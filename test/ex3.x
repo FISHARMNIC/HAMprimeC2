@@ -1,0 +1,1 @@
+create bob <- 2 + (u32 5 + u16 10) * (2 / (array[Bob<aa:jon.ab,ee:1+3>.method(a.b + 3).cc + 2] + bob.gg));
