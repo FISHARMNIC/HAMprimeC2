@@ -95,14 +95,15 @@ module.exports = {
             pointer: false,
             special: true,
             dblRef: false,
-            templatePtr: null
+            formatPtr: null
         },
     },
     keywords: [
-        "method","function","format","initializer"
+        "method","function","format","initializer", "persistent"
     ],
     operators: ["+","-","*","/","<<",">>","|","&","%"],
     symbols: "!@#$%^&*()+{}|:<>?,./;'[]\-=' ",
     conditionalMap,
     conditionals: Object.keys(conditionalMap),
+    mathEnders
 }

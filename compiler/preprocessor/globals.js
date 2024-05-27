@@ -1,8 +1,6 @@
-globalThis.scope = 0;
-globalThis.bracketStack = [];
+globalThis.scope = [];
 globalThis.currentStackOffset = 0;
-
-
+globalThis.requestBracket = 0;
 globalThis.globalVariables = {           // Object : {variable name: type}
     __return_8__: types.i8,
     __return_16__: types.i16,
@@ -89,35 +87,63 @@ globalThis.userFunctions = {           // Object : {function name: {func name, p
         returnType: types.u32
     }
 }
-globalThis.stackVariables = {}
-
+globalThis.userFormats = {}
+globalThis.stackVariables = [{}]
+globalThis.nextAllocIsPersistent = false;
 globalThis.outputCode = { // object with out data
     data: [],
     init: [],
     text: [],
     autoPush: function () {
-        if (bracketStack.length == 0)
+        if (scope.length == 0)
             this.init.push(...arguments)
         else
             this.text.push(...arguments)
     }
 }
+globalThis.typeStack = []
 
 
 
 
 
 
+globalThis.keywordTypes = {
+    FORMAT: 0, 
+    FUNCTION: 1,
+    INIT: 2,
+    METHOD: 3
+}
 
 
+globalThis.getLastScopeType = function()
+{
+    if(scope.length == 0)
+        return -1
+    return scope[scope.length - 1].type
+}
 
+globalThis.newScope = function(rb)
+{
+    stackVariables.push({})
+    scope.push(objCopy(rb))
+}
 
+globalThis.createStackVariableListOnly = function(vname, type)
+{
+    stackVariables.at(-1)[vname] = objCopy(type)
+}
 
-
-
-
-
-
+globalThis.getAllStackVariables = function()
+{
+    var obj = {}
+    stackVariables.forEach(inner_obj => {
+        Object.entries(inner_obj).forEach(pair => {
+            obj[pair[0]] = pair[1]
+        })
+    })
+    return obj
+}
 
 globalThis.debugPrint = function () {
     console.log("\033[92m[DEBUG]\033[0m", ("\033[96m" + (debugPrint.caller.name || "*unkown caller*") + "\033[0m").padEnd(32), ...arguments);
@@ -151,7 +177,7 @@ globalThis.objectIncludes = function(obj,inc)
 
 globalThis.objectValuesIncludes = function(obj,inc)
 {
-    return Object.value(obj).includes(inc)
+    return Object.values(obj).includes(inc)
 }
 globalThis.newStackVar = function (type) {
     return {
@@ -167,3 +193,16 @@ globalThis.newGlobalVar = function(type, info = {}) {
     }
 }
 console.logArr = (x) => {console.dir(x, {depth: null, colors: true, maxArrayLength: null})}
+
+//globalThis.setStackVariable = function(vname)
+// {
+//     for(var i = stackVariables.length; i >= 0; i--)
+//     {
+//         var obj = stackVariables[i]
+//         if(objectIncludes(obj, vname))
+//         {
+//             stackVariables[i].
+//         }
+//     }
+//     throwE(`Stack variable ${vname} does not exist`)
+// }

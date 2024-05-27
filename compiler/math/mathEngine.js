@@ -1,3 +1,8 @@
+/*
+todo. Only push non clobbered. use eax, esi, and edi since they are least likely to be clobbered
+(eax will never be clobbered)
+*/
+
 module.exports = function (arr) {
     debugPrint("MATH ON", arr)
     var scanPos = 0;
@@ -68,7 +73,7 @@ module.exports = function (arr) {
         })(item))
         scanPos += 1;
     }
-    var lbl = actions.requestTempLabel(defines.types.u32);
+    var lbl = helpers.variables.newTempLabel(defines.type.u32)
     outputCode.autoPush(`mov %eax, ${lbl}`, `popa`)
     typeStack.push(defines.types.u32)
     return lbl

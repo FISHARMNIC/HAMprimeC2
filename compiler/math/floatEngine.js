@@ -64,7 +64,7 @@ module.exports = function (arr) {
         })(item))
         scanPos += 2;
     }
-    var lbl = actions.requestTempLabel(defines.types.u32);
+    var lbl = helpers.variables.newTempLabel(defines.type.u32)
     outputCode.autoPush(`movss %xmm0, ${lbl}`)
     typeStack.push(defines.types.u32)
     return lbl

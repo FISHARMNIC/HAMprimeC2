@@ -14,20 +14,21 @@ var assembly = {
         currentStackOffset += 4
     },
     getStackOffset: function (variable) {
-        return currentStackOffset - 4 - stackVariables[variable].offset
+        return currentStackOffset - 4 - getAllStackVariables()[variable].offset
     }
 }
 
 var variables = {
-    create: function (vname, type, value, onStack = scope != 0) {
+    create: function (vname, type, value, onStack = scope.length != 0) {
         if (onStack) // inside of a function
         {
             value = helpers.types.formatIfConstant(value)
-            if(objectIncludes(stackVariables, vname))
+            if(objectIncludes(getAllStackVariables(), vname))
             {
                 throwE(`Variable "${vname}" already defined`)
             }
-            stackVariables[vname] = newStackVar(type)
+            createStackVariableListOnly(vname, newStackVar(type))
+
             assembly.pushToStack(value) // store in stack
         } else { // outside of function, global variable
             if(objectIncludes(globalVariables, vname))
@@ -66,7 +67,7 @@ var variables = {
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
         if(isStack)
         {
-            var type = stackVariables[vname].type
+            var type = getAllStackVariables()[vname].type
             var dReg = helpers.types.formatRegister('d', type)
             var output = helpers.registers.getFreeLabelOrRegister(type)
             
@@ -83,26 +84,32 @@ var variables = {
 var allocations = {
     allocateStack: function (bytes) {
         outputCode.autoPush(
-            `sub %esp, ${bytes}`
+            `sub %esp, \$${bytes}`
         )
-        var lbl = helpers.variables.newTempLabel(defines.type.p32)
-        stackVariables[lbl] = newStackVar(defines.type.p32)
-        currentStackOffset += bytes
-        return lbl
+        return "%esp"
+        // var lbl = helpers.variables.newTempLabel(defines.types.p32)
+        // createStackVariableListOnly(lbl, newStackVar(defines.types.p32)) //not actually for use, just for knowing the offset
+        // currentStackOffset += bytes
+        //return lbl
     },
     allocateMmap: function (bytes) {
-        throwE("unfinished")
+        outputCode.autoPush(
+            `pushl \$${bytes}`,
+            `call __allocate__`,
+        )
+        return "%eax"
     },
-    allocateAuto: function (value, bytes) {
-        if (bytes >= 4096 || currentStackOffset > 1e6) // stack threshold
+    allocateAuto: function (bytes) {
+        if (bytes >= 4096 || currentStackOffset > 1e6 || nextAllocIsPersistent || scope.length == 0)
         {
-            return allocateMmap(bytes)
+            return this.allocateMmap(bytes)
+            nextAllocIsPersistent = false;
         } else {
-            return allocateStack(bytes)
+            return this.allocateStack(bytes)
         }
     },
     newStringLiteral: function (value) {
-        var label = helpers.formatters.stringLiteral(counters.stringLiterals++)
+        var label = helpers.formatters.stringLiteral(helpers.counters.stringLiterals++)
         outputCode.data.push(
             `${label}: .asciz "${value}"`
         )
@@ -117,7 +124,43 @@ var functions = {
 }
 
 var formats = {
+    parseParams: function(fname, parr)
+    {
+        var passed = {}
+        if (parr.includes(":")) {
+            parr.forEach((x, i) => {
+                if (x == ":") {
+                    passed[parr[i - 1]] = parr[i + 1];
+                }
+            })
+            //throwE(userFormats[fname].size)
+            scope.push([])
+            var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
+            var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32) // whar it's saved in
+            outputCode.autoPush(`mov ${allocLbl}, ${saveLbl}`)
+            //throwE(outputCode)
+            
+            var off = 0
+            userFormats[fname].properties.forEach(p => {
+                var value = passed[p.name]
+                if(value == undefined)
+                {
+                    throwE(`Property ${p} not given`);
+                }
 
+                if(helpers.types.isConstant(value))
+                {
+                    outputCode.autoPush(`mov${helpers.types.sizeToSuffix(p.type)} \$${value}, ${off}(${allocLbl})`)
+                } else {
+                    var reg = helpers.types.formatRegister('d', p.type)
+                    outputCode.autoPush(`mov ${value}, ${reg}; mov ${reg}, ${off}(${allocLbl})`)
+                }
+                
+                off += helpers.types.typeToBytes(p.type)
+            })
+            return saveLbl
+        }
+    }
 }
 
 module.exports = {

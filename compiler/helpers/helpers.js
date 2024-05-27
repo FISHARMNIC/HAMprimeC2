@@ -51,10 +51,13 @@ var types = {
         if (x.pointer || x.templatePtr != undefined) return 32 // HERE IF BROKEN Mar 12 2023 delete || x.templatePre != undefined
         return parseInt(x.size)
     },
+    typeToBytes: function (x) {
+        return this.typeToBits(x) / 8
+    },
     sizeToSuffix: function (x) {
         var t = this.typeToBits(x)
         if (t == 32) return 'l'
-        if (t == 16) return 's'
+        if (t == 16) return 'w'
         if (t == 8) return 'b'
         throwE("Unknown type", x)
     },
@@ -86,10 +89,10 @@ var formatters = {
 
 var variables = {
     checkIfOnStack(vname) {
-        return scope != 0 && objectIncludes(stackVariables, vname) // ) // if stack var
+        return scope.length != 0 && objectIncludes(getAllStackVariables(), vname) // ) // if stack var
     },
     getVariableType(vname) {
-        return this.checkIfOnStack(vname) ? stackVariables[vname].type : globalVariables[vname].type
+        return this.checkIfOnStack(vname) ? getAllStackVariables()[vname].type : globalVariables[vname].type
     },
     variableExists(vname) {
         return this.checkIfOnStack(vname) || objectIncludes(globalVariables, vname)
@@ -103,15 +106,13 @@ var variables = {
 
 var registers = {
     inLineClobbers: {
-        'a': 0,
-        'b': 0,
+        'b': 0, // ax is reserved for function returns
         'c': 0, // dx is reserved for other stuff
         's': 0,
         'i': 0, // edi
     },
     clearClobbers: function () {
         this.inLineClobbers = {
-            'a': 0,
             'b': 0,
             'c': 0,
             's': 0,
@@ -140,6 +141,30 @@ var registers = {
     }
 }
 
+var formats = {
+    propertyOffset: function(fname, pname)
+    {
+        var offset = 0
+        userFormats[fname].properties.findIndex(e => {
+            if(e.name == pname)
+                return true
+        
+            offset += types.typeToBits(e.type)
+            return false
+        })
+        return offset
+    },
+    getFormatSize: function(props)
+    {
+
+        var offset = 0;
+        props.forEach(e => {
+            offset += types.typeToBits(e.type)
+        })
+        return offset / 8
+    }
+}
+
 module.exports = {
-    types, formatters, variables, registers, counters
+    types, formatters, variables, registers, counters, formats
 }

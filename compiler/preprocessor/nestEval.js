@@ -2,20 +2,20 @@
 
 var nesters = {
     '(': ')',
-    '{': '}',
     '[': ']',
     '<': '>'
 }
 
 function nest(split_line) {
+    throwE("Use nest2. Nest is longer being used")
     var out = []          // output
     var refStack = [out]  // stack of last references
     var openingStack = [] // stack of last parenthesis
 
-    console.log(split_line)
+    //console.log(split_line)
     for (var wordIndex = 0; wordIndex < split_line.length; wordIndex++) {
         var word = split_line[wordIndex]
-        if (Object.keys(nesters).includes(word)) {
+        if (Object.keys(nesters).includes(word) || word == "<-") {
             openingStack.push(word) // push opening parenthesis
             var nref = []
             refStack.at(-1).push(word)
@@ -28,11 +28,44 @@ function nest(split_line) {
             openingStack.pop();
             refStack.at(-1).push(word)
         }
-        else{
+        else {
             refStack.at(-1).push(word)
         }
     }
-    console.logArr(out)
+    //console.logArr(out)
+    return out
+}
+
+function nest2(split_line, opener = -1, closers = []) {
+    var out = []
+    for (var wordIndex = 0; wordIndex < split_line.length; wordIndex++) {
+        var word = split_line[wordIndex]
+        if (Object.keys(nesters).includes(word) || word == "<-") {
+            if (word == "<-") {
+                out.push(nest2(split_line.slice(wordIndex + 1), -1, [null]))
+                return out
+            } else {
+                var ret = nest2(split_line.slice(wordIndex + 1), word, [nesters[word]])
+                wordIndex += ret.t
+                out.push(word)
+                out.push(ret.d)
+            }
+
+        }
+        else if (closers.includes(word)) { // closing
+            return {
+                d: out,
+                t: wordIndex
+            }
+        } else {
+            out.push(word)
+        }
+    }
+
+    //console.log(opener, split_line)
+    if (opener != -1) {
+        throwE(`Unclosed parameter in line`, split_line)
+    }
     return out
 }
 
@@ -46,7 +79,7 @@ function orderDeepestFirst(line) {
             //console.log("nesting on", word)
             lineq.push(orderDeepestFirst(word))
             bckq.push(n++)
-        } else /*if(word != '(' && word != ')')*/{
+        } else /*if(word != '(' && word != ')')*/ {
             bckq.push(word)
         }
     })
@@ -63,7 +96,7 @@ function runDeepestFirst(line) {
         var oArr = []
         for (var i = 0; i < nestedEnd; i++) {
             var outT = runDeepestFirst(line.slice(0, nestedEnd)[i])
-        
+
             line = line.map(x => { // if accessing a number that needs to be replaced, replace it
                 if (x == i) {
                     return outT
@@ -80,10 +113,16 @@ function runDeepestFirst(line) {
         // here is where stuff should be evaluated. Using aline
 
         // it then needs to be replaced with a label
-        evaluator(aline)
+        //console.log("COMPILING",aline)
+        
+        // var output = evaluator(aline)
+        // console.log("=====OUT", output)
+        // return output
+        
+        
         console.log(`EV${tevDELETE} = EVALUATE: ${aline.join(" ")}`)
         return (`EV${tevDELETE++}`)
     }
 }
 
-module.exports = { nest, orderDeepestFirst, runDeepestFirst, nesters }
+module.exports = { nest, nest2, orderDeepestFirst, runDeepestFirst, nesters }

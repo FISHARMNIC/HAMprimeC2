@@ -11,7 +11,7 @@ globalThis.helpers = require('./helpers/helpers.js')
 globalThis.evaluator = require('./helpers/evaluator.js')
 
 // load input file and split into lines
-const INPUTFILE = "../test/ex3.x"
+const INPUTFILE = "../test/ex4.x"
 inputCode = String(fs.readFileSync(INPUTFILE));
 inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x);
 
@@ -20,8 +20,12 @@ inputCode = inputCode.map(line => {
     // parse it into words
     var lsplit = parser.split(line);
     helpers.registers.clearClobbers()
-    lsplit = nest.nest(lsplit);
+    typeStack = []
+
+    lsplit = nest.nest2(lsplit);
+    
     lsplit = nest.orderDeepestFirst(lsplit)
+    //console.log(lsplit)
     lsplit = nest.runDeepestFirst(lsplit)
 
     helpers.counters.setMaxTempLabels();
@@ -30,7 +34,6 @@ inputCode = inputCode.map(line => {
 
 // the compiler goes LEFT TO RIGHT NOW
 
-// scope = 1;
 // actions.variables.create("bob",defines.types.u32,123);
 // actions.variables.set("bob", 456)
 // actions.variables.read("bob")
@@ -40,4 +43,6 @@ inputCode = inputCode.map(line => {
 // actions.variables.read("bob")
 // actions.variables.read("bob")
 // actions.variables.read("bob")
+
 console.log(outputCode)
+//console.logArr(helpers.formats.propertyOffset("Person", "age"))
