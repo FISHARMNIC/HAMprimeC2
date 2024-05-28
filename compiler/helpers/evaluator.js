@@ -31,17 +31,19 @@ function evaluate(line) {
             if (objectValuesIncludes(nest.nesters, offsetWord(-1))) // if like >. or ).
             {
                 parent = offsetWord(-1)
+            } else {
+
             }
         } else if (objectIncludes(userFormats, word)) // if word is a class
         {
+            console.log("=======", scope)
             if (offsetWord(1) == '<') // if using an init
             {
                 var dataLbl = actions.formats.parseParams(word, offsetWord(2))
                 line[wordNum] = dataLbl
                 line.splice(wordNum + 1, 3)
             }
-            typeStack.push()
-
+            console.log("=======", scope)
         }
         // #endregion
         // #region Variables
@@ -72,9 +74,8 @@ function evaluate(line) {
                 typeStack.push(defines.types.u32)
                 return actions.variables.set(word, offsetWord[1])
             }
-        } else if(word[0] == '"' && word[word.length - 1] == '"')
-        {
-            line[wordNum] = actions.allocations.newStringLiteral(word.substring(1,word.length - 1))
+        } else if (word[0] == '"' && word[word.length - 1] == '"') {
+            line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
         }
         // #endregion
         // #region Brackets
@@ -99,6 +100,7 @@ function evaluate(line) {
                 nobj.formatPtr = userFormats[oldScope.data.name]
                 defines.types[oldScope.data.name] = nobj
             }
+            console.log("IJWJWWO", scope)
         }
         // #endregion
         // #region Keywords
@@ -120,7 +122,33 @@ function evaluate(line) {
             }
         }
         // #endregion
+        // #region Math
+
+        // #endregion
     }
+
+    for (var wordNum = 0; wordNum < line.length; wordNum++) {
+        var word = line[wordNum]
+        if (defines.operators.includes(line[wordNum + 1])) {
+            var start = wordNum
+            var onNum = true;
+            var build = [];
+            while (wordNum < line.length) {
+                word = line[wordNum]
+                if (onNum) {
+                    if (defines.symbols.includes(word) || defines.operators.includes(word)) {
+                        break;
+                    }
+                }
+                build.push(word)
+                onNum = !onNum;
+                wordNum++;
+            }
+            var lbl = mathEngine(build)
+            line.splice(start, build.length + 1, lbl)
+        }
+    }
+
     return line
 }
 module.exports = evaluate

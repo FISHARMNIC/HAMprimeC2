@@ -126,6 +126,7 @@ var functions = {
 var formats = {
     parseParams: function(fname, parr)
     {
+        
         var passed = {}
         if (parr.includes(":")) {
             parr.forEach((x, i) => {
@@ -134,7 +135,6 @@ var formats = {
                 }
             })
             //throwE(userFormats[fname].size)
-            scope.push([])
             var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
             var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32) // whar it's saved in
             outputCode.autoPush(`mov ${allocLbl}, ${saveLbl}`)
@@ -148,12 +148,19 @@ var formats = {
                     throwE(`Property ${p} not given`);
                 }
 
+
+                console.log("eferfergegerwgerwg", value)
+                value = helpers.types.conformRegisterIfIs(value, p.type)
+
                 if(helpers.types.isConstant(value))
                 {
                     outputCode.autoPush(`mov${helpers.types.sizeToSuffix(p.type)} \$${value}, ${off}(${allocLbl})`)
                 } else {
                     var reg = helpers.types.formatRegister('d', p.type)
-                    outputCode.autoPush(`mov ${value}, ${reg}; mov ${reg}, ${off}(${allocLbl})`)
+                    if(helpers.types.stringIsRegister)
+                    outputCode.autoPush(`mov ${value}, ${off}(${allocLbl})`)
+                    else 
+                        outputCode.autoPush(`mov ${value}, ${reg}; mov ${reg}, ${off}(${allocLbl})`)
                 }
                 
                 off += helpers.types.typeToBytes(p.type)

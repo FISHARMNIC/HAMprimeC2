@@ -8,7 +8,7 @@ var conditionalMap = {
 }
 
 var mathEnders = [
-    "[","<","(",":",",",
+    "]",">",")",":",",",
 ]
 module.exports = {
     types:{

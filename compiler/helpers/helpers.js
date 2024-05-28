@@ -75,6 +75,30 @@ var types = {
             throwE("Unknown type [" + JSON.stringify(type) + "]")
         }
     },
+    stringIsRegister: function(str)
+    {
+        return str[0] == "%" && (str.length == 3 || str.length == 4)
+    },
+    conformRegisterIfIs: function (register, type) {
+        if (this.stringIsRegister(register)) {
+            if (register.includes("di")) {
+                return this.formatRegister('i', type)
+            }
+            else if(register.length == 3) // %ax, %bl, %si
+            {
+                return this.formatRegister(register[1], type)
+            } else {                      // %eax, %ebx, %esi,
+                return this.formatRegister(register[2], type)
+            }
+        }
+        return register
+    },
+    guessType: function (word) {
+        if (variables.variableExists(word)) {
+            return variables.getVariableType(word)
+        }
+        return defines.types.u32
+    }
 }
 
 var formatters = {
@@ -142,20 +166,18 @@ var registers = {
 }
 
 var formats = {
-    propertyOffset: function(fname, pname)
-    {
+    propertyOffset: function (fname, pname) {
         var offset = 0
         userFormats[fname].properties.findIndex(e => {
-            if(e.name == pname)
+            if (e.name == pname)
                 return true
-        
+
             offset += types.typeToBits(e.type)
             return false
         })
         return offset
     },
-    getFormatSize: function(props)
-    {
+    getFormatSize: function (props) {
 
         var offset = 0;
         props.forEach(e => {

@@ -4,39 +4,39 @@ todo. Only push non clobbered. use eax, esi, and edi since they are least likely
 */
 
 module.exports = function (arr) {
-    debugPrint("MATH ON", arr)
+    debugPrint("MATH ON", arr, helpers.registers.inLineClobbers)
     var scanPos = 0;
     var current = arr[scanPos]
     var mathType = defines.types.u32
-
-    outputCode.autoPush(
-        `pusha`,
-        `xor %eax, %eax`,
-        `xor %ebx, %ebx`,
-        `xor %ecx, %ecx`,
-        `mov ${actions.formatIfConstantOrLiteral(current)}, ${asm.formatRegister('a', popTypeStack())}`
-    ) // load first value into register a
+    var pushed = [];
+    Object.entries(helpers.registers.inLineClobbers).forEach(pair => {
+        if(pair[1] == 1)
+        {
+            pushed.push(helpers.types.formatRegister(pair[0]))
+            outputCode.autoPush(`push ${helpers.types.formatRegister(pair[0])}`)
+        }
+    })
+    outputCode.autoPush(`mov ${helpers.types.formatIfConstant(current)}, ${helpers.types.formatRegister('a', helpers.types.guessType(current))}`) // load first value into register a
 
     scanPos += 1
     var reps = scanPos - 2;
     while (scanPos < arr.length - 1) {
 
-        current = actions.formatIfConstantOrLiteral(arr[scanPos]);
+        current = helpers.types.formatIfConstant(arr[scanPos]);
 
-        var regA = asm.formatRegister('a', defines.mathOps.includes(current)? mathType : popTypeStack())
-        var regB = asm.formatRegister('b', mathType)
-        var regC = asm.formatRegister('c', mathType)
-        var regD = asm.formatRegister('d', mathType)
-
+        var regA = helpers.types.formatRegister('a', defines.operators.includes(current)? mathType : helpers.types.guessType(arr[scanPos]))
+        var regB = helpers.types.formatRegister('b', mathType)
+        var regC = helpers.types.formatRegister('c', mathType)
+        var regD = helpers.types.formatRegister('d', mathType)
 
         var item = {
             current,
-            next: actions.formatIfConstantOrLiteral(arr[scanPos + 1]),
+            next: helpers.types.formatIfConstant(arr[scanPos + 1]),
         }
 
-        var g = actions.getVariableOrParamIfExists(arr[scanPos + 1])
-        if (g != null) {
-            regB = asm.formatRegister('b', g)
+        if(helpers.variables.variableExists(arr[scanPos + 1]))
+        {
+            regB = helpers.types.formatRegister('b', helpers.variables.getVariableType(arr[scanPos + 1]))
         }
 
         outputCode.autoPush(...((inD) => {
@@ -63,18 +63,18 @@ module.exports = function (arr) {
                         `div ${regB}`,
                         `mov ${regD}, ${regA}`,
                     ]
-                case ">": //TODO
-                    return [
-                        `cmp ${inD.next}, ${regB}`,
-                    ]
                 default:
                     return ""
             }
         })(item))
         scanPos += 1;
     }
-    var lbl = helpers.variables.newTempLabel(defines.type.u32)
-    outputCode.autoPush(`mov %eax, ${lbl}`, `popa`)
+    var lbl = helpers.registers.getFreeLabelOrRegister(mathType)
+    outputCode.autoPush(`mov %eax, ${lbl}`)
+    pushed.forEach(x => {
+        outputCode.autoPush(`pop ${x}`)
+    })
+
     typeStack.push(defines.types.u32)
     return lbl
 }
