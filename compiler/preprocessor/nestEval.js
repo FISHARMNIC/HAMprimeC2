@@ -18,7 +18,7 @@ function nest(split_line) {
         if (Object.keys(nesters).includes(word) || word == "<-") {
             openingStack.push(word) // push opening parenthesis
             var nref = []
-            if(word != "(")
+            //if(word != "(")
                 refStack.at(-1).push(word)
             refStack.at(-1).push(nref)          // push new nested arr
             refStack.push(nref)
@@ -27,7 +27,7 @@ function nest(split_line) {
         {
             refStack.pop();
             openingStack.pop();
-            if(word != ")")
+            //if(word != ")")
                 refStack.at(-1).push(word)
         }
         else {

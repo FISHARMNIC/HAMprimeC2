@@ -112,18 +112,8 @@ function parseFinalCode()
 `
 .1byte = .byte
 
-# crucial libs
-.include "/Users/squijano/Documents/progLan2/compiler/assembly_libs/init.s"
-.include "/Users/squijano/Documents/progLan2/compiler/assembly_libs/io.s"
-.include "/Users/squijano/Documents/progLan2/compiler/assembly_libs/memory.s"
-
-# additional libs
-`
-    + includedAssemblyFiles.map(x=> `.include "${x}"`).join("\n") + 
-`
-
 .data
-__fpu_temp__: .4byte 0
+
 ######## user data section ########
 `
     + outputCode.data.join("\n") + 
@@ -136,23 +126,19 @@ __fpu_temp__: .4byte 0
 
 user_init:
 #### compiler initation section ###
-push $16
-swap_stack
-call __allocate__
-swap_stack
+__init__:
 `
     + outputCode.init.join("\n") + 
 `
-###################################
 ret
+###################################
 
 main:
-    jmp PL__read_args__
-    PL__read_args_fin__:
-    call init_stacks
-    //swap_stack
+    call __init__
     call entry
     ret
+
+###################################
 `
 
 var index = out.split("\n").length

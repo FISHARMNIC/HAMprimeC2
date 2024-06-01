@@ -33,6 +33,16 @@ var types = {
     formatIfConstant: function (x) {
         return this.isConstant(x) ? "$" + x : x
     },
+    formatIfLiteral: function(x) {
+        if(x.substring(0,8) == "__STRING")
+        {
+            return "$" + x
+        }
+        return x
+    },
+    isConstOrLit: function(x) {
+        return (x.substring(0,8) == "__STRING" || this.isConstant(x))
+    },
     typeToAsm: function (x) {
         if (x.float) {
             return `.4byte`
@@ -79,6 +89,26 @@ var types = {
     {
         return str[0] == "%" && (str.length == 3 || str.length == 4)
     },
+    stringIsEspOffset: function(str)
+    {
+        return str.substring(str.indexOf("(")) == "(%esp)"
+    },
+    getOffsetFromEspOffsetString: function(str)
+    {
+        return str.substring(0, str.indexOf("("))
+    },
+    getRegisterType: function(register)
+    {
+        if(register.includes("%x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp"))
+        {
+            if(register.includes("%e"))
+            {
+                return defines.types.u32
+            }
+            return defines.types.u16
+        }
+        return defines.types.u8
+    },
     conformRegisterIfIs: function (register, type) {
         if (this.stringIsRegister(register)) {
             if (register.includes("di")) {
@@ -93,9 +123,18 @@ var types = {
         }
         return register
     },
+    getVariableFromEspOffsetString: function(word)
+    {
+        return variables.getStackVariableWithOffset(currentStackOffset - 4 - (this.getOffsetFromEspOffsetString(word)))
+    },
     guessType: function (word) {
+        word == String(word)
         if (variables.variableExists(word)) {
             return variables.getVariableType(word)
+        } else if(this.stringIsEspOffset(word)) {
+            return this.getVariableFromEspOffsetString(word).type
+        } else if(this.stringIsRegister(word)) {
+            return this.getRegisterType(word)
         }
         return defines.types.u32
     }
@@ -126,6 +165,18 @@ var variables = {
         globalVariables[lbl] = newGlobalVar(type)
         return lbl
     },
+    getStackVariableNameWithOffset(offset)
+    {
+        var gaf = getAllStackVariables()
+        
+        return Object.keys(gaf)[Object.values(gaf).findIndex(x => {
+            return x.offset == offset
+        })]
+    },
+    getStackVariableWithOffset(offset)
+    {
+        return getAllStackVariables()[this.getStackVariableNameWithOffset(offset)]
+    }
 }
 
 var registers = {

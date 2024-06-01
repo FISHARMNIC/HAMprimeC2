@@ -1,3 +1,9 @@
+/*
+TODO:
+    - dealloc stack vars
+
+*/
+
 const fs = require("fs");
 
 // All required libs
@@ -19,10 +25,15 @@ inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x);
 
 //console.log(helpers.registers)
 
-scope.push([])
 inputCode = inputCode.map(line => {
     // parse it into words
     var lsplit = parser.split(line);
+    var io = lsplit.indexOf("//")
+    if(io != -1)
+    {
+        lsplit = lsplit.slice(0,lsplit.indexOf("//"))
+    }
+
     helpers.registers.clearClobbers()
     typeStack = []
 
@@ -36,6 +47,8 @@ inputCode = inputCode.map(line => {
     return lsplit;
 })
 
+fs.writeFileSync(__dirname + "/../compiled/out.s", parser.parseFinalCode().out)
+
 // the compiler goes LEFT TO RIGHT NOW
 
 // actions.variables.create("bob",defines.types.u32,123);
@@ -48,5 +61,5 @@ inputCode = inputCode.map(line => {
 // actions.variables.read("bob")
 // actions.variables.read("bob")
 
-console.log(outputCode)
+//console.log(outputCode)
 //console.logArr(helpers.formats.propertyOffset("Person", "age"))

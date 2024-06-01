@@ -2,90 +2,17 @@ globalThis.scope = [];
 globalThis.currentStackOffset = 0;
 globalThis.requestBracket = 0;
 globalThis.globalVariables = {           // Object : {variable name: type}
-    __return_8__: types.i8,
-    __return_16__: types.i16,
-    __return_32__: types.i32,
-    __return_flt__: types.f32,
-    "this": types.u32,
-    "argv": types.u32,
-    "argc": types.u32
+    "this": defines.types.u32,
 }
 globalThis.userFunctions = {           // Object : {function name: {func name, parameters[{param name , type},...]}, return type}
-    "put_string": {
-        name: 'put_string',
-        parameters: [{ name: "buffer", type: types.p8 }],
+    "printf": {
+        name: 'printf',
+        parameters: [
+            {name: "format", type: types.p8}
+        ],
+        variadic: true,
         returnType: types.u32
     },
-    "put_int": {
-        name: 'put_int',
-        parameters: [{ name: "number", type: types.u32 }],
-        returnType: types.u32
-    },
-    "puts": {
-        name: 'puts',
-        parameters: [{ name: "string", type: types.p8 }],
-        returnType: types.u32
-    },
-    "printf_mini": {
-        name: 'printf_mini',
-        parameters: [],
-        returnType: types.u32
-    },
-    "put_float": {
-        name: 'put_float',
-        parameters: [{ name: "number", type: types.f32 }],
-        returnType: types.u32
-    },
-    "put_floatln": {
-        name: 'put_floatln',
-        parameters: [{ name: "number", type: types.f32 }],
-        returnType: types.u32
-    },
-    "fopen": {
-        name: 'fopen',
-        parameters: [],
-        returnType: types.u32
-    },
-    "fwrite": {
-        name: 'fopen',
-        parameters: [],
-        returnType: types.u32
-    },
-    "fread": {
-        name: 'fopen',
-        parameters: [],
-        returnType: types.u32
-    },
-    "fclose": {
-        name: 'fclose',
-        parameters: [],
-        returnType: types.u32
-    },
-    "mpow": {
-        name: 'mpow',
-        parameters: [],
-        returnType: types.f32
-    },
-    "scanf_mini": {
-        name: 'scanf_mini',
-        parameters: [],
-        returnType: types.u32
-    },
-    "malloc": {
-        name: "malloc",
-        parameters: [],
-        returnType: types.p32
-    },
-    "free": {
-        name: "free",
-        parameters: [],
-        returnType: types.u32
-    },
-    "strlen_rapid" : {
-        name: "strlen_rapid",
-        parameters: [{name: "string", type: types.p8 }],
-        returnType: types.u32
-    }
 }
 globalThis.userFormats = {}
 globalThis.stackVariables = [{}]
@@ -157,7 +84,7 @@ globalThis.throwE = function (x) {
     console.log("\n\n================== THIS WAS NOT A JS ERROR, THIS WAS THROWE ==================\n\n")
     process.exit(1)
 }
-globalThis.throwW = (x) => console.log(`[WARNING] @ line ${globalInd}: `, ...arguments);
+globalThis.throwW = (x) => {console.log(`[WARNING] @ line ____: `, ...arguments); process.exit(0)};
 
 //taken from: https://stackoverflow.com/questions/65538406/convert-javascript-number-to-float-single-precision-ieee-754-and-receive-integ
 globalThis.doubleIEEE = function (double) {
@@ -192,6 +119,23 @@ globalThis.newGlobalVar = function(type, info = {}) {
         info
     }
 }
+
+globalThis.popTypeStack = function(u32ifNo = false) {
+    if (typeStack.length == 0) {
+        if (u32ifNo) {
+            //throwW("Mising expected type, guessing u32")
+            return defines.types.u32;
+        }
+        throwE("Missing expected type")
+    }
+    return typeStack.pop()
+}
+
+globalThis.objectCompare = function(a,b)
+{
+    return JSON.stringify(a) == JSON.stringify(b)
+}
+
 console.logArr = (x) => {console.dir(x, {depth: null, colors: true, maxArrayLength: null})}
 
 //globalThis.setStackVariable = function(vname)

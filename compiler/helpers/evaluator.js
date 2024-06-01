@@ -1,6 +1,7 @@
 function evaluate(line) {
     console.log(line)
     line = line.map((x) => { // bad code yes
+
         if (objectIncludes(defines.types, x) && !objectIncludes(userFormats, x)) {
             typeStack.splice(0, 0, objCopy(defines.types[x]))
             return null
@@ -11,23 +12,20 @@ function evaluate(line) {
     }).filter(x => x)
     //throwE(line, typeStack)
 
-    function popTypeStack(u32ifNo = false) {
-        if (typeStack.length == 0) {
-            if (u32ifNo) {
-                return defines.types.u32;
-            }
-            throwE("[COMPILER] Missing expected type")
-        }
-        return typeStack.pop()
-    }
-
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
 
         var word = line[wordNum]
         var offsetWord = x => wordNum + x >= 0 ? line[wordNum + x] : null;
 
-        // #region formats
-        if (word == '.') { // child property UNFINISHED
+        // #region modifications
+        if(word == '(' || word == ')')
+        {
+            line.splice(wordNum, 1)
+            wordNum--;
+        }
+        // #endregion
+        // #region Formats
+        else if (word == '.') { // child property UNFINISHED
             if (objectValuesIncludes(nest.nesters, offsetWord(-1))) // if like >. or ).
             {
                 parent = offsetWord(-1)
@@ -36,14 +34,14 @@ function evaluate(line) {
             }
         } else if (objectIncludes(userFormats, word)) // if word is a class
         {
-            console.log("=======", scope)
+            //console.log("=======", scope)
             if (offsetWord(1) == '<') // if using an init
             {
                 var dataLbl = actions.formats.parseParams(word, offsetWord(2))
                 line[wordNum] = dataLbl
                 line.splice(wordNum + 1, 3)
             }
-            console.log("=======", scope)
+            //console.log("=======", scope)
         }
         // #endregion
         // #region Variables
@@ -58,10 +56,8 @@ function evaluate(line) {
             }
 
             if (offsetWord(2) == '<-') {
-                typeStack.push(defines.types.u32)
                 return actions.variables.create(offsetWord(1), popTypeStack(true), offsetWord(3))
             } else {
-                typeStack.push(defines.types.u32)
                 return actions.variables.create(offsetWord(1), popTypeStack(true), 0)
             }
         } else if (offsetWord(1) == "<-") { // variable setting
@@ -76,6 +72,12 @@ function evaluate(line) {
             }
         } else if (word[0] == '"' && word[word.length - 1] == '"') {
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
+        } else if(objectIncludes(getAllStackVariables(), word)) // get stack var
+        {
+            line[wordNum] = actions.assembly.getStackVarAsEsp(word)
+            //throwE(word)
+            typeStack.push(getAllStackVariables()[word].type)
+            //throwE(stackVariables, currentStackOffset)
         }
         // #endregion
         // #region Brackets
@@ -99,8 +101,12 @@ function evaluate(line) {
                 var nobj = objCopy(defines.types.___format_template___)
                 nobj.formatPtr = userFormats[oldScope.data.name]
                 defines.types[oldScope.data.name] = nobj
+                actions.allocations.deallocStack()
+            } else if(oldScope.type == keywordTypes.FUNCTION)
+            {
+                actions.functions.closeFunction(oldScope)
             }
-            console.log("IJWJWWO", scope)
+            //console.log("IJWJWWO", scope)
         }
         // #endregion
         // #region Keywords
@@ -119,14 +125,45 @@ function evaluate(line) {
                 }
             } else if (word == "persistent") {
                 nextAllocIsPersistent = true;
+            } else if (word == "function")
+            {
+                var fname = offsetWord(-1)
+                var params_obj = actions.functions.createParams(offsetWord(2))
+                var returnType = objCopy(defines.types.u32)
+                
+                if(offsetWord(3) == "->")
+                {
+                    returnType = popTypeStack()
+                }
+
+                var data = {
+                    name: fname,
+                    params: params_obj.params,
+                    returnType,
+                    variadic: false,
+                }
+
+                requestBracket = {
+                    type: keywordTypes.FUNCTION,
+                    data
+                }
+
+                userFunctions[fname] = data
+                actions.functions.createFunction(fname)
             }
         }
         // #endregion
-        // #region Math
-
+        // #region Functions
+        else if(offsetWord(1) == "(" && objectIncludes(userFunctions,word)) // function call
+        {
+            var fname = word
+            var args = offsetWord(2)
+            actions.functions.callFunction(fname, args)
+        }
         // #endregion
     }
 
+    // #region Math
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         var word = line[wordNum]
         if (defines.operators.includes(line[wordNum + 1])) {
@@ -148,7 +185,9 @@ function evaluate(line) {
             line.splice(start, build.length + 1, lbl)
         }
     }
+    // #endregion
 
     return line
+
 }
 module.exports = evaluate

@@ -16,7 +16,7 @@ module.exports = function (arr) {
             outputCode.autoPush(`push ${helpers.types.formatRegister(pair[0])}`)
         }
     })
-    outputCode.autoPush(`mov ${helpers.types.formatIfConstant(current)}, ${helpers.types.formatRegister('a', helpers.types.guessType(current))}`) // load first value into register a
+    outputCode.autoPush(`xor %eax, %eax`, `mov ${helpers.types.formatIfConstant(current)}, ${helpers.types.formatRegister('a', helpers.types.guessType(current))}`) // load first value into register a
 
     scanPos += 1
     var reps = scanPos - 2;
@@ -75,6 +75,6 @@ module.exports = function (arr) {
         outputCode.autoPush(`pop ${x}`)
     })
 
-    typeStack.push(defines.types.u32)
+    //typeStack.push(defines.types.u32)
     return lbl
 }
