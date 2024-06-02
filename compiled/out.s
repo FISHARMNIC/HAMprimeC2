@@ -5,7 +5,7 @@
 
 ######## user data section ########
 __STRING0__: .asciz "bob"
-__STRING1__: .asciz "%i"
+__STRING1__: .asciz "%i%i"
 ###################################
 .text
 
@@ -48,12 +48,17 @@ mov 0(%esp), %al
 add $4, %eax
 mov %eax, %ebx
 push %ebx
+# Calling function printf
+xor %edx, %edx
+mov 4(%esp), %dl
+push %edx
 xor %edx, %edx
 mov 0(%esp), %dl
 push %edx
 pushl $__STRING1__
 call printf
-add $8, %esp
+mov %eax, %ebx
+add $12, %esp
 mov %ebp, %esp
 pop %ebp
 ret

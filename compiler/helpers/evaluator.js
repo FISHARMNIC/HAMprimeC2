@@ -1,5 +1,5 @@
 function evaluate(line) {
-    console.log(line)
+    //console.log(line)
     line = line.map((x) => { // bad code yes
 
         if (objectIncludes(defines.types, x) && !objectIncludes(userFormats, x)) {
@@ -26,7 +26,7 @@ function evaluate(line) {
         // #endregion
         // #region Formats
         else if (word == '.') { // child property UNFINISHED
-            if (objectValuesIncludes(nest.nesters, offsetWord(-1))) // if like >. or ).
+            if (objectValuesIncludes(nest.nesters, offsetWord(-1))) // if like >. or ].
             {
                 parent = offsetWord(-1)
             } else {
@@ -158,7 +158,9 @@ function evaluate(line) {
         {
             var fname = word
             var args = offsetWord(2)
-            actions.functions.callFunction(fname, args)
+            //debugPrint(line)
+            line[wordNum] = actions.functions.callFunction(fname, args)
+            line.splice(wordNum + 1, args.length)
         }
         // #endregion
     }

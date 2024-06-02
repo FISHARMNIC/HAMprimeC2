@@ -8,10 +8,10 @@ globalThis.userFunctions = {           // Object : {function name: {func name, p
     "printf": {
         name: 'printf',
         parameters: [
-            {name: "format", type: types.p8}
+            {name: "format", type: defines.types.p8}
         ],
         variadic: true,
-        returnType: types.u32
+        returnType: defines.types.u32
     },
 }
 globalThis.userFormats = {}
@@ -26,6 +26,9 @@ globalThis.outputCode = { // object with out data
             this.init.push(...arguments)
         else
             this.text.push(...arguments)
+    },
+    comment: function() {
+        this.autoPush("# " + [...arguments].join(" "))
     }
 }
 globalThis.typeStack = []

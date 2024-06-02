@@ -4,24 +4,43 @@ var assembly = {
         outputCode.autoPush(`mov ${helpers.types.formatIfConstant(value)}, ${r}`)
         return r
     },
-    pushToStack: function (value, type) {
-        if (helpers.types.isConstant(value)) {
-            outputCode.autoPush(`pushl \$${value}`)
-        } else if (helpers.types.stringIsRegister(value)) {
-            debugPrint(type)
-            outputCode.autoPush(`push ${helpers.types.conformRegisterIfIs(value, defines.types.u32)}`)
-        } else {
-            this.setRegister(value, 'a', type)
-            outputCode.autoPush(`push %eax`)
+    pushToStack: function (value, type, dummy = false) {
+        if (!dummy) {
+            if (helpers.types.isConstant(value)) {
+                outputCode.autoPush(`pushl \$${value}`)
+            } else if (helpers.types.stringIsRegister(value)) {
+                //debugPrint(type)
+                outputCode.autoPush(`push ${helpers.types.conformRegisterIfIs(value, defines.types.u32)}`)
+            } else {
+                this.setRegister(value, 'd', type)
+                outputCode.autoPush(`push %edx`)
+            }
         }
+        debugPrint("ALLOCATING 4", value)
         currentStackOffset += 4
     },
     getStackOffset: function (variable) {
         return currentStackOffset - 4 - getAllStackVariables()[variable].offset
     },
     getStackVarAsEsp(vname) {
+        debugPrint("READING", vname, assembly.getStackOffset(vname), currentStackOffset, getAllStackVariables()[vname].offset)
         return `${assembly.getStackOffset(vname)}(%esp)`
-    }
+    },
+    pushClobbers: function () {
+        Object.entries(helpers.registers.inLineClobbers).forEach(x => {
+            if (x[1] == 1) {
+                this.pushToStack(helpers.types.formatRegister(x[0], defines.types.u32), defines.types.u32)
+                //outputCode.autoPush(`push ${helpers.types.formatRegister(x[0], defines.types.u32)}`)
+            }
+        })
+    },
+    popClobbers: function () {
+        Object.entries(helpers.registers.inLineClobbers).forEach(x => {
+            if (x[1] == 1) {
+                outputCode.autoPush(`pop ${helpers.types.formatRegister(x[0], defines.types.u32)}`)
+            }
+        })
+    },
 }
 
 var variables = {
@@ -83,13 +102,16 @@ var variables = {
     },
     read: function (vname) {
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
+        debugPrint("READING", vname)
         if (isStack) {
             var type = getAllStackVariables()[vname].type
             var dReg = helpers.types.formatRegister('d', type)
             var output = helpers.registers.getFreeLabelOrRegister(type)
 
+
             // mov stack var into edx, then into allocated label or register
             //edx cannot be used to store things since it is used for other stuff in the compiler
+            
             assembly.setRegister(`${assembly.getStackOffset(vname)}(%esp)`, 'd', type)
             outputCode.autoPush(`mov ${dReg}, ${output}`)
             return output
@@ -110,8 +132,8 @@ var allocations = {
         //return lbl
     },
     allocateMmap: function (bytes) {
+        assembly.pushToStack(bytes, defines.types.u32)
         outputCode.autoPush(
-            `pushl \$${bytes}`,
             `call __allocate__`,
         )
         return "%eax"
@@ -148,14 +170,15 @@ var functions = {
                     throwE(`Expected comma at word "${x}" in ${parr}`)
             } else {
                 var type = popTypeStack(true)
-                robj.push({name:x, type})
+                robj.push({ name: x, type })
                 oBytes += helpers.types.typeToBytes(type)
             }
             onCom = !onCom
         })
-        return {params: robj, oBytes}
+        return { params: robj, oBytes }
     },
     createFunction: function (fname) {
+        assembly.pushToStack("%ebp", defines.types.u32, true)
         outputCode.text.push(
             fname + ":",
             `push %ebp`,
@@ -174,49 +197,70 @@ var functions = {
         var onCom = false
         var variadic = userFunctions[fname].variadic
         //throwE(fname, args)
-        var bytes = 0;
-        args.reverse().forEach((x,ind) => {
+        var bytes = 0
+        var tbuff = []
+
+        assembly.pushClobbers()
+
+        outputCode.comment(`Calling function ${fname}`)
+
+        args.forEach((x, ind) => {
             if (onCom) {
                 if (x != ',')
                     throwE("Expected comma")
             } else {
                 var expectedType = userFunctions[fname].parameters[ind]?.type
+                debugPrint(x)
                 var givenType = helpers.types.guessType(x)
-                if(expectedType == undefined && !variadic)
-                {
-                        throwE(`Function '${fname}' given too many arguments`)
+                if (expectedType == undefined && !variadic) {
+                    throwE(`Function '${fname}' given too many arguments`)
                 }
 
-                if(!variadic && !objectCompare(expectedType, givenType))
-                {
+                if ((variadic && (expectedType != undefined && !objectCompare(expectedType, givenType))) || (!variadic && !objectCompare(expectedType, givenType)))
                     throwE(`Argument '${x}' does not match expected type ${expectedType}`)
-                }
 
-                if(helpers.types.isConstOrLit(x))
-                {
-                    outputCode.autoPush(`pushl \$${x}`)
+                if (helpers.types.isConstOrLit(x)) {
+                    assembly.pushToStack(x, defines.types.u32, true)
+                    tbuff.push(`pushl \$${x}`)
                 }
-                else 
-                {
+                else {
                     //throwE(expectedType, givenType)
                     var r = helpers.types.formatRegister('d', givenType)
-                    if(r != "%edx")
-                        outputCode.autoPush("xor %edx, %edx")
-                    outputCode.autoPush(
+
+                    var bbuff = []
+                    if (r != "%edx")
+                        bbuff.push("xor %edx, %edx")
+
+                    actions.assembly.pushToStack("%edx", defines.types.u32, true)
+                    bbuff.push(
                         `mov ${x}, ${r}`,
                         `push %edx`
                     )
+                    tbuff.push(bbuff)
                 }
                 bytes += 4
             }
             onCom = !onCom
         })
-        outputCode.autoPush(`call ${fname}`)
 
-        if(bytes != 0)
-        {
+        outputCode.autoPush(...tbuff.reverse().flat())
+        var rt = userFunctions[fname].returnType
+        var out = helpers.registers.getFreeLabelOrRegister(rt, false)
+
+        outputCode.autoPush(
+            `call ${fname}`,
+            `mov ${helpers.types.formatRegister('a', rt)}, ${out}`
+        )
+
+        if (bytes != 0) {
             outputCode.autoPush(`add \$${bytes}, %esp`)
         }
+
+        assembly.popClobbers()
+
+        helpers.registers.clobberRegister(helpers.registers.registerStringToLetterIfIs(out))
+
+        return out
     }
 }
 

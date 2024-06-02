@@ -33,15 +33,14 @@ var types = {
     formatIfConstant: function (x) {
         return this.isConstant(x) ? "$" + x : x
     },
-    formatIfLiteral: function(x) {
-        if(x.substring(0,8) == "__STRING")
-        {
+    formatIfLiteral: function (x) {
+        if (x.substring(0, 8) == "__STRING") {
             return "$" + x
         }
         return x
     },
-    isConstOrLit: function(x) {
-        return (x.substring(0,8) == "__STRING" || this.isConstant(x))
+    isConstOrLit: function (x) {
+        return (x.substring(0, 8) == "__STRING" || this.isConstant(x))
     },
     typeToAsm: function (x) {
         if (x.float) {
@@ -85,24 +84,18 @@ var types = {
             throwE("Unknown type [" + JSON.stringify(type) + "]")
         }
     },
-    stringIsRegister: function(str)
-    {
+    stringIsRegister: function (str) {
         return str[0] == "%" && (str.length == 3 || str.length == 4)
     },
-    stringIsEspOffset: function(str)
-    {
+    stringIsEspOffset: function (str) {
         return str.substring(str.indexOf("(")) == "(%esp)"
     },
-    getOffsetFromEspOffsetString: function(str)
-    {
+    getOffsetFromEspOffsetString: function (str) {
         return str.substring(0, str.indexOf("("))
     },
-    getRegisterType: function(register)
-    {
-        if(register.includes("%x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp"))
-        {
-            if(register.includes("%e"))
-            {
+    getRegisterType: function (register) {
+        if (register.includes("%x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp")) {
+            if (register.includes("%e")) {
                 return defines.types.u32
             }
             return defines.types.u16
@@ -114,7 +107,7 @@ var types = {
             if (register.includes("di")) {
                 return this.formatRegister('i', type)
             }
-            else if(register.length == 3) // %ax, %bl, %si
+            else if (register.length == 3) // %ax, %bl, %si
             {
                 return this.formatRegister(register[1], type)
             } else {                      // %eax, %ebx, %esi,
@@ -123,17 +116,17 @@ var types = {
         }
         return register
     },
-    getVariableFromEspOffsetString: function(word)
-    {
+    getVariableFromEspOffsetString: function (word) {
         return variables.getStackVariableWithOffset(currentStackOffset - 4 - (this.getOffsetFromEspOffsetString(word)))
     },
     guessType: function (word) {
         word == String(word)
         if (variables.variableExists(word)) {
             return variables.getVariableType(word)
-        } else if(this.stringIsEspOffset(word)) {
+        } else if (this.stringIsEspOffset(word)) {
+            debugPrint((currentStackOffset - 4 - (this.getOffsetFromEspOffsetString(word))), currentStackOffset, this.getOffsetFromEspOffsetString(word))
             return this.getVariableFromEspOffsetString(word).type
-        } else if(this.stringIsRegister(word)) {
+        } else if (this.stringIsRegister(word)) {
             return this.getRegisterType(word)
         }
         return defines.types.u32
@@ -165,18 +158,16 @@ var variables = {
         globalVariables[lbl] = newGlobalVar(type)
         return lbl
     },
-    getStackVariableNameWithOffset(offset)
-    {
+    getStackVariableNameWithOffset(offset) {
         var gaf = getAllStackVariables()
-        
+
         return Object.keys(gaf)[Object.values(gaf).findIndex(x => {
             return x.offset == offset
         })]
     },
-    getStackVariableWithOffset(offset)
-    {
+    getStackVariableWithOffset(offset) {
         return getAllStackVariables()[this.getStackVariableNameWithOffset(offset)]
-    }
+    },
 }
 
 var registers = {
@@ -193,6 +184,8 @@ var registers = {
             's': 0,
             'i': 0,
         }
+
+
     },
     getFreeRegister: function (clobber = true) {
         var register = -1
@@ -200,19 +193,39 @@ var registers = {
             if (x[1] == 0) {
                 register = x[0]
                 if (clobber)
+                {
                     this.inLineClobbers[x[0]] = 1
+                }        
                 return false
             }
             return true
         })
         return register
     },
-    getFreeLabelOrRegister: function (type) {
-        var reg = this.getFreeRegister();
+    getFreeLabelOrRegister: function (type, clobber = true) {
+        var reg = this.getFreeRegister(clobber);
         if (reg != -1) {
             return types.formatRegister(reg, type)
         }
         return variables.newTempLabel(type)
+    },
+    clobberRegister: function(register) {
+        this.inLineClobbers[register] = 1
+    },
+    registerStringToLetterIfIs(rstr) {
+        if(types.stringIsRegister(rstr)) {
+            if(rstr.includes("di")) {
+                return 'i'
+            } else if(rstr.includes("si")) {
+                return 's'
+            }
+            else if(rstr.length == 4) {
+                return rstr[2]
+            } else {
+                return rstr[1]
+            }
+        }
+        return rstr
     }
 }
 

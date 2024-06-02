@@ -4,7 +4,7 @@ todo. Only push non clobbered. use eax, esi, and edi since they are least likely
 */
 
 module.exports = function (arr) {
-    debugPrint("MATH ON", arr, helpers.registers.inLineClobbers)
+    //debugPrint("MATH ON", arr, helpers.registers.inLineClobbers)
     var scanPos = 0;
     var current = arr[scanPos]
     var mathType = defines.types.u32
