@@ -71,9 +71,22 @@ var types = {
         throwE("Unknown type", x)
     },
     formatRegister: function (register, type, low = true) {
-        var endLetter = register == 's' || register == 'i' ? 'i' : 'x'
+
+        var endLetter;
+        if(register == 's' || register == 'i')
+        {
+            endLetter = 'i'
+        } else if(register == 'p')
+        {
+            endLetter = 'p'
+        } else {
+            endLetter = 'x'
+        }
+
         if (register == 'i')
             register = 'd' // edi NOT edx
+        if (register == 'p')
+            register = 'b'
 
         if (type.templatePtr != undefined) { // format register for a format / struct
             return `%e${register}${endLetter}`
@@ -87,11 +100,11 @@ var types = {
     stringIsRegister: function (str) {
         return str[0] == "%" && (str.length == 3 || str.length == 4)
     },
-    stringIsEspOffset: function (str) {
-        return str.substring(str.indexOf("(")) == "(%esp)"
+    stringIsEbpOffset: function (str) {
+        return str.substring(str.indexOf("(")) == "(%ebp)"
     },
-    getOffsetFromEspOffsetString: function (str) {
-        return str.substring(0, str.indexOf("("))
+    getOffsetFromEbpOffsetString: function (str) {
+        return str.substring(1, str.indexOf("("))
     },
     getRegisterType: function (register) {
         if (register.includes("%x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp")) {
@@ -106,6 +119,8 @@ var types = {
         if (this.stringIsRegister(register)) {
             if (register.includes("di")) {
                 return this.formatRegister('i', type)
+            } else if(register.includes("bp")) {
+                return this.formatRegister('p', type)
             }
             else if (register.length == 3) // %ax, %bl, %si
             {
@@ -116,16 +131,15 @@ var types = {
         }
         return register
     },
-    getVariableFromEspOffsetString: function (word) {
-        return variables.getStackVariableWithOffset(currentStackOffset - 4 - (this.getOffsetFromEspOffsetString(word)))
+    getVariableFromEbpOffsetString: function (word) {
+        return variables.getStackVariableWithOffset(currentStackOffset - 4 - (this.getOffsetFromEbpOffsetString(word)))
     },
     guessType: function (word) {
         word == String(word)
         if (variables.variableExists(word)) {
             return variables.getVariableType(word)
-        } else if (this.stringIsEspOffset(word)) {
-            debugPrint((currentStackOffset - 4 - (this.getOffsetFromEspOffsetString(word))), currentStackOffset, this.getOffsetFromEspOffsetString(word))
-            return this.getVariableFromEspOffsetString(word).type
+        } else if (this.stringIsEbpOffset(word)) {
+            return getAllStackVariables()[variables.getStackVariableNameWithOffset(this.getOffsetFromEbpOffsetString(word))].type
         } else if (this.stringIsRegister(word)) {
             return this.getRegisterType(word)
         }
@@ -139,6 +153,9 @@ var formatters = {
     },
     tempLabel: function (type, number) {
         return `__TEMP${types.typeToBits(type)}_${number}__`
+    },
+    fnAllocMacro: function(fname) {
+        return `__ALLOCFOR_${fname}__`
     }
 }
 

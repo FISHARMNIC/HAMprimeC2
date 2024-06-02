@@ -26,6 +26,8 @@ globalThis.outputCode = { // object with out data
             this.init.push(...arguments)
         else
             this.text.push(...arguments)
+
+        debugPrint(outputCode.autoPush.caller.name, ...arguments)
     },
     comment: function() {
         this.autoPush("# " + [...arguments].join(" "))

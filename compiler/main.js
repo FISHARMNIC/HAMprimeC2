@@ -1,7 +1,6 @@
 /*
 TODO:
-    - dealloc stack vars
-
+    - fix most register formater functions to acknowledge ebp as register 'p'
 */
 
 const fs = require("fs");

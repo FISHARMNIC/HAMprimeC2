@@ -4,31 +4,44 @@ var assembly = {
         outputCode.autoPush(`mov ${helpers.types.formatIfConstant(value)}, ${r}`)
         return r
     },
-    pushToStack: function (value, type, dummy = false) {
-        if (!dummy) {
+    optimizeMove(source, destination, sType, dType)
+    {
+        if(helpers.types.isConstant(source))
+        {
+            outputCode.autoPush(`mov${helpers.types.sizeToSuffix(dType)} \$${source}, ${destination}`)
+        } else if (helpers.types.stringIsRegister(source)) {
+            outputCode.autoPush(`mov ${source}, ${destination}`)
+        } else {
+            if(helpers.types.typeToBits(sType) != 32)
+                outputCode.autoPush("xor %edx, %edx")
+            this.setRegister(value, 'd', sType)
+            outputCode.autoPush(`mov ${helpers.types.formatRegister('d', dType)}, ${destination}`)
+        }
+    },
+    pushToStack: function (value, type) {
+        debugPrint(value, helpers.types.conformRegisterIfIs(value, defines.types.u32))
             if (helpers.types.isConstant(value)) {
                 outputCode.autoPush(`pushl \$${value}`)
             } else if (helpers.types.stringIsRegister(value)) {
-                //debugPrint(type)
+
                 outputCode.autoPush(`push ${helpers.types.conformRegisterIfIs(value, defines.types.u32)}`)
             } else {
                 this.setRegister(value, 'd', type)
                 outputCode.autoPush(`push %edx`)
             }
-        }
-        debugPrint("ALLOCATING 4", value)
-        currentStackOffset += 4
     },
     getStackOffset: function (variable) {
-        return currentStackOffset - 4 - getAllStackVariables()[variable].offset
+        return getAllStackVariables()[variable].offset
     },
-    getStackVarAsEsp(vname) {
-        debugPrint("READING", vname, assembly.getStackOffset(vname), currentStackOffset, getAllStackVariables()[vname].offset)
-        return `${assembly.getStackOffset(vname)}(%esp)`
+    getStackVarAsEbp(vname) {
+        //throwE("READING", vname, assembly.getStackOffset(vname), currentStackOffset)
+        return `-${assembly.getStackOffset(vname)}(%ebp)`
     },
     pushClobbers: function () {
+        
         Object.entries(helpers.registers.inLineClobbers).forEach(x => {
             if (x[1] == 1) {
+                //debugPrint("pushing", x)
                 this.pushToStack(helpers.types.formatRegister(x[0], defines.types.u32), defines.types.u32)
                 //outputCode.autoPush(`push ${helpers.types.formatRegister(x[0], defines.types.u32)}`)
             }
@@ -52,9 +65,10 @@ var variables = {
             if (objectIncludes(getAllStackVariables(), vname)) {
                 throwE(`Variable "${vname}" already defined`)
             }
+            var off = allocations.allocateStack(helpers.types.typeToBytes(type)) // store in stack
+            assembly.optimizeMove(value, off)
             createStackVariableListOnly(vname, newStackVar(type))
-            debugPrint(type)
-            assembly.pushToStack(value, type) // store in stack
+            
         } else { // outside of function, global variable
             if (objectIncludes(globalVariables, vname)) {
                 throwE(`Variable "${vname}" already defined`)
@@ -112,7 +126,7 @@ var variables = {
             // mov stack var into edx, then into allocated label or register
             //edx cannot be used to store things since it is used for other stuff in the compiler
             
-            assembly.setRegister(`${assembly.getStackOffset(vname)}(%esp)`, 'd', type)
+            assembly.setRegister(`-${assembly.getStackOffset(vname)}(%ebp)`, 'd', type)
             outputCode.autoPush(`mov ${dReg}, ${output}`)
             return output
         }
@@ -122,16 +136,17 @@ var variables = {
 
 var allocations = {
     allocateStack: function (bytes) {
-        outputCode.autoPush(
-            `sub \$${bytes}, %esp`
-        )
-        return "%esp"
+        scope.at(-1).data.totalAlloc += bytes
+        currentStackOffset = scope.at(-1).data.totalAlloc
+        debugPrint("ALLOCING", bytes, currentStackOffset)
+        return `-${currentStackOffset}(%ebp)`
         // var lbl = helpers.variables.newTempLabel(defines.types.p32)
         // createStackVariableListOnly(lbl, newStackVar(defines.types.p32)) //not actually for use, just for knowing the offset
         // currentStackOffset += bytes
         //return lbl
     },
     allocateMmap: function (bytes) {
+        //debugPrint("PUSHING")
         assembly.pushToStack(bytes, defines.types.u32)
         outputCode.autoPush(
             `call __allocate__`,
@@ -178,12 +193,13 @@ var functions = {
         return { params: robj, oBytes }
     },
     createFunction: function (fname) {
-        assembly.pushToStack("%ebp", defines.types.u32, true)
         outputCode.text.push(
             fname + ":",
             `push %ebp`,
             `mov %esp, %ebp`,
+            `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`
         )
+
     },
     closeFunction: function (sc) {
         var d = sc.data
@@ -191,6 +207,9 @@ var functions = {
             `mov %ebp, %esp`,
             `pop %ebp`,
             `ret`
+        )
+        outputCode.data.push(
+            `${helpers.formatters.fnAllocMacro(d.name)} = ${d.totalAlloc}`
         )
     },
     callFunction: function (fname, args) {

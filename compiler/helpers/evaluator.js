@@ -74,7 +74,7 @@ function evaluate(line) {
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
         } else if(objectIncludes(getAllStackVariables(), word)) // get stack var
         {
-            line[wordNum] = actions.assembly.getStackVarAsEsp(word)
+            line[wordNum] = actions.assembly.getStackVarAsEbp(word)
             //throwE(word)
             typeStack.push(getAllStackVariables()[word].type)
             //throwE(stackVariables, currentStackOffset)
@@ -141,6 +141,7 @@ function evaluate(line) {
                     params: params_obj.params,
                     returnType,
                     variadic: false,
+                    totalAlloc: 0,
                 }
 
                 requestBracket = {
