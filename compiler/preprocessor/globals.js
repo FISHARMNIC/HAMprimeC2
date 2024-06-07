@@ -38,7 +38,7 @@ globalThis.outputCode = { // object with out data
     }
 }
 globalThis.typeStack = []
-
+globalThis.mostRecentIfStatement = [] 
 
 
 
@@ -49,7 +49,8 @@ globalThis.keywordTypes = {
     FUNCTION: 1,
     INIT: 2,
     METHOD: 3,
-    WHILE: 4
+    WHILE: 4,
+    IF: 5
 }
 
 

@@ -30,8 +30,16 @@ inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x);
 
 //console.log(helpers.registers)
 
-inputCode = inputCode.map(line => {
+
+globalThis.globalLine;
+globalThis.previewNextLine = function()
+{
+    return inputCode[globalLine + 1]
+}
+
+inputCode = inputCode.map((line,lineNo) => {
     // parse it into words
+    globalLine = lineNo
     var lsplit = parser.split(line);
     var io = lsplit.indexOf("//")
     if(io != -1)

@@ -76,7 +76,7 @@ function evaluate(line) {
         {
             line[wordNum] = actions.assembly.getStackVarAsEbp(word)
             typeStack.push(getAllStackVariables()[word].type)
-        } else if(scope.length > 0 && scope[scope.length - 1].type == keywordTypes.FUNCTION && scope[scope.length - 1].data.parameters.findIndex(x => x.name == word) != -1)
+        } else if(scope.length > 0 && (helpers.general.getMostRecentFunction() != undefined) && helpers.general.getMostRecentFunction().data.parameters.findIndex(x => x.name == word) != -1)
         {
             //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
             line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
@@ -86,12 +86,14 @@ function evaluate(line) {
         else if (word == "{") {
             if (requestBracket != 0) {
                 newScope(requestBracket)
+                debugPrint("ENTERTING", requestBracket)
                 requestBracket = 0
             } else {
                 // array
             }
         } else if (word == "}") {
             var oldScope = scope.pop()
+            debugPrint("EXITING", oldScope)
             var oldStack = stackVariables.pop()
             if (oldScope.type == keywordTypes.FORMAT) {
                 userFormats[oldScope.data.name] = {
@@ -114,8 +116,21 @@ function evaluate(line) {
                     `jmp ${oldScope.data.name}`,
                     `${oldScope.data.exit}:` // exit loop
                 )
+            } else if (oldScope.type == keywordTypes.IF) {
+                outputCode.text.push(
+                    `jmp ${oldScope.data.name}`, // final termination
+                    `${oldScope.data.localExit}:`
+                )
+                var preview = previewNextLine()
+                if (!(preview.includes("else") || preview.includes("elif"))) // fully escape block since we are done with all elif/else
+                {
+                    outputCode.autoPush(
+                        `${oldScope.data.name}:`
+                    )
+                    mostRecentIfStatement.pop()
+                }
             }
-            //console.log("IJWJWWO", scope)
+            console.log("IJWJWWO", scope)
         }
         // #endregion
         // #region Keywords
@@ -169,7 +184,23 @@ function evaluate(line) {
                     `jne ${requestBracket.data.exit}` // jump out if not equal
                 )
             } else if (word == "return") {
-                actions.functions.closeFunction(scope[scope.length - 1], oldStack, true, offsetWord(2))
+                debugPrint("closer", line, scope)
+                actions.functions.closeFunction(helpers.general.getMostRecentFunction(), oldStack, true, offsetWord(2))
+            }
+            else if (word == "if") {
+                var localExit = helpers.variables.newUntypedLabel() // jump out of this if, but not out of whole block
+                outputCode.autoPush(
+                    `cmpb $1, ${offsetWord(2)}`, // checks if value = 1
+                    `jne ${localExit}`
+                )
+                requestBracket = {
+                    type: keywordTypes.IF,
+                    data: {
+                        name: helpers.variables.newUntypedLabel(), // final termination
+                        localExit
+                    }
+                }
+                mostRecentIfStatement.push(objCopy(requestBracket))
             }
         }
         // #endregion

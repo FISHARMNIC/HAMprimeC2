@@ -1,5 +1,6 @@
 var assembly = {
     setRegister: function (value, register, type, low = true) {
+        debugPrint("setting", register, value, type)
         var r = helpers.types.formatRegister(register, type, low)
         outputCode.autoPush(`mov ${helpers.types.formatIfConstant(value)}, ${r}`)
         return r
@@ -219,6 +220,7 @@ var functions = {
     },
     closeFunction: function (sc, st, asRet = false, rVal = null) {
         var d = sc.data
+        debugPrint("SC", scope)
         if(rVal != null)
         {
             assembly.setRegister(rVal, "a", d.returnType)

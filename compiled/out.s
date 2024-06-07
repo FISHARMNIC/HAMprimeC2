@@ -6,9 +6,10 @@
 .data
 
 ######## user data section ########
-__ALLOCFOR_getNum__ = 0
 __STRING0__: .asciz "%i\n"
-__ALLOCFOR_entry__ = 8
+__ALLOCFOR_factorial__ = 0
+__STRING1__: .asciz "%i\n"
+__ALLOCFOR_entry__ = 0
 ###################################
 .text
 
@@ -28,11 +29,47 @@ main:
     ret
 
 ###################################
-getNum:
+factorial:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_getNum__, %esp
+sub $__ALLOCFOR_factorial__, %esp
+# Calling function printf
+mov 8(%ebp), %edx
+push %edx
+pushl $__STRING0__
+call printf
+mov %eax, %ebx
+add $8, %esp
+cmpb $1, 8(%ebp),>,1
+jne __LABEL0__
+xor %eax, %eax
 mov 8(%ebp), %eax
+sub $1, %eax
+mov %eax, %ebx
+push %ebx
+# Calling function factorial
+mov %ebx, %edx
+push %edx
+call factorial
+mov %eax, %ecx
+add $4, %esp
+pop %ebx
+push %ebx
+push %ecx
+xor %eax, %eax
+mov 8(%ebp), %eax
+mov %ecx, %ebx
+mul %ebx
+mov %eax, %esi
+pop %ebx
+pop %ecx
+mov %esi, %eax
+mov %ebp, %esp
+pop %ebp
+ret
+jmp __LABEL1__
+__LABEL0__:
+__LABEL1__:
 mov %ebp, %esp
 pop %ebp
 ret
@@ -43,46 +80,20 @@ entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-mov $0, %edx
-mov %edx, -4(%ebp)
-mov $9, %edx
-mov %edx, -8(%ebp)
-__LABEL0__:
-# Calling function getNum
-pushl $3
-call getNum
+# Calling function factorial
+pushl $5
+call factorial
 mov %eax, %ebx
 add $4, %esp
-mov -4(%ebp), %eax
-mov %ebx, %edx
-movb $0, %cl
-cmp %edx, %eax
-setl %cl
-cmpb $1, %cl
-jne __LABEL1__
-xor %eax, %eax
-mov -4(%ebp), %eax
-mov -4(%ebp), %ebx
-mul %ebx
-mov %eax, %ebx
 push %ebx
 # Calling function printf
 mov %ebx, %edx
 push %edx
-pushl $__STRING0__
+pushl $__STRING1__
 call printf
 mov %eax, %ecx
 add $8, %esp
 pop %ebx
-xor %eax, %eax
-mov -4(%ebp), %eax
-add $1, %eax
-mov %eax, %ebx
-mov %ebx, -4(%ebp)
-jmp __LABEL0__
-__LABEL1__:
 mov %ebp, %esp
 pop %ebp
 ret
-# x: 4
-# y: 8
