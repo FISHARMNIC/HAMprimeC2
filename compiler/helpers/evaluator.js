@@ -1,5 +1,5 @@
 function evaluate(line) {
-    //console.log(line)
+    debugPrint(line)
     line = line.map((x) => { // bad code yes
 
         if (objectIncludes(defines.types, x) && !objectIncludes(userFormats, x)) {
@@ -68,16 +68,18 @@ function evaluate(line) {
                 })
             } else {
                 typeStack.push(defines.types.u32)
-                return actions.variables.set(word, offsetWord[1])
+                return actions.variables.set(word, offsetWord(2))
             }
         } else if (word[0] == '"' && word[word.length - 1] == '"') {
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
         } else if(objectIncludes(getAllStackVariables(), word)) // get stack var
         {
             line[wordNum] = actions.assembly.getStackVarAsEbp(word)
-            //throwE(word)
             typeStack.push(getAllStackVariables()[word].type)
-            //throwE(stackVariables, currentStackOffset)
+        } else if(scope.length > 0 && scope[scope.length - 1].type == keywordTypes.FUNCTION && scope[scope.length - 1].data.parameters.findIndex(x => x.name == word) != -1)
+        {
+            //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
+            line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
         }
         // #endregion
         // #region Brackets
@@ -90,6 +92,7 @@ function evaluate(line) {
             }
         } else if (word == "}") {
             var oldScope = scope.pop()
+            var oldStack = stackVariables.pop()
             if (oldScope.type == keywordTypes.FORMAT) {
                 userFormats[oldScope.data.name] = {
                     properties: oldScope.data.properties,
@@ -101,10 +104,16 @@ function evaluate(line) {
                 var nobj = objCopy(defines.types.___format_template___)
                 nobj.formatPtr = userFormats[oldScope.data.name]
                 defines.types[oldScope.data.name] = nobj
-                actions.allocations.deallocStack()
+                //actions.allocations.deallocStack()
             } else if(oldScope.type == keywordTypes.FUNCTION)
             {
-                actions.functions.closeFunction(oldScope)
+                actions.functions.closeFunction(oldScope, oldStack)
+            } else if(oldScope.type == keywordTypes.WHILE)
+            {
+                outputCode.autoPush(
+                    `jmp ${oldScope.data.name}`,
+                    `${oldScope.data.exit}:` // exit loop
+                )
             }
             //console.log("IJWJWWO", scope)
         }
@@ -128,7 +137,10 @@ function evaluate(line) {
             } else if (word == "function")
             {
                 var fname = offsetWord(-1)
-                var params_obj = actions.functions.createParams(offsetWord(2))
+                var params = offsetWord(2)
+                if(typeof(params) == "string")
+                    params = [params]
+                var params_obj = actions.functions.createParams(params)
                 var returnType = objCopy(defines.types.u32)
                 
                 if(offsetWord(3) == "->")
@@ -138,7 +150,7 @@ function evaluate(line) {
 
                 var data = {
                     name: fname,
-                    params: params_obj.params,
+                    parameters: params_obj.params,
                     returnType,
                     variadic: false,
                     totalAlloc: 0,
@@ -151,6 +163,13 @@ function evaluate(line) {
 
                 userFunctions[fname] = data
                 actions.functions.createFunction(fname)
+            } else if (word == "while") {
+                outputCode.autoPush(
+                    `cmpb $1, ${offsetWord(2)}`,
+                    `jne ${requestBracket.data.exit}` // jump out if not equal
+                )
+            } else if (word == "return") {
+                actions.functions.closeFunction(scope[scope.length - 1], oldStack, true, offsetWord(2))
             }
         }
         // #endregion
@@ -159,16 +178,21 @@ function evaluate(line) {
         {
             var fname = word
             var args = offsetWord(2)
+            if(typeof(args) == "string")
+                args = [args]
             //debugPrint(line)
             line[wordNum] = actions.functions.callFunction(fname, args)
-            line.splice(wordNum + 1, args.length)
+            line.splice(wordNum + 1, args.length + 1)
         }
         // #endregion
     }
 
-    // #region Math
+
+    // EVERYTHING MUST BE ABOVE THIS
+
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         var word = line[wordNum]
+        // #region Math
         if (defines.operators.includes(line[wordNum + 1])) {
             var start = wordNum
             var onNum = true;
@@ -186,9 +210,61 @@ function evaluate(line) {
             }
             var lbl = mathEngine(build)
             line.splice(start, build.length + 1, lbl)
+        } 
+        // #endregion
+        // #region Conditionals
+        else if(defines.conditionals.includes(offsetWord(-1)))
+        {
+            var left = offsetWord(-2)
+            var right = word
+            var cond = offsetWord(-1)
+
+            var left_type = helpers.types.guessType(left)
+            var right_type = helpers.types.guessType(right)
+
+            
+            if(typeof(left) != "string" || typeof(right) != "string")
+            {
+                throwE("Cannot compare expanded statements", left, right)
+            }
+
+            var regL = helpers.types.formatRegister("a", left_type)
+            var regR = helpers.types.formatRegister("d", right_type)
+            var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u8)
+
+            
+
+            if(!helpers.types.isConstant(left))
+            {
+                outputCode.autoPush(`mov ${left}, ${regL}`)
+                left = regL
+            } else { 
+                left = helpers.types.formatIfConstOrLit(left)
+            }
+
+            if(!helpers.types.isConstant(right))
+            {
+                outputCode.autoPush(`mov ${right}, ${regR}`)
+                right = regR
+            } else {
+                right = helpers.types.formatIfConstOrLit(right)
+            }
+
+            outputCode.autoPush(
+                `mov${helpers.types.stringIsRegister(lbl)? "b" : ""} \$0, ${lbl}`,
+                `cmp ${right}, ${left}`,
+                `${defines.conditionalMap[cond]} ${lbl}`,
+            )
+
+            //throwE(line)
+            line[wordNum - 2] = lbl
+            line.splice(wordNum - 1, 2)
+
+            wordNum -= 2
+
         }
+        // #endregion
     }
-    // #endregion
 
     return line
 

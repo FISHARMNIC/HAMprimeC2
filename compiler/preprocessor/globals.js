@@ -14,9 +14,11 @@ globalThis.userFunctions = {           // Object : {function name: {func name, p
         returnType: defines.types.u32
     },
 }
+globalThis.lineOwners = []
 globalThis.userFormats = {}
 globalThis.stackVariables = [{}]
 globalThis.nextAllocIsPersistent = false;
+globalThis.autoIncludes = []
 globalThis.outputCode = { // object with out data
     data: [],
     init: [],
@@ -26,6 +28,8 @@ globalThis.outputCode = { // object with out data
             this.init.push(...arguments)
         else
             this.text.push(...arguments)
+
+        lineOwners.push([arguments,(new Error()).stack])
 
         debugPrint(outputCode.autoPush.caller.name, ...arguments)
     },
@@ -44,7 +48,8 @@ globalThis.keywordTypes = {
     FORMAT: 0, 
     FUNCTION: 1,
     INIT: 2,
-    METHOD: 3
+    METHOD: 3,
+    WHILE: 4
 }
 
 

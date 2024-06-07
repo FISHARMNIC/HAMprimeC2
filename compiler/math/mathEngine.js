@@ -12,8 +12,9 @@ module.exports = function (arr) {
     Object.entries(helpers.registers.inLineClobbers).forEach(pair => {
         if(pair[1] == 1)
         {
-            pushed.push(helpers.types.formatRegister(pair[0]))
-            outputCode.autoPush(`push ${helpers.types.formatRegister(pair[0])}`)
+            var type = helpers.types.formatRegister(pair[0], defines.types.u32)
+            pushed.push(type)
+            outputCode.autoPush(`push ${type}`)
         }
     })
     outputCode.autoPush(`xor %eax, %eax`, `mov ${helpers.types.formatIfConstant(current)}, ${helpers.types.formatRegister('a', helpers.types.guessType(current))}`) // load first value into register a
@@ -70,6 +71,7 @@ module.exports = function (arr) {
         scanPos += 1;
     }
     var lbl = helpers.registers.getFreeLabelOrRegister(mathType)
+    //debugPrint("MATH GOT LBL", lbl)
     outputCode.autoPush(`mov %eax, ${lbl}`)
     pushed.forEach(x => {
         outputCode.autoPush(`pop ${x}`)

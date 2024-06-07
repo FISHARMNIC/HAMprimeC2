@@ -4,31 +4,45 @@ var assembly = {
         outputCode.autoPush(`mov ${helpers.types.formatIfConstant(value)}, ${r}`)
         return r
     },
-    optimizeMove(source, destination, sType, dType)
-    {
-        if(helpers.types.isConstant(source))
-        {
-            outputCode.autoPush(`mov${helpers.types.sizeToSuffix(dType)} \$${source}, ${destination}`)
+    optimizeMove(source, destination, sType, dType) {
+        debugPrint(source)
+        if (helpers.types.isConstOrLit(source)) {
+            if (helpers.types.isLiteral(source)) {
+                if (helpers.types.stringIsRegister(destination)) {
+                    if (helpers.types.typeToBits(sType) != 32)
+                        throwE(`Cannot move string into '${destination}'. Type cannot hold 32 bits`)
+                    outputCode.autoPush(`mov \$${source}, ${destination}`)
+                } else {
+                    outputCode.autoPush(
+                        `mov \$${source}, %edx`,
+                        `mov %edx, ${destination}`
+                    )
+                }
+
+            } else {
+                outputCode.autoPush(`mov${helpers.types.sizeToSuffix(dType)} \$${source}, ${destination}`)
+            }
         } else if (helpers.types.stringIsRegister(source)) {
-            outputCode.autoPush(`mov ${source}, ${destination}`)
+            outputCode.autoPush(`mov ${helpers.types.conformRegisterIfIs(source, dType)}, ${destination}`)
         } else {
-            if(helpers.types.typeToBits(sType) != 32)
+            //debugPrint(source,sType, dType)
+            if (helpers.types.typeToBits(sType) != 32)
                 outputCode.autoPush("xor %edx, %edx")
-            this.setRegister(value, 'd', sType)
+            this.setRegister(source, 'd', sType)
             outputCode.autoPush(`mov ${helpers.types.formatRegister('d', dType)}, ${destination}`)
         }
     },
     pushToStack: function (value, type) {
         debugPrint(value, helpers.types.conformRegisterIfIs(value, defines.types.u32))
-            if (helpers.types.isConstant(value)) {
-                outputCode.autoPush(`pushl \$${value}`)
-            } else if (helpers.types.stringIsRegister(value)) {
+        if (helpers.types.isConstant(value)) {
+            outputCode.autoPush(`pushl \$${value}`)
+        } else if (helpers.types.stringIsRegister(value)) {
 
-                outputCode.autoPush(`push ${helpers.types.conformRegisterIfIs(value, defines.types.u32)}`)
-            } else {
-                this.setRegister(value, 'd', type)
-                outputCode.autoPush(`push %edx`)
-            }
+            outputCode.autoPush(`push ${helpers.types.conformRegisterIfIs(value, defines.types.u32)}`)
+        } else {
+            this.setRegister(value, 'd', type)
+            outputCode.autoPush(`push %edx`)
+        }
     },
     getStackOffset: function (variable) {
         return getAllStackVariables()[variable].offset
@@ -38,7 +52,7 @@ var assembly = {
         return `-${assembly.getStackOffset(vname)}(%ebp)`
     },
     pushClobbers: function () {
-        
+
         Object.entries(helpers.registers.inLineClobbers).forEach(x => {
             if (x[1] == 1) {
                 //debugPrint("pushing", x)
@@ -66,9 +80,9 @@ var variables = {
                 throwE(`Variable "${vname}" already defined`)
             }
             var off = allocations.allocateStack(helpers.types.typeToBytes(type)) // store in stack
-            assembly.optimizeMove(value, off)
+            assembly.optimizeMove(value, off, type, type)
             createStackVariableListOnly(vname, newStackVar(type))
-            
+
         } else { // outside of function, global variable
             if (objectIncludes(globalVariables, vname)) {
                 throwE(`Variable "${vname}" already defined`)
@@ -97,18 +111,12 @@ var variables = {
     set: function (vname, value) {
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
         var type = helpers.variables.getVariableType(vname)
-        var suffix = ""
-        if (helpers.types.isConstant(value)) {
-            value = helpers.types.formatIfConstant(value)
-            suffix = helpers.types.sizeToSuffix(type)
-        } else {
-            value = assembly.setRegister(value, 'd', type)
-        }
 
         if (isStack) {
-            outputCode.autoPush(`mov${suffix} ${value}, ${assembly.getStackOffset(vname)}(%esp)`)
+            assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
         } else if (objectIncludes(globalVariables, vname)) {       // if glob var
-            outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
+            assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
+            //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
         } else {
             throwE(`Variable ${vname} has not been declared neither locally nor globally`)
         }
@@ -125,7 +133,7 @@ var variables = {
 
             // mov stack var into edx, then into allocated label or register
             //edx cannot be used to store things since it is used for other stuff in the compiler
-            
+
             assembly.setRegister(`-${assembly.getStackOffset(vname)}(%ebp)`, 'd', type)
             outputCode.autoPush(`mov ${dReg}, ${output}`)
             return output
@@ -145,12 +153,20 @@ var allocations = {
         // currentStackOffset += bytes
         //return lbl
     },
+    hasUsedMmap: false,
     allocateMmap: function (bytes) {
         //debugPrint("PUSHING")
+        assembly.pushClobbers()
         assembly.pushToStack(bytes, defines.types.u32)
         outputCode.autoPush(
             `call __allocate__`,
+            `add $4, %esp`
         )
+        assembly.popClobbers()
+        if (!this.hasUsedMmap) {
+            autoIncludes.push(mainDir + "/libs/alloc.s")
+            this.hasUsedMmap = true
+        }
         return "%eax"
     },
     allocateAuto: function (bytes) {
@@ -169,9 +185,9 @@ var allocations = {
         globalVariables[label] = newGlobalVar(defines.types.p8)
         return label
     },
-    deallocStack: function () {
-        outputCode.autoPush(`add \$${Object.entries(stackVariables[stackVariables.length - 1]).length}, %esp`)
-    }
+    // deallocStack: function () {
+    //     outputCode.autoPush(`add \$${Object.entries(stackVariables[stackVariables.length - 1]).length}, %esp`)
+    // }
 }
 
 var functions = {
@@ -201,16 +217,32 @@ var functions = {
         )
 
     },
-    closeFunction: function (sc) {
+    closeFunction: function (sc, st, asRet = false, rVal = null) {
         var d = sc.data
+        if(rVal != null)
+        {
+            assembly.setRegister(rVal, "a", d.returnType)
+        }
+        
         outputCode.text.push(
             `mov %ebp, %esp`,
             `pop %ebp`,
             `ret`
         )
-        outputCode.data.push(
-            `${helpers.formatters.fnAllocMacro(d.name)} = ${d.totalAlloc}`
-        )
+
+        if (!asRet) {
+            outputCode.data.push(
+                `${helpers.formatters.fnAllocMacro(d.name)} = ${d.totalAlloc}`
+            )
+
+
+            Object.entries(st).forEach(sv => {
+                outputCode.text.push(
+                    `# ${sv[0]}: ${sv[1].offset}`
+                )
+            })
+        }
+        //throwE(st)
     },
     callFunction: function (fname, args) {
         var onCom = false
@@ -223,34 +255,43 @@ var functions = {
 
         outputCode.comment(`Calling function ${fname}`)
 
-        args.forEach((x, ind) => {
+        var ind = 0;
+        args.forEach((x) => {
             if (onCom) {
                 if (x != ',')
                     throwE("Expected comma")
             } else {
+                //debugPrint(fname, userFunctions[fname].parameters)
                 var expectedType = userFunctions[fname].parameters[ind]?.type
-                debugPrint(x)
+                //debugPrint(x)
                 var givenType = helpers.types.guessType(x)
+
+                //debugPrint("fwfwfwfww",givenType)
+
                 if (expectedType == undefined && !variadic) {
                     throwE(`Function '${fname}' given too many arguments`)
                 }
 
-                if ((variadic && (expectedType != undefined && !objectCompare(expectedType, givenType))) || (!variadic && !objectCompare(expectedType, givenType)))
+                if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && !objectCompare(expectedType, givenType))) || (!variadic && !objectCompare(expectedType, givenType))))
                     throwE(`Argument '${x}' does not match expected type ${expectedType}`)
 
                 if (helpers.types.isConstOrLit(x)) {
-                    assembly.pushToStack(x, defines.types.u32, true)
                     tbuff.push(`pushl \$${x}`)
                 }
                 else {
-                    //throwE(expectedType, givenType)
+
+                    //debugPrint("FMTING", givenType, x)
                     var r = helpers.types.formatRegister('d', givenType)
+                    //debugPrint("erijgoewije", r)
 
                     var bbuff = []
                     if (r != "%edx")
                         bbuff.push("xor %edx, %edx")
 
-                    actions.assembly.pushToStack("%edx", defines.types.u32, true)
+                    // if(helpers.types.stringIsRegister(x))
+                    // {
+                    //     throwE(x, r, fname, args, givenType)
+                    // }
                     bbuff.push(
                         `mov ${x}, ${r}`,
                         `push %edx`
@@ -258,6 +299,7 @@ var functions = {
                     tbuff.push(bbuff)
                 }
                 bytes += 4
+                ind++
             }
             onCom = !onCom
         })
@@ -294,39 +336,48 @@ var formats = {
                 }
             })
             //throwE(userFormats[fname].size)
-            var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
-            var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32) // whar it's saved in
-            outputCode.autoPush(`mov ${allocLbl}, ${saveLbl}`)
-            //throwE(outputCode)
 
-            var off = 0
-            userFormats[fname].properties.forEach(p => {
-                var value = passed[p.name]
-                if (value == undefined) {
-                    throwE(`Property ${p} not given`);
-                }
+            // temporarily disabled stack allocations since if you do loops it will be overriting the same thing
+            var allocLbl = allocations.allocateMmap(userFormats[fname].size)
+            //var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
 
+            if (helpers.types.stringIsEbpOffset(allocLbl)) // local
+            {
+                var allocOffset = parseInt(helpers.types.getOffsetFromEbpOffsetString(allocLbl))
+                var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32) // what it's saved in
+                outputCode.autoPush(`mov \$${allocOffset}, ${saveLbl} # Local allocation address for ${fname}`)
+                //throwE(outputCode)
 
-                //console.log("eferfergegerwgerwg", value)
-                value = helpers.types.conformRegisterIfIs(value, p.type)
-
-                if (helpers.types.isConstant(value)) {
-                    outputCode.autoPush(`mov${helpers.types.sizeToSuffix(p.type)} \$${value}, ${off}(${allocLbl})`)
-                } else {
-                    var reg = helpers.types.formatRegister('d', p.type)
-                    if (helpers.types.stringIsRegister(value)) {
-                        outputCode.autoPush(`mov ${value}, ${off}(${allocLbl})`)
+                var off = 0
+                userFormats[fname].properties.forEach(p => {
+                    var value = passed[p.name]
+                    if (value == undefined) {
+                        throwE(`Property ${p} not given`);
                     }
-                    else {
-                        outputCode.autoPush(
-                            `mov ${helpers.types.formatIfLiteral(value)}, ${reg}`,
-                            `mov ${reg}, ${off}(${allocLbl})`)
-                    }
-                }
+                    debugPrint("LOCFFSET", off, helpers.types.typeToBytes(p.type))
+                    assembly.optimizeMove(value, `-${off + allocOffset + helpers.types.typeToBytes(p.type)}(%ebp)`, helpers.types.guessType(value), p.type)
 
-                off += helpers.types.typeToBytes(p.type)
-            })
-            return saveLbl
+                    off += helpers.types.typeToBytes(p.type)
+                })
+                return saveLbl
+            } else { // global
+                var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
+                outputCode.autoPush(`mov %eax, ${saveLbl} # Local allocation address for ${fname}`)
+
+                var off = 0
+                userFormats[fname].properties.forEach(p => {
+                    var value = passed[p.name]
+                    if (value == undefined) {
+                        throwE(`Property ${p} not given`);
+                    }
+                    assembly.optimizeMove(value, `${off}(%eax)`, helpers.types.guessType(value), p.type)
+
+                    off += helpers.types.typeToBytes(p.type)
+                })
+                return saveLbl
+            }
+
+
         }
     }
 }

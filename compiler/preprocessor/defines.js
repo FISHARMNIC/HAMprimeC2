@@ -10,6 +10,7 @@ var conditionalMap = {
 var mathEnders = [
     "]",">",")",":",",",
 ]
+
 module.exports = {
     types:{
         "p8": {
@@ -99,7 +100,10 @@ module.exports = {
         },
     },
     keywords: [
-        "method","function","format","initializer", "persistent"
+        "method","function","format","initializer", "persistent", "while", "return"
+    ],
+    priorityWords: [
+        "while"
     ],
     operators: ["+","-","*","/","<<",">>","|","&","%"],
     symbols: "!@#$%^&*()+{}|:<>?,./;'[]\-=' ",

@@ -111,7 +111,11 @@ function parseFinalCode()
     var out = 
 `
 .1byte = .byte
-
+######## Auto included libs #######
+` 
+    + autoIncludes.map(x => `.include "${x}"`).join(" ") + 
+`
+###################################
 .data
 
 ######## user data section ########

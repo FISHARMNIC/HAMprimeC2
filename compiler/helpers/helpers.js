@@ -1,5 +1,6 @@
 var counters = {
     stringLiterals: 0,
+    untypedLabels: 0,
     tempLabels: {
         max: {
             "0": 0,
@@ -27,6 +28,9 @@ var counters = {
 }
 
 var types = {
+    isLiteral: function(x) {
+        return x.substring(0, 8) == "__STRING"
+    },
     isConstant: function (x) {
         return parseFloat(x) == x
     },
@@ -34,13 +38,19 @@ var types = {
         return this.isConstant(x) ? "$" + x : x
     },
     formatIfLiteral: function (x) {
-        if (x.substring(0, 8) == "__STRING") {
+        if (this.isLiteral(x)) {
             return "$" + x
         }
         return x
     },
     isConstOrLit: function (x) {
         return (x.substring(0, 8) == "__STRING" || this.isConstant(x))
+    },
+    formatIfConstOrLit: function(x) {
+        if (this.isConstOrLit(x)) {
+            return "$" + x
+        }
+        return x
     },
     typeToAsm: function (x) {
         if (x.float) {
@@ -72,6 +82,7 @@ var types = {
     },
     formatRegister: function (register, type, low = true) {
 
+        //debugPrint("REG", register, type)
         var endLetter;
         if(register == 's' || register == 'i')
         {
@@ -104,10 +115,10 @@ var types = {
         return str.substring(str.indexOf("(")) == "(%ebp)"
     },
     getOffsetFromEbpOffsetString: function (str) {
-        return str.substring(1, str.indexOf("("))
+        return str.substring(str[0] == "-"? 1 : 0, str.indexOf("("))
     },
     getRegisterType: function (register) {
-        if (register.includes("%x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp")) {
+        if (register.includes("x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp")) {
             if (register.includes("%e")) {
                 return defines.types.u32
             }
@@ -132,18 +143,23 @@ var types = {
         return register
     },
     getVariableFromEbpOffsetString: function (word) {
-        return variables.getStackVariableWithOffset(currentStackOffset - 4 - (this.getOffsetFromEbpOffsetString(word)))
+        if(!word.includes("-"))
+        {
+            //throwE(functions.getParameterWithOffset(this.getOffsetFromEbpOffsetString(word)))
+            return functions.getParameterWithOffset(this.getOffsetFromEbpOffsetString(word))
+        }
+        return variables.getStackVariableWithOffset(this.getOffsetFromEbpOffsetString(word))
     },
     guessType: function (word) {
         word == String(word)
         if (variables.variableExists(word)) {
-            return variables.getVariableType(word)
+            return objCopy(variables.getVariableType(word))
         } else if (this.stringIsEbpOffset(word)) {
-            return getAllStackVariables()[variables.getStackVariableNameWithOffset(this.getOffsetFromEbpOffsetString(word))].type
+            return objCopy(this.getVariableFromEbpOffsetString(word).type)
         } else if (this.stringIsRegister(word)) {
-            return this.getRegisterType(word)
+            return objCopy(this.getRegisterType(word))
         }
-        return defines.types.u32
+        return objCopy(defines.types.u32)
     }
 }
 
@@ -156,9 +172,11 @@ var formatters = {
     },
     fnAllocMacro: function(fname) {
         return `__ALLOCFOR_${fname}__`
+    },
+    untypedLabel: function(number) {
+        return `__LABEL${number}__`
     }
 }
-
 
 var variables = {
     checkIfOnStack(vname) {
@@ -174,6 +192,9 @@ var variables = {
         var lbl = formatters.tempLabel(type, counters.tempLabels.current[types.typeToBits(type)]++)
         globalVariables[lbl] = newGlobalVar(type)
         return lbl
+    },
+    newUntypedLabel: function() {
+        return formatters.untypedLabel(counters.untypedLabels++)
     },
     getStackVariableNameWithOffset(offset) {
         var gaf = getAllStackVariables()
@@ -268,6 +289,35 @@ var formats = {
     }
 }
 
+var functions = {
+    getParameterOffset: function(param)
+    {
+        var offset = 0
+        debugPrint("-----------", param)
+        scope[scope.length - 1].data.parameters.some(x => {
+            if(x.name == param)
+            {
+                return true
+            }
+            offset += 4
+        })
+        return offset
+    },
+    getParameterWithOffset: function(offset)
+    {
+        offset -= 8
+        return scope[scope.length - 1].data.parameters.find(x => {
+            debugPrint(offset)
+            if(offset == 0)
+            {
+                return true
+            }
+            offset -= 4
+            return false
+        })
+    }
+}
+
 module.exports = {
-    types, formatters, variables, registers, counters, formats
+    types, formatters, variables, registers, counters, formats, functions,
 }
