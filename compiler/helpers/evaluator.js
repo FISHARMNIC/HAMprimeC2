@@ -122,7 +122,7 @@ function evaluate(line) {
                     `${oldScope.data.localExit}:`
                 )
                 var preview = previewNextLine()
-                if (!(preview.includes("else") || preview.includes("elif"))) // fully escape block since we are done with all elif/else
+                if (!(line.includes("else") || line.includes("elif")) && !(preview.includes("else") || preview.includes("elif"))) // fully escape block since we are done with all elif/else
                 {
                     outputCode.autoPush(
                         `${oldScope.data.name}:`
@@ -201,6 +201,21 @@ function evaluate(line) {
                     }
                 }
                 mostRecentIfStatement.push(objCopy(requestBracket))
+            } else if (word == "elif") {
+                var localExit = helpers.variables.newUntypedLabel()// jump out of this if, but not out of whole block
+                outputCode.text.push(
+                    `cmpb $1, ${offsetWord(2)}`, // checks if value = 1
+                    `jne ${localExit}`
+                )
+                requestBracket = mostRecentIfStatement.pop() // copy final termination
+                mostRecentIfStatement.push(objCopy(requestBracketStack))
+                requestBracketStack.data.localExit = localExit // new local exit
+            }
+            else if (word == "else") {
+                var localExit = helpers.variables.newUntypedLabel()
+                requestBracketStack = mostRecentIfStatement.pop()
+                mostRecentIfStatement.push(objCopy(requestBracketStack))
+                requestBracketStack.data.localExit = localExit
             }
         }
         // #endregion
