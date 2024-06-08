@@ -196,10 +196,15 @@ var functions = {
         var onCom = false
         var robj = []
         var oBytes = 0;
+        var didVari = false
         parr.forEach(x => {
             if (onCom) {
+                if(didVari)
+                    throwE("Cannot have parameters declared after variadic ellipsis")
                 if (x != ',')
                     throwE(`Expected comma at word "${x}" in ${parr}`)
+            } else if(x == "...") {
+                didVari = true
             } else {
                 var type = popTypeStack(true)
                 robj.push({ name: x, type })
@@ -207,7 +212,7 @@ var functions = {
             }
             onCom = !onCom
         })
-        return { params: robj, oBytes }
+        return { params: robj, oBytes, didVari }
     },
     createFunction: function (fname) {
         outputCode.text.push(

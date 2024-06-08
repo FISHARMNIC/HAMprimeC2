@@ -35,7 +35,7 @@ sub $__ALLOCFOR_factorial__, %esp
 mov 8(%ebp), %eax
 movb $0, %bl
 cmp $1, %eax
-setg %bl
+setge %bl
 cmpb $1, %bl
 jne __LABEL0__
 xor %eax, %eax
@@ -66,6 +66,7 @@ ret
 jmp __LABEL1__
 __LABEL0__:
 __LABEL1__:
+mov $1, %eax
 mov %ebp, %esp
 pop %ebp
 ret
@@ -90,6 +91,10 @@ call printf
 mov %eax, %ecx
 add $8, %esp
 pop %ebx
+mov $0, %eax
+mov %ebp, %esp
+pop %ebp
+ret
 mov %ebp, %esp
 pop %ebp
 ret

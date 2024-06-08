@@ -1,15 +1,16 @@
 function evaluate(line) {
     debugPrint(line)
-    line = line.map((x) => { // bad code yes
+    // line = line.map((x) => { // bad code yes
 
-        if (objectIncludes(defines.types, x) && !objectIncludes(userFormats, x)) {
-            typeStack.splice(0, 0, objCopy(defines.types[x]))
-            return null
-        } else if (helpers.variables.variableExists(x)) {
-            typeStack.splice(0, 0, helpers.variables.getVariableType(x))
-        }
-        return x;
-    }).filter(x => x)
+    //     if (objectIncludes(defines.types, x) && !objectIncludes(userFormats, x)) {
+    //         typeStack.splice(0, 0, objCopy(defines.types[x]))
+    //         return null
+    //     } else if (helpers.variables.variableExists(x)) {
+    //         typeStack.splice(0, 0, helpers.variables.getVariableType(x))
+    //     }
+    //     return x;
+    // }).filter(x => x)
+
     //throwE(line, typeStack)
 
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
@@ -18,10 +19,17 @@ function evaluate(line) {
         var offsetWord = x => wordNum + x >= 0 ? line[wordNum + x] : null;
 
         // #region modifications
-        if(word == '(' || word == ')')
-        {
+        if (word == '(' || word == ')') {
             line.splice(wordNum, 1)
             wordNum--;
+        } else if (objectIncludes(defines.types, word)) {
+            if (offsetWord(1) == "(") {
+                throwE("CAST TODO")
+            } else {
+                typeStack.push(objCopy(defines.types[word]))
+                line.splice(wordNum, 1)
+                wordNum--;
+            }
         }
         // #endregion
         // #region Formats
@@ -72,12 +80,11 @@ function evaluate(line) {
             }
         } else if (word[0] == '"' && word[word.length - 1] == '"') {
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
-        } else if(objectIncludes(getAllStackVariables(), word)) // get stack var
+        } else if (objectIncludes(getAllStackVariables(), word)) // get stack var
         {
             line[wordNum] = actions.assembly.getStackVarAsEbp(word)
             typeStack.push(getAllStackVariables()[word].type)
-        } else if(scope.length > 0 && (helpers.general.getMostRecentFunction() != undefined) && helpers.general.getMostRecentFunction().data.parameters.findIndex(x => x.name == word) != -1)
-        {
+        } else if (scope.length > 0 && (helpers.general.getMostRecentFunction() != undefined) && helpers.general.getMostRecentFunction().data.parameters.findIndex(x => x.name == word) != -1) {
             //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
             line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
         }
@@ -107,11 +114,9 @@ function evaluate(line) {
                 nobj.formatPtr = userFormats[oldScope.data.name]
                 defines.types[oldScope.data.name] = nobj
                 //actions.allocations.deallocStack()
-            } else if(oldScope.type == keywordTypes.FUNCTION)
-            {
+            } else if (oldScope.type == keywordTypes.FUNCTION) {
                 actions.functions.closeFunction(oldScope, oldStack)
-            } else if(oldScope.type == keywordTypes.WHILE)
-            {
+            } else if (oldScope.type == keywordTypes.WHILE) {
                 outputCode.autoPush(
                     `jmp ${oldScope.data.name}`,
                     `${oldScope.data.exit}:` // exit loop
@@ -149,35 +154,35 @@ function evaluate(line) {
                 }
             } else if (word == "persistent") {
                 nextAllocIsPersistent = true;
-            } else if (word == "function")
-            {
+            } else if (word == "function") {
                 var fname = offsetWord(-1)
                 var params = offsetWord(2)
-                if(typeof(params) == "string")
+                if (typeof (params) == "string")
                     params = [params]
                 var params_obj = actions.functions.createParams(params)
                 var returnType = objCopy(defines.types.u32)
-                
-                if(offsetWord(3) == "->")
-                {
-                    returnType = popTypeStack()
+
+                if (offsetWord(3) == "->") {
+                    returnType = typeStack[typeStack.length - 1]
                 }
 
                 var data = {
                     name: fname,
                     parameters: params_obj.params,
                     returnType,
-                    variadic: false,
+                    variadic: params_obj.didVari,
                     totalAlloc: 0,
                 }
-
-                requestBracket = {
-                    type: keywordTypes.FUNCTION,
-                    data
-                }
-
                 userFunctions[fname] = data
-                actions.functions.createFunction(fname)
+
+                if (offsetWord(-2) != "foward") {
+                    requestBracket = {
+                        type: keywordTypes.FUNCTION,
+                        data
+                    }
+
+                    actions.functions.createFunction(fname)
+                }
             } else if (word == "while") {
                 outputCode.autoPush(
                     `cmpb $1, ${offsetWord(2)}`,
@@ -185,7 +190,12 @@ function evaluate(line) {
                 )
             } else if (word == "return") {
                 debugPrint("closer", line, scope)
-                actions.functions.closeFunction(helpers.general.getMostRecentFunction(), oldStack, true, offsetWord(2))
+
+                var wrd = offsetWord(1)
+                if (offsetWord(1) == "(")
+                    wrd = offsetWord(2)
+
+                actions.functions.closeFunction(helpers.general.getMostRecentFunction(), oldStack, true, wrd)
             }
             else if (word == "if") {
                 var localExit = helpers.variables.newUntypedLabel() // jump out of this if, but not out of whole block
@@ -220,11 +230,11 @@ function evaluate(line) {
         }
         // #endregion
         // #region Functions
-        else if(offsetWord(1) == "(" && objectIncludes(userFunctions,word)) // function call
+        else if (offsetWord(1) == "(" && objectIncludes(userFunctions, word)) // function call
         {
             var fname = word
             var args = offsetWord(2)
-            if(typeof(args) == "string")
+            if (typeof (args) == "string")
                 args = [args]
             //debugPrint(line)
             line[wordNum] = actions.functions.callFunction(fname, args)
@@ -256,11 +266,10 @@ function evaluate(line) {
             }
             var lbl = mathEngine(build)
             line.splice(start, build.length + 1, lbl)
-        } 
+        }
         // #endregion
         // #region Conditionals
-        else if(defines.conditionals.includes(offsetWord(-1)))
-        {
+        else if (defines.conditionals.includes(offsetWord(-1))) {
             var left = offsetWord(-2)
             var right = word
             var cond = offsetWord(-1)
@@ -268,9 +277,8 @@ function evaluate(line) {
             var left_type = helpers.types.guessType(left)
             var right_type = helpers.types.guessType(right)
 
-            
-            if(typeof(left) != "string" || typeof(right) != "string")
-            {
+
+            if (typeof (left) != "string" || typeof (right) != "string") {
                 throwE("Cannot compare expanded statements", left, right)
             }
 
@@ -278,18 +286,16 @@ function evaluate(line) {
             var regR = helpers.types.formatRegister("d", right_type)
             var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u8)
 
-            
 
-            if(!helpers.types.isConstant(left))
-            {
+
+            if (!helpers.types.isConstant(left)) {
                 outputCode.autoPush(`mov ${left}, ${regL}`)
                 left = regL
-            } else { 
+            } else {
                 left = helpers.types.formatIfConstOrLit(left)
             }
 
-            if(!helpers.types.isConstant(right))
-            {
+            if (!helpers.types.isConstant(right)) {
                 outputCode.autoPush(`mov ${right}, ${regR}`)
                 right = regR
             } else {
@@ -297,7 +303,7 @@ function evaluate(line) {
             }
 
             outputCode.autoPush(
-                `mov${helpers.types.stringIsRegister(lbl)? "b" : ""} \$0, ${lbl}`,
+                `mov${helpers.types.stringIsRegister(lbl) ? "b" : ""} \$0, ${lbl}`,
                 `cmp ${right}, ${left}`,
                 `${defines.conditionalMap[cond]} ${lbl}`,
             )

@@ -1,6 +1,6 @@
 factorial function<u32 n> -> u32
 {
-    if(n :> 1)
+    if(n >= 1)
     {
         return (n * factorial(n - 1));
     }
@@ -10,4 +10,5 @@ factorial function<u32 n> -> u32
 entry function<p8 args, u32 argv> -> u32
 {
     printf("%i\n", factorial(5));
+    return 0;
 }

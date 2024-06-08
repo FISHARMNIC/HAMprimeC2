@@ -5,17 +5,22 @@ TODO:
     - __allocfor__ will not work with loops
         - temporarily disabled stack allocations for formats since if you do loops it will be overriting the same thing
     - do like "(123,555) == bob" is like an and
-    - todo: (x && y) or (a || b)
+    - (x && y) or (a || b)
+    - Incorporate c functions
+    - lambda functions
+    - function prototypes
 */
 
 const fs = require("fs");
 const exec = require('child_process').exec;
 // All required libs
-globalThis.defines = require("./preprocessor/defines.js");
+globalThis.defines = require("./preparer/defines.js");
 globalThis.types = defines.types;
-require("./preprocessor/globals.js");
-globalThis.parser = require("./preprocessor/splitter.js");
-globalThis.nest = require('./preprocessor/nestEval.js')
+
+require("./preparer/globals.js");
+
+globalThis.parser = require("./preparer/splitter.js");
+globalThis.nest = require('./preparer/nestEval.js')
 globalThis.actions = require('./helpers/actions.js')
 globalThis.helpers = require('./helpers/helpers.js')
 globalThis.evaluator = require('./helpers/evaluator.js')
@@ -23,13 +28,13 @@ globalThis.mathEngine = require("./math/mathEngine.js");
 globalThis.floatEngine = require("./math/floatEngine.js");
 globalThis.prioritizeWord = require("./helpers/priority.js")
 globalThis.mainDir = __dirname
+
 // load input file and split into lines
 const INPUTFILE = "../test/ex4.x"
 inputCode = String(fs.readFileSync(INPUTFILE));
 inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x);
 
 //console.log(helpers.registers)
-
 
 globalThis.globalLine;
 globalThis.previewNextLine = function()
@@ -40,6 +45,7 @@ globalThis.previewNextLine = function()
 inputCode = inputCode.map((line,lineNo) => {
     // parse it into words
     globalLine = lineNo
+    
     var lsplit = parser.split(line);
     var io = lsplit.indexOf("//")
     if(io != -1)
