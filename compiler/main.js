@@ -9,6 +9,7 @@ TODO:
     - Incorporate c functions
     - lambda functions
     - function prototypes
+    - redo splitter to join lines when a parenthesis has been opened
 */
 
 const fs = require("fs");
@@ -30,7 +31,7 @@ globalThis.prioritizeWord = require("./helpers/priority.js")
 globalThis.mainDir = __dirname
 
 // load input file and split into lines
-const INPUTFILE = "../test/ex4.x"
+const INPUTFILE = "../test/ex5.x"
 inputCode = String(fs.readFileSync(INPUTFILE));
 inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x);
 
@@ -45,7 +46,7 @@ globalThis.previewNextLine = function()
 inputCode = inputCode.map((line,lineNo) => {
     // parse it into words
     globalLine = lineNo
-    
+
     var lsplit = parser.split(line);
     var io = lsplit.indexOf("//")
     if(io != -1)

@@ -63,7 +63,11 @@ globalThis.getLastScopeType = function()
 
 globalThis.newScope = function(rb)
 {
-    stackVariables.push({})
+    if(rb.stackVariables == undefined)
+    {
+        rb.stackVariables = {}
+    }
+    stackVariables.push(objCopy(rb.stackVariables))
     scope.push(objCopy(rb))
 }
 
@@ -117,10 +121,10 @@ globalThis.objectValuesIncludes = function(obj,inc)
 {
     return Object.values(obj).includes(inc)
 }
-globalThis.newStackVar = function (type) {
+globalThis.newStackVar = function (type, offset = currentStackOffset) {
     return {
         type: objCopy(type),
-        offset: currentStackOffset
+        offset
     }
 }
 

@@ -1,2 +1,2 @@
-gcc out.s -o out -g -no-pie -m32 -fno-asynchronous-unwind-tables 
-chmod u+x ./out
+gcc ../../compiled/out.s -o ../../compiled/out -g -no-pie -m32 -fno-asynchronous-unwind-tables 
+../../compiled/out

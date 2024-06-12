@@ -180,7 +180,21 @@ var variables = {
         return scope.length != 0 && objectIncludes(getAllStackVariables(), vname) // ) // if stack var
     },
     getVariableType(vname) {
-        return this.checkIfOnStack(vname) ? getAllStackVariables()[vname].type : globalVariables[vname].type
+        if(this.checkIfOnStack(vname))
+        {
+            return getAllStackVariables()[vname].type
+        }
+        else if(this.checkIfParameter(vname))
+        {
+            throwE("WIP")
+            //return 
+        } else {
+            return globalVariables[vname].type
+        }
+        //return this.checkIfOnStack(vname) ? getAllStackVariables()[vname].type : globalVariables[vname].type
+    },
+    getStackVarOffset: function(vname) {
+        return getAllStackVariables()[vname].offset
     },
     variableExists(vname) {
         return this.checkIfOnStack(vname) || objectIncludes(globalVariables, vname)
@@ -193,16 +207,19 @@ var variables = {
     newUntypedLabel: function () {
         return formatters.untypedLabel(counters.untypedLabels++)
     },
-    getStackVariableNameWithOffset(offset) {
+    getStackVariableNameWithOffset: function(offset) {
         var gaf = getAllStackVariables()
 
         return Object.keys(gaf)[Object.values(gaf).findIndex(x => {
             return x.offset == offset
         })]
     },
-    getStackVariableWithOffset(offset) {
+    getStackVariableWithOffset: function(offset) {
         return getAllStackVariables()[this.getStackVariableNameWithOffset(offset)]
     },
+    checkIfParameter: function(word) {
+        return (scope.length > 0 && (general.getMostRecentFunction() != undefined) && general.getMostRecentFunction().data.parameters.findIndex(x => x.name == word) != -1)
+    }
 }
 
 var registers = {
@@ -252,6 +269,8 @@ var registers = {
                 return 'i'
             } else if (rstr.includes("si")) {
                 return 's'
+            } else if (rstr.includes("bp")) {
+                return 'p'
             }
             else if (rstr.length == 4) {
                 return rstr[2]
@@ -305,6 +324,14 @@ var functions = {
                 return true
             }
             offset -= 4
+            return false
+        })
+    },
+    getParameterType: function (pname) {
+        return general.getMostRecentFunction().data.parameters.find(x => {
+            if (x.name == pname) {
+                return true
+            }
             return false
         })
     }

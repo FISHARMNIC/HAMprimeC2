@@ -141,6 +141,71 @@ var variables = {
         }
         return vname
     },
+    readArray: function (aname, index) {
+        var baseType = helpers.variables.getVariableType(aname)
+        var indexMultiplier = baseType.bits
+        var out = helpers.registers.getFreeLabelOrRegister(baseType)
+        var ogout = out
+        var edxReserved = false
+        if (!helpers.types.stringIsRegister(out))
+        {
+            var edxReserved = true
+            out = helpers.types.formatRegister('d', baseType)
+        }
+
+
+        if (helpers.variables.checkIfOnStack(aname)) {
+            var baseStackOffset = helpers.variables.getStackVarOffset(aname)
+
+            outputCode.autoPush(
+                `mov %ebp, %eax`,
+                `sub $8, %eax`
+            )
+        } else {
+            // if global, param, etc.
+            // base must be in eax
+        }
+
+
+        if (helpers.types.isConstant(index)) {
+            outputCode.autoPush(
+                `mov ${index * indexMultiplier}(%eax), ${out}`
+            )
+        } else if (helpers.types.stringIsRegister(index)) {
+            index = helpers.types.conformRegisterIfIs(index, defines.types.u32)
+            outputCode.autoPush(
+                `mov (%eax, ${index}, ${indexMultiplier}), ${out}`
+            )
+        } else if (helpers.types.stringIsEbpOffset(index)) {
+            if (edxReserved) {
+                throwE("unimplemented")
+                // have to use normal math since edx and eax are occupied and cannot be modified
+            } else {
+                actions.assembly.optimizeMove(index, "%edx", helpers.types.getVariableFromEbpOffsetString(index).type, defines.types.u32)
+                outputCode.autoPush(
+                    `mov (%eax, %edx, ${indexMultiplier}), ${out}`
+                )
+            }
+        } else {
+            if (edxReserved) {
+                throwE("unimplemented")
+                // have to use normal math since edx and eax are occupied and cannot be modified
+            } else {
+                actions.assembly.optimizeMove(index, "%edx", helpers.variables.getVariableType(index), defines.types.u32)
+                outputCode.autoPush(
+                    `mov (%eax, %edx, ${indexMultiplier}), ${out}`
+                )
+            }
+        }
+
+        if (edxReserved) {
+            outputCode.autoPush(
+                `mov %edx, ${ogout}`
+            )
+            return ogout
+        }
+        return out
+    }
 }
 
 var allocations = {
@@ -199,11 +264,11 @@ var functions = {
         var didVari = false
         parr.forEach(x => {
             if (onCom) {
-                if(didVari)
+                if (didVari)
                     throwE("Cannot have parameters declared after variadic ellipsis")
                 if (x != ',')
                     throwE(`Expected comma at word "${x}" in ${parr}`)
-            } else if(x == "...") {
+            } else if (x == "...") {
                 didVari = true
             } else {
                 var type = popTypeStack(true)
@@ -226,11 +291,10 @@ var functions = {
     closeFunction: function (sc, st, asRet = false, rVal = null) {
         var d = sc.data
         debugPrint("SC", scope)
-        if(rVal != null)
-        {
+        if (rVal != null) {
             assembly.setRegister(rVal, "a", d.returnType)
         }
-        
+
         outputCode.text.push(
             `mov %ebp, %esp`,
             `pop %ebp`,
@@ -328,6 +392,46 @@ var functions = {
 
         helpers.registers.clobberRegister(helpers.registers.registerStringToLetterIfIs(out))
 
+        return out
+    },
+    readArgument: function (index) {
+        var out = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
+        var ogout = out
+        if (!helpers.types.stringIsRegister(out))
+            out = "%edx"
+
+        if (helpers.types.isConstant(index)) {
+            outputCode.autoPush(
+                `mov ${index + 8}(%ebp), ${out}`
+            )
+        } else if (helpers.types.stringIsRegister(index)) {
+            actions.assembly.optimizeMove(index, "%eax", helpers.types.getRegisterType(index), defines.types.u32)
+            outputCode.autoPush(
+                `add $2, %eax`,
+                `mov (%ebp, %eax, 4), ${out}`
+            )
+        } else if (helpers.types.stringIsEbpOffset(index)) {
+            // workin on here
+            actions.assembly.optimizeMove(index, "%eax", helpers.types.getVariableFromEbpOffsetString(index).type, defines.types.u32)
+            outputCode.autoPush(
+                `add $2, %eax`,
+                `mov (%ebp, %eax, 4), ${out}`
+            )
+        } else {
+            //throwE(index)
+            actions.assembly.optimizeMove(index, "%eax", helpers.variables.getVariableType(index), defines.types.u32)
+            outputCode.autoPush(
+                `add $2, %eax`,
+                `mov (%ebp, %eax, 4), ${out}`
+            )
+        }
+
+        if (out == "%edx") {
+            outputCode.autoPush(
+                `mov %edx, ${ogout}`
+            )
+            return ogout
+        }
         return out
     }
 }

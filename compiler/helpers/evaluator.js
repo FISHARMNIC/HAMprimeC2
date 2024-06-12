@@ -52,6 +52,45 @@ function evaluate(line) {
             //console.log("=======", scope)
         }
         // #endregion
+        // #region Arrays
+        else if (word == "[") {
+            var index = offsetWord(1)
+            var vname = offsetWord(-1)
+            if (typeof (index) == "string") {
+                index = [index]
+            }
+
+            if (vname == "__arguments") {
+                var index = index[0]
+
+                var out = actions.functions.readArgument(index)
+                line[wordNum - 1] = out
+                line.splice(wordNum, 3)
+                wordNum--
+                //throwE(line, wordNum)
+
+            } else {
+                if (index.length != 1) {
+                    throwE("Multi-dimensional arrays not implemented")
+                } else {
+                    var out = actions.variables.readArray(vname, index)
+                    line[wordNum - 1] = out
+                    line.splice(wordNum, 3)
+                    wordNum--
+                }
+            }
+            //else if (objectIncludes(getAllStackVariables(), vname)) { // local
+            //     offset = getAllStackVariables()[vname].offset
+            //     typeOfVar = 1
+            // } else if (helpers.variables.checkIfParameter(vname)) {     // stack
+            //     offset = helpers.functions.getParameterOffset(word) + 8
+            //     typeOfVar = 0
+            // } else {                                                    // global
+            //     offset = vname
+            //     typeOfVar = 2
+            // }
+        }
+        // #endregion
         // #region Variables
         else if (word == "create") {        // variable creation
             /*
@@ -84,7 +123,7 @@ function evaluate(line) {
         {
             line[wordNum] = actions.assembly.getStackVarAsEbp(word)
             typeStack.push(getAllStackVariables()[word].type)
-        } else if (scope.length > 0 && (helpers.general.getMostRecentFunction() != undefined) && helpers.general.getMostRecentFunction().data.parameters.findIndex(x => x.name == word) != -1) {
+        } else if (helpers.variables.checkIfParameter(word)) {   // is param
             //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
             line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
         }
