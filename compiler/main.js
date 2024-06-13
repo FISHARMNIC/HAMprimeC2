@@ -4,15 +4,15 @@ TODO:
     HIGH
         - Stallocs need to return ESP since ebp offsets cannot be preserved if in a loop
         - Make it so if the last thing was a loop or something iterable, use esp instead
+        - ESP is then moved into a variable that was allocated on the stack and can be accessed using EBP
+        - so $offset(EBP) holds a reference to the actual address
     - fix most register formater functions to acknowledge ebp as register 'p'
     - if there isnt any math on the line, free up more, otherwise pre-clobber certain registers
     - __allocfor__ will not work with loops
         - temporarily disabled stack allocations for formats since if you do loops it will be overriting the same thing
-    - do like "(123,555) == bob" is like an and
+    - do like "(123,555) &&== bob" is like an and
     - (x && y) or (a || b)
-    - Incorporate c functions
     - lambda functions
-    - function prototypes
     - redo splitter to join lines when a parenthesis has been opened
 */
 
