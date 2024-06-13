@@ -22,14 +22,21 @@ function evaluate(line) {
         if (word == '(' || word == ')') {
             line.splice(wordNum, 1)
             wordNum--;
-        } else if (objectIncludes(defines.types, word)) {
+        } else if (objectIncludes(defines.types, word)) { // types
             if (offsetWord(1) == "(") {
                 throwE("CAST TODO")
+            } else if(offsetWord(1) == "{")
+            {
+                arrayClamp = defines.types[word]
+                line.splice(wordNum, 1)
+                wordNum--;
             } else {
                 typeStack.push(objCopy(defines.types[word]))
                 line.splice(wordNum, 1)
                 wordNum--;
             }
+        } else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {
+            scope[scope.length - 1].data.push(offsetWord(-1))
         }
         // #endregion
         // #region Formats
@@ -135,7 +142,12 @@ function evaluate(line) {
                 debugPrint("ENTERTING", requestBracket)
                 requestBracket = 0
             } else {
-                // array
+                // do something like an array flag then on closing bracket it checks if array flag is set
+                throwE("array init")
+                newScope({
+                    type: keywordTypes.ARRAY,
+                    data: []
+                })
             }
         } else if (word == "}") {
             var oldScope = scope.pop()
@@ -173,6 +185,14 @@ function evaluate(line) {
                     )
                     mostRecentIfStatement.pop()
                 }
+            } else if (oldScope.type == keywordTypes.ARRAY) {
+                var numElements = oldScope.data.length
+                var bytesPerElement = helpers.types.typeToBytes(arrayClamp)
+                arrayClamp = defines.types.u32
+
+                throwE("working on it")
+                actions.allocations.allocateAuto
+                outputCode.autoPush
             }
             console.log("IJWJWWO", scope)
         }

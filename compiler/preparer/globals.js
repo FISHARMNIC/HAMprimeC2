@@ -39,7 +39,7 @@ globalThis.outputCode = { // object with out data
 }
 globalThis.typeStack = []
 globalThis.mostRecentIfStatement = [] 
-
+globalThis.arrayClamp = defines.types.u32
 
 
 
@@ -50,7 +50,8 @@ globalThis.keywordTypes = {
     INIT: 2,
     METHOD: 3,
     WHILE: 4,
-    IF: 5
+    IF: 5,
+    ARRAY: 6
 }
 
 

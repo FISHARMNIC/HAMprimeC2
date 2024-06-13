@@ -1,5 +1,9 @@
 /*
 TODO:
+
+    HIGH
+        - Stallocs need to return ESP since ebp offsets cannot be preserved if in a loop
+        - Make it so if the last thing was a loop or something iterable, use esp instead
     - fix most register formater functions to acknowledge ebp as register 'p'
     - if there isnt any math on the line, free up more, otherwise pre-clobber certain registers
     - __allocfor__ will not work with loops
@@ -31,7 +35,7 @@ globalThis.prioritizeWord = require("./helpers/priority.js")
 globalThis.mainDir = __dirname
 
 // load input file and split into lines
-const INPUTFILE = "../test/ex5.x"
+const INPUTFILE = "../test/ex6.x"
 inputCode = String(fs.readFileSync(INPUTFILE));
 inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x);
 
@@ -59,13 +63,12 @@ inputCode = inputCode.map((line,lineNo) => {
         prioritizeWord(lsplit[0])
     }
 
+    arrayClamp = defines.types.u32
     helpers.registers.clearClobbers()
     typeStack = []
 
     lsplit = nest.nest(lsplit);
-    
     lsplit = nest.orderDeepestFirst(lsplit)
-    //console.log(lsplit)
     lsplit = nest.runDeepestFirst(lsplit)
 
     helpers.counters.setMaxTempLabels();
