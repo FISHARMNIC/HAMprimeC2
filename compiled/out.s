@@ -6,11 +6,13 @@
 .data
 
 ######## user data section ########
-__STRING0__: .asciz "Argument %i: %s\n"
-__ALLOCFOR_myVariadic__ = 4
-__STRING1__: .asciz "hi"
-__STRING2__: .asciz "bye"
-__ALLOCFOR_entry__ = 0
+__STRING0__: .asciz "chicken"
+.comm __LABEL0__, 16, 4
+arrGlobal: .4byte 0
+__STRING1__: .asciz "%i %i %i\n"
+__ALLOCFOR_entry__ = 16
+__TEMP32_0__: .4byte 0
+__TEMP32_1__: .4byte 0
 ###################################
 .text
 
@@ -20,7 +22,14 @@ __ALLOCFOR_entry__ = 0
 user_init:
 #### compiler initation section ###
 __init__:
-
+mov $__LABEL0__, %eax
+movl $1, 0(%eax)
+movl $2, 4(%eax)
+movl $9, 8(%eax)
+mov $__STRING0__, %edx
+mov %edx, 12(%eax)
+mov %eax, %ebx
+mov %ebx, arrGlobal
 ret
 ###################################
 
@@ -30,57 +39,48 @@ main:
     ret
 
 ###################################
-myVariadic:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR_myVariadic__, %esp
-mov $1, %edx
-mov %edx, -4(%ebp)
-__LABEL0__:
-mov -4(%ebp), %eax
-mov 8(%ebp), %edx
-movb $0, %bl
-cmp %edx, %eax
-setle %bl
-cmpb $1, %bl
-jne __LABEL1__
-mov -4(%ebp), %edx
-mov %edx, %eax
-add $2, %eax
-mov (%ebp, %eax, 4), %ebx
-push %ebx
-# Calling function printf
-mov %ebx, %edx
-push %edx
-mov -4(%ebp), %edx
-push %edx
-pushl $__STRING0__
-call printf
-mov %eax, %ecx
-add $12, %esp
-pop %ebx
-xor %eax, %eax
-mov -4(%ebp), %eax
-add $1, %eax
-mov %eax, %ebx
-mov %ebx, -4(%ebp)
-jmp __LABEL0__
-__LABEL1__:
-mov %ebp, %esp
-pop %ebp
-ret
-# i: 4
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-# Calling function myVariadic
-pushl $__STRING2__
-pushl $__STRING1__
-pushl $2
-call myVariadic
+movl $4, -12(%ebp)
+movl $3, -8(%ebp)
+movl $1, -4(%ebp)
+mov %ebp, %eax
+sub $12, %eax
 mov %eax, %ebx
-add $12, %esp
+mov %ebx, -16(%ebp)
+xor %eax, %eax
+mov -16(%ebp), %eax
+add $8, %eax
+mov %eax, %ebx
+mov arrGlobal, %eax
+mov 0(%eax), %ecx
+mov %ebx, %eax
+mov 0(%eax), %esi
+mov arrGlobal, %eax
+mov 4(%eax), %edi
+mov -16(%ebp), %eax
+mov (%eax, %ecx, 4), %edx
+mov %edx, __TEMP32_0__
+push %ebx
+push %ecx
+push %esi
+push %edi
+# Calling function printf
+mov __TEMP32_0__, %edx
+push %edx
+push %edi
+push %esi
+pushl $__STRING1__
+call printf
+mov %eax, __TEMP32_1__
+add $16, %esp
+pop %ebx
+pop %ecx
+pop %esi
+pop %edi
 mov %ebp, %esp
 pop %ebp
 ret
+# arr: 16

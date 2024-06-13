@@ -106,14 +106,16 @@ function runDeepestFirst(line) {
     if (nestedEnd != 0 && line.length != 0) {
         var oArr = []
         for (var i = 0; i < nestedEnd; i++) {
+            //debugPrint("NEEEEESTING",line, i)
             var outT = runDeepestFirst(line.slice(0, nestedEnd)[i])
 
             line = line.map(x => { // if accessing a number that needs to be replaced, replace it
-                if (x == i) {
+                if ((x == i) && typeof(x) != "string") {
                     return outT
                 }
                 return x
             })
+            //debugPrint("OUUUTUTTTTTT", line)
         }
         var newA = [...line.slice(nestedEnd, line.length - 1), 0]
         //console.log("weeee", newA)
@@ -124,15 +126,13 @@ function runDeepestFirst(line) {
         // here is where stuff should be evaluated. Using aline
 
         // it then needs to be replaced with a label
-        //console.log("COMPILING",aline)
-
+        //debugPrint("COMPILING",aline)
         var output = evaluator(aline)
         if(output.length ==1)
             output = output[0]
+        //debugPrint("++=====COMPILED", aline)
         //console.log("=====OUT", output)
         return output
-
-
         // console.log(`EV${tevDELETE} = EVALUATE: ${aline.join(" ")}`)
         // return (`EV${tevDELETE++}`)
     }

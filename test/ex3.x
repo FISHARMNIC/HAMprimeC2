@@ -1,1 +1,12 @@
-create bob <- 2 + (u32 5 + u16 10) * (2 / (array[Bob<aa:jon.ab,ee:1+3>.method(a.b + 3).cc + 2] + bob.gg));
+Person format {    
+    age <- u8;
+    name <- p8;
+}
+
+create bob <- Person<age:(5+10),name:"bob">;
+entry function<p8 args, u32 argv> -> u32
+{
+    create jon <- u8 (12 + 34);
+    create dad <- (jon + 4);
+    printf("%i %i",dad, jon);
+}

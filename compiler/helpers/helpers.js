@@ -3,13 +3,11 @@ var counters = {
     untypedLabels: 0,
     tempLabels: {
         max: {
-            "0": 0,
             "8": 0,
             "16": 0,
             "32": 0
         },
         current: {
-            "0": 0,
             "8": 0,
             "16": 0,
             "32": 0
@@ -109,11 +107,18 @@ var types = {
     stringIsRegister: function (str) {
         return str[0] == "%" && (str.length == 3 || str.length == 4)
     },
+    stringIsEsp: function (str) {
+        return str == "%esp"
+    },
     stringIsEbpOffset: function (str) {
+        //debugPrint("============", str, str.substring(str.indexOf("(")) == "(%ebp)")
         return str.substring(str.indexOf("(")) == "(%ebp)"
     },
     getOffsetFromEbpOffsetString: function (str) {
         return str.substring(str[0] == "-" ? 1 : 0, str.indexOf("("))
+    },
+    getOffsetFromEbpOffsetStringNoAbs: function (str) {
+        return parseInt(str.substring(0, str.indexOf("(")))
     },
     getRegisterType: function (register) {
         if (register.includes("x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp")) {
@@ -155,6 +160,8 @@ var types = {
             return objCopy(this.getVariableFromEbpOffsetString(word).type)
         } else if (this.stringIsRegister(word)) {
             return objCopy(this.getRegisterType(word))
+        } else if (variables.checkIfParameter(word)) {
+            return functions.getParameterType(word)
         }
         return objCopy(defines.types.u32)
     }
@@ -176,6 +183,14 @@ var formatters = {
 }
 
 var variables = {
+    genTempLabels: function() {
+        Object.entries(counters.tempLabels.max).forEach((e,ind) => {
+            for(var i = 0; i < e[1]; i++)
+            {
+                outputCode.data.push(`__TEMP${e[0]}_${i}__: .${parseInt(e[0]) / 8}byte 0`)
+            }
+        })
+    },
     checkIfOnStack(vname) {
         return scope.length != 0 && objectIncludes(getAllStackVariables(), vname) // ) // if stack var
     },
@@ -217,6 +232,7 @@ var variables = {
     getStackVariableWithOffset: function(offset) {
         return getAllStackVariables()[this.getStackVariableNameWithOffset(offset)]
     },
+    
     checkIfParameter: function(word) {
         return (scope.length > 0 && (general.getMostRecentFunction() != undefined) && general.getMostRecentFunction().data.parameters.findIndex(x => x.name == word) != -1)
     }
@@ -345,6 +361,9 @@ var general = {
             //debugPrint("3333333", x)
             return x.type == keywordTypes.FUNCTION
         }))
+    },
+    scopeHasIterable: function () {
+        return scope.some(x => x.type == keywordTypes.WHILE)
     }
 }
 module.exports = {

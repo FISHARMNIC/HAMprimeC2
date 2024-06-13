@@ -1,6 +1,6 @@
 /*
 TODO:
-
+    - working on: see ex6
     HIGH
         - Stallocs need to return ESP since ebp offsets cannot be preserved if in a loop
         - Make it so if the last thing was a loop or something iterable, use esp instead
@@ -74,6 +74,9 @@ inputCode = inputCode.map((line,lineNo) => {
     helpers.counters.setMaxTempLabels();
     return lsplit;
 })
+
+helpers.variables.genTempLabels();
+
 
 fs.writeFileSync(__dirname + "/../compiled/out.s", parser.parseFinalCode().out)
 

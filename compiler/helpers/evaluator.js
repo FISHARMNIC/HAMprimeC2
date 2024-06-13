@@ -30,14 +30,20 @@ function evaluate(line) {
                 arrayClamp = defines.types[word]
                 line.splice(wordNum, 1)
                 wordNum--;
+            } else if(offsetWord(1) == "<" && objectIncludes(userFormats, word))
+            {
+                    var dataLbl = actions.formats.parseParams(word, offsetWord(2))
+                    line[wordNum] = dataLbl
+                    
+                    line.splice(wordNum + 1, 3)
             } else {
                 typeStack.push(objCopy(defines.types[word]))
                 line.splice(wordNum, 1)
                 wordNum--;
             }
-        } else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {
-            scope[scope.length - 1].data.push(offsetWord(-1))
-        }
+        } //else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {
+        //     scope[scope.length - 1].data.push(offsetWord(-1))
+        // }
         // #endregion
         // #region Formats
         else if (word == '.') { // child property UNFINISHED
@@ -49,13 +55,14 @@ function evaluate(line) {
             }
         } else if (objectIncludes(userFormats, word)) // if word is a class
         {
+            // moved to region above
             //console.log("=======", scope)
-            if (offsetWord(1) == '<') // if using an init
-            {
-                var dataLbl = actions.formats.parseParams(word, offsetWord(2))
-                line[wordNum] = dataLbl
-                line.splice(wordNum + 1, 3)
-            }
+            // if (offsetWord(1) == '<') // if using an init
+            // {
+            //     var dataLbl = actions.formats.parseParams(word, offsetWord(2))
+            //     line[wordNum] = dataLbl
+            //     line.splice(wordNum + 1, 3)
+            // }
             //console.log("=======", scope)
         }
         // #endregion
@@ -80,6 +87,7 @@ function evaluate(line) {
                 if (index.length != 1) {
                     throwE("Multi-dimensional arrays not implemented")
                 } else {
+                    index = index[0]
                     var out = actions.variables.readArray(vname, index)
                     line[wordNum - 1] = out
                     line.splice(wordNum, 3)
@@ -142,11 +150,11 @@ function evaluate(line) {
                 debugPrint("ENTERTING", requestBracket)
                 requestBracket = 0
             } else {
-                // do something like an array flag then on closing bracket it checks if array flag is set
-                throwE("array init")
+                //throwE("array init")
                 newScope({
                     type: keywordTypes.ARRAY,
-                    data: []
+                    data: [],
+                    begin: wordNum
                 })
             }
         } else if (word == "}") {
@@ -190,11 +198,13 @@ function evaluate(line) {
                 var bytesPerElement = helpers.types.typeToBytes(arrayClamp)
                 arrayClamp = defines.types.u32
 
-                throwE("working on it")
-                actions.allocations.allocateAuto
-                outputCode.autoPush
+                var begin = oldScope.begin
+                var output = actions.allocations.allocateArray(line.slice(begin))
+                line[begin] = output.out
+                line.splice(begin + 1, output.len + 2)
+                wordNum = begin
             }
-            console.log("IJWJWWO", scope)
+            //console.log("IJWJWWO", scope)
         }
         // #endregion
         // #region Keywords
@@ -297,7 +307,8 @@ function evaluate(line) {
                 args = [args]
             //debugPrint(line)
             line[wordNum] = actions.functions.callFunction(fname, args)
-            line.splice(wordNum + 1, args.length + 1)
+            //debugPrint("1232323", line)
+            line.splice(wordNum + 1, 3)
         }
         // #endregion
     }

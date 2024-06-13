@@ -75,15 +75,16 @@ var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
         if (onStack) // inside of a function
         {
-
+            //throwE(vname, type, value)
             value = helpers.types.formatIfConstant(value)
             if (objectIncludes(getAllStackVariables(), vname)) {
                 throwE(`Variable "${vname}" already defined`)
             }
             var off = allocations.allocateStack(helpers.types.typeToBytes(type)) // store in stack
+            //throwE(value, off)
             assembly.optimizeMove(value, off, type, type)
             createStackVariableListOnly(vname, newStackVar(type))
-
+            //throwE(stackVariables)
         } else { // outside of function, global variable
             if (objectIncludes(globalVariables, vname)) {
                 throwE(`Variable "${vname}" already defined`)
@@ -142,34 +143,75 @@ var variables = {
         return vname
     },
     readArray: function (aname, index) {
-        var baseType = helpers.variables.getVariableType(aname)
-        var indexMultiplier = baseType.bits
+        var stypes = {
+            GLOB: 0,
+            LOC: 1,
+            PAR: 2,
+            EBP: 3,
+            ESP: 4
+        }
+        
+        var baseType = -1;
+        var status = stypes.GLOB
+
+        // yes bad code that I was doing something else with but changed it
+        if (helpers.variables.variableExists(aname)) {
+            baseType = helpers.variables.getVariableType(aname)
+            outputCode.autoPush(
+                `mov ${aname}, %eax`,
+            )
+            if (helpers.types.stringIsEbpOffset(aname)) {
+                status = stypes.LOC 
+            } else {
+                status = stypes.GLOB
+            }
+        } else if (helpers.variables.checkIfParameter(aname)) {
+                // status = stypes.PAR
+                // baseType = helpers.functions.getParameterType(aname)
+                // outputCode.autoPush(
+                //     `mov %ebp, %eax`,
+                //     `mov ${(helpers.functions.getParameterOffset(aname) + 8) + "(%ebp)"}, %eax`
+                // )
+                throwE("shouldn't get here....")
+        } else if(helpers.types.stringIsEbpOffset(aname)) {
+            baseType = helpers.types.getVariableFromEbpOffsetString(aname).type
+            outputCode.autoPush(
+                `mov ${aname}, %eax`,
+            )
+        } else if(helpers.types.isLiteral(aname)) {
+            throwE("Unimplemented")
+        } else if(helpers.types.stringIsEsp(aname)) {
+            outputCode.autoPush(
+                `mov %esp, %eax`,
+            )
+        }
+        else if(helpers.types.stringIsRegister(aname)) {
+            baseType = helpers.types.getRegisterType(aname)
+            outputCode.autoPush(
+                `mov ${aname}, %eax`,
+            )
+        }
+        else {
+                throwE(`Cannot access array "${aname}"`)
+        }
+        if(baseType == -1)
+        {
+            throwE("Compiler error, never set 'baseType' variable")
+        }
+        
+        var indexMultiplier = baseType.size / 8
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
         var ogout = out
         var edxReserved = false
-        if (!helpers.types.stringIsRegister(out))
-        {
+        if (!helpers.types.stringIsRegister(out)) {
             var edxReserved = true
             out = helpers.types.formatRegister('d', baseType)
         }
 
-
-        if (helpers.variables.checkIfOnStack(aname)) {
-            var baseStackOffset = helpers.variables.getStackVarOffset(aname)
-
-            outputCode.autoPush(
-                `mov %ebp, %eax`,
-                `sub $8, %eax`
-            )
-        } else {
-            // if global, param, etc.
-            // base must be in eax
-        }
-
-
+        debugPrint(index)
         if (helpers.types.isConstant(index)) {
             outputCode.autoPush(
-                `mov ${index * indexMultiplier}(%eax), ${out}`
+                `mov ${parseInt(index) * indexMultiplier}(%eax), ${out}`
             )
         } else if (helpers.types.stringIsRegister(index)) {
             index = helpers.types.conformRegisterIfIs(index, defines.types.u32)
@@ -210,10 +252,19 @@ var variables = {
 
 var allocations = {
     allocateStack: function (bytes) {
-        scope.at(-1).data.totalAlloc += bytes
-        currentStackOffset = scope.at(-1).data.totalAlloc
-        debugPrint("ALLOCING", bytes, currentStackOffset)
-        return `-${currentStackOffset}(%ebp)`
+        if (helpers.general.scopeHasIterable()) {
+        
+            debugPrint("ALLOCING - DR", bytes, currentStackOffset)
+            outputCode.autoPush(
+                `sub \$${bytes}, %esp`,
+            )
+            return `%esp`
+        } else {
+            //throwE(bytes)
+            currentStackOffset = (helpers.general.getMostRecentFunction().data.totalAlloc += bytes)
+            debugPrint("ALLOCING", bytes, currentStackOffset)
+            return `-${currentStackOffset}(%ebp)`
+        }
         // var lbl = helpers.variables.newTempLabel(defines.types.p32)
         // createStackVariableListOnly(lbl, newStackVar(defines.types.p32)) //not actually for use, just for knowing the offset
         // currentStackOffset += bytes
@@ -235,10 +286,21 @@ var allocations = {
         }
         return "%eax"
     },
+    allocateData: function (bytes) {
+        var lbl = helpers.variables.newUntypedLabel()
+        outputCode.data.push(`.comm ${lbl}, ${bytes}, 4`);
+        outputCode.autoPush(`mov \$${lbl}, %eax`)
+        return "%eax"
+    },
     allocateAuto: function (bytes) {
         if (bytes >= 4096 || currentStackOffset > 1e6 || nextAllocIsPersistent || scope.length == 0) {
-            return this.allocateMmap(bytes)
+            if(scope.length == 0)
+            {
+                return this.allocateData(bytes)
+            } else {
             nextAllocIsPersistent = false;
+            return this.allocateMmap(bytes)
+            }
         } else {
             return this.allocateStack(bytes)
         }
@@ -251,6 +313,53 @@ var allocations = {
         globalVariables[label] = newGlobalVar(defines.types.p8)
         return label
     },
+    allocateArray: function (arr) {
+        arr = arr.slice(1, arr.length - 1)
+        var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * 4)
+        var globalAlloc = true
+        var ebpOff;
+        if (helpers.types.stringIsEbpOffset(allocLbl)) {
+            globalAlloc = false
+            ebpOff = parseInt(helpers.types.getOffsetFromEbpOffsetString(allocLbl))
+        }
+
+        //throwE(allocLbl)
+
+        var onComma = false
+        arr.forEach((x, i) => {
+            if (onComma) {
+                if (x != ",") {
+                    throwE(`Expected comma in array allocation: [${arr.join(",")}]`)
+                }
+            } else {
+                if (x == ",") {
+                    throwE(`Did not expect comma in array allocation: [${arr.join(",")}]`)
+                }
+                if(globalAlloc){
+                    assembly.optimizeMove(x, `${i * 2}(${allocLbl})`, helpers.types.guessType(x), defines.types.u32)
+                } else {
+                    //throwE(ebpOff)
+                    assembly.optimizeMove(x, `-${ebpOff - (i * 2)}(%ebp)`, helpers.types.guessType(x), defines.types.u32)
+                }
+                
+            }
+            onComma = !onComma
+        })
+
+        var out = helpers.registers.getFreeLabelOrRegister(defines.types.p32)
+        if(globalAlloc){
+            outputCode.autoPush(
+                `mov ${allocLbl}, ${out}`
+            )
+        } else {
+            outputCode.autoPush(
+                `mov %ebp, %eax`,
+                `sub \$${ebpOff}, %eax`,
+                `mov %eax, ${out}`
+            )
+        }
+        return { out, len: arr.length }
+    }
     // deallocStack: function () {
     //     outputCode.autoPush(`add \$${Object.entries(stackVariables[stackVariables.length - 1]).length}, %esp`)
     // }
@@ -348,6 +457,9 @@ var functions = {
 
                 if (helpers.types.isConstOrLit(x)) {
                     tbuff.push(`pushl \$${x}`)
+                } else if(helpers.types.stringIsRegister(x))
+                {
+                    tbuff.push(`push ${x}`)
                 }
                 else {
 
@@ -448,14 +560,16 @@ var formats = {
             })
             //throwE(userFormats[fname].size)
 
-            // temporarily disabled stack allocations since if you do loops it will be overriting the same thing
-            var allocLbl = allocations.allocateMmap(userFormats[fname].size)
+            // FIXED? // old: temporarily disabled stack allocations since if you do loops it will be overriting the same thing
+            var allocLbl = allocations.allocateAuto(userFormats[fname].size)
             //var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
 
             if (helpers.types.stringIsEbpOffset(allocLbl)) // local
             {
+                //throwE(allocLbl, parr)
                 var allocOffset = parseInt(helpers.types.getOffsetFromEbpOffsetString(allocLbl))
                 var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32) // what it's saved in
+
                 outputCode.autoPush(`mov \$${allocOffset}, ${saveLbl} # Local allocation address for ${fname}`)
                 //throwE(outputCode)
 
@@ -473,7 +587,11 @@ var formats = {
                 return saveLbl
             } else { // global
                 var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
-                outputCode.autoPush(`mov %eax, ${saveLbl} # Local allocation address for ${fname}`)
+                if (helpers.types.stringIsEsp(allocLbl)) {
+                    outputCode.autoPush(`mov %esp, ${saveLbl} # Local allocation address for ${fname}`)
+                } else {
+                    outputCode.autoPush(`mov %eax, ${saveLbl} # Local allocation address for ${fname}`)
+                }
 
                 var off = 0
                 userFormats[fname].properties.forEach(p => {
