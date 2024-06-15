@@ -9,10 +9,11 @@
 __STRING0__: .asciz "chicken"
 .comm __LABEL0__, 16, 4
 arrGlobal: .4byte 0
-__STRING1__: .asciz "%i %i %i\n"
-__ALLOCFOR_entry__ = 16
-__TEMP32_0__: .4byte 0
-__TEMP32_1__: .4byte 0
+__STRING1__: .asciz "blah"
+someString: .4byte 0
+__STRING2__: .asciz "%c %c\n"
+__STRING3__: .asciz "abcdefgh"
+__ALLOCFOR_entry__ = 0
 ###################################
 .text
 
@@ -30,6 +31,8 @@ mov $__STRING0__, %edx
 mov %edx, 12(%eax)
 mov %eax, %ebx
 mov %ebx, arrGlobal
+mov $__STRING1__, %edx
+mov %edx, someString
 ret
 ###################################
 
@@ -43,44 +46,25 @@ entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-movl $4, -12(%ebp)
-movl $3, -8(%ebp)
-movl $1, -4(%ebp)
-mov %ebp, %eax
-sub $12, %eax
-mov %eax, %ebx
-mov %ebx, -16(%ebp)
-xor %eax, %eax
-mov -16(%ebp), %eax
-add $8, %eax
-mov %eax, %ebx
+mov $__STRING3__, %eax
+mov 7(%eax), %bl
 mov arrGlobal, %eax
-mov 0(%eax), %ecx
-mov %ebx, %eax
-mov 0(%eax), %esi
-mov arrGlobal, %eax
-mov 4(%eax), %edi
-mov -16(%ebp), %eax
-mov (%eax, %ecx, 4), %edx
-mov %edx, __TEMP32_0__
+mov 12(%eax), %ecx
+mov %ecx, %eax
+mov 16(%eax), %esi
 push %ebx
 push %ecx
 push %esi
-push %edi
 # Calling function printf
-mov __TEMP32_0__, %edx
-push %edx
-push %edi
 push %esi
-pushl $__STRING1__
+push %ebx
+pushl $__STRING2__
 call printf
-mov %eax, __TEMP32_1__
-add $16, %esp
+mov %eax, %edi
+add $12, %esp
 pop %ebx
 pop %ecx
 pop %esi
-pop %edi
 mov %ebp, %esp
 pop %ebp
 ret
-# arr: 16

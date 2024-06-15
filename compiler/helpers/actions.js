@@ -2,11 +2,15 @@ var assembly = {
     setRegister: function (value, register, type, low = true) {
         debugPrint("setting", register, value, type)
         var r = helpers.types.formatRegister(register, type, low)
-        outputCode.autoPush(`mov ${helpers.types.formatIfConstant(value)}, ${r}`)
+        if(helpers.types.typeToBits(type))
+        {
+            helpers.registers.extendedTypes[register] = type
+        }
+        outputCode.autoPush(`mov ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
         return r
     },
     optimizeMove(source, destination, sType, dType) {
-        debugPrint(source)
+        debugPrint(" reoifjeorjferiojerf", source)
         if (helpers.types.isConstOrLit(source)) {
             if (helpers.types.isLiteral(source)) {
                 if (helpers.types.stringIsRegister(destination)) {
@@ -155,8 +159,15 @@ var variables = {
         var status = stypes.GLOB
 
         // yes bad code that I was doing something else with but changed it
-        if (helpers.variables.variableExists(aname)) {
+        if(helpers.types.isLiteral(aname)) {
+            baseType = defines.types.u8
+            outputCode.autoPush(
+                `mov \$${aname}, %eax`,
+            )
+        } 
+        else if (helpers.variables.variableExists(aname)) {
             baseType = helpers.variables.getVariableType(aname)
+            debugPrint("EXISTSSS", aname, baseType)
             outputCode.autoPush(
                 `mov ${aname}, %eax`,
             )
@@ -178,8 +189,6 @@ var variables = {
             outputCode.autoPush(
                 `mov ${aname}, %eax`,
             )
-        } else if(helpers.types.isLiteral(aname)) {
-            throwE("Unimplemented")
         } else if(helpers.types.stringIsEsp(aname)) {
             outputCode.autoPush(
                 `mov %esp, %eax`,
@@ -459,7 +468,7 @@ var functions = {
                     tbuff.push(`pushl \$${x}`)
                 } else if(helpers.types.stringIsRegister(x))
                 {
-                    tbuff.push(`push ${x}`)
+                    tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
                 }
                 else {
 

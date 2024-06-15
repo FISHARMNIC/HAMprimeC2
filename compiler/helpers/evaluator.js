@@ -118,9 +118,9 @@ function evaluate(line) {
             }
 
             if (offsetWord(2) == '<-') {
-                return actions.variables.create(offsetWord(1), popTypeStack(true), offsetWord(3))
+                return actions.variables.create(offsetWord(1), helpers.types.guessType(offsetWord(3)), offsetWord(3))
             } else {
-                return actions.variables.create(offsetWord(1), popTypeStack(true), 0)
+                return actions.variables.create(offsetWord(1), helpers.types.guessType(offsetWord(3)), 0)
             }
         } else if (offsetWord(1) == "<-") { // variable setting
             if (getLastScopeType() == keywordTypes.FORMAT) { // just creating a property

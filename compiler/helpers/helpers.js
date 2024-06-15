@@ -123,6 +123,10 @@ var types = {
     getRegisterType: function (register) {
         if (register.includes("x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp")) {
             if (register.includes("%e")) {
+                var l = registers.registerStringToLetterIfIs(register)
+                {
+                    return registers.extendedTypes[l]
+                }
                 return defines.types.u32
             }
             return defines.types.u16
@@ -252,8 +256,28 @@ var registers = {
             's': 0,
             'i': 0,
         }
-
-
+    },
+    extendedTypes: {
+        'a': defines.types.u32,
+        'b': defines.types.u32,
+        'c': defines.types.u32,
+        'd': defines.types.u32,
+        's': defines.types.u32,
+        'i': defines.types.u32,
+        's': defines.types.u32,
+        'p': defines.types.u32,
+    },
+    resetExtendedTypes: function() {
+        this.extendedTypes = {
+            'a': defines.types.u32,
+            'b': defines.types.u32,
+            'c': defines.types.u32,
+            'd': defines.types.u32,
+            's': defines.types.u32,
+            'i': defines.types.u32,
+            's': defines.types.u32,
+            'p': defines.types.u32,
+        }
     },
     getFreeRegister: function (clobber = true) {
         var register = -1

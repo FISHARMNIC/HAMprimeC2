@@ -1,6 +1,8 @@
 /*
 TODO:
     - working on: see ex6
+    - working on "resetExtendedTypes" having registers have types if representing a pointer, like a string
+        - %edx looses the pointer type that it's owning, so things like arrays dont work if the string was stored in an array
     HIGH
         - Stallocs need to return ESP since ebp offsets cannot be preserved if in a loop
         - Make it so if the last thing was a loop or something iterable, use esp instead
@@ -65,6 +67,7 @@ inputCode = inputCode.map((line,lineNo) => {
 
     arrayClamp = defines.types.u32
     helpers.registers.clearClobbers()
+    helpers.registers.resetExtendedTypes()
     typeStack = []
 
     lsplit = nest.nest(lsplit);
