@@ -37,13 +37,12 @@ globalThis.prioritizeWord = require("./helpers/priority.js")
 globalThis.mainDir = __dirname
 
 // load input file and split into lines
-const INPUTFILE = "../test/ex6.x"
+const INPUTFILE = __dirname + "/../test/ex3.x"
 inputCode = String(fs.readFileSync(INPUTFILE));
 inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x);
 
 //console.log(helpers.registers)
 
-globalThis.globalLine;
 globalThis.previewNextLine = function()
 {
     return inputCode[globalLine + 1]
@@ -80,8 +79,13 @@ inputCode = inputCode.map((line,lineNo) => {
 
 helpers.variables.genTempLabels();
 
+var out = parser.parseFinalCode()
 
-fs.writeFileSync(__dirname + "/../compiled/out.s", parser.parseFinalCode().out)
+lineOwners["offset"] = out.index; // text section offset (must add to each key)
+lineOwners["file"] = INPUTFILE;
+
+fs.writeFileSync(__dirname + "/../compiled/out.s", out.out)
+fs.writeFileSync(__dirname + "/../compiled/debugInfo.json", JSON.stringify(lineOwners))
 
 //console.log(lineOwners)
 // the compiler goes LEFT TO RIGHT NOW

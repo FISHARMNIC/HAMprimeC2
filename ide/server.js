@@ -1,10 +1,10 @@
 var http = require('http');
 
-var finalhandler = require('finalhandler');
-var serveStatic = require('serve-static');
+var finalhandler = require('finalhandler')
+var serveStatic = require('serve-static')
 var handleCommand = require('./commands.js')
 
-var serve = serveStatic("website");
+var serve = serveStatic("website")
 
 var server = http.createServer(function (req, res) {
   var url = req.url.split("/")
@@ -20,8 +20,8 @@ var server = http.createServer(function (req, res) {
   } else {
     if(url[0] == "") req.url = "index.html"
     var done = finalhandler(req, res);
-    serve(req, res, done);
+    serve(req, res, done)
   }
-});
+})
 
-server.listen(8080);
+server.listen(8080)

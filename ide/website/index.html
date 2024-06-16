@@ -22,7 +22,8 @@
 
     <ul class="nav">
         <li><i title="compile" class="fa fa-check-circle navli" aria-hidden="true" style="font-size:30px;color:white;" onclick="comms.compile()"></i></li>
-        <li><i title="cpmpile and run" class="fa fa-arrow-circle-right navli" aria-hidden="true" style="font-size:30px;color:white;" onclick="comms.compileAndRun()"></i></li>
+        <li><i title="compile and run" class="fa fa-arrow-circle-right navli" aria-hidden="true" style="font-size:30px;color:white;" onclick="comms.compileAndRun()"></i></li>
+        <li><i title="compile and run" class="fa fa-bug navli" aria-hidden="true" style="font-size:30px;color:white;" onclick="comms.debug()"></i></li>
     </ul>
     <div class="container">
         <div class="container__left" style="width: 11%; overflow-y: scroll; height: 100%;border: 2px solid var(--env); border-top: none;" id="zone_files">Files</div>
@@ -64,7 +65,7 @@ entry function<p8 args, u32 argv> -> u32
                             <tr>
                                 <td valign="top">
                                     <div id="main">
-                                        <textarea style="height:50vh;width:100%" id="zone_terminal_ta"></textarea>
+                                        <textarea style="height:50vh;width:100%;font-size: 17px;" id="zone_terminal_ta"></textarea>
                                         </code>
                                     </div>
                                 </td>

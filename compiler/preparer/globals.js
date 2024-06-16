@@ -14,7 +14,7 @@ globalThis.userFunctions = {           // Object : {function name: {func name, p
         returnType: defines.types.u32
     },
 }
-globalThis.lineOwners = []
+globalThis.lineOwners = {}
 globalThis.userFormats = {}
 globalThis.stackVariables = [{}]
 globalThis.nextAllocIsPersistent = false;
@@ -29,7 +29,12 @@ globalThis.outputCode = { // object with out data
         else
             this.text.push(...arguments)
 
-        lineOwners.push([arguments,(new Error()).stack])
+        var outGoing = { line: globalLine, caller: (new Error()).stack } //caller: arguments.callee.caller.name || "*unkown caller*"}
+        if (lineOwners[this.text.length] == undefined) {
+            lineOwners[this.text.length] = [outGoing]
+        } else {
+            lineOwners[this.text.length].push(outGoing)
+        }
 
         debugPrint(outputCode.autoPush.caller.name, ...arguments)
     },
@@ -40,7 +45,7 @@ globalThis.outputCode = { // object with out data
 globalThis.typeStack = []
 globalThis.mostRecentIfStatement = [] 
 globalThis.arrayClamp = defines.types.u32
-
+globalThis.globalLine;
 
 
 
@@ -95,12 +100,12 @@ globalThis.objCopy = function (x) {
     return JSON.parse(JSON.stringify(x))
 }
 globalThis.throwE = function (x) {
-    console.log(`[ERROR] @ line ___: `, ...arguments)
+    console.log(`[ERROR] @ line ${globalLine}: `, ...arguments)
     console.trace()
     console.log("\n\n================== THIS WAS NOT A JS ERROR, THIS WAS THROWE ==================\n\n")
     process.exit(1)
 }
-globalThis.throwW = (x) => {console.log(`[WARNING] @ line ____: `, ...arguments); process.exit(0)};
+globalThis.throwW = (x) => {console.log(`[WARNING] @ line ${globalLine}: `, ...arguments); process.exit(0)};
 
 //taken from: https://stackoverflow.com/questions/65538406/convert-javascript-number-to-float-single-precision-ieee-754-and-receive-integ
 globalThis.doubleIEEE = function (double) {

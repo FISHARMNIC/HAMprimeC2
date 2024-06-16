@@ -6,14 +6,11 @@
 .data
 
 ######## user data section ########
-__STRING0__: .asciz "chicken"
-.comm __LABEL0__, 16, 4
-arrGlobal: .4byte 0
-__STRING1__: .asciz "blah"
-someString: .4byte 0
-__STRING2__: .asciz "%c %c\n"
-__STRING3__: .asciz "abcdefgh"
-__ALLOCFOR_entry__ = 0
+__STRING0__: .asciz "bob"
+.comm __LABEL0__, 5, 4
+bob: .4byte 0
+__STRING1__: .asciz "%i %i\n"
+__ALLOCFOR_entry__ = 8
 ###################################
 .text
 
@@ -23,16 +20,16 @@ __ALLOCFOR_entry__ = 0
 user_init:
 #### compiler initation section ###
 __init__:
-mov $__LABEL0__, %eax
-movl $1, 0(%eax)
-movl $2, 4(%eax)
-movl $9, 8(%eax)
-mov $__STRING0__, %edx
-mov %edx, 12(%eax)
+xor %eax, %eax
+mov $5, %eax
+add $10, %eax
 mov %eax, %ebx
-mov %ebx, arrGlobal
-mov $__STRING1__, %edx
-mov %edx, someString
+mov $__LABEL0__, %eax
+mov %eax, %ecx # Local allocation address for Person
+mov %bl, 0(%eax)
+mov $__STRING0__, %edx
+mov %edx, 1(%eax)
+mov %ecx, bob
 ret
 ###################################
 
@@ -46,25 +43,31 @@ entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-mov $__STRING3__, %eax
-mov 7(%eax), %bl
-mov arrGlobal, %eax
-mov 12(%eax), %ecx
-mov %ecx, %eax
-mov 12(%eax), %esi
-push %ebx
-push %ecx
-push %esi
+xor %eax, %eax
+mov $12, %eax
+add $34, %eax
+mov %eax, %ebx
+mov %ebx, -4(%ebp)
+xor %eax, %eax
+mov -4(%ebp), %eax
+add $4, %eax
+mov %eax, %ebx
+mov %ebx, -8(%ebp)
 # Calling function printf
-push %esi
-push %ebx
-pushl $__STRING2__
+mov -4(%ebp), %edx
+push %edx
+mov -8(%ebp), %edx
+push %edx
+pushl $__STRING1__
 call printf
-mov %eax, %edi
+mov %eax, %ebx
 add $12, %esp
-pop %ebx
-pop %ecx
-pop %esi
+mov $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
+mov %ebp, %esp
+pop %ebp
+ret
+# jon: 4
+# dad: 8
