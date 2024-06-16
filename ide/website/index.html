@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/boxes.css">
+    <link rel="stylesheet" href="css/nav.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
+    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/clike/clike.min.js"></script>
+    <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/gas/gas.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css"></link>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/idea.min.css"></link>
+
+</head>
+
+<body style="font-family: 'Courier New', monospace;">
+
+    <ul class="nav">
+        <li><i title="compile" class="fa fa-check-circle navli" aria-hidden="true" style="font-size:30px;color:white;" onclick="comms.compile()"></i></li>
+        <li><i title="cpmpile and run" class="fa fa-arrow-circle-right navli" aria-hidden="true" style="font-size:30px;color:white;" onclick="comms.compileAndRun()"></i></li>
+    </ul>
+    <div class="container">
+        <div class="container__left" style="width: 11%; overflow-y: scroll; height: 100%;border: 2px solid var(--env); border-top: none;" id="zone_files">Files</div>
+        <div class="resizer" data-direction="horizontal"></div>
+        <div class="container__right">
+            <div class="container">
+                <!-- #region CODE -->
+                <div id="zone_code" class="container__left" style="min-width: 70%; max-width:70%">
+                    <div style="display: grid; width: 100%;height: 100%;">
+                        <div style="grid-column: 1;grid-row: 1;" class="unselectable">
+                            <textarea id="highlight" name="code" class="unselectable"></textarea>   
+                        </div>
+                        <div style="grid-column: 1;grid-row: 1;">
+                            <textarea id="code" name="code">
+Person format {    
+    age <- u8;
+    name <- p8;
+}
+
+create bob <- Person<age:(5+10),name:"bob">;
+entry function<p8 args, u32 argv> -> u32
+{
+    create jon <- u8 (12 + 34);
+    create dad <- (jon + 4);
+    printf("%i %i",dad, jon);
+}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <!-- #endregion -->
+                <div class="resizer" data-direction="horizontal"></div>
+                <div class="container__right2">
+                    <div class="container__top" id="zone_terminal_correspondent" style="height: 50%; width: 100%;">
+                        <textarea id="assembly" name="code">jiojo</textarea>   
+                    </div>
+                    <div class="resizer" data-direction="vertical"></div>
+                    <div class="container__bottom" id="zone_terminal">
+                        <table style="height: 100%;border-collapse: collapse;">
+                            <tr>
+                                <td valign="top">
+                                    <div id="main">
+                                        <textarea style="height:50vh;width:100%" id="zone_terminal_ta"></textarea>
+                                        </code>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="bottom">
+                                    <div style="background: black;">
+                                        <input style="width:20vh;">
+                                        <button>send</button>
+                                        <button onclick="hide('terminal')">close</button>
+                                        <button onclick="clearTerm()">clear</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/views.js"></script>
+    <script src="js/showhide.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/comms.js"></script>
+    <script src="js/fileViewer.js"></script>
+</body>
+
+</html>
