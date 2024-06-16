@@ -51,7 +51,7 @@ mov 7(%eax), %bl
 mov arrGlobal, %eax
 mov 12(%eax), %ecx
 mov %ecx, %eax
-mov 16(%eax), %esi
+mov 12(%eax), %esi
 push %ebx
 push %ecx
 push %esi

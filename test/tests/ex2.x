@@ -26,4 +26,5 @@ entry function<> -> u32
     create dadsRoom <- Square<20, "red">;
     printf_mini(myRoom.volume(5), "My room cubic feet: %i (should be 500)\n");
     printf_mini(dadsRoom.length, "Dads room square feet: %i (should be 20)\n");
+    return
 }
