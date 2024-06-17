@@ -1,5 +1,6 @@
 /*
 TODO:
+    - only use esp in loop if allocating format otherwise it can be overwritten like normal var
     - working on: see ex6
     - working on "resetExtendedTypes" having registers have types if representing a pointer, like a string
         - %edx looses the pointer type that it's owning, so things like arrays dont work if the string was stored in an array
@@ -34,12 +35,14 @@ globalThis.evaluator = require('./helpers/evaluator.js')
 globalThis.mathEngine = require("./math/mathEngine.js");
 globalThis.floatEngine = require("./math/floatEngine.js");
 globalThis.prioritizeWord = require("./helpers/priority.js")
+
 globalThis.mainDir = __dirname
 
 // load input file and split into lines
 const INPUTFILE = __dirname + "/../test/ex3.x"
-inputCode = String(fs.readFileSync(INPUTFILE));
-inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x);
+globalThis.inputCode = String(fs.readFileSync(INPUTFILE))
+globalThis.inputCodeLikeTrue = inputCode.split("\n")
+inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x)
 
 //console.log(helpers.registers)
 

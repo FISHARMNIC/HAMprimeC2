@@ -4,11 +4,16 @@ function replace0s(line) {
     return line.replace(/[\u0000]/g, "\0")
 }
 
+function formatOutput(out)
+{
+    return JSON.stringify({data: out.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '').split("\n").filter(x => x)})
+}
+
 const { execSync } = require('child_process')
 function execute(command, stringify = true) {
-    var out = String(execSync(command)).replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '')
+    var out = String(execSync(command))
     if(stringify)  {
-        out = JSON.stringify({data: out.split("\n").filter(x => x)})
+        out = formatOutput(out)
     }
     return out
 }
@@ -17,7 +22,14 @@ module.exports = function (command) {
     if (command == "ls") {
         return execute(`ls -p ${__dirname}/../test`)
     } else if (command == "compile") {
-        return execute(`node ${__dirname}/../compiler/main.js`)
+        var out;
+        try {
+            out = execute(`node ${__dirname}/../compiler/main.js`)
+        }
+        catch(error) {
+            out = formatOutput(String(error.stdout))
+        }
+        return out
     } else if (command == "asm") {
         return String(fs.readFileSync(`${__dirname}/../compiled/out.s`))
     } else if (command == "assemble") {

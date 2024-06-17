@@ -6,10 +6,7 @@
 .data
 
 ######## user data section ########
-__STRING0__: .asciz "bob"
-.comm __LABEL0__, 5, 4
-bob: .4byte 0
-__STRING1__: .asciz "%i %i\n"
+__STRING0__: .asciz "%i %i\n"
 __ALLOCFOR_entry__ = 8
 ###################################
 .text
@@ -20,16 +17,7 @@ __ALLOCFOR_entry__ = 8
 user_init:
 #### compiler initation section ###
 __init__:
-xor %eax, %eax
-mov $5, %eax
-add $10, %eax
-mov %eax, %ebx
-mov $__LABEL0__, %eax
-mov %eax, %ecx # Local allocation address for Person
-mov %bl, 0(%eax)
-mov $__STRING0__, %edx
-mov %edx, 1(%eax)
-mov %ecx, bob
+
 ret
 ###################################
 
@@ -45,7 +33,7 @@ mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 xor %eax, %eax
 mov $12, %eax
-add $34, %eax
+add 34, %eax
 mov %eax, %ebx
 mov %ebx, -4(%ebp)
 xor %eax, %eax
@@ -58,7 +46,7 @@ mov -4(%ebp), %edx
 push %edx
 mov -8(%ebp), %edx
 push %edx
-pushl $__STRING1__
+pushl $__STRING0__
 call printf
 mov %eax, %ebx
 add $12, %esp

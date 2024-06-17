@@ -50,7 +50,7 @@ button.fs:hover {
 
 textarea {
     white-space: pre;
-    overflow-wrap:normal;
+    overflow-wrap: normal;
     overflow: scroll;
     width: 100vh;
     resize: none;
@@ -60,8 +60,9 @@ textarea {
     scrollbar-width: none;
 }
 
-textarea::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
+textarea::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
 }
 
 .unselectable {
@@ -71,6 +72,8 @@ textarea::-webkit-scrollbar {
     -moz-user-select: none !important;
     -ms-user-select: none !important;
     user-select: none !important;
+    overflow: hidden !important;
+    scrollbar-width: none !important;
 }
 
 .CodeMirror {
@@ -85,7 +88,7 @@ textarea::-webkit-scrollbar {
 }
 
 .highlight_yellow {
-    background-color: rgb(255, 245, 160)
+    background-color: rgb(255, 245, 160);
 }
 
 .fa:hover {
@@ -96,4 +99,30 @@ textarea::-webkit-scrollbar {
 .fa {
     transition: transform .5s;
     transform: scale(1)
+}
+
+
+button.term {
+    background-color: #c2c2c2;
+    border: none;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    padding: 4px;
+    margin: 0px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 10px;
+    width: 11%;
+}
+
+button.term:hover {
+    background-color: #dedede;
+}
+
+div.term {
+    background: var(--env);
+    align-items: center;
+    text-align: center;
+    border-radius: 5px;
 }

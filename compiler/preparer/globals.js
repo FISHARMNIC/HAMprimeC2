@@ -93,6 +93,22 @@ globalThis.getAllStackVariables = function()
     return obj
 }
 
+globalThis.getTrueLine = function(execFileLikeTrue, line) {
+    var lookAtFile = 0;
+    var lookAtSpliced = 0;
+    while(line != lookAtSpliced)
+    {
+        //console.log(execFileLikeTrue[lookAtFile].split("").filter(x => x != " " && x != "\t").slice(0,2).join(""))
+        if(execFileLikeTrue[lookAtFile] != "" && execFileLikeTrue[lookAtFile].split("").filter(x => x != " " && x != "\t").slice(0,2).join("") != "//")
+        {
+            lookAtSpliced++;
+        }
+        lookAtFile++;
+    }
+    //gave up
+    return lookAtFile + ((execFileLikeTrue[lookAtFile - 1] != "" && execFileLikeTrue[lookAtFile - 1].split("").filter(x => x != " " && x != "\t").slice(0,2).join("") != "//") ? -1 : 0);
+}
+
 globalThis.debugPrint = function () {
     console.log("\033[92m[DEBUG]\033[0m", ("\033[96m" + (debugPrint.caller.name || "*unkown caller*") + "\033[0m").padEnd(32), ...arguments);
 }
@@ -102,8 +118,9 @@ globalThis.objCopy = function (x) {
 globalThis.throwE = function (x) {
     console.log(`[ERROR] @ line ${globalLine}: `, ...arguments)
     console.trace()
-    console.log("\n\n================== THIS WAS NOT A JS ERROR, THIS WAS THROWE ==================\n\n")
-    process.exit(1)
+    console.log("\n\n================== THIS WAS THROWE ==================\n\n")
+    console.log(getTrueLine(inputCodeLikeTrue, globalLine))
+    process.exit(126)
 }
 globalThis.throwW = (x) => {console.log(`[WARNING] @ line ${globalLine}: `, ...arguments); process.exit(0)};
 
