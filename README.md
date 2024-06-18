@@ -14,6 +14,7 @@ This is a the second compiler that I have developed for HAM prime. So far it lac
 
 ### New IDE
 <img width="1249" alt="Screen Shot 2024-06-17 at 12 21 11 PM" src="https://github.com/FISHARMNIC/HAMprimeC2/assets/73864341/4434942e-023f-4092-8913-dfc529c500a7">
+
 ### Whats working
 * Variables
 * Arrays
