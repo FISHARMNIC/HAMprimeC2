@@ -6,7 +6,7 @@ files.forEach(x => {
     // major security bug right here
     var isFolder = x[x.length - 1] == "/"
     fileZoneOut.push(
-        `<li><button class="fs" onclick="comms.${isFolder? "loadFolder" : "loadFile"}('${x}')"><i class="fa ${isFolder? "fa-folder-o" : "fa-file-code-o"}" aria-hidden="true" style="align: left;"></i><span>&nbsp;&nbsp;${x}</span></button></li>`)
+        `<li><button class="fs" onclick="comms.${isFolder? "loadFolder" : "loadFile"}('${x}')"><i class="far ${isFolder? "fa-folder" : "fa-file-code"}" aria-hidden="true" style="align: left;"></i><span>&nbsp;&nbsp;${x}</span></button></li>`)
 })
 fileZoneOut.push(`</ul>`)
 

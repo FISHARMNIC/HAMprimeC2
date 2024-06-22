@@ -84,7 +84,7 @@ var variables = {
             if (objectIncludes(getAllStackVariables(), vname)) {
                 throwE(`Variable "${vname}" already defined`)
             }
-            var off = allocations.allocateStack(helpers.types.typeToBytes(type)) // store in stack
+            var off = allocations.allocateStack(helpers.types.typeToBytes(type), true) // store in stack
             //throwE(value, off)
             assembly.optimizeMove(value, off, type, type)
             createStackVariableListOnly(vname, newStackVar(type))
@@ -260,8 +260,8 @@ var variables = {
 }
 
 var allocations = {
-    allocateStack: function (bytes) {
-        if (helpers.general.scopeHasIterable()) {
+    allocateStack: function (bytes, forceEbp = false) {
+        if (helpers.general.scopeHasIterable() && !forceEbp) {
         
             debugPrint("ALLOCING - DR", bytes, currentStackOffset)
             outputCode.autoPush(
@@ -301,7 +301,7 @@ var allocations = {
         outputCode.autoPush(`mov \$${lbl}, %eax`)
         return "%eax"
     },
-    allocateAuto: function (bytes) {
+    allocateAuto: function (bytes, forceEbpIfStack = false) {
         if (bytes >= 4096 || currentStackOffset > 1e6 || nextAllocIsPersistent || scope.length == 0) {
             if(scope.length == 0)
             {
@@ -311,7 +311,7 @@ var allocations = {
             return this.allocateMmap(bytes)
             }
         } else {
-            return this.allocateStack(bytes)
+            return this.allocateStack(bytes, forceEbpIfStack)
         }
     },
     newStringLiteral: function (value) {
@@ -408,7 +408,7 @@ var functions = {
     },
     closeFunction: function (sc, st, asRet = false, rVal = null) {
         var d = sc.data
-        debugPrint("SC", scope)
+        debugPrint("SC", scope, rVal)
         if (rVal != null) {
             assembly.setRegister(rVal, "a", d.returnType)
         }
@@ -573,8 +573,9 @@ var formats = {
             var allocLbl = allocations.allocateAuto(userFormats[fname].size)
             //var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
 
-            if (helpers.types.stringIsEbpOffset(allocLbl)) // local
+            if (helpers.types.stringIsEbpOffset(allocLbl)) // local. Intheory this will never happen?
             {
+                throwE("Compiler shouldn't be here")
                 //throwE(allocLbl, parr)
                 var allocOffset = parseInt(helpers.types.getOffsetFromEbpOffsetString(allocLbl))
                 var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32) // what it's saved in

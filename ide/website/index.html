@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="css/boxes.css">
     <link rel="stylesheet" href="css/nav.css">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
     <script language="javascript" type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
     <script language="javascript" type="text/javascript"
@@ -37,9 +38,9 @@
                     style="font-size:30px;color:white;" onclick="comms.debug()"></i></li>
         </div>
     </ul>
-    <div class="container">
+    <div class="container" >
         <div class="container__left"
-            style="width: 11%; overflow-y: scroll; height: 100%;border: 2px solid var(--env); border-top: none;"
+            style="width: 11%; overflow-y: scroll; height: 100%;border: 2px solid var(--env); border-top: none; background-color: #c2c2c2;"
             id="zone_files">Files</div>
         <div class="resizer" data-direction="horizontal"></div>
         <div class="container__right">
@@ -55,9 +56,13 @@
                         </div>
                     </div>
                 </div>
+                <div class="undoredo">
+                    <i title="compile and run" class="fa fa-undo" aria-hidden="true" style="font-size:20px;color:white;" onclick="editor.undo()"></i></li>
+                    <i title="compile and run" class="fas fa-redo" aria-hidden="true" style="font-size:20px;color:white;" onclick="editor.redo()"></i></li>
+                </div>
                 <!-- #endregion -->
                 <div class="resizer" data-direction="horizontal"></div>
-                <div class="container__right2">
+                <div class="container__right2" style="border-bottom: 2px solid var(--env); border-right: 2px solid var(--env);">
                     <div class="container__top" id="zone_terminal_correspondent" style="height: 50%; width: 100%;">
                         <textarea id="assembly" name="code"></textarea>
                     </div>

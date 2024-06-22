@@ -8,6 +8,7 @@ ul.nav {
     padding: 0;
     overflow: hidden;
     background-color: var(--env);
+    width: 100.27%;
 }
 
 .navli {
@@ -91,12 +92,13 @@ textarea::-webkit-scrollbar {
     background-color: rgb(255, 245, 160);
 }
 
-.fa:hover {
+.fa:hover, .fas:hover {
     transition: transform .5s;
-    transform: scale(1.1)
+    transform: scale(1.1);
+    cursor: pointer;
 }
 
-.fa {
+.fa, .fas {
     transition: transform .5s;
     transform: scale(1)
 }
@@ -124,5 +126,20 @@ div.term {
     background: var(--env);
     align-items: center;
     text-align: center;
+    border-radius: 5px;
+}
+
+div.undoredo {
+
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: var(--env);
+    position: absolute; top: 75px; left: 67.5%;
+    align-items: center;
+    padding: 6px;
+    padding-bottom: 3.5px;
+    background-color: var(--env);
     border-radius: 5px;
 }

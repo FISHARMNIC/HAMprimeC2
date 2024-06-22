@@ -25,17 +25,16 @@ function evaluate(line) {
         } else if (objectIncludes(defines.types, word)) { // types
             if (offsetWord(1) == "(") {
                 throwE("CAST TODO")
-            } else if(offsetWord(1) == "{")
-            {
+            } else if (offsetWord(1) == "{") {
                 arrayClamp = defines.types[word]
                 line.splice(wordNum, 1)
                 wordNum--;
-            } else if(offsetWord(1) == "<" && objectIncludes(userFormats, word))
+            } else if (offsetWord(1) == "<" && objectIncludes(userFormats, word)) // classes
             {
-                    var dataLbl = actions.formats.parseParams(word, offsetWord(2))
-                    line[wordNum] = dataLbl
-                    
-                    line.splice(wordNum + 1, 3)
+                var dataLbl = actions.formats.parseParams(word, offsetWord(2))
+                line[wordNum] = dataLbl
+
+                line.splice(wordNum + 1, 3)
             } else {
                 typeStack.push(objCopy(defines.types[word]))
                 line.splice(wordNum, 1)
@@ -74,24 +73,28 @@ function evaluate(line) {
                 index = [index]
             }
 
-            if (vname == "__arguments") {
-                var index = index[0]
-
-                var out = actions.functions.readArgument(index)
-                line[wordNum - 1] = out
-                line.splice(wordNum, 3)
-                wordNum--
-                //throwE(line, wordNum)
-
+            if (offsetWord(3) == "<-") {
+                throwE("WIP array set")
             } else {
-                if (index.length != 1) {
-                    throwE("Multi-dimensional arrays not implemented")
-                } else {
-                    index = index[0]
-                    var out = actions.variables.readArray(vname, index)
+                if (vname == "__arguments") {
+                    var index = index[0]
+
+                    var out = actions.functions.readArgument(index)
                     line[wordNum - 1] = out
                     line.splice(wordNum, 3)
                     wordNum--
+                    //throwE(line, wordNum)
+
+                } else {
+                    if (index.length != 1) {
+                        throwE("Multi-dimensional arrays not implemented")
+                    } else {
+                        index = index[0]
+                        var out = actions.variables.readArray(vname, index)
+                        line[wordNum - 1] = out
+                        line.splice(wordNum, 3)
+                        wordNum--
+                    }
                 }
             }
             //else if (objectIncludes(getAllStackVariables(), vname)) { // local
@@ -132,7 +135,7 @@ function evaluate(line) {
                 typeStack.push(defines.types.u32)
                 return actions.variables.set(word, offsetWord(2))
             }
-        } else if (word[0] == '"' && word[word.length - 1] == '"') {
+        } else if (word[0] == '"' && word[word.length - 1] == '"') { // string literal
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
         } else if (objectIncludes(getAllStackVariables(), word)) // get stack var
         {
@@ -223,6 +226,7 @@ function evaluate(line) {
                 }
             } else if (word == "persistent") {
                 nextAllocIsPersistent = true;
+                line.splice(wordNum--, 1)
             } else if (word == "function") {
                 var fname = offsetWord(-1)
                 var params = offsetWord(2)
@@ -261,8 +265,11 @@ function evaluate(line) {
                 debugPrint("closer", line, scope)
 
                 var wrd = offsetWord(1)
-                if (offsetWord(1) == "(")
+                if (offsetWord(1) == "(") {
                     wrd = offsetWord(2)
+                } else {
+                    wrd = evaluate([wrd])[0]
+                }
 
                 actions.functions.closeFunction(helpers.general.getMostRecentFunction(), oldStack, true, wrd)
             }
