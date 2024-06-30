@@ -15,6 +15,9 @@ genArrs function<> -> p32
 
 entry function<> -> p32
 {
+    // todo: "own"
     create result <- own genArrs();
     printf("%i", result[1]);
+    disown result;  // removes ownership
+    discard result; // frees area
 }

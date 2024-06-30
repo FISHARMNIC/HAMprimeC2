@@ -6,6 +6,7 @@ TODO:
         - uses Memory Ownership Table for automatic freeing
         - "__disable ownership" to turn this off
     - working on: see ex6
+    - add bignums (only supported using zmm registers)
     HIGH
     - fix most register formater functions to acknowledge ebp as register 'p'
     - if there isnt any math on the line, free up more, otherwise pre-clobber certain registers
@@ -45,7 +46,7 @@ globalThis.prioritizeWord = require("./helpers/priority.js")
 globalThis.mainDir = __dirname
 
 // load input file and split into lines
-const INPUTFILE = __dirname + "/../test/ex1.x"
+const INPUTFILE = __dirname + "/../test/working/pthread.x"
 globalThis.inputCode = String(fs.readFileSync(INPUTFILE))
 globalThis.inputCodeLikeTrue = inputCode.split("\n")
 inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x)

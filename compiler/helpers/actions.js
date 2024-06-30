@@ -462,7 +462,7 @@ var functions = {
                 }
 
                 if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && !objectCompare(expectedType, givenType))) || (!variadic && !objectCompare(expectedType, givenType))))
-                    throwE(`Argument '${x}' does not match expected type ${expectedType}`)
+                    throwE(`Argument '${x}' does not match expected type ${JSON.stringify(expectedType)}`)
 
                 if (helpers.types.isConstOrLit(x)) {
                     tbuff.push(`pushl \$${x}`)

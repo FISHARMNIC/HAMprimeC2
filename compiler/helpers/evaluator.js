@@ -248,7 +248,7 @@ function evaluate(line) {
                 }
                 userFunctions[fname] = data
 
-                if (offsetWord(-2) != "foward") {
+                if (offsetWord(-2) != "forward") {
                     requestBracket = {
                         type: keywordTypes.FUNCTION,
                         data

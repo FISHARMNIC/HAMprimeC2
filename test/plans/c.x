@@ -10,7 +10,7 @@ int my_C_function(int a, char* b)
 @end
 
 // Declare prototype for the function declared in C
-prototype my_C_function function<u32 a, p8 b>;
+forward my_C_function function<u32 a, p8 b>;
 
 entry function<p8 args, u32 argv> -> u32
 {

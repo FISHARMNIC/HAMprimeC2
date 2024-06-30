@@ -20,7 +20,7 @@ function execute(command, stringify = true) {
 
 module.exports = function (command) {
     if (command == "ls") {
-        return execute(`ls -p ${__dirname}/../test`)
+        return execute(`ls -p ${__dirname}/../test/working`)
     } else if (command == "compile") {
         var out;
         try {
@@ -58,7 +58,7 @@ module.exports = function (command) {
 
         console.log(command, sub)
         if (command == "read") {
-            return String(fs.readFileSync(`${__dirname}/../test/${sub}`))
+            return String(fs.readFileSync(`${__dirname}/../test/working/${sub}`))
         }
     }
 }

@@ -6,9 +6,10 @@
 .data
 
 ######## user data section ########
-__ALLOCFOR_genArrs__ = 8
-__STRING0__: .asciz "%i"
-__ALLOCFOR_entry__ = 4
+__STRING0__: .asciz "hello from thread\n"
+__ALLOCFOR_thread__ = 4
+__STRING1__: .asciz "hello from main\n"
+__ALLOCFOR_entry__ = 8
 ###################################
 .text
 
@@ -28,31 +29,31 @@ main:
     ret
 
 ###################################
-genArrs:
+thread:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_genArrs__, %esp
+sub $__ALLOCFOR_thread__, %esp
 mov $0, %edx
 mov %edx, -4(%ebp)
-pushl $12
-call __allocate__
-add $4, %esp
-movl $0, 0(%eax)
-movl $0, 4(%eax)
-movl $0, 8(%eax)
-mov %eax, %ebx
-mov %ebx, -8(%ebp)
 __LABEL0__:
 mov -4(%ebp), %eax
 movb $0, %bl
-cmp $3, %eax
+cmp $10, %eax
 setl %bl
 cmpb $1, %bl
 jne __LABEL1__
-mov -8(%ebp), %eax
-mov -4(%ebp), %edx
-mov %edx, %edx
-mov (%eax, %edx, 4), %ebx
+# Calling function write
+pushl $18
+pushl $__STRING0__
+pushl $1
+call write
+mov %eax, %ebx
+add $12, %esp
+# Calling function sleep
+pushl $1
+call sleep
+mov %eax, %ebx
+add $4, %esp
 xor %eax, %eax
 mov -4(%ebp), %eax
 add $1, %eax
@@ -60,7 +61,7 @@ mov %eax, %ebx
 mov %ebx, -4(%ebp)
 jmp __LABEL0__
 __LABEL1__:
-mov -8(%ebp), %eax
+mov $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
@@ -68,26 +69,64 @@ mov %ebp, %esp
 pop %ebp
 ret
 # i: 4
-# rarr: 8
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-# Calling function genArrs
-call genArrs
+pushl $4
+call __allocate__
+add $4, %esp
+movl $0, 0(%eax)
 mov %eax, %ebx
 mov %ebx, -4(%ebp)
-mov -4(%ebp), %eax
-mov 4(%eax), %ebx
-push %ebx
-# Calling function printf
-push %ebx
-pushl $__STRING0__
-call printf
-mov %eax, %ecx
-add $8, %esp
-pop %ebx
+# Calling function pthread_create
+pushl $0
+pushl $thread
+pushl $0
+mov -4(%ebp), %edx
+push %edx
+call pthread_create
+mov %eax, %ebx
+add $16, %esp
+mov $0, %edx
+mov %edx, -8(%ebp)
+__LABEL2__:
+mov -8(%ebp), %eax
+movb $0, %bl
+cmp $10, %eax
+setl %bl
+cmpb $1, %bl
+jne __LABEL3__
+# Calling function write
+pushl $16
+pushl $__STRING1__
+pushl $1
+call write
+mov %eax, %ebx
+add $12, %esp
+# Calling function sleep
+pushl $1
+call sleep
+mov %eax, %ebx
+add $4, %esp
+xor %eax, %eax
+mov -8(%ebp), %eax
+add $1, %eax
+mov %eax, %ebx
+mov %ebx, -8(%ebp)
+jmp __LABEL2__
+__LABEL3__:
+# Calling function pthread_exit
+pushl $0
+call pthread_exit
+mov %eax, %ebx
+add $4, %esp
+mov $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# result: 4
+mov %ebp, %esp
+pop %ebp
+ret
+# a: 4
+# i: 8

@@ -42,7 +42,7 @@ var types = {
         return x
     },
     isConstOrLit: function (x) {
-        return (x.substring(0, 8) == "__STRING" || this.isConstant(x))
+        return (x.substring(0, 8) == "__STRING" || this.isConstant(x) || objectIncludes(userFunctions, x))
     },
     formatIfConstOrLit: function (x) {
         if (this.isConstOrLit(x)) {
