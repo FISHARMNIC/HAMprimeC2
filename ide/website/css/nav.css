@@ -135,11 +135,25 @@ div.undoredo {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: var(--env);
     position: absolute; top: 75px; left: 67.5%;
     align-items: center;
     padding: 6px;
     padding-bottom: 3.5px;
     background-color: var(--env);
     border-radius: 5px;
+}
+
+div.saveIcon {
+
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: absolute; top: 68.5px; left: 65%;
+    align-items: center;
+    color: blue;
+    /* font-style: blue; */
+    font-size: 30px;
+    padding: 6.5px;
+    padding-bottom: 3.0px;
 }

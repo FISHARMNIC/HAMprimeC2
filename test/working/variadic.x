@@ -11,4 +11,5 @@ myVariadic function<u32 numberOfArgs, ...> -> u32
 entry function<> -> u32
 {
     myVariadic(2, "hi", "bye");
+    return 0;
 }

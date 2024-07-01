@@ -2,8 +2,7 @@ var assembly = {
     setRegister: function (value, register, type, low = true) {
         debugPrint("setting", register, value, type)
         var r = helpers.types.formatRegister(register, type, low)
-        if(helpers.types.typeToBits(type))
-        {
+        if (helpers.types.typeToBits(type)) {
             helpers.registers.extendedTypes[register] = type
         }
         outputCode.autoPush(`mov ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
@@ -154,17 +153,17 @@ var variables = {
             EBP: 3,
             ESP: 4
         }
-        
+
         var baseType = -1;
         var status = stypes.GLOB
 
         // yes bad code that I was doing something else with but changed it
-        if(helpers.types.isLiteral(aname)) {
+        if (helpers.types.isLiteral(aname)) {
             baseType = defines.types.u8
             outputCode.autoPush(
                 `mov \$${aname}, %eax`,
             )
-        } 
+        }
         else if (helpers.variables.variableExists(aname)) {
             baseType = helpers.variables.getVariableType(aname)
             debugPrint("EXISTSSS", aname, baseType)
@@ -172,42 +171,41 @@ var variables = {
                 `mov ${aname}, %eax`,
             )
             if (helpers.types.stringIsEbpOffset(aname)) {
-                status = stypes.LOC 
+                status = stypes.LOC
             } else {
                 status = stypes.GLOB
             }
         } else if (helpers.variables.checkIfParameter(aname)) {
-                // status = stypes.PAR
-                // baseType = helpers.functions.getParameterType(aname)
-                // outputCode.autoPush(
-                //     `mov %ebp, %eax`,
-                //     `mov ${(helpers.functions.getParameterOffset(aname) + 8) + "(%ebp)"}, %eax`
-                // )
-                throwE("shouldn't get here....")
-        } else if(helpers.types.stringIsEbpOffset(aname)) {
+            // status = stypes.PAR
+            // baseType = helpers.functions.getParameterType(aname)
+            // outputCode.autoPush(
+            //     `mov %ebp, %eax`,
+            //     `mov ${(helpers.functions.getParameterOffset(aname) + 8) + "(%ebp)"}, %eax`
+            // )
+            throwE("shouldn't get here....")
+        } else if (helpers.types.stringIsEbpOffset(aname)) {
             baseType = helpers.types.getVariableFromEbpOffsetString(aname).type
             outputCode.autoPush(
                 `mov ${aname}, %eax`,
             )
-        } else if(helpers.types.stringIsEsp(aname)) {
+        } else if (helpers.types.stringIsEsp(aname)) {
             outputCode.autoPush(
                 `mov %esp, %eax`,
             )
         }
-        else if(helpers.types.stringIsRegister(aname)) {
+        else if (helpers.types.stringIsRegister(aname)) {
             baseType = helpers.types.getRegisterType(aname)
             outputCode.autoPush(
                 `mov ${aname}, %eax`,
             )
         }
         else {
-                throwE(`Cannot access array "${aname}"`)
+            throwE(`Cannot access array "${aname}"`)
         }
-        if(baseType == -1)
-        {
+        if (baseType == -1) {
             throwE("Compiler error, never set 'baseType' variable")
         }
-        
+
         var indexMultiplier = baseType.size / 8
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
         var ogout = out
@@ -256,13 +254,33 @@ var variables = {
             return ogout
         }
         return out
+    },
+    readAddress: function (name) {
+        var reg = helpers.registers.getFreeLabelOrRegister(defines.types.p32)
+        if (helpers.variables.checkIfOnStack(name)) { // if local
+            var addr = helpers.variables.getStackVarOffset(name)
+            outputCode.text.push(
+                `mov %esp, ${reg}`,
+                `sub \$${addr}, ${reg}`
+            )
+        } else if (helpers.types.stringIsEbpOffset(name)) {
+            var off = helpers.types.getOffsetFromEbpOffsetString(name)
+            throwE("unfinished")
+        } else if (helpers.variables.checkIfParameter(name)) {
+            throwE("unfinished")
+        } else {
+            outputCode.text.push(
+                `mov \$${name}, ${reg}`
+            )
+        }
+        return reg
     }
 }
 
 var allocations = {
     allocateStack: function (bytes, forceEbp = false) {
         if (helpers.general.scopeHasIterable() && !forceEbp) {
-        
+
             debugPrint("ALLOCING - DR", bytes, currentStackOffset)
             outputCode.autoPush(
                 `sub \$${bytes}, %esp`,
@@ -303,12 +321,11 @@ var allocations = {
     },
     allocateAuto: function (bytes, forceEbpIfStack = false) {
         if (bytes >= 4096 || currentStackOffset > 1e6 || nextAllocIsPersistent || scope.length == 0) {
-            if(scope.length == 0)
-            {
+            if (scope.length == 0) {
                 return this.allocateData(bytes)
             } else {
-            nextAllocIsPersistent = false;
-            return this.allocateMmap(bytes)
+                nextAllocIsPersistent = false;
+                return this.allocateMmap(bytes)
             }
         } else {
             return this.allocateStack(bytes, forceEbpIfStack)
@@ -344,19 +361,19 @@ var allocations = {
                 if (x == ",") {
                     throwE(`Did not expect comma in array allocation: [${arr.join(",")}]`)
                 }
-                if(globalAlloc){
+                if (globalAlloc) {
                     assembly.optimizeMove(x, `${i * 2}(${allocLbl})`, helpers.types.guessType(x), defines.types.u32)
                 } else {
                     //throwE(ebpOff)
                     assembly.optimizeMove(x, `-${ebpOff - (i * 2)}(%ebp)`, helpers.types.guessType(x), defines.types.u32)
                 }
-                
+
             }
             onComma = !onComma
         })
 
         var out = helpers.registers.getFreeLabelOrRegister(defines.types.p32)
-        if(globalAlloc){
+        if (globalAlloc) {
             outputCode.autoPush(
                 `mov ${allocLbl}, ${out}`
             )
@@ -410,7 +427,7 @@ var functions = {
         var d = sc.data
         debugPrint("SC", scope, rVal)
         if (rVal != null) {
-            assembly.setRegister(rVal, "a", d.returnType)
+            assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
         outputCode.text.push(
@@ -443,7 +460,7 @@ var functions = {
         assembly.pushClobbers()
 
         outputCode.comment(`Calling function ${fname}`)
-
+ 
         var ind = 0;
         args.forEach((x) => {
             if (onCom) {
@@ -466,8 +483,7 @@ var functions = {
 
                 if (helpers.types.isConstOrLit(x)) {
                     tbuff.push(`pushl \$${x}`)
-                } else if(helpers.types.stringIsRegister(x))
-                {
+                } else if (helpers.types.stringIsRegister(x)) {
                     tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
                 }
                 else {
@@ -498,7 +514,9 @@ var functions = {
 
         outputCode.autoPush(...tbuff.reverse().flat())
         var rt = userFunctions[fname].returnType
+        // TODO HERE BROKEN : writing "true" instead breaks it. No idea
         var out = helpers.registers.getFreeLabelOrRegister(rt, false)
+        //throwE(out, helpers.types.guessType("%ebx"))
 
         outputCode.autoPush(
             `call ${fname}`,

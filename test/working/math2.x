@@ -12,4 +12,6 @@ entry function<p8 args, u32 argv> -> u32
         printf("%i\n", (x * x));
         x <- (x + 1);
     }
+    
+    return 0;
 }

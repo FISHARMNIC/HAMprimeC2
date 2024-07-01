@@ -1,4 +1,6 @@
 var site = window.location.origin
+var currentOpenFile;
+var fileIsSaved = false
 
 function getTerminal() {
     return document.getElementById("zone_terminal_ta")
@@ -10,19 +12,39 @@ function clearTerm() {
 
 function get(command) {
     const xhr = new XMLHttpRequest()
-    xhr.open('GET', site + "/get/" + command, false)
-    xhr.send(null)
+    try {
+        xhr.open('GET', site + "/get/" + command, false)
+        xhr.send(null)
+    } catch (error) {
+        window.alert("Server Crashed")
+    }
     if (xhr.status != 200) {
-        throw new Error('Fail' + xhr.statusText)
+        window.alert("Server failed to process request")
         return 0
     }
     return xhr.responseText
 }
 
+function send(string) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", site, false);
+
+    // Send the proper header information along with the request
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = () => {
+        // Call a function when the state changes.
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            // Request finished. Do processing here.
+        }
+    };
+    xhr.send(string);
+}
+
 var comms = {
     compile: function () {
         show("terminal")
-        var out = JSON.parse(get("compile")).data
+        var out = JSON.parse(get("compile/" + currentOpenFile)).data
         if (out[out.length - 2] == "================== THIS WAS THROWE ==================") {
             console.log("F")
             document.getElementById("zone_terminal_ta").value = out.join("\n")
@@ -51,11 +73,31 @@ var comms = {
     },
     loadFile: function (file) {
         var out = get(`read/${file}`)
+        currentOpenFile = file
         editor.setValue(out)
+        document.getElementById("saveIcon").hidden = true
+    },
+    saveFile: function () {
+        var textContent = editor.doc.getValue()
+        console.log(textContent)
+        send(JSON.stringify({ textContent, currentOpenFile }))
+        document.getElementById("saveIcon").hidden = true
+    },
+    createFile: function(name) {
+        get(`createFile/${name}`)
+        renderFiles()
     },
     compileAndRun: function () {
-        this.compile()
-        this.runCompiled()
+        // https://stackoverflow.com/questions/6921895/synchronous-delay-in-code-execution 
+        const wait = (msec) => new Promise((resolve, _) => {
+            setTimeout(resolve, msec);
+        });
+
+        (async () => {
+             this.compile()
+            await wait(100);
+             this.runCompiled();
+        })();
     },
     debug: function (file) {
         var _out = this.getOutput()
@@ -80,4 +122,4 @@ var comms = {
     }
 }
 
-comms.loadFile("ex3.x")
+comms.loadFile("recursion.x")

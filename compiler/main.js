@@ -8,6 +8,7 @@ TODO:
     - working on: see ex6
     - add bignums (only supported using zmm registers)
     HIGH
+    - IDE editing: \n becomes \\n. tab = \t. Stuff like that
     - fix most register formater functions to acknowledge ebp as register 'p'
     - if there isnt any math on the line, free up more, otherwise pre-clobber certain registers
     - do like "(123,555) &&== bob" is like an and
@@ -46,7 +47,9 @@ globalThis.prioritizeWord = require("./helpers/priority.js")
 globalThis.mainDir = __dirname
 
 // load input file and split into lines
-const INPUTFILE = __dirname + "/../test/working/pthread.x"
+
+var INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
+
 globalThis.inputCode = String(fs.readFileSync(INPUTFILE))
 globalThis.inputCodeLikeTrue = inputCode.split("\n")
 inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x)

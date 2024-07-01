@@ -10,4 +10,6 @@ entry function<> -> p32
 {
     create result <- genArrs();
     printf("%i", result[1]);
+    
+    return 0;
 }

@@ -64,12 +64,7 @@ function highlightErr(view, line, msg = null) {
 }
 
 function eoc() {
-    // const text = editor.doc.getValue()
-    // //highlighter.setValue(text)
-    // var from = {line: 0, ch: 0}
-    // var to = {line:10, ch: 10}
-
-    // highlightErr(0, "hello")
+    document.getElementById("saveIcon").hidden = false
 }
 
 editor.on('change', eoc)

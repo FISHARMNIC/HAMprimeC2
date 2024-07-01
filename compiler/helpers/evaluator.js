@@ -144,6 +144,9 @@ function evaluate(line) {
         } else if (helpers.variables.checkIfParameter(word)) {   // is param
             //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
             line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
+        } else if(word == "$") {
+            line[wordNum] = actions.variables.readAddress(offsetWord(1))
+            line.splice(wordNum + 1, 1)
         }
         // #endregion
         // #region Brackets
@@ -235,9 +238,13 @@ function evaluate(line) {
                 var params_obj = actions.functions.createParams(params)
                 var returnType = objCopy(defines.types.u32)
 
-                if (offsetWord(3) == "->") {
-                    returnType = typeStack[typeStack.length - 1]
+
+                if (offsetWord(4) == "->") {
+
+                    returnType = defines.types[offsetWord(5)]
                 }
+
+               // throwE(line, offsetWord(3), offsetWord(4))
 
                 var data = {
                     name: fname,

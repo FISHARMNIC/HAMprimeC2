@@ -279,14 +279,19 @@ var registers = {
             'p': defines.types.u32,
         }
     },
-    getFreeRegister: function (clobber = true) {
+    setExtendedType: function(register, type) {
+        this.extendedTypes[register] = objCopy(type)
+    },
+    getFreeRegister: function (type, clobber = true) {
         var register = -1
         Object.entries(this.inLineClobbers).every((x, i) => {
             if (x[1] == 0) {
                 register = x[0]
                 if (clobber) {
-                    this.inLineClobbers[x[0]] = 1
+                    this.inLineClobbers[register] = 1
+                    //debugPrint("SETTTTTINGGGGG", register, type)
                 }
+                this.setExtendedType(register, type)
                 return false
             }
             return true
@@ -294,7 +299,7 @@ var registers = {
         return register
     },
     getFreeLabelOrRegister: function (type, clobber = true) {
-        var reg = this.getFreeRegister(clobber);
+        var reg = this.getFreeRegister(type, clobber);
         if (reg != -1) {
             return types.formatRegister(reg, type)
         }
