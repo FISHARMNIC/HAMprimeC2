@@ -137,7 +137,9 @@ function evaluate(line) {
             }
         } else if (word[0] == '"' && word[word.length - 1] == '"') { // string literal
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
-        } else if (objectIncludes(getAllStackVariables(), word)) // get stack var
+        } else if(word[0] = "'" && word[word.length - 1] == "'") {
+            line[wordNum] = String(word.charCodeAt(1));
+        }else if (objectIncludes(getAllStackVariables(), word)) // get stack var
         {
             line[wordNum] = actions.assembly.getStackVarAsEbp(word)
             typeStack.push(getAllStackVariables()[word].type)
@@ -238,7 +240,6 @@ function evaluate(line) {
                 var params_obj = actions.functions.createParams(params)
                 var returnType = objCopy(defines.types.u32)
 
-
                 if (offsetWord(4) == "->") {
 
                     returnType = defines.types[offsetWord(5)]
@@ -301,14 +302,14 @@ function evaluate(line) {
                     `jne ${localExit}`
                 )
                 requestBracket = mostRecentIfStatement.pop() // copy final termination
-                mostRecentIfStatement.push(objCopy(requestBracketStack))
-                requestBracketStack.data.localExit = localExit // new local exit
+                mostRecentIfStatement.push(objCopy(requestBracket))
+                requestBracket.data.localExit = localExit // new local exit
             }
             else if (word == "else") {
                 var localExit = helpers.variables.newUntypedLabel()
-                requestBracketStack = mostRecentIfStatement.pop()
-                mostRecentIfStatement.push(objCopy(requestBracketStack))
-                requestBracketStack.data.localExit = localExit
+                requestBracket = mostRecentIfStatement.pop()
+                mostRecentIfStatement.push(objCopy(requestBracket))
+                requestBracket.data.localExit = localExit
             }
         }
         // #endregion
@@ -362,6 +363,8 @@ function evaluate(line) {
             var right_type = helpers.types.guessType(right)
 
 
+            //throwE(left, right, left_type, right_type)
+
             if (typeof (left) != "string" || typeof (right) != "string") {
                 throwE("Cannot compare expanded statements", left, right)
             }
@@ -371,20 +374,32 @@ function evaluate(line) {
             var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u8)
 
 
-
-            if (!helpers.types.isConstant(left)) {
+            // TODO: optimize to allow one reference like cmp (%ebp), $123
+            if (helpers.types.isConstant(left)) {
+                left = helpers.types.formatIfConstOrLit(left)
+            } else if (!helpers.types.stringIsRegister(left)){
                 outputCode.autoPush(`mov ${left}, ${regL}`)
                 left = regL
             } else {
-                left = helpers.types.formatIfConstOrLit(left)
+                //throwE(helpers.types.getRegisterType(left, true).size)
+                if((helpers.types.typeToBits(left_type) != 32) && helpers.types.getRegisterType(left, true).size == 32 )
+                    {
+                        left = helpers.types.formatRegister(helpers.registers.registerStringToLetterIfIs(left), left_type)
+                    }
             }
 
-            if (!helpers.types.isConstant(right)) {
+            if (helpers.types.isConstant(right)) {
+                right = helpers.types.formatIfConstOrLit(right)
+            } else if (!helpers.types.stringIsRegister(right)){
                 outputCode.autoPush(`mov ${right}, ${regR}`)
                 right = regR
             } else {
-                right = helpers.types.formatIfConstOrLit(right)
-            }
+                if((helpers.types.typeToBits(right_type)) != 32 && helpers.types.getRegisterType(right, true).size == 32 )
+                    {
+                        right = helpers.types.formatRegister(helpers.registers.registerStringToLetterIfIs(right), right_type)
+                    }
+                }
+            
 
             outputCode.autoPush(
                 `mov${helpers.types.stringIsRegister(lbl) ? "b" : ""} \$0, ${lbl}`,

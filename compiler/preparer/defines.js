@@ -106,7 +106,7 @@ module.exports = {
         "while"
     ],
     operators: ["+","-","*","/","<<",">>","|","&","%"],
-    symbols: "!@#$%^&*()+{}|:<>?,./;'[]\-=' ",
+    symbols: "!@#$%^&*()+{}|:<>?,./;[]\-= ",
     conditionalMap,
     conditionals: Object.keys(conditionalMap),
     mathEnders

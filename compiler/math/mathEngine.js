@@ -17,6 +17,8 @@ module.exports = function (arr) {
             outputCode.autoPush(`push ${type}`)
         }
     })
+
+    debugPrint("CCCCCCCC", arr)
     outputCode.autoPush(`xor %eax, %eax`, `mov ${helpers.types.formatIfConstant(current)}, ${helpers.types.formatRegister('a', helpers.types.guessType(current))}`) // load first value into register a
 
     scanPos += 1

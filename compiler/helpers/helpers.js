@@ -111,7 +111,7 @@ var types = {
         return str == "%esp"
     },
     stringIsEbpOffset: function (str) {
-        //debugPrint("============", str, str.substring(str.indexOf("(")) == "(%ebp)")
+        debugPrint("============", str)
         return str.substring(str.indexOf("(")) == "(%ebp)"
     },
     getOffsetFromEbpOffsetString: function (str) {
@@ -120,11 +120,11 @@ var types = {
     getOffsetFromEbpOffsetStringNoAbs: function (str) {
         return parseInt(str.substring(0, str.indexOf("(")))
     },
-    getRegisterType: function (register) {
+    getRegisterType: function (register, raw = false) {
         if (register.includes("x") || register.includes("di") || register.includes("si") || register.includes("bp") || register.includes("sp")) {
             if (register.includes("%e")) {
                 var l = registers.registerStringToLetterIfIs(register)
-                {
+                if (!raw) {
                     return registers.extendedTypes[l]
                 }
                 return defines.types.u32
@@ -157,7 +157,7 @@ var types = {
         return variables.getStackVariableWithOffset(this.getOffsetFromEbpOffsetString(word))
     },
     guessType: function (word) {
-        word == String(word)
+        word = String(word)
         if (variables.variableExists(word)) {
             return objCopy(variables.getVariableType(word))
         } else if (this.stringIsEbpOffset(word)) {

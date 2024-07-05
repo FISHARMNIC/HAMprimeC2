@@ -247,6 +247,12 @@ var variables = {
             }
         }
 
+        var nopointer = objCopy(baseType)
+        nopointer.pointer = false
+
+        // type = deref
+        helpers.registers.extendedTypes[helpers.registers.registerStringToLetterIfIs(out)] = nopointer
+        
         if (edxReserved) {
             outputCode.autoPush(
                 `mov %edx, ${ogout}`
@@ -479,7 +485,7 @@ var functions = {
                 }
 
                 if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && !objectCompare(expectedType, givenType))) || (!variadic && !objectCompare(expectedType, givenType))))
-                    throwE(`Argument '${x}' does not match expected type ${JSON.stringify(expectedType)}`)
+                    throwW(`Argument '${x}' does not match expected type ${JSON.stringify(expectedType)}`)
 
                 if (helpers.types.isConstOrLit(x)) {
                     tbuff.push(`pushl \$${x}`)
@@ -515,6 +521,7 @@ var functions = {
         outputCode.autoPush(...tbuff.reverse().flat())
         var rt = userFunctions[fname].returnType
         // TODO HERE BROKEN : writing "true" instead breaks it. No idea
+        debugPrint("RRRR", userFunctions[fname])
         var out = helpers.registers.getFreeLabelOrRegister(rt, false)
         //throwE(out, helpers.types.guessType("%ebx"))
 

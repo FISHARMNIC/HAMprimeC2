@@ -1,4 +1,5 @@
 // Parser
+// old program
 
 var symbols = defines.symbols
 
@@ -100,7 +101,7 @@ function split(line) {
     if(build != "") outBuffer.push(build); // use end of string as splitter to 
 
     if(inquotes != "") {
-        parser_error("[PARSER ERROR] Missing end-quote: " + line)
+        console.log("[PARSER ERROR] Missing end-quote: " + line)
         process.exit(1)
     }
     return outBuffer;

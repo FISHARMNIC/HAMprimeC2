@@ -1,0 +1,32 @@
+New possible types to add
+=========================
+
+1: Ax~TYPE
+    Where:
+        "A" represents a number
+    Purpose:
+        Double, triple, etc. pointer extensions
+    Examples:
+        2x~p32
+        3x~p8
+
+2: fpTYPE
+    Purpose:
+        Float pointer
+    Examples:
+        fp8
+        fp16
+    
+3: fn~TYPE
+    Where:
+        The suffix type is the return type of the function
+    Purpose:
+        Function pointer
+    Examples:
+        fn~u32
+        fn~f32
+
+4: zflt
+    Purpose:
+        Represent big numbers
+        Uses several bytes to store the number and needs special print and math function

@@ -122,7 +122,10 @@ globalThis.throwE = function (x) {
     console.log(getTrueLine(inputCodeLikeTrue, globalLine))
     process.exit(126)
 }
-globalThis.throwW = (x) => {console.log(`[WARNING] @ line ${globalLine}: `, ...arguments); process.exit(0)};
+globalThis.throwW = function (x) 
+{
+    console.log(`[WARNING] @ line ${globalLine}: `, ...arguments)
+}
 
 //taken from: https://stackoverflow.com/questions/65538406/convert-javascript-number-to-float-single-precision-ieee-754-and-receive-integ
 globalThis.doubleIEEE = function (double) {
