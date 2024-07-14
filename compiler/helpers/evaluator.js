@@ -74,7 +74,8 @@ function evaluate(line) {
             }
 
             if (offsetWord(3) == "<-") {
-                throwE("WIP array set")
+                var value = offsetWord(4)
+                return actions.variables.loadArrayIndex(vname, index, value)
             } else {
                 if (vname == "__arguments") {
                     var index = index[0]

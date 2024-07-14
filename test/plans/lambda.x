@@ -8,7 +8,7 @@ entry function<> -> u32
     printf("%i\n", doOperation(4,5,(
         lambda function<u32 pa, u32 pb> -> u32 
         {
-            return a * b + a
+            return (pa * pb + pa);
         }
     );
     return 0;

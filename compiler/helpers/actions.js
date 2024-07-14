@@ -2,14 +2,19 @@ var assembly = {
     setRegister: function (value, register, type, low = true) {
         debugPrint("setting", register, value, type)
         var r = helpers.types.formatRegister(register, type, low)
-        if (helpers.types.typeToBits(type)) {
+        var er = helpers.types.formatRegister(register, defines.types.u32)
+        if (helpers.types.typeToBits(type) == 32) {
             helpers.registers.extendedTypes[register] = type
+        } else {
+            outputCode.autoPush(`xor ${er}, ${er}`)
         }
-        outputCode.autoPush(`mov ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
+
+        outputCode.autoPush(`mov${objectIncludes(globalVariables, value) ? helpers.types.sizeToSuffix(indexType) : ""} ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
         return r
     },
     optimizeMove(source, destination, sType, dType) {
         debugPrint(" reoifjeorjferiojerf", source)
+        debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
         if (helpers.types.isConstOrLit(source)) {
             if (helpers.types.isLiteral(source)) {
                 if (helpers.types.stringIsRegister(destination)) {
@@ -29,11 +34,15 @@ var assembly = {
         } else if (helpers.types.stringIsRegister(source)) {
             outputCode.autoPush(`mov ${helpers.types.conformRegisterIfIs(source, dType)}, ${destination}`)
         } else {
-            //debugPrint(source,sType, dType)
-            if (helpers.types.typeToBits(sType) != 32)
-                outputCode.autoPush("xor %edx, %edx")
-            this.setRegister(source, 'd', sType)
-            outputCode.autoPush(`mov ${helpers.types.formatRegister('d', dType)}, ${destination}`)
+            if (helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source)) {
+                var s = helpers.types.sizeToSuffix(sType)
+                outputCode.autoPush(`mov${s} ${source}, ${destination}`)
+            } else {
+                if (helpers.types.typeToBits(sType) != 32)
+                    outputCode.autoPush("xor %edx, %edx")
+                this.setRegister(source, 'd', sType)
+                outputCode.autoPush(`mov ${helpers.types.formatRegister('d', dType)}, ${destination}`)
+            }
         }
     },
     pushToStack: function (value, type) {
@@ -252,7 +261,7 @@ var variables = {
 
         // type = deref
         helpers.registers.extendedTypes[helpers.registers.registerStringToLetterIfIs(out)] = nopointer
-        
+
         if (edxReserved) {
             outputCode.autoPush(
                 `mov %edx, ${ogout}`
@@ -280,6 +289,87 @@ var variables = {
             )
         }
         return reg
+    },
+    loadArrayIndex: function (address, index, value) {
+        // var indexAsReg = "%edx"
+        // if(!helpers.types.stringIsRegister(index)) {
+        // actions.assembly.setRegister(index, "d", helpers.types.guessType(index))
+        // }
+
+        //for now
+        var index = index[0]
+
+        var arrType = helpers.types.guessType(address)
+        var elementType = helpers.types.derefType(arrType)
+        var elementBytes = helpers.types.typeToBytes(elementType)
+        var indexType = helpers.types.guessType(index)
+        var valueType = helpers.types.guessType(value)
+
+
+        var indexIsVar = objectIncludes(globalVariables, index)
+
+        var suffix = "";
+
+        outputCode.autoPush("#Set begin")
+        //throwE(address, index, value)
+
+        if (!helpers.types.stringIsRegister(address)) {
+            outputCode.autoPush(`mov ${helpers.types.formatIfConstant(address)}, %eax`)
+        }
+
+        // two step
+        if (!(helpers.types.isConstant(value) || helpers.types.stringIsRegister(value))) {
+            outputCode.autoPush(`mov ${value}, %edx`)
+            value = "%edx"
+        } else if (helpers.types.isConstant(value)) {
+            value = "$" + value
+            suffix = helpers.types.sizeToSuffix(elementType);
+        }
+
+        if (helpers.types.isConstant(index)) {
+            var ti = parseInt(index) * elementBytes
+            outputCode.autoPush(
+                `mov${suffix} ${value}, ${ti}(%eax)`
+            )
+        } else if (helpers.types.stringIsRegister(index)) {
+            outputCode.autoPush(
+                `mov${suffix} ${value}, (%eax, ${index}, ${elementBytes})`
+            )
+        } else if (objectIncludes(globalVariables, index) || helpers.types.stringIsEbpOffset(index)) {
+            // FIX THIS poorly optimized
+            outputCode.autoPush(
+                `push %eax`,
+                `mov ${index}, %eax`,
+                `${(elementBytes != 1) ? `shl \$${helpers.types.typeToBytes(elementType) / 2}, %eax` : ""}`,
+                `add (%esp), %eax`,
+                `add $1, %esp`,
+                `mov${suffix} ${value}, (%eax)`
+            )
+        }
+
+
+        outputCode.autoPush("#Set end")
+
+        // if (helpers.types.stringIsEbpOffset(address)) {
+        //     var baseEbpOffset = helpers.types.getOffsetFromEbpOffsetStringNoAbs(address)
+        //     if (helpers.types.isConstant(index)) {
+        //         var newIndex = baseEbpOffset + parseInt(index)
+        //         assembly.optimizeMove(value, `${newIndex}(%ebp)`, valueType, elementType)
+        //     } else {
+        //         outputCode.autoPush(
+        //             `mov${indexIsVar? helpers.types.sizeToSuffix(indexType) : ""} ${index}, ${helpers.types.formatRegister("a", indexType)}`,
+        //             `${(helpers.types.typeToBytes(elementType) != 1) ? `shl \$${helpers.types.typeToBytes(elementType) / 2}, %eax` : ""}`,
+        //             `add %ebp, %eax`,
+        //             `add \$${baseEbpOffset}, %eax`,
+        //         )
+        //         assembly.optimizeMove(value, "(%eax)", valueType, elementType)
+        //     }
+        // }// else if ()
+
+
+        //throwE("wip unfinished", outputCode)
+        return [address]
+
     }
 }
 
@@ -466,7 +556,7 @@ var functions = {
         assembly.pushClobbers()
 
         outputCode.comment(`Calling function ${fname}`)
- 
+
         var ind = 0;
         args.forEach((x) => {
             if (onCom) {

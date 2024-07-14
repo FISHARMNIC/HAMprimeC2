@@ -5,8 +5,8 @@
 /*
 sizeof(mpf_t) = 16
 sizeof(mpz_t) = 12
-
 */
+
 int main(){
     mpf_t bflt_a, bflt_b;
 

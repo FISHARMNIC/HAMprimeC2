@@ -26,6 +26,11 @@ var counters = {
 }
 
 var types = {
+    derefType: function(type) {
+        var c = objCopy(type)
+        c.pointer = false
+        return c
+    },
     isLiteral: function (x) {
         return x.substring(0, 8) == "__STRING"
     },
