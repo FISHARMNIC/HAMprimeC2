@@ -18,6 +18,21 @@ function evaluate(line) {
         var word = line[wordNum]
         var offsetWord = x => wordNum + x >= 0 ? line[wordNum + x] : null;
 
+        if(inComment) {
+            if(word == "*/")
+            {
+                inComment = false
+                debugPrint("EXIR")
+            }
+            debugPrint("YA")
+            continue
+        } else if(word == "/*")
+        {
+
+            inComment = true
+            continue
+        }
+
         // #region modifications
         if (word == '(' || word == ')') {
             line.splice(wordNum, 1)
@@ -332,6 +347,8 @@ function evaluate(line) {
 
     // EVERYTHING MUST BE ABOVE THIS
 
+    if(!inComment)
+    {
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         var word = line[wordNum]
         // #region Math
@@ -417,7 +434,7 @@ function evaluate(line) {
         }
         // #endregion
     }
-
+    }
     return line
 
 }

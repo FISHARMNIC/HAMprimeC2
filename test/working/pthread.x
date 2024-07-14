@@ -1,4 +1,8 @@
-// if this doesnt work make sure compiling with -lpthread
+/*
+    Program showcasing how C can be easily included in HAM`
+    
+    NOTE: if this doesnt work make sure compiling with -lpthread
+*/
 forward pthread_create function<u32 a, u32 b, u32 c, u32 d>;
 forward pthread_exit function<u32 a>;
 forward sleep function<u32 a>;

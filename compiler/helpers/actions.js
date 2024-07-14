@@ -9,7 +9,7 @@ var assembly = {
             outputCode.autoPush(`xor ${er}, ${er}`)
         }
 
-        outputCode.autoPush(`mov${objectIncludes(globalVariables, value) ? helpers.types.sizeToSuffix(indexType) : ""} ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
+        outputCode.autoPush(`mov${objectIncludes(globalVariables, value) ? helpers.types.sizeToSuffix(type) : ""} ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
         return r
     },
     optimizeMove(source, destination, sType, dType) {
@@ -129,7 +129,7 @@ var variables = {
         if (isStack) {
             assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
         } else if (objectIncludes(globalVariables, vname)) {       // if glob var
-            assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
+            assembly.optimizeMove(value, vname, type, type)
             //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
         } else {
             throwE(`Variable ${vname} has not been declared neither locally nor globally`)

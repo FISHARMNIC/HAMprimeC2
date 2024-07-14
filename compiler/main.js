@@ -73,7 +73,7 @@ inputCode = inputCode.map((line,lineNo) => {
         lsplit = lsplit.slice(0,lsplit.indexOf("//"))
     }
 
-    if(defines.priorityWords.includes(lsplit[0]))
+    if(defines.priorityWords.includes(lsplit[0]) && !inComment)
     {
         prioritizeWord(lsplit[0])
     }

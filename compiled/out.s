@@ -6,12 +6,9 @@
 .data
 
 ######## user data section ########
-__ALLOCFOR_test__ = 0
-gi: .4byte 1
-.comm __LABEL0__, 12, 4
-garr: .4byte 0
-__STRING0__: .asciz "%i %i\n"
-__ALLOCFOR_entry__ = 20
+__ALLOCFOR_factorial__ = 0
+__STRING0__: .asciz "%i\n"
+__ALLOCFOR_entry__ = 0
 ###################################
 .text
 
@@ -21,12 +18,7 @@ __ALLOCFOR_entry__ = 20
 user_init:
 #### compiler initation section ###
 __init__:
-mov $__LABEL0__, %eax
-movl $1, 0(%eax)
-movl $2, 4(%eax)
-movl $3, 8(%eax)
-mov %eax, %ebx
-mov %ebx, garr
+
 ret
 ###################################
 
@@ -36,11 +28,44 @@ main:
     ret
 
 ###################################
-test:
+factorial:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_test__, %esp
-mov $123, %eax
+sub $__ALLOCFOR_factorial__, %esp
+mov 8(%ebp), %eax
+movb $0, %bl
+cmp $1, %eax
+setge %bl
+cmpb $1, %bl
+jne __LABEL0__
+xor %eax, %eax
+mov 8(%ebp), %eax
+sub $1, %eax
+mov %eax, %ebx
+push %ebx
+# Calling function factorial
+push %ebx
+call factorial
+mov %eax, %ecx
+add $4, %esp
+pop %ebx
+push %ebx
+push %ecx
+xor %eax, %eax
+mov 8(%ebp), %eax
+mov %ecx, %ebx
+mul %ebx
+mov %eax, %esi
+pop %ebx
+pop %ecx
+mov %esi, %eax
+mov %ebp, %esp
+pop %ebp
+ret
+jmp __LABEL1__
+__LABEL0__:
+__LABEL1__:
+mov $1, %eax
 mov %ebp, %esp
 pop %ebp
 ret
@@ -51,56 +76,23 @@ entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-mov $2, %edx
-mov %edx, -4(%ebp)
-movl $1, -16(%ebp)
-movl $2, -12(%ebp)
-movl $3, -8(%ebp)
-mov %ebp, %eax
-sub $16, %eax
+# Calling function factorial
+pushl $5
+call factorial
 mov %eax, %ebx
-mov %ebx, -20(%ebp)
-# Calling function test
-call test
-mov %eax, %ebx
-#Set begin
-mov -20(%ebp), %eax
-push %eax
-mov -4(%ebp), %eax
-shl $2, %eax
-add (%esp), %eax
-add $1, %esp
-mov %ebx, (%eax)
-#Set end
-#Set begin
-mov garr, %eax
-push %eax
-mov gi, %eax
-shl $2, %eax
-add (%esp), %eax
-add $1, %esp
-movl $456, (%eax)
-#Set end
-mov -20(%ebp), %eax
-mov -4(%ebp), %edx
-mov %edx, %edx
-mov (%eax, %edx, 4), %ebx
-mov garr, %eax
-movl gi, %edx
-mov (%eax, %edx, 4), %ecx
+add $4, %esp
 push %ebx
-push %ecx
 # Calling function printf
-push %ecx
 push %ebx
 pushl $__STRING0__
 call printf
-mov %eax, %esi
-add $12, %esp
+mov %eax, %ecx
+add $8, %esp
 pop %ebx
-pop %ecx
+mov $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# li: 4
-# larr: 20
+mov %ebp, %esp
+pop %ebp
+ret

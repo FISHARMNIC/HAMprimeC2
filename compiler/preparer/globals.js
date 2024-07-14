@@ -46,8 +46,7 @@ globalThis.typeStack = []
 globalThis.mostRecentIfStatement = [] 
 globalThis.arrayClamp = defines.types.u32
 globalThis.globalLine;
-
-
+globalThis.inComment = false;
 
 globalThis.keywordTypes = {
     FORMAT: 0, 
