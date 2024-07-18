@@ -6,10 +6,12 @@
 .data
 
 ######## user data section ########
-.comm __LABEL0__, 3, 4
-d: .4byte 0
-__STRING0__: .asciz "%i %i"
-__ALLOCFOR_entry__ = 10
+__STRING0__: .asciz "bob"
+__STRING1__: .asciz "The student %s (id #%i) is %i years old\n"
+__STRING2__: .asciz "bob"
+__ALLOCFOR_entry__ = 28
+__TEMP32_0__: .4byte 0
+__TEMP32_1__: .4byte 0
 ###################################
 .text
 
@@ -19,12 +21,7 @@ __ALLOCFOR_entry__ = 10
 user_init:
 #### compiler initation section ###
 __init__:
-mov $__LABEL0__, %eax
-movb $4, 0(%eax)
-movb $5, 1(%eax)
-movb $6, 2(%eax)
-mov %eax, %ebx
-mov %ebx, d
+
 ret
 ###################################
 
@@ -38,41 +35,55 @@ entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-xor %edx, %edx
-xor %edx, %edx
-mov $123, %dl
-mov %dl, -1(%ebp)
-xor %edx, %edx
-xor %edx, %edx
-mov $0, %dx
-mov %dx, -3(%ebp)
-movb $1, -6(%ebp)
-movb $2, -5(%ebp)
-movb $3, -4(%ebp)
-mov %ebp, %eax
-sub $6, %eax
-mov %eax, %ebx
-mov %ebx, -10(%ebp)
-mov -10(%ebp), %eax
-xor %ebx, %ebx
-mov 1(%eax), %bl
-mov d, %eax
-xor %ecx, %ecx
-mov 1(%eax), %cl
+lea -8(%ebp), %ebx # Local allocation address for Person
+movl $15, -8(%ebp)
+mov $__STRING0__, %edx
+mov %edx, -4(%ebp)
+lea -16(%ebp), %ecx # Local allocation address for Student
+mov %ebx, -16(%ebp)
+movl $123, -12(%ebp)
+mov %ecx, -20(%ebp)
+movl -20(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+mov 4(%ebx), %edx
+mov %edx, %ecx
+movl -20(%ebp), %eax
+mov 4(%eax), %edx
+mov %edx, %esi
+movl -20(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %edi
+mov 0(%edi), %edx
+mov %edx, __TEMP32_0__
 push %ebx
 push %ecx
+push %esi
+push %edi
 # Calling function printf
+mov __TEMP32_0__, %edx
+push %edx
+push %esi
 push %ecx
-push %ebx
-pushl $__STRING0__
+pushl $__STRING1__
 call printf
-mov %eax, %esi
-add $12, %esp
+mov %eax, __TEMP32_1__
+add $16, %esp
 pop %ebx
 pop %ecx
+pop %esi
+pop %edi
+xor %eax, %eax
+mov $5, %eax
+add $10, %eax
+mov %eax, %ebx
+lea -28(%ebp), %ecx # Local allocation address for Person
+mov %ebx, -28(%ebp)
+mov $__STRING2__, %edx
+mov %edx, -24(%ebp)
+mov 4(%ecx), %edx
+mov %edx, %esi
 mov %ebp, %esp
 pop %ebp
 ret
-# a: 1
-# b: 3
-# c: 10
+# bob: 20

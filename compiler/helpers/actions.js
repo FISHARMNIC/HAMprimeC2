@@ -705,15 +705,16 @@ var formats = {
             // FIXED? // old: temporarily disabled stack allocations since if you do loops it will be overriting the same thing
             var allocLbl = allocations.allocateAuto(userFormats[fname].size)
             //var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
-
-            if (helpers.types.stringIsEbpOffset(allocLbl)) // local. Intheory this will never happen?
+            var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types[fname]) // what it's saved in
+            //throwE(saveLbl, helpers.registers.extendedTypes.c)
+            if (helpers.types.stringIsEbpOffset(allocLbl))
             {
-                throwE("Compiler shouldn't be here")
+                //throwE("Compiler shouldn't be here", parr, allocLbl)
                 //throwE(allocLbl, parr)
                 var allocOffset = parseInt(helpers.types.getOffsetFromEbpOffsetString(allocLbl))
-                var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32) // what it's saved in
+                
 
-                outputCode.autoPush(`mov \$${allocOffset}, ${saveLbl} # Local allocation address for ${fname}`)
+                outputCode.autoPush(`lea ${allocLbl}, ${saveLbl} # Local allocation address for ${fname}`)
                 //throwE(outputCode)
 
                 var off = 0
@@ -722,14 +723,13 @@ var formats = {
                     if (value == undefined) {
                         throwE(`Property ${p} not given`);
                     }
-                    debugPrint("LOCFFSET", off, helpers.types.typeToBytes(p.type))
-                    assembly.optimizeMove(value, `-${off + allocOffset + helpers.types.typeToBytes(p.type)}(%ebp)`, helpers.types.guessType(value), p.type)
+                    debugPrint("LOCFFSET", off, allocOffset)
+                    assembly.optimizeMove(value, `-${allocOffset - off }(%ebp)`, helpers.types.guessType(value), p.type)
 
                     off += helpers.types.typeToBytes(p.type)
                 })
                 return saveLbl
             } else { // global
-                var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
                 if (helpers.types.stringIsEsp(allocLbl)) {
                     outputCode.autoPush(`mov %esp, ${saveLbl} # Local allocation address for ${fname}`)
                 } else {
@@ -751,6 +751,26 @@ var formats = {
 
 
         }
+    },
+    readProperty: function (base, baseType, propertyName) {
+        var offset = 0
+        var i = 0
+        while(baseType.formatPtr.properties[i].name != propertyName)
+        {
+            offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
+            i++
+        }
+        var propertyType = baseType.formatPtr.properties[i].type
+        //throwE(propertyType, offset)
+
+        var out = helpers.registers.getFreeLabelOrRegister(propertyType)
+        if(!helpers.types.stringIsRegister(base))
+        {
+            outputCode.autoPush(`movl ${base}, %eax`)
+            base = "%eax"
+        }
+        assembly.optimizeMove(`${offset}(${base})`, out, propertyType, propertyType)
+        return out
     }
 }
 

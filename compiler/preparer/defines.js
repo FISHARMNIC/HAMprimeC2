@@ -93,7 +93,7 @@ module.exports = {
         "___format_template___": {
             size: 0,
             float: false,
-            pointer: false,
+            pointer: true,
             special: true,
             dblRef: false,
             formatPtr: null

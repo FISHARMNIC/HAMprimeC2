@@ -9,7 +9,8 @@ entry function<> -> u32
 
     // typing arrays, local
     create c <- u8{1,2,3};
+    c[1] <- 123;
 
-    printf("%i %i",c[1],d[1]);
+    printf("%i %i", c[1], d[1]);
 }
 

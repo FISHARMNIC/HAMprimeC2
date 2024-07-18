@@ -62,12 +62,29 @@ function evaluate(line) {
         // #endregion
         // #region Formats
         else if (word == '.') { // child property UNFINISHED
-            if (objectValuesIncludes(nest.nesters, offsetWord(-1))) // if like >. or ].
-            {
-                parent = offsetWord(-1)
-            } else {
-
+            // creating a new property
+            if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
+                scope[scope.length - 1].data.properties.push({
+                    name: offsetWord(1),
+                    type: defines.types[offsetWord(2)]
+                })
             }
+            else {
+                var base = offsetWord(-1)
+                var ptype = helpers.types.guessType(base)
+                var out = actions.formats.readProperty(base,ptype,offsetWord(1))
+                line[wordNum - 1] = out
+                line.splice(wordNum, 2)
+                wordNum--
+                //throwE(line,wordNum)
+            }
+            //throwE(guessType(offsetWord(-1)))
+            // } else if (objectValuesIncludes(nest.nesters, offsetWord(-1))) // if like >. or ].
+            // {
+            //     parent = offsetWord(-1)
+            // } else {
+
+            // }
         } else if (objectIncludes(userFormats, word)) // if word is a class
         {
             // moved to region above
@@ -208,6 +225,7 @@ function evaluate(line) {
                 var nobj = objCopy(defines.types.___format_template___)
                 nobj.formatPtr = userFormats[oldScope.data.name]
                 defines.types[oldScope.data.name] = nobj
+                //throwE(defines.types.Person.formatPtr.properties)
                 //actions.allocations.deallocStack()
             } else if (oldScope.type == keywordTypes.FUNCTION) {
                 actions.functions.closeFunction(oldScope, oldStack)
