@@ -1,8 +1,8 @@
-# HAM prime
+# HAM prime - a 32-bit compiled programming language
 ### Compiler 2
 
 ---
-This is a the second compiler that I have developed for HAM prime. So far it lacks many features that existed in the original HAM prime compiler. However, this new compiler is much more optimized and has less bugs than the original
+This is a the second compiler that I have developed for HAM prime. So far it lacks many features that existed in the original HAM prime compiler. However, this new compiler is much more optimized and has less bugs than the original.
 
 ## See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working)
 
