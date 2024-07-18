@@ -26,9 +26,11 @@ This is a the second compiler that I have developed for HAM prime. So far it lac
 * Math (no floats yet)
 * see `test/working` for working programs
 
-### Examples
+### Interesting examples
 **Basic demo**
 ```C
+
+// functions
 getNum function<u32 n> -> u32
 {
     return(n);
@@ -36,10 +38,14 @@ getNum function<u32 n> -> u32
 
 entry function<p8 args, u32 argv> -> u32
 {
+    // Stack variables
     create x <- 0;
     create y <- 9;
+
+    // Looping
     while(x <: getNum(3))
     {
+        // C printf
         printf("%i\n", (x * x));
         x <- (x + 1);
     }
@@ -67,6 +73,26 @@ entry function<> -> u32
 }
 ```
 
+**Formats**
+```C
+Person format
+{
+    .age u32;
+    .name p8;
+}
+
+Student format
+{
+    .info Person;
+    .id u32;
+}
+
+entry function<> -> u32
+{
+    create bob <- Student<id:123,info:Person<age:15,name:"bob">>;
+    printf("The student %s (id #%i) is %i years old\n", bob.info.name, bob.id, bob.info.age);
+}
+```
 
 **C inclusion**
 ```C
