@@ -22,9 +22,9 @@ function evaluate(line) {
             if(word == "*/")
             {
                 inComment = false
-                debugPrint("EXIR")
+                //debugPrint("EXIR")
             }
-            debugPrint("YA")
+            //debugPrint("YA")
             continue
         } else if(word == "/*")
         {
@@ -44,6 +44,7 @@ function evaluate(line) {
                 arrayClamp = defines.types[word]
                 line.splice(wordNum, 1)
                 wordNum--;
+                //throwE("CAMP", arrayClamp,line,wordNum)
             } else if (offsetWord(1) == "<" && objectIncludes(userFormats, word)) // classes
             {
                 var dataLbl = actions.formats.parseParams(word, offsetWord(2))
@@ -129,17 +130,28 @@ function evaluate(line) {
         else if (word == "create") {        // variable creation
             /*
                0    1   2  3
-            create bob <- jon
-            create bob u32    (u32 will not show up)
+            create bob <- jon;
+            create u32 bob;
+            create u32 bob <- jon;
             */
             if (getLastScopeType == keywordTypes.FORMAT) {
                 throwE("'Create' should not be used inside of a format")
             }
 
-            if (offsetWord(2) == '<-') {
-                return actions.variables.create(offsetWord(1), helpers.types.guessType(offsetWord(3)), offsetWord(3))
+            var vtype;
+            if(objectIncludes(defines.types,offsetWord(1)))
+            {
+                // get type and remove
+                vtype = defines.types[offsetWord(1)]
+                line.splice(wordNum + 1, 1)
             } else {
-                return actions.variables.create(offsetWord(1), helpers.types.guessType(offsetWord(3)), 0)
+                vtype = helpers.types.guessType(offsetWord(3))
+            }
+
+            if (offsetWord(2) == '<-') {
+                return actions.variables.create(offsetWord(1), vtype, offsetWord(3))
+            } else {
+                return actions.variables.create(offsetWord(1), vtype, 0)
             }
         } else if (offsetWord(1) == "<-") { // variable setting
             if (getLastScopeType() == keywordTypes.FORMAT) { // just creating a property
@@ -220,10 +232,15 @@ function evaluate(line) {
             } else if (oldScope.type == keywordTypes.ARRAY) {
                 var numElements = oldScope.data.length
                 var bytesPerElement = helpers.types.typeToBytes(arrayClamp)
-                arrayClamp = defines.types.u32
+                //arrayClamp = defines.types.u32
 
                 var begin = oldScope.begin
                 var output = actions.allocations.allocateArray(line.slice(begin))
+                lastArrayType = output.arrayType
+                arrayClamp = defines.types.u32
+
+
+     
                 line[begin] = output.out
                 line.splice(begin + 1, output.len + 2)
                 wordNum = begin

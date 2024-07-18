@@ -155,16 +155,10 @@ var variables = {
         return vname
     },
     readArray: function (aname, index) {
-        var stypes = {
-            GLOB: 0,
-            LOC: 1,
-            PAR: 2,
-            EBP: 3,
-            ESP: 4
-        }
 
+
+        var baseRegister = "%eax"
         var baseType = -1;
-        var status = stypes.GLOB
 
         // yes bad code that I was doing something else with but changed it
         if (helpers.types.isLiteral(aname)) {
@@ -174,16 +168,19 @@ var variables = {
             )
         }
         else if (helpers.variables.variableExists(aname)) {
-            baseType = helpers.variables.getVariableType(aname)
+            baseType = objCopy(helpers.variables.getVariableType(aname))
+            baseType.pointer = false
+
+            baseRegister = helpers.types.formatRegister("a", baseType)
             debugPrint("EXISTSSS", aname, baseType)
             outputCode.autoPush(
                 `mov ${aname}, %eax`,
             )
-            if (helpers.types.stringIsEbpOffset(aname)) {
-                status = stypes.LOC
-            } else {
-                status = stypes.GLOB
-            }
+            // if (helpers.types.stringIsEbpOffset(aname)) {
+            //     status = stypes.LOC
+            // } else {
+            //     status = stypes.GLOB
+            // }
         } else if (helpers.variables.checkIfParameter(aname)) {
             // status = stypes.PAR
             // baseType = helpers.functions.getParameterType(aname)
@@ -193,7 +190,10 @@ var variables = {
             // )
             throwE("shouldn't get here....")
         } else if (helpers.types.stringIsEbpOffset(aname)) {
-            baseType = helpers.types.getVariableFromEbpOffsetString(aname).type
+            baseType = objCopy(helpers.types.getVariableFromEbpOffsetString(aname).type)
+            baseType.pointer = false
+
+            baseRegister = helpers.types.formatRegister("a", baseType)
             outputCode.autoPush(
                 `mov ${aname}, %eax`,
             )
@@ -203,9 +203,12 @@ var variables = {
             )
         }
         else if (helpers.types.stringIsRegister(aname)) {
-            baseType = helpers.types.getRegisterType(aname)
+            baseType = objCopy(helpers.types.getRegisterType(aname))
+            baseType.pointer = false 
+
+            baseRegister = helpers.types.formatRegister("a", baseType)
             outputCode.autoPush(
-                `mov ${aname}, %eax`,
+                `mov ${aname}, ${baseRegister}`,
             )
         }
         else {
@@ -217,6 +220,12 @@ var variables = {
 
         var indexMultiplier = baseType.size / 8
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
+        var fullReg = helpers.types.conformRegisterIfIs(out, defines.types.u32)
+
+        if(baseType.size != 32)
+        {
+            outputCode.autoPush(`xor ${fullReg}, ${fullReg}`)
+        }
         var ogout = out
         var edxReserved = false
         if (!helpers.types.stringIsRegister(out)) {
@@ -437,9 +446,12 @@ var allocations = {
     },
     allocateArray: function (arr) {
         arr = arr.slice(1, arr.length - 1)
-        var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * 4)
-        var globalAlloc = true
+        var elementSize = helpers.types.typeToBytes(arrayClamp)
+        var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize)
+
         var ebpOff;
+
+        var globalAlloc = true
         if (helpers.types.stringIsEbpOffset(allocLbl)) {
             globalAlloc = false
             ebpOff = parseInt(helpers.types.getOffsetFromEbpOffsetString(allocLbl))
@@ -448,27 +460,33 @@ var allocations = {
         //throwE(allocLbl)
 
         var onComma = false
-        arr.forEach((x, i) => {
+        var index = 0
+
+        arr.forEach((x) => {
             if (onComma) {
                 if (x != ",") {
                     throwE(`Expected comma in array allocation: [${arr.join(",")}]`)
                 }
             } else {
+                //debugPrint("reregwegereerwrege", elementSize, index)
                 if (x == ",") {
                     throwE(`Did not expect comma in array allocation: [${arr.join(",")}]`)
                 }
                 if (globalAlloc) {
-                    assembly.optimizeMove(x, `${i * 2}(${allocLbl})`, helpers.types.guessType(x), defines.types.u32)
+                    assembly.optimizeMove(x, `${index * elementSize}(${allocLbl})`, helpers.types.guessType(x), arrayClamp)
                 } else {
-                    //throwE(ebpOff)
-                    assembly.optimizeMove(x, `-${ebpOff - (i * 2)}(%ebp)`, helpers.types.guessType(x), defines.types.u32)
-                }
 
+                    assembly.optimizeMove(x, `-${ebpOff - (index * elementSize)}(%ebp)`, helpers.types.guessType(x), arrayClamp)
+                }
+                index++
             }
             onComma = !onComma
         })
 
-        var out = helpers.registers.getFreeLabelOrRegister(defines.types.p32)
+        var ref = objCopy(arrayClamp)
+        ref.pointer = true;
+
+        var out = helpers.registers.getFreeLabelOrRegister(ref)
         if (globalAlloc) {
             outputCode.autoPush(
                 `mov ${allocLbl}, ${out}`
@@ -480,7 +498,7 @@ var allocations = {
                 `mov %eax, ${out}`
             )
         }
-        return { out, len: arr.length }
+        return { out, len: arr.length, arrayType: ref }
     }
     // deallocStack: function () {
     //     outputCode.autoPush(`add \$${Object.entries(stackVariables[stackVariables.length - 1]).length}, %esp`)

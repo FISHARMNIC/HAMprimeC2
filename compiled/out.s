@@ -6,9 +6,10 @@
 .data
 
 ######## user data section ########
-__ALLOCFOR_factorial__ = 0
-__STRING0__: .asciz "%i\n"
-__ALLOCFOR_entry__ = 0
+.comm __LABEL0__, 3, 4
+d: .4byte 0
+__STRING0__: .asciz "%i %i"
+__ALLOCFOR_entry__ = 10
 ###################################
 .text
 
@@ -18,7 +19,12 @@ __ALLOCFOR_entry__ = 0
 user_init:
 #### compiler initation section ###
 __init__:
-
+mov $__LABEL0__, %eax
+movb $4, 0(%eax)
+movb $5, 1(%eax)
+movb $6, 2(%eax)
+mov %eax, %ebx
+mov %ebx, d
 ret
 ###################################
 
@@ -28,71 +34,45 @@ main:
     ret
 
 ###################################
-factorial:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR_factorial__, %esp
-mov 8(%ebp), %eax
-movb $0, %bl
-cmp $1, %eax
-setge %bl
-cmpb $1, %bl
-jne __LABEL0__
-xor %eax, %eax
-mov 8(%ebp), %eax
-sub $1, %eax
-mov %eax, %ebx
-push %ebx
-# Calling function factorial
-push %ebx
-call factorial
-mov %eax, %ecx
-add $4, %esp
-pop %ebx
-push %ebx
-push %ecx
-xor %eax, %eax
-mov 8(%ebp), %eax
-mov %ecx, %ebx
-mul %ebx
-mov %eax, %esi
-pop %ebx
-pop %ecx
-mov %esi, %eax
-mov %ebp, %esp
-pop %ebp
-ret
-jmp __LABEL1__
-__LABEL0__:
-__LABEL1__:
-mov $1, %eax
-mov %ebp, %esp
-pop %ebp
-ret
-mov %ebp, %esp
-pop %ebp
-ret
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-# Calling function factorial
-pushl $5
-call factorial
+xor %edx, %edx
+xor %edx, %edx
+mov $123, %dl
+mov %dl, -1(%ebp)
+xor %edx, %edx
+xor %edx, %edx
+mov $0, %dx
+mov %dx, -3(%ebp)
+movb $1, -6(%ebp)
+movb $2, -5(%ebp)
+movb $3, -4(%ebp)
+mov %ebp, %eax
+sub $6, %eax
 mov %eax, %ebx
-add $4, %esp
+mov %ebx, -10(%ebp)
+mov -10(%ebp), %eax
+xor %ebx, %ebx
+mov 1(%eax), %bl
+mov d, %eax
+xor %ecx, %ecx
+mov 1(%eax), %cl
 push %ebx
+push %ecx
 # Calling function printf
+push %ecx
 push %ebx
 pushl $__STRING0__
 call printf
-mov %eax, %ecx
-add $8, %esp
+mov %eax, %esi
+add $12, %esp
 pop %ebx
-mov $0, %eax
+pop %ecx
 mov %ebp, %esp
 pop %ebp
 ret
-mov %ebp, %esp
-pop %ebp
-ret
+# a: 1
+# b: 3
+# c: 10

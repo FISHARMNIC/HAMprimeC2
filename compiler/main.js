@@ -79,6 +79,7 @@ inputCode = inputCode.map((line,lineNo) => {
     }
 
     arrayClamp = defines.types.u32
+    lastArrayType = defines.types.u32
     helpers.registers.clearClobbers()
     helpers.registers.resetExtendedTypes()
     typeStack = []
