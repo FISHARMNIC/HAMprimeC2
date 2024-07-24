@@ -21,7 +21,7 @@ This is a the second compiler that I have developed for HAM prime. So far it lac
 ### Whats working
 * Variables
 * Arrays
-* Format declaration and allocation (no accessing yet)
+* Format declaration, allocation, and properties
 * Functions
 * NEW: Function prototypes
 * NEW: Variadics
