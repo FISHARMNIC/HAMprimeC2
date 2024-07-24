@@ -92,8 +92,9 @@ var variables = {
             if (objectIncludes(getAllStackVariables(), vname)) {
                 throwE(`Variable "${vname}" already defined`)
             }
-            var off = allocations.allocateStack(helpers.types.typeToBytes(type), true) // store in stack
+            var off = allocations.allocateStack(helpers.types.typeToBytes(type), true, true) // store in stack
             //throwE(value, off)
+            outputCode.autoPush(`# Loading local variable "${vname}" @${off}`)
             assembly.optimizeMove(value, off, type, type)
             createStackVariableListOnly(vname, newStackVar(type))
             //throwE(stackVariables)
@@ -204,7 +205,7 @@ var variables = {
         }
         else if (helpers.types.stringIsRegister(aname)) {
             baseType = objCopy(helpers.types.getRegisterType(aname))
-            baseType.pointer = false 
+            baseType.pointer = false
 
             baseRegister = helpers.types.formatRegister("a", baseType)
             outputCode.autoPush(
@@ -222,8 +223,7 @@ var variables = {
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
         var fullReg = helpers.types.conformRegisterIfIs(out, defines.types.u32)
 
-        if(baseType.size != 32)
-        {
+        if (baseType.size != 32) {
             outputCode.autoPush(`xor ${fullReg}, ${fullReg}`)
         }
         var ogout = out
@@ -383,19 +383,36 @@ var variables = {
 }
 
 var allocations = {
-    allocateStack: function (bytes, forceEbp = false) {
+    allocateStack: function (bytes, forceEbp = false, forceNoSize = false, note="") {
         if (helpers.general.scopeHasIterable() && !forceEbp) {
-
             debugPrint("ALLOCING - DR", bytes, currentStackOffset)
-            outputCode.autoPush(
-                `sub \$${bytes}, %esp`,
-            )
+            if (programRules.DynamicArraysAllocateSize && !forceNoSize) {
+                outputCode.autoPush(
+                    `# Allocating ${bytes} bytes + 1 extra for size ${note.length != 0? "\n#" + note : ""}`,
+                    `sub \$${bytes + 4}, %esp`,
+                    `movl \$${bytes}, (%esp)`,
+                    `add \$4, %esp`
+                )
+            } else {
+                outputCode.autoPush(
+                    `sub \$${bytes}, %esp`,
+                )
+            }
             return `%esp`
         } else {
             //throwE(bytes)
-            currentStackOffset = (helpers.general.getMostRecentFunction().data.totalAlloc += bytes)
+
             debugPrint("ALLOCING", bytes, currentStackOffset)
-            return `-${currentStackOffset}(%ebp)`
+            if (programRules.DynamicArraysAllocateSize && !forceNoSize) {
+                currentStackOffset = (helpers.general.getMostRecentFunction().data.totalAlloc += (bytes + 4))
+                outputCode.autoPush(
+                    `${note.length != 0? "#" + note + "\n": ""}movl \$${bytes}, -${currentStackOffset}(%ebp) # Allocated in __ALLOC_FOR__, setting extra byte for size`
+                )
+                return `-${currentStackOffset - 4}(%ebp)`
+            } else {
+                currentStackOffset = (helpers.general.getMostRecentFunction().data.totalAlloc += bytes)
+                return `-${currentStackOffset}(%ebp)`
+            }
         }
         // var lbl = helpers.variables.newTempLabel(defines.types.p32)
         // createStackVariableListOnly(lbl, newStackVar(defines.types.p32)) //not actually for use, just for knowing the offset
@@ -403,12 +420,12 @@ var allocations = {
         //return lbl
     },
     hasUsedMmap: false,
-    allocateMmap: function (bytes) {
+    allocateMmap: function (bytes, note="") {
         //debugPrint("PUSHING")
         assembly.pushClobbers()
         assembly.pushToStack(bytes, defines.types.u32)
         outputCode.autoPush(
-            `call __allocate__`,
+            `call ${programRules.DynamicArraysAllocateSize ? "__allocate_wsize__" : "__allocate__"} ${note.length != 0? "#" + note : ""}`,
             `add $4, %esp`
         )
         assembly.popClobbers()
@@ -418,22 +435,26 @@ var allocations = {
         }
         return "%eax"
     },
-    allocateData: function (bytes) {
+    allocateData: function (bytes, note = "") {
         var lbl = helpers.variables.newUntypedLabel()
-        outputCode.data.push(`.comm ${lbl}, ${bytes}, 4`);
+        if (programRules.StaticArraysAllocateSize) {
+            outputCode.data.push(`.4byte ${bytes} # Extra size allocation, manually enabled by StaticArraysAllocateSize = true`)
+        }
+        outputCode.data.push(`.comm ${lbl}, ${bytes} ${note.length != 0? "#" + note : ""}`);
         outputCode.autoPush(`mov \$${lbl}, %eax`)
         return "%eax"
     },
-    allocateAuto: function (bytes, forceEbpIfStack = false) {
+    allocateAuto: function (bytes, forceEbpIfStack = false, note = "") {
+        bytes = parseInt(bytes) // just in case
         if (bytes >= 4096 || currentStackOffset > 1e6 || nextAllocIsPersistent || scope.length == 0) {
             if (scope.length == 0) {
-                return this.allocateData(bytes)
+                return this.allocateData(bytes, note)
             } else {
                 nextAllocIsPersistent = false;
-                return this.allocateMmap(bytes)
+                return this.allocateMmap(bytes, note)
             }
         } else {
-            return this.allocateStack(bytes, forceEbpIfStack)
+            return this.allocateStack(bytes, forceEbpIfStack, false, note)
         }
     },
     newStringLiteral: function (value) {
@@ -444,10 +465,10 @@ var allocations = {
         globalVariables[label] = newGlobalVar(defines.types.p8)
         return label
     },
-    allocateArray: function (arr) {
+    allocateArray: function (arr, note="") {
         arr = arr.slice(1, arr.length - 1)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
-        var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize)
+        var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
 
         var ebpOff;
 
@@ -493,10 +514,13 @@ var allocations = {
             )
         } else {
             outputCode.autoPush(
-                `mov %ebp, %eax`,
-                `sub \$${ebpOff}, %eax`,
-                `mov %eax, ${out}`
+                `lea -${ebpOff}(%ebp), ${out} # load array base into variable`
             )
+            // outputCode.autoPush(
+            //     `mov %ebp, %eax`,
+            //     `sub \$${ebpOff}, %eax`,
+            //     `mov %eax, ${out}`
+            // )
         }
         return { out, len: arr.length, arrayType: ref }
     }
@@ -707,12 +731,11 @@ var formats = {
             //var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
             var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types[fname]) // what it's saved in
             //throwE(saveLbl, helpers.registers.extendedTypes.c)
-            if (helpers.types.stringIsEbpOffset(allocLbl))
-            {
+            if (helpers.types.stringIsEbpOffset(allocLbl)) {
                 //throwE("Compiler shouldn't be here", parr, allocLbl)
                 //throwE(allocLbl, parr)
                 var allocOffset = parseInt(helpers.types.getOffsetFromEbpOffsetString(allocLbl))
-                
+
 
                 outputCode.autoPush(`lea ${allocLbl}, ${saveLbl} # Local allocation address for ${fname}`)
                 //throwE(outputCode)
@@ -724,7 +747,7 @@ var formats = {
                         throwE(`Property ${p} not given`);
                     }
                     debugPrint("LOCFFSET", off, allocOffset)
-                    assembly.optimizeMove(value, `-${allocOffset - off }(%ebp)`, helpers.types.guessType(value), p.type)
+                    assembly.optimizeMove(value, `-${allocOffset - off}(%ebp)`, helpers.types.guessType(value), p.type)
 
                     off += helpers.types.typeToBytes(p.type)
                 })
@@ -755,8 +778,7 @@ var formats = {
     readProperty: function (base, baseType, propertyName) {
         var offset = 0
         var i = 0
-        while(baseType.formatPtr.properties[i].name != propertyName)
-        {
+        while (baseType.formatPtr.properties[i].name != propertyName) {
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
             i++
         }
@@ -764,8 +786,7 @@ var formats = {
         //throwE(propertyType, offset)
 
         var out = helpers.registers.getFreeLabelOrRegister(propertyType)
-        if(!helpers.types.stringIsRegister(base))
-        {
+        if (!helpers.types.stringIsRegister(base)) {
             outputCode.autoPush(`movl ${base}, %eax`)
             base = "%eax"
         }

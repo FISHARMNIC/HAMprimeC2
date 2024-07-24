@@ -31,33 +31,33 @@ TODO:
 const fs = require("fs");
 const exec = require('child_process').exec;
 // All required libs
-globalThis.defines = require("./preparer/defines.js");
-globalThis.types = defines.types;
+global.defines = require("./preparer/defines.js");
+global.types = defines.types;
 
 require("./preparer/globals.js");
 
-globalThis.parser = require("./preparer/splitter.js");
-globalThis.nest = require('./preparer/nestEval.js')
-globalThis.actions = require('./helpers/actions.js')
-globalThis.helpers = require('./helpers/helpers.js')
-globalThis.evaluator = require('./helpers/evaluator.js')
-globalThis.mathEngine = require("./math/mathEngine.js");
-globalThis.floatEngine = require("./math/floatEngine.js");
-globalThis.prioritizeWord = require("./helpers/priority.js")
+global.parser = require("./preparer/splitter.js");
+global.nest = require('./preparer/nestEval.js')
+global.actions = require('./helpers/actions.js')
+global.helpers = require('./helpers/helpers.js')
+global.evaluator = require('./helpers/evaluator.js')
+global.mathEngine = require("./math/mathEngine.js");
+global.floatEngine = require("./math/floatEngine.js");
+global.prioritizeWord = require("./helpers/priority.js")
 
-globalThis.mainDir = __dirname
+global.mainDir = __dirname
 
 // load input file and split into lines
 
 var INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
 
-globalThis.inputCode = String(fs.readFileSync(INPUTFILE))
-globalThis.inputCodeLikeTrue = inputCode.split("\n")
+global.inputCode = String(fs.readFileSync(INPUTFILE))
+global.inputCodeLikeTrue = inputCode.split("\n")
 inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x).map(x => x.replace(/\t/g, ""))
 
 //console.log(helpers.registers)
 
-globalThis.previewNextLine = function()
+global.previewNextLine = function()
 {
     return inputCode[globalLine + 1]
 }

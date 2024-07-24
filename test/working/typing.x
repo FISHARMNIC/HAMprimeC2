@@ -12,5 +12,7 @@ entry function<> -> u32
     c[1] <- 123;
 
     printf("%i %i", c[1], d[1]);
+    
+    return 0;
 }
 

@@ -1,5 +1,7 @@
 /* 
-    "Persistent" is a special keyword that will create local arrays on the global scope
+    "Persistent" is a special keyword that will create force arrays to be on the global scope
+    "dispose" is to free it
+    You can also just use C "malloc" and "free" as long as you declare the prototypes
 */
 
 genArrs function<> -> p32
@@ -11,6 +13,7 @@ genArrs function<> -> p32
 entry function<> -> p32
 {
     create result <- genArrs();
-    printf("%i", result[1]);
+    printf("%i\n", result[1]);
+    dispose(result);
     return 0;
 }

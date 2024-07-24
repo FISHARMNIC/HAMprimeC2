@@ -19,4 +19,6 @@ entry function<> -> u32
     printf("The student %s (id #%i) is %i years old\n", bob.info.name, bob.id, bob.info.age);
 
     /* this also works: create bob <- Person<age:(5+10),name:"bob">.name; */
+    
+    return 0;
 }

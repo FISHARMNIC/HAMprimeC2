@@ -1,17 +1,15 @@
 
 .1byte = .byte
 ######## Auto included libs #######
-
+.include "/Users/squijano/Documents/HAMprimeC2/compiler/libs/alloc.s"
 ###################################
 .data
+.align 4
 
 ######## user data section ########
-__STRING0__: .asciz "bob"
-__STRING1__: .asciz "The student %s (id #%i) is %i years old\n"
-__STRING2__: .asciz "bob"
-__ALLOCFOR_entry__ = 28
-__TEMP32_0__: .4byte 0
-__TEMP32_1__: .4byte 0
+__ALLOCFOR_genArrs__ = 4
+__STRING0__: .asciz "%i\n"
+__ALLOCFOR_entry__ = 4
 ###################################
 .text
 
@@ -31,59 +29,57 @@ main:
     ret
 
 ###################################
+genArrs:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR_genArrs__, %esp
+pushl $12
+call __allocate_wsize__ #Allocation for array
+add $4, %esp
+movl $1, 0(%eax)
+movl $2, 4(%eax)
+movl $3, 8(%eax)
+mov %eax, %ebx
+# Loading local variable "rarr" @-4(%ebp)
+mov %ebx, -4(%ebp)
+mov -4(%ebp), %eax
+mov %ebp, %esp
+pop %ebp
+ret
+mov %ebp, %esp
+pop %ebp
+ret
+# rarr: 4
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-lea -8(%ebp), %ebx # Local allocation address for Person
-movl $15, -8(%ebp)
-mov $__STRING0__, %edx
-mov %edx, -4(%ebp)
-lea -16(%ebp), %ecx # Local allocation address for Student
-mov %ebx, -16(%ebp)
-movl $123, -12(%ebp)
-mov %ecx, -20(%ebp)
-movl -20(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %ebx
-mov 4(%ebx), %edx
-mov %edx, %ecx
-movl -20(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %esi
-movl -20(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %edi
-mov 0(%edi), %edx
-mov %edx, __TEMP32_0__
-push %ebx
-push %ecx
-push %esi
-push %edi
-# Calling function printf
-mov __TEMP32_0__, %edx
-push %edx
-push %esi
-push %ecx
-pushl $__STRING1__
-call printf
-mov %eax, __TEMP32_1__
-add $16, %esp
-pop %ebx
-pop %ecx
-pop %esi
-pop %edi
-xor %eax, %eax
-mov $5, %eax
-add $10, %eax
+# Calling function genArrs
+call genArrs
 mov %eax, %ebx
-lea -28(%ebp), %ecx # Local allocation address for Person
-mov %ebx, -28(%ebp)
-mov $__STRING2__, %edx
-mov %edx, -24(%ebp)
-mov 4(%ecx), %edx
-mov %edx, %esi
+# Loading local variable "result" @-4(%ebp)
+mov %ebx, -4(%ebp)
+mov -4(%ebp), %eax
+mov 4(%eax), %ebx
+push %ebx
+# Calling function printf
+push %ebx
+pushl $__STRING0__
+call printf
+mov %eax, %ecx
+add $8, %esp
+pop %ebx
+# Calling function dispose
+mov -4(%ebp), %edx
+push %edx
+call dispose
+mov %eax, %ebx
+add $4, %esp
+mov $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# bob: 20
+mov %ebp, %esp
+pop %ebp
+ret
+# result: 4

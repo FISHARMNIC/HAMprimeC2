@@ -119,6 +119,7 @@ function parseFinalCode()
 `
 ###################################
 .data
+.align 4
 
 ######## user data section ########
 `

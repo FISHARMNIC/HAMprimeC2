@@ -18,6 +18,7 @@ function evaluate(line) {
         var word = line[wordNum]
         var offsetWord = x => wordNum + x >= 0 ? line[wordNum + x] : null;
 
+        // #region comments
         if(inComment) {
             if(word == "*/")
             {
@@ -32,6 +33,10 @@ function evaluate(line) {
             inComment = true
             continue
         }
+        // #endregion comments
+
+        // EVERYTHING MUST BE BELOW THIS
+
 
         // #region modifications
         if (word == '(' || word == ')') {
@@ -85,6 +90,9 @@ function evaluate(line) {
             // } else {
 
             // }
+        } else if(offsetWord(1) == "." && (word == parseInt(word)) && (offsetWord(2) == parseInt(offsetWord(2)))) {
+            var num = word + "." + offsetWord(2)
+            throwE("FLoats not implemented", num)
         } else if (objectIncludes(userFormats, word)) // if word is a class
         {
             // moved to region above
@@ -113,6 +121,7 @@ function evaluate(line) {
                 if (vname == "__arguments") {
                     var index = index[0]
 
+                    //debugPrint(line)
                     var out = actions.functions.readArgument(index)
                     line[wordNum - 1] = out
                     line.splice(wordNum, 3)
@@ -253,7 +262,7 @@ function evaluate(line) {
                 //arrayClamp = defines.types.u32
 
                 var begin = oldScope.begin
-                var output = actions.allocations.allocateArray(line.slice(begin))
+                var output = actions.allocations.allocateArray(line.slice(begin), `Allocation for array`)
                 lastArrayType = output.arrayType
                 arrayClamp = defines.types.u32
 
@@ -361,6 +370,10 @@ function evaluate(line) {
                 requestBracket = mostRecentIfStatement.pop()
                 mostRecentIfStatement.push(objCopy(requestBracket))
                 requestBracket.data.localExit = localExit
+            } else if(word == "__rule") {
+                programRules[offsetWord(1)] = offsetWord(2) == "true"
+                line.splice(wordNum--, 3)
+                
             }
         }
         // #endregion

@@ -6,7 +6,12 @@ var codezone = document.getElementById("zone_code")
 var editor = CodeMirror.fromTextArea(textarea, {
     lineNumbers: true,
     mode: 'text/x-c++src',
-    theme: 'idea'
+    theme: 'idea',
+    extraKeys: {
+        "Tab": function(cm){
+            cm.replaceSelection("    " , "end");
+        }
+    }
 })
 
 var highlighter = CodeMirror.fromTextArea(highlight, {
