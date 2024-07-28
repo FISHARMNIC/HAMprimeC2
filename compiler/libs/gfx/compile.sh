@@ -1,0 +1,1 @@
+gcc -m32 -c gfx.c -o bin/gfx.o

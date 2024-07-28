@@ -24,6 +24,11 @@ global.userFunctions = {           // Object : {function name: {func name, param
         returnType: defines.types.u32
     }
 }
+global.specialFunctions = {
+    size: function(params) {
+        throwE("todo")
+    }
+}
 global.lineOwners = {}
 global.userFormats = {}
 global.stackVariables = [{}]
@@ -61,6 +66,8 @@ global.programRules = {
     DynamicArraysAllocateSize: true,
     StaticArraysAllocateSize: false
 }
+global.nextNumIsFloat = false;
+global.areaHasFloat = false;
 global.keywordTypes = {
     FORMAT: 0,
     FUNCTION: 1,

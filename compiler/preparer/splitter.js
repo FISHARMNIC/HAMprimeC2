@@ -12,7 +12,7 @@ var noExes = [
     "#f",
     "..."
 ];
-noExes.push(...Object.keys(defines.types),...defines.conditionals) // laod all types into exceptions
+noExes.push(...Object.keys(defines.types), ...defines.conditionals) // laod all types into exceptions
 
 var quoteMarks = [
     `"`,
@@ -26,6 +26,8 @@ var nesters = {
     '[': ']',
     '<': '>'
 }
+
+var inComment = false;
 
 // computes the sum of the outputs of a function expecting an offset
 // ex. returns char + nextChar + secNextChar
@@ -54,77 +56,94 @@ function split(line) {
 
         // false if there is an exception (dont split)
 
-        if(inquotes != "" && !quoteMarks.includes(char)) {
-            build += char;
-            continue;
-        }
-
-        var noExe = noExes.every(x => {
-            // if length = 2, then sum up the current and the next
-            // if length = 3, current + next + second next
-            if (cascade(x.length, charOffset) == x) {
-                if (build != "")
-                    outBuffer.push(build) // push current
-                outBuffer.push(x) // push sequence
-                build = "" // clear current
-                charNum += x.length - 1; //offset by length of sequence
-                return false;
-            }
-            return true
-        })
-        if (!noExe) continue; // there was a resevered sequence, dont split and skip
-
-        if (symbols.includes(char)) { // splitting character
-            if (build != "")
-                outBuffer.push(build); // push current
-            if(char != " ")
-                outBuffer.push(char);
-            build = ""; // clear buffer
-        } else if(quoteMarks.includes(char)) { // enter special non-splitting mode in quotes
-            if(inquotes == char) { // are exiting quotes
-                outBuffer.push(build + char);
+        if (!inComment) {
+            if(char == "/" && charOffset(1) == "*")
+            {
+                outBuffer.push(build)
                 build = ""
-                inquotes = "";
-            } else if(inquotes == "") { // are entering quotes
-                build += char;
-                inquotes = char;
+                inComment = true
+                charNum++
+                continue;
             }
-        } else if ((char == parseInt(char)) != mode) { // if we are going from numbers to letters or vice versa
-            if(build != "") 
-                outBuffer.push(build);
-            mode = !mode;
-            build = char;
+
+
+            if (inquotes != "" && !quoteMarks.includes(char)) {
+                build += char;
+                continue;
+            }
+
+            var noExe = noExes.every(x => {
+                // if length = 2, then sum up the current and the next
+                // if length = 3, current + next + second next
+                if (cascade(x.length, charOffset) == x) {
+                    if (build != "")
+                        outBuffer.push(build) // push current
+                    outBuffer.push(x) // push sequence
+                    build = "" // clear current
+                    charNum += x.length - 1; //offset by length of sequence
+                    return false;
+                }
+                return true
+            })
+            if (!noExe) continue; // there was a resevered sequence, dont split and skip
+
+            if (symbols.includes(char)) { // splitting character
+                if (build != "")
+                    outBuffer.push(build); // push current
+                if (char != " ")
+                    outBuffer.push(char);
+                build = ""; // clear buffer
+            } else if (quoteMarks.includes(char)) { // enter special non-splitting mode in quotes
+                if (inquotes == char) { // are exiting quotes
+                    outBuffer.push(build + char);
+                    build = ""
+                    inquotes = "";
+                } else if (inquotes == "") { // are entering quotes
+                    build += char;
+                    inquotes = char;
+                }
+            } else if ((char == parseInt(char)) != mode) { // if we are going from numbers to letters or vice versa
+                if (build != "")
+                    outBuffer.push(build);
+                mode = !mode;
+                build = char;
+            } else {
+                build += char; // build current char
+            }
+
         } else {
-            build += char; // build current char
+            if(char == "*" && charOffset(1) == "/")
+            {
+                inComment = false
+            }
         }
     }
-    if(build != "") outBuffer.push(build); // use end of string as splitter to 
+    if (build != "") outBuffer.push(build); // use end of string as splitter to 
 
-    if(inquotes != "") {
+    if (inquotes != "") {
         console.log("[PARSER ERROR] Missing end-quote: " + line)
         process.exit(1)
     }
     return outBuffer;
 }
 
-function parseFinalCode()
-{
+function parseFinalCode() {
     //console.log(outputCode)
-    var out = 
-`
+    var out =
+        `
 .1byte = .byte
 ######## Auto included libs #######
-` 
-    + autoIncludes.map(x => `.include "${x}"`).join(" ") + 
 `
+        + autoIncludes.map(x => `.include "${x}"`).join(" ") +
+        `
 ###################################
 .data
 .align 4
 
 ######## user data section ########
 `
-    + outputCode.data.join("\n") + 
-`
+        + outputCode.data.join("\n") +
+        `
 ###################################
 .text
 
@@ -135,8 +154,8 @@ user_init:
 #### compiler initation section ###
 __init__:
 `
-    + outputCode.init.join("\n") + 
-`
+        + outputCode.init.join("\n") +
+        `
 ret
 ###################################
 
@@ -148,14 +167,13 @@ main:
 ###################################
 `
 
-var index = out.split("\n").length
-out += outputCode.text.join("\n") + "\n"
-    return {out,index}
+    var index = out.split("\n").length
+    out += outputCode.text.join("\n") + "\n"
+    return { out, index }
 }
 
-function addReserved(x)
-{
+function addReserved(x) {
     noExes.push(x)
 }
 
-module.exports = {split, addReserved, parseFinalCode, symbols, noExes}
+module.exports = { split, addReserved, parseFinalCode, symbols, noExes }

@@ -1,71 +1,84 @@
-//https://docs.oracle.com/cd/E19455-01/806-3773/instructionset-142/index.html
+/*
+todo. Only push non clobbered. use eax, esi, and edi since they are least likely to be clobbered
+(eax will never be clobbered)
+*/
 
 module.exports = function (arr) {
-    //throwE(typeStack)
-    debugPrint("FLOAT MATH ON", arr)
+    //debugPrint("MATH ON", arr, helpers.registers.inLineClobbers)
     var scanPos = 0;
     var current = arr[scanPos]
     var mathType = defines.types.u32
-    var type = popTypeStack()
-    var useFloat = type.float
-    var fmtted = actions.formatIfConstantOrLiteral(current)
+    var pushed = [];
+    Object.entries(helpers.registers.inLineClobbers).forEach(pair => {
+        if(pair[1] == 1)
+        {
+            var type = helpers.types.formatRegister(pair[0], defines.types.u32)
+            pushed.push(type)
+            outputCode.autoPush(`push ${type}`)
+        }
+    })
 
-    if (actions.getVariableOrParamIfExists(fmtted) != null) // if already defined var, load directly into xmm1
-    {
-        outputCode.autoPush(useFloat ? `movss ${fmtted}, %xmm0` : `cvtsi2ss ${fmtted}, %xmm0`);
-    }
-    else { // if constant, must load into __fpu_temp__ inorder to be used by xmm1
-        outputCode.autoPush(`movl ${fmtted}, __fpu_temp__`, useFloat ? `movss __fpu_temp__, %xmm0` : `cvtsi2ss __fpu_temp__, %xmm0`); // store number in fpu stack
-    }
+    debugPrint("CCCCCCCC", arr)
+    outputCode.autoPush(`xor %eax, %eax`, `mov ${helpers.types.formatIfConstant(current)}, ${helpers.types.formatRegister('a', helpers.types.guessType(current))}`) // load first value into register a
 
     scanPos += 1
     var reps = scanPos - 2;
-
-    var deletectr = 0
     while (scanPos < arr.length - 1) {
 
-        current = actions.formatIfConstantOrLiteral(arr[scanPos]);
+        current = helpers.types.formatIfConstant(arr[scanPos]);
 
-        //throwW(scanPos, current)
-        var type = popTypeStack()
-        var useFloat = type.float
-
-        var _next = arr[scanPos + 1]
+        var regA = helpers.types.formatRegister('a', defines.operators.includes(current)? mathType : helpers.types.guessType(arr[scanPos]))
+        var regB = helpers.types.formatRegister('b', mathType)
+        var regC = helpers.types.formatRegister('c', mathType)
+        var regD = helpers.types.formatRegister('d', mathType)
 
         var item = {
             current,
-            next: actions.formatIfConstantOrLiteral(_next),
+            next: helpers.types.formatIfConstant(arr[scanPos + 1]),
         }
 
-
-        if (actions.getVariableOrParamIfExists(_next) != null) // if already defined var, load directly into xmm1
+        if(helpers.variables.variableExists(arr[scanPos + 1]))
         {
-            outputCode.autoPush(useFloat ? `movss ${item.next}, %xmm1` : `cvtsi2ss ${item.next}, %xmm1`); // store number in fpu stack
+            regB = helpers.types.formatRegister('b', helpers.variables.getVariableType(arr[scanPos + 1]))
         }
-        else { // if constant, must load into __fpu_temp__ inorder to be used by xmm1
-            outputCode.autoPush(`movl ${item.next}, __fpu_temp__`, useFloat ? `movss __fpu_temp__, %xmm1` : `cvtsi2ss __fpu_temp__, %xmm1`); // store number in fpu stack
-        }
-
 
         outputCode.autoPush(...((inD) => {
-            var number = inD.next
             switch (inD.current) {
                 case "+":
-                    return [`addss %xmm1, %xmm0`] // s(1) += st(0). st(0) = st(1) (pop)
+                    return [`add ${inD.next}, ${regA}`]
                 case "-":
-                    return [`subss %xmm1, %xmm0`]
+                    return [`sub ${inD.next}, ${regA}`]
                 case "*":
-                    return [`mulss %xmm1, %xmm0`]
+                    return [
+                        `mov ${inD.next}, ${regB}`,
+                        `mul ${regB}`,
+                    ]
                 case "/":
-                    return [`divss %xmm1, %xmm0`]
+                    return [
+                        `mov ${inD.next}, ${regB}`,
+                        `xor %edx, %edx`,
+                        `div ${regB}`,
+                    ]
+                case "%":
+                    return [
+                        `mov ${inD.next}, ${regB}`,
+                        `xor %edx, %edx`,
+                        `div ${regB}`,
+                        `mov ${regD}, ${regA}`,
+                    ]
                 default:
                     return ""
             }
         })(item))
-        scanPos += 2;
+        scanPos += 1;
     }
-    var lbl = helpers.variables.newTempLabel(defines.type.u32)
-    outputCode.autoPush(`movss %xmm0, ${lbl}`)
-    typeStack.push(defines.types.u32)
+    var lbl = helpers.registers.getFreeLabelOrRegister(mathType)
+    //debugPrint("MATH GOT LBL", lbl)
+    outputCode.autoPush(`mov %eax, ${lbl}`)
+    pushed.forEach(x => {
+        outputCode.autoPush(`pop ${x}`)
+    })
+
+    //typeStack.push(defines.types.u32)
     return lbl
 }

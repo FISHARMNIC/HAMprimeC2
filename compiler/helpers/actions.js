@@ -557,6 +557,7 @@ var functions = {
             fname + ":",
             `push %ebp`,
             `mov %esp, %ebp`,
+            `${userFunctions[fname].saveRegs? "pusha" : ""}`,
             `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`
         )
 
@@ -569,6 +570,7 @@ var functions = {
         }
 
         outputCode.text.push(
+            `${d.saveRegs? "popa" : ""}`,
             `mov %ebp, %esp`,
             `pop %ebp`,
             `ret`

@@ -1,7 +1,7 @@
 /*
 TODO:
     NEW
-    - Array allocate +4 in order to store length of array too. Add specifier like "__disable length" to remove that if wanted
+    - 
     - "own" keyword specifies who owns data. Without it its freed 
         - uses Memory Ownership Table for automatic freeing
         - "__disable ownership" to turn this off
@@ -19,6 +19,7 @@ TODO:
 */
 
 /* FIXED
+- Array allocate +4 in order to store length of array too
 - FIXED only use esp in loop if allocating format otherwise it can be overwritten like normal var
     - FIXED Stallocs need to return ESP since ebp offsets cannot be preserved if in a loop
     - FIXED Make it so if the last thing was a loop or something iterable, use esp instead

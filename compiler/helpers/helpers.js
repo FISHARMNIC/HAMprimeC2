@@ -172,6 +172,10 @@ var types = {
         } else if (variables.checkIfParameter(word)) {
             return functions.getParameterType(word)
         }
+        if(nextNumIsFloat) {
+            nextNumIsFloat = false
+            return objCopy(defines.types.f32)
+        }
         return objCopy(defines.types.u32)
     }
 }

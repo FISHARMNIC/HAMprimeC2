@@ -19,16 +19,14 @@ function evaluate(line) {
         var offsetWord = x => wordNum + x >= 0 ? line[wordNum + x] : null;
 
         // #region comments
-        if(inComment) {
-            if(word == "*/")
-            {
+        if (inComment) {
+            if (word == "*/") {
                 inComment = false
                 //debugPrint("EXIR")
             }
             //debugPrint("YA")
             continue
-        } else if(word == "/*")
-        {
+        } else if (word == "/*") {
 
             inComment = true
             continue
@@ -65,7 +63,7 @@ function evaluate(line) {
         //     scope[scope.length - 1].data.push(offsetWord(-1))
         // }
         // #endregion
-        // #region Formats
+        // #region Formats and Numbers
         else if (word == '.') { // child property UNFINISHED
             // creating a new property
             if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
@@ -77,7 +75,7 @@ function evaluate(line) {
             else {
                 var base = offsetWord(-1)
                 var ptype = helpers.types.guessType(base)
-                var out = actions.formats.readProperty(base,ptype,offsetWord(1))
+                var out = actions.formats.readProperty(base, ptype, offsetWord(1))
                 line[wordNum - 1] = out
                 line.splice(wordNum, 2)
                 wordNum--
@@ -90,9 +88,16 @@ function evaluate(line) {
             // } else {
 
             // }
-        } else if(offsetWord(1) == "." && (word == parseInt(word)) && (offsetWord(2) == parseInt(offsetWord(2)))) {
-            var num = word + "." + offsetWord(2)
-            throwE("FLoats not implemented", num)
+        } else if (offsetWord(1) == "." && (word == parseInt(word)) && (offsetWord(2) == parseInt(offsetWord(2)))) // float 
+        {
+            var num = parseFloat(word + "." + offsetWord(2))
+            var asflt = String(doubleIEEE(num))
+            line.splice(wordNum + 1, 2)
+            line[wordNum] = asflt
+            nextNumIsFloat = true;
+        } else if (word == parseInt(word)) // int
+        {
+            nextNumIsFloat = false;
         } else if (objectIncludes(userFormats, word)) // if word is a class
         {
             // moved to region above
@@ -165,8 +170,7 @@ function evaluate(line) {
             }
 
             var vtype;
-            if(objectIncludes(defines.types,offsetWord(1)))
-            {
+            if (objectIncludes(defines.types, offsetWord(1))) {
                 // get type and remove
                 vtype = defines.types[offsetWord(1)]
                 line.splice(wordNum + 1, 1)
@@ -191,16 +195,16 @@ function evaluate(line) {
             }
         } else if (word[0] == '"' && word[word.length - 1] == '"') { // string literal
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
-        } else if(word[0] = "'" && word[word.length - 1] == "'") {
+        } else if (word[0] = "'" && word[word.length - 1] == "'") {
             line[wordNum] = String(word.charCodeAt(1));
-        }else if (objectIncludes(getAllStackVariables(), word)) // get stack var
+        } else if (objectIncludes(getAllStackVariables(), word)) // get stack var
         {
             line[wordNum] = actions.assembly.getStackVarAsEbp(word)
             typeStack.push(getAllStackVariables()[word].type)
         } else if (helpers.variables.checkIfParameter(word)) {   // is param
             //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
             line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
-        } else if(word == "$") {
+        } else if (word == "$") {
             line[wordNum] = actions.variables.readAddress(offsetWord(1))
             line.splice(wordNum + 1, 1)
         }
@@ -267,7 +271,7 @@ function evaluate(line) {
                 arrayClamp = defines.types.u32
 
 
-     
+
                 line[begin] = output.out
                 line.splice(begin + 1, output.len + 2)
                 wordNum = begin
@@ -305,7 +309,7 @@ function evaluate(line) {
                     returnType = defines.types[offsetWord(5)]
                 }
 
-               // throwE(line, offsetWord(3), offsetWord(4))
+                // throwE(line, offsetWord(3), offsetWord(4))
 
                 var data = {
                     name: fname,
@@ -313,6 +317,7 @@ function evaluate(line) {
                     returnType,
                     variadic: params_obj.didVari,
                     totalAlloc: 0,
+                    saveRegs: offsetWord(-2) == "__ccalled__"
                 }
                 userFunctions[fname] = data
 
@@ -370,22 +375,26 @@ function evaluate(line) {
                 requestBracket = mostRecentIfStatement.pop()
                 mostRecentIfStatement.push(objCopy(requestBracket))
                 requestBracket.data.localExit = localExit
-            } else if(word == "__rule") {
+            } else if (word == "__rule") {
                 programRules[offsetWord(1)] = offsetWord(2) == "true"
                 line.splice(wordNum--, 3)
-                
+
             }
         }
         // #endregion
         // #region Functions
-        else if (offsetWord(1) == "(" && objectIncludes(userFunctions, word)) // function call
+        else if (offsetWord(1) == "(" && (objectIncludes(userFunctions, word) || objectIncludes(specialFunctions, word))) // function call
         {
             var fname = word
             var args = offsetWord(2)
             if (typeof (args) == "string")
                 args = [args]
             //debugPrint(line)
-            line[wordNum] = actions.functions.callFunction(fname, args)
+            if (objectIncludes(specialFunctions, word)) {
+                line[wordNum] = specialFunctions[fname](args)
+            } else {
+                line[wordNum] = actions.functions.callFunction(fname, args)
+            }
             //debugPrint("1232323", line)
             line.splice(wordNum + 1, 3)
         }
@@ -395,93 +404,90 @@ function evaluate(line) {
 
     // EVERYTHING MUST BE ABOVE THIS
 
-    if(!inComment)
-    {
-    for (var wordNum = 0; wordNum < line.length; wordNum++) {
-        var word = line[wordNum]
-        // #region Math
-        if (defines.operators.includes(line[wordNum + 1])) {
-            var start = wordNum
-            var onNum = true;
-            var build = [];
-            while (wordNum < line.length) {
-                word = line[wordNum]
-                if (onNum) {
-                    if (defines.symbols.includes(word) || defines.operators.includes(word)) {
-                        break;
+    if (!inComment) {
+        for (var wordNum = 0; wordNum < line.length; wordNum++) {
+            var word = line[wordNum]
+            // #region Math
+            if (defines.operators.includes(line[wordNum + 1])) {
+                var start = wordNum
+                var onNum = true;
+                var build = [];
+                while (wordNum < line.length) {
+                    word = line[wordNum]
+                    if (onNum) {
+                        if (defines.symbols.includes(word) || defines.operators.includes(word)) {
+                            break;
+                        }
                     }
+                    build.push(word)
+                    onNum = !onNum;
+                    wordNum++;
                 }
-                build.push(word)
-                onNum = !onNum;
-                wordNum++;
+                var lbl = mathEngine(build)
+                line.splice(start, build.length + 1, lbl)
             }
-            var lbl = mathEngine(build)
-            line.splice(start, build.length + 1, lbl)
-        }
-        // #endregion
-        // #region Conditionals
-        else if (defines.conditionals.includes(offsetWord(-1))) {
-            var left = offsetWord(-2)
-            var right = word
-            var cond = offsetWord(-1)
+            // #endregion
+            // #region Conditionals
+            else if (defines.conditionals.includes(offsetWord(-1))) {
+                var left = offsetWord(-2)
+                var right = word
+                var cond = offsetWord(-1)
 
-            var left_type = helpers.types.guessType(left)
-            var right_type = helpers.types.guessType(right)
+                var left_type = helpers.types.guessType(left)
+                var right_type = helpers.types.guessType(right)
 
 
-            //throwE(left, right, left_type, right_type)
+                //throwE(left, right, left_type, right_type)
 
-            if (typeof (left) != "string" || typeof (right) != "string") {
-                throwE("Cannot compare expanded statements", left, right)
-            }
+                if (typeof (left) != "string" || typeof (right) != "string") {
+                    throwE("Cannot compare expanded statements", left, right)
+                }
 
-            var regL = helpers.types.formatRegister("a", left_type)
-            var regR = helpers.types.formatRegister("d", right_type)
-            var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u8)
+                var regL = helpers.types.formatRegister("a", left_type)
+                var regR = helpers.types.formatRegister("d", right_type)
+                var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u8)
 
 
-            // TODO: optimize to allow one reference like cmp (%ebp), $123
-            if (helpers.types.isConstant(left)) {
-                left = helpers.types.formatIfConstOrLit(left)
-            } else if (!helpers.types.stringIsRegister(left)){
-                outputCode.autoPush(`mov ${left}, ${regL}`)
-                left = regL
-            } else {
-                //throwE(helpers.types.getRegisterType(left, true).size)
-                if((helpers.types.typeToBits(left_type) != 32) && helpers.types.getRegisterType(left, true).size == 32 )
-                    {
+                // TODO: optimize to allow one reference like cmp (%ebp), $123
+                if (helpers.types.isConstant(left)) {
+                    left = helpers.types.formatIfConstOrLit(left)
+                } else if (!helpers.types.stringIsRegister(left)) {
+                    outputCode.autoPush(`mov ${left}, ${regL}`)
+                    left = regL
+                } else {
+                    //throwE(helpers.types.getRegisterType(left, true).size)
+                    if ((helpers.types.typeToBits(left_type) != 32) && helpers.types.getRegisterType(left, true).size == 32) {
                         left = helpers.types.formatRegister(helpers.registers.registerStringToLetterIfIs(left), left_type)
                     }
-            }
+                }
 
-            if (helpers.types.isConstant(right)) {
-                right = helpers.types.formatIfConstOrLit(right)
-            } else if (!helpers.types.stringIsRegister(right)){
-                outputCode.autoPush(`mov ${right}, ${regR}`)
-                right = regR
-            } else {
-                if((helpers.types.typeToBits(right_type)) != 32 && helpers.types.getRegisterType(right, true).size == 32 )
-                    {
+                if (helpers.types.isConstant(right)) {
+                    right = helpers.types.formatIfConstOrLit(right)
+                } else if (!helpers.types.stringIsRegister(right)) {
+                    outputCode.autoPush(`mov ${right}, ${regR}`)
+                    right = regR
+                } else {
+                    if ((helpers.types.typeToBits(right_type)) != 32 && helpers.types.getRegisterType(right, true).size == 32) {
                         right = helpers.types.formatRegister(helpers.registers.registerStringToLetterIfIs(right), right_type)
                     }
                 }
-            
 
-            outputCode.autoPush(
-                `mov${helpers.types.stringIsRegister(lbl) ? "b" : ""} \$0, ${lbl}`,
-                `cmp ${right}, ${left}`,
-                `${defines.conditionalMap[cond]} ${lbl}`,
-            )
 
-            //throwE(line)
-            line[wordNum - 2] = lbl
-            line.splice(wordNum - 1, 2)
+                outputCode.autoPush(
+                    `mov${helpers.types.stringIsRegister(lbl) ? "b" : ""} \$0, ${lbl}`,
+                    `cmp ${right}, ${left}`,
+                    `${defines.conditionalMap[cond]} ${lbl}`,
+                )
 
-            wordNum -= 2
+                //throwE(line)
+                line[wordNum - 2] = lbl
+                line.splice(wordNum - 1, 2)
 
+                wordNum -= 2
+
+            }
+            // #endregion
         }
-        // #endregion
-    }
     }
     return line
 

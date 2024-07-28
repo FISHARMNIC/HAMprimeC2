@@ -1,15 +1,14 @@
 
 .1byte = .byte
 ######## Auto included libs #######
-.include "/Users/squijano/Documents/HAMprimeC2/compiler/libs/alloc.s"
+
 ###################################
 .data
 .align 4
 
 ######## user data section ########
-__ALLOCFOR_genArrs__ = 4
-__STRING0__: .asciz "%i\n"
-__ALLOCFOR_entry__ = 4
+__ALLOCFOR_render__ = 0
+__ALLOCFOR_entry__ = 0
 ###################################
 .text
 
@@ -29,57 +28,39 @@ main:
     ret
 
 ###################################
-genArrs:
+render:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_genArrs__, %esp
-pushl $12
-call __allocate_wsize__ #Allocation for array
-add $4, %esp
-movl $1, 0(%eax)
-movl $2, 4(%eax)
-movl $3, 8(%eax)
+pusha
+sub $__ALLOCFOR_render__, %esp
+# Calling function gfx_rect
+pushl $30
+pushl $30
+pushl $20
+pushl $20
+call gfx_rect
 mov %eax, %ebx
-# Loading local variable "rarr" @-4(%ebp)
-mov %ebx, -4(%ebp)
-mov -4(%ebp), %eax
+add $16, %esp
+popa
 mov %ebp, %esp
 pop %ebp
 ret
-mov %ebp, %esp
-pop %ebp
-ret
-# rarr: 4
 entry:
 push %ebp
 mov %esp, %ebp
+
 sub $__ALLOCFOR_entry__, %esp
-# Calling function genArrs
-call genArrs
-mov %eax, %ebx
-# Loading local variable "result" @-4(%ebp)
-mov %ebx, -4(%ebp)
-mov -4(%ebp), %eax
-mov 4(%eax), %ebx
+mov $render, %ebx
 push %ebx
-# Calling function printf
+# Calling function gfx_begin
 push %ebx
-pushl $__STRING0__
-call printf
+pushl $100
+pushl $100
+call gfx_begin
 mov %eax, %ecx
-add $8, %esp
+add $12, %esp
 pop %ebx
-# Calling function dispose
-mov -4(%ebp), %edx
-push %edx
-call dispose
-mov %eax, %ebx
-add $4, %esp
-mov $0, %eax
+
 mov %ebp, %esp
 pop %ebp
 ret
-mov %ebp, %esp
-pop %ebp
-ret
-# result: 4
