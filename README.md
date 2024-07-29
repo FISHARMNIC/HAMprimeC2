@@ -165,3 +165,27 @@ entry function<> -> u32
     gfx_begin(500, 360, $render);
 }
 ```
+
+### How to run
+* Dependencies
+    * NodeJS
+    * Needed if on MacOS
+        * LimaVM
+        * XQuartz (only if you are planning to use the graphics library)
+* To compile a program
+    * run `node compiler/main.js <file name in test/working directory>`
+        * This creates an assembly file in `compiled/out.s`
+* To run your program (normal)
+    * MacOS
+        * Enter `limactl`
+        * Run `.compiler/scripts/assemble.sh`
+    * Linux
+        * Run `.compiler/scripts/assemble.sh`
+* To run your program (with graphics)
+    * Compile graphics library (one time only)
+        * Run `./compiler/libs/gfx/compile.sh`
+          * If on MacOS, add `limactl shell debian` before this on the same line
+    * MacOS
+        * Run `.compiler/scripts/lima_x11.sh`
+    * Linux
+        * Run `.compiler/scripts/internal/assemble_x11.sh`
