@@ -59,7 +59,11 @@ function evaluate(line) {
                 line.splice(wordNum, 1)
                 wordNum--;
             }
-        } //else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {
+        } else if(objectIncludes(macros, word)) {
+            line[wordNum] = macros[word]
+        }
+        
+        //else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {
         //     scope[scope.length - 1].data.push(offsetWord(-1))
         // }
         // #endregion
@@ -183,7 +187,14 @@ function evaluate(line) {
             } else {
                 return actions.variables.create(offsetWord(1), vtype, 0)
             }
-        } else if (offsetWord(1) == "<-") { // variable setting
+        } else if(word == "import") {
+            //throwE(line, offsetWord(1))
+            globalVariables[offsetWord(2)] = newGlobalVar(defines.types[offsetWord(1)])
+            outputCode.data.push(".extern " + offsetWord(2))
+            wordNum += 2
+        }
+        
+        else if (offsetWord(1) == "<-") { // variable setting
             if (getLastScopeType() == keywordTypes.FORMAT) { // just creating a property
                 scope[scope.length - 1].data.properties.push({
                     name: word,
@@ -379,6 +390,9 @@ function evaluate(line) {
                 programRules[offsetWord(1)] = offsetWord(2) == "true"
                 line.splice(wordNum--, 3)
 
+            } else if (word == "__define") {
+                macros[offsetWord(1)] = offsetWord(2)
+                wordNum += 2
             }
         }
         // #endregion
@@ -423,6 +437,7 @@ function evaluate(line) {
                     onNum = !onNum;
                     wordNum++;
                 }
+                //throwE(line)
                 var lbl = mathEngine(build)
                 line.splice(start, build.length + 1, lbl)
             }

@@ -117,6 +117,8 @@ var types = {
     },
     stringIsEbpOffset: function (str) {
         debugPrint("============", str)
+        if(String(str) == "undefined")
+            throwE("Undef?")
         return str.substring(str.indexOf("(")) == "(%ebp)"
     },
     getOffsetFromEbpOffsetString: function (str) {

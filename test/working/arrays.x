@@ -6,7 +6,8 @@ This example showcases loading and reading to/from arrays
 create gi <- 1;
 create garr <- {1,2,3};
 
-/* The following functions don't really do anything. They're only there to show that you can use functions in indexing */
+
+/* The following functions don't really do anything. They're only there to show that you can use functions in indexing  */
 test function<> -> u32
 {
     return(123);

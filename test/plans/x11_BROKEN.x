@@ -13,23 +13,19 @@ __define Expose 12;
 __define ButtonPress 4; 
 __define ButtonRelease 5;
 
-create size <- 20;
+create sx <- 20;
 __ccalled__ render function<u32 event> -> u32
 {
     gfx_clear();
+    /* ELIF DOESNT WORK */
     if(event == ButtonPress)
     {
-        size <- (size + 10);
-        gfx_mouse_x <- (gfx_mouse_x - 5);
-        gfx_mouse_y <- (gfx_mouse_y - 5);
-    } 
-    
-    if(event == ButtonRelease)
+        sx <- (sx + 10);
+    } elif(event == ButtonRelease)
     {
-        size <- (size - 10);
-        
+        sx <- (sx - 10);
     }
-    gfx_rect((gfx_mouse_x - 10),(gfx_mouse_y - 10),size,size);
+    gfx_rect((gfx_mouse_x - 10),(gfx_mouse_y - 10),sx,20);
 }
 
 entry function<> -> u32

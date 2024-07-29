@@ -3,6 +3,8 @@
 global.scope = [];
 global.currentStackOffset = 0;
 global.requestBracket = 0;
+
+global.macros = {}
 global.globalVariables = {           // Object : {variable name: type}
     "this": defines.types.u32,
 }
@@ -11,6 +13,15 @@ global.userFunctions = {           // Object : {function name: {func name, param
         name: 'printf',
         parameters: [
             { name: "format", type: defines.types.p8 }
+        ],
+        variadic: true,
+        returnType: defines.types.u32
+    },
+    "sprintf": {
+        name: 'sprintf',
+        parameters: [
+            {name: "destination", type: defines.types.p8},
+            {name: "format", type: defines.types.p8}
         ],
         variadic: true,
         returnType: defines.types.u32

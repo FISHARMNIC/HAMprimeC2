@@ -1,13 +1,15 @@
 /*
 TODO:
     NEW
-    - 
+    _ __define only works for single words
+    - flag for __ccalled__ to be turned on automatically, and switches of caller saving regs
     - "own" keyword specifies who owns data. Without it its freed 
         - uses Memory Ownership Table for automatic freeing
         - "__disable ownership" to turn this off
     - working on: see ex6
     - add bignums (only supported using zmm registers)
     HIGH
+    - check plans/X11_BROKEN ELIF DO NOT WORK
     - Unclosed quotes like "don't" won't work in comments
     - IDE editing: \n becomes \\n. tab = \t. Stuff like that
     - fix most register formater functions to acknowledge ebp as register 'p'

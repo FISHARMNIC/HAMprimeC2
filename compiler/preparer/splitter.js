@@ -114,6 +114,7 @@ function split(line) {
         } else {
             if(char == "*" && charOffset(1) == "/")
             {
+                charNum++
                 inComment = false
             }
         }
