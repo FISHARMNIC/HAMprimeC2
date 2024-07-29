@@ -20,13 +20,20 @@ This is a the second compiler that I have developed for HAM prime. So far it lac
 
 ### Whats working
 * Variables
-* Arrays
-* Format declaration, allocation, and properties
+* Implicit typing
+* Formats
 * Functions
-* NEW: Function prototypes
-* NEW: Variadics
+* Variadic functions
+* Nested If/elif/else statements (UPDATE: recent push broke elif)
 * Math (no floats yet)
-* see `test/working` for working programs
+* Printing
+* While loops
+* Arrays
+* Pointers
+* Stack variables
+* Debugger
+* X11 graphics (works, but much more to be added)
+* See `test/working` for working programs
 
 ### Interesting examples
 **Basic demo**
@@ -131,5 +138,30 @@ entry function<> -> u32
 
     pthread_exit(0);
     return 0;
+}
+```
+
+**Graphics**
+```C
+/* Assemble with scripts/lima_x11.sh */
+
+forward gfx_begin function<u32 a, u32 b, p32 fn> -> u32;
+forward gfx_rect function<u32 x, u32 y, u32 w, u32 h> -> u32;
+forward gfx_clear function<> -> u32;
+
+import u32 gfx_mouse_x;
+import u32 gfx_mouse_y;
+
+/* __ccalled__ specifies that the function will be called from C */
+__ccalled__ render function<u32 event> -> u32
+{
+    gfx_clear();
+    /* Draw a rectangle at the mouse */
+    gfx_rect((gfx_mouse_x - 10),(gfx_mouse_y - 10),20,20);
+}
+
+entry function<> -> u32
+{
+    gfx_begin(500, 360, $render);
 }
 ```
