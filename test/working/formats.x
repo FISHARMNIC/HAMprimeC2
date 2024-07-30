@@ -14,7 +14,6 @@ Student format
 entry function<> -> u32
 {
     create bob <- Student<id:123,info:Person<age:15,name:"bob">>;
-
     // Nested properties
     printf("The student %s (id #%i) is %i years old\n", bob.info.name, bob.id, bob.info.age);
 

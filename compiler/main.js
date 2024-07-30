@@ -9,6 +9,7 @@ TODO:
     - working on: see ex6
     - add bignums (only supported using zmm registers)
     HIGH
+    - FORMAT PROPERTYS CANNOT BE SET
     - check plans/X11_BROKEN ELIF DO NOT WORK
     - Unclosed quotes like "don't" won't work in comments
     - IDE editing: \n becomes \\n. tab = \t. Stuff like that

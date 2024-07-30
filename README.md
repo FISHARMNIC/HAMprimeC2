@@ -1,32 +1,45 @@
-# HAM prime - a 32-bit compiled programming language
-### Compiler 2
-
----
-This is a the second compiler that I have developed for HAM prime. So far it lacks many features that existed in the original HAM prime compiler. However, this new compiler is much more optimized and has less bugs than the original.
-
-## See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working)
-
-### Main differences
+# <img src="https://github.com/FISHARMNIC/proglan2/assets/73864341/9a5327b9-ffcc-425a-b927-ad829415715b" width="20px"> HAM\` Language (New Compiler)
+A new compiler for the 32-bit compiled programming language HAM\` (HAM prime). So far, it lacks some features that existed in the [original HAM prime compiler](https://github.com/FISHARMNIC/HAMprime/tree/main) (mainly floats and methods). However, besides including numerous new features, this new compiler is much more optimized and has less bugs than the original.
+# What sets HAM\` apart from other languages?
+HAM\` is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays (missing from this compiler) and implicit typing.
+# What is working so far?
+With the exception of floating point arithmetic (which *does* work in the first compiler), this compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
+- Variables
+	- Stack and global scope
+	- Implicit and forced typing
+	- Pointers an addressing
+	- External variables
+	- Arrays and strings
+- Formats
+	- Nested formats
+	- Creating instances
+	- Property reading (setting coming very soon)
+- Functions
+	- Variadic functions
+	- Forward declarations
+	- Seamless callee/caller C-functions
+- Control flow
+	- Nested If/elif/else statements (UPDATE: recent push broke elif)
+	- While loops
+* I/O
+	* Uses C printf and scanf
+- Debugger
+	- Traces back to faulty line in source file
+- Graphics
+	- Expose/mouse/keyboard events
+	- Rendering simple shapes
+- Math (no floats yet)
+#### differences from the first compiler
 * Much better optimization
-* Full inclusion of stack allocation
+* Stack allocation / variables
 * Recursion
-* Standard calling convention
+* Standard calling convention (cdecl)
 * No more corner cases where certain things won't work
 * Parenthesis math 
 * Seamless C inclusion
+# Features a new IDE
+<img width="500" alt="IDE" src="https://github.com/FISHARMNIC/HAMprimeC2/assets/73864341/4434942e-023f-4092-8913-dfc529c500a7">
 
-### New IDE
-<img width="1249" alt="Screen Shot 2024-06-17 at 12 21 11 PM" src="https://github.com/FISHARMNIC/HAMprimeC2/assets/73864341/4434942e-023f-4092-8913-dfc529c500a7">
-
-### Whats working
-* Variables
-* Arrays
-* Format declaration, allocation, and properties
-* Functions
-* NEW: Function prototypes
-* NEW: Variadics
-* Math (no floats yet)
-* see `test/working` for working programs
 
 ### Interesting examples
 **Basic demo**
