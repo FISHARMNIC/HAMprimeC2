@@ -146,3 +146,52 @@ entry function<> -> u32
     return 0;
 }
 ```
+
+**Graphics**
+```C
+/* Assemble with scripts/lima_x11.sh */
+
+forward gfx_begin function<u32 a, u32 b, p32 fn> -> u32;
+forward gfx_rect function<u32 x, u32 y, u32 w, u32 h> -> u32;
+forward gfx_clear function<> -> u32;
+
+import u32 gfx_mouse_x;
+import u32 gfx_mouse_y;
+
+/* __ccalled__ specifies that the function will be called from C */
+__ccalled__ render function<u32 event> -> u32
+{
+    gfx_clear();
+    /* Draw a rectangle at the mouse */
+    gfx_rect((gfx_mouse_x - 10),(gfx_mouse_y - 10),20,20);
+}
+
+entry function<> -> u32
+{
+    gfx_begin(500, 360, $render);
+}
+```
+
+### How to run
+* Dependencies
+    * NodeJS
+    * Needed if on MacOS
+        * LimaVM
+        * XQuartz (only if you are planning to use the graphics library)
+* To compile a program
+    * run `node compiler/main.js <file name in test/working directory>`
+        * This creates an assembly file in `compiled/out.s`
+* To run your program (normal)
+    * MacOS
+        * Enter `limactl`
+        * Run `.compiler/scripts/assemble.sh`
+    * Linux
+        * Run `.compiler/scripts/assemble.sh`
+* To run your program (with graphics)
+    * Compile graphics library (one time only)
+        * Run `./compiler/libs/gfx/compile.sh`
+          * If on MacOS, add `limactl shell debian` before this on the same line
+    * MacOS
+        * Run `.compiler/scripts/lima_x11.sh`
+    * Linux
+        * Run `.compiler/scripts/internal/assemble_x11.sh`
