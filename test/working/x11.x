@@ -25,8 +25,7 @@ __ccalled__ render function<u32 event> -> u32
         gfx_mouse_x <- (gfx_mouse_x - 5);
         gfx_mouse_y <- (gfx_mouse_y - 5);
     } 
-    
-    if(event == ButtonRelease)
+    elif(event == ButtonRelease)
     {
         size <- (size - 10);
         

@@ -1,11 +1,16 @@
 List format {
-    .buffer p32;
+    __rule DynamicArraysAllocateSize false;
 
-    .append method<u32 item > -> u32
+    .buffer p32;
+    .size 
+
+    .append method<u32 item> -> u32
     {
         realloc(this.buffer,(size(this) + 1));
         this[size(this)] = item;
     }
+
+    __rule DynamicArraysAllocateSize true;
 }
 
 create listA -> List<>;

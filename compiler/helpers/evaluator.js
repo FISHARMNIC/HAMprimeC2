@@ -178,9 +178,11 @@ function evaluate(line) {
                 // get type and remove
                 vtype = defines.types[offsetWord(1)]
                 line.splice(wordNum + 1, 1)
-            } else {
-                vtype = helpers.types.guessType(offsetWord(3))
-            }
+            } else if (offsetWord(2) == '<-') {
+                    vtype = helpers.types.guessType(offsetWord(3))
+                } else {
+                    vtype = defines.types.u32
+                }
 
             if (offsetWord(2) == '<-') {
                 return actions.variables.create(offsetWord(1), vtype, offsetWord(3))

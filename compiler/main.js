@@ -1,19 +1,19 @@
 /*
 TODO:
     NEW
-    _ __define only works for single words
     - flag for __ccalled__ to be turned on automatically, and switches of caller saving regs
+    - flag "NoStringDuplicates" when TRUE: any string literals with the same value use the same reference. Default TRUE
     - "own" keyword specifies who owns data. Without it its freed 
         - uses Memory Ownership Table for automatic freeing
         - "__disable ownership" to turn this off
     - working on: see ex6
     - add bignums (only supported using zmm registers)
     HIGH
+    _ __define only works for single words
     - FORMAT PROPERTYS CANNOT BE SET
-    - check plans/X11_BROKEN ELIF DO NOT WORK
     - Unclosed quotes like "don't" won't work in comments
     - IDE editing: \n becomes \\n. tab = \t. Stuff like that
-    - fix most register formater functions to acknowledge ebp as register 'p'
+    - (??? FIXED ???) fix most register formater functions to acknowledge ebp as register 'p'
     - if there isnt any math on the line, free up more, otherwise pre-clobber certain registers
     - do like "(123,555) &&== bob" is like an and
     - (x && y) or (a || b)
