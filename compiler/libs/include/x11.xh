@@ -1,4 +1,22 @@
-/* from x.h */
+__rule hasUsedMmap true;
+
+forward gfx_setup function<u32 width, u32 height> -> u32;
+forward gfx_begin function<p32 fn> -> u32
+
+forward gfx_draw_rect function<u32 x, u32 y, u32 w, u32 h> -> u32;
+forward gfx_draw_arc function<u32 x, u32 y, u32 size, u32 a1, u32 a2> -> u32;
+
+forward gfx_clear function<> -> u32;
+
+forward gfx_context_allocateColor function<p8 color> -> u32;
+forward gfx_context_setContext function<p32 gc> -> u32;
+
+import u32 gfx_mouse_x;
+import u32 gfx_mouse_y;
+import u32 gfx_mouse_button;
+import u32 gfx_keypress_keycode;
+import u8 gfx_keypress_key;
+
 __define KeyPress         2; 
 __define KeyRelease       3; 
 __define ButtonPress      4; 

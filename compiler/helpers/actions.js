@@ -419,7 +419,6 @@ var allocations = {
         // currentStackOffset += bytes
         //return lbl
     },
-    hasUsedMmap: false,
     allocateMmap: function (bytes, note="") {
         //debugPrint("PUSHING")
         assembly.pushClobbers()
@@ -429,10 +428,9 @@ var allocations = {
             `add $4, %esp`
         )
         assembly.popClobbers()
-        if (!this.hasUsedMmap) {
-            autoIncludes.push(mainDir + "/libs/alloc.s")
-            this.hasUsedMmap = true
-        }
+
+        programRules.hasUsedMmap = true
+
         return "%eax"
     },
     allocateData: function (bytes, note = "") {

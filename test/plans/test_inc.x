@@ -1,6 +1,6 @@
 /* Assemble with scripts/lima_x11.sh */
 
-#include sys x11
+#include sys x11;
 
 create size <- 20;
 __ccalled__ render function<u32 event> -> u32
@@ -22,6 +22,5 @@ __ccalled__ render function<u32 event> -> u32
 
 entry function<> -> u32
 {
-    gfx_setup(500, 360);
-    gfx_begin($render);
+    gfx_begin(500, 360, $render);
 }

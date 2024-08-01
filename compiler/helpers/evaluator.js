@@ -391,7 +391,6 @@ function evaluate(line) {
             } else if (word == "__rule") {
                 programRules[offsetWord(1)] = offsetWord(2) == "true"
                 line.splice(wordNum--, 3)
-
             } else if (word == "__define") {
                 macros[offsetWord(1)] = offsetWord(2)
                 wordNum += 2

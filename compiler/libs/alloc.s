@@ -1,5 +1,9 @@
 .text
 
+.globl __allocate_wsize__
+.globl __allocate__
+.globl dispose
+
 .macro __alloc_macro__
     push %ebp 
     mov $192, %eax    # mmap2

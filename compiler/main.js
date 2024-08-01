@@ -9,6 +9,7 @@ TODO:
     - working on: see ex6
     - add bignums (only supported using zmm registers)
     HIGH
+    - "} elif {"" won't work for some reason, needs new line, maybe because it thinks array?
     _ __define only works for single words
     - FORMAT PROPERTYS CANNOT BE SET
     - Unclosed quotes like "don't" won't work in comments
@@ -48,6 +49,7 @@ global.evaluator = require('./helpers/evaluator.js')
 global.mathEngine = require("./math/mathEngine.js");
 global.floatEngine = require("./math/floatEngine.js");
 global.prioritizeWord = require("./helpers/priority.js")
+global.preprocess = require("./preprocessor/pre.js")
 
 global.mainDir = __dirname
 
@@ -57,8 +59,10 @@ var INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "v
 
 global.inputCode = String(fs.readFileSync(INPUTFILE))
 global.inputCodeLikeTrue = inputCode.split("\n")
-inputCode = inputCode.replace(/\n/g, ";").split(";").filter(x => x).map(x => x.replace(/\t/g, ""))
+inputCode = quickSplit(inputCode)
 
+preprocess(inputCode)
+console.log(inputCode)
 //console.log(helpers.registers)
 
 global.previewNextLine = function()
@@ -97,6 +101,11 @@ inputCode = inputCode.map((line,lineNo) => {
 })
 
 helpers.variables.genTempLabels();
+
+if (programRules.hasUsedMmap)
+{
+    autoIncludes.push(mainDir + "/libs/alloc.s")
+}
 
 var out = parser.parseFinalCode()
 

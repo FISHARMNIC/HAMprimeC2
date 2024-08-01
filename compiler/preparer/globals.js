@@ -75,7 +75,8 @@ global.globalLine;
 global.inComment = false;
 global.programRules = {
     DynamicArraysAllocateSize: true,
-    StaticArraysAllocateSize: false
+    StaticArraysAllocateSize: false,
+    hasUsedMmap: false
 }
 global.nextNumIsFloat = false;
 global.areaHasFloat = false;
@@ -89,6 +90,9 @@ global.keywordTypes = {
     ARRAY: 6
 }
 
+global.quickSplit = function(inputCode) {
+    return inputCode.replace(/\n/g, ";").split(";").filter(x => x).map(x => x.replace(/\t/g, ""))
+}
 
 global.getLastScopeType = function () {
     if (scope.length == 0)
