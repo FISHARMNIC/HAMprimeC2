@@ -154,7 +154,11 @@ entry function<> -> u32
 
 #include sys x11;
 
-/* __ccalled__ specifies that the function will be called from C */
+/* 
+* __ccalled__ specifies that the function will be called from C 
+    * By default, HAM` optimizes if registers should be saved before a function call
+    * Without this, any registers that should be preserved by the callee might not be
+*/
 __ccalled__ render function<u32 event> -> u32
 {
     gfx_clear();
@@ -164,7 +168,8 @@ __ccalled__ render function<u32 event> -> u32
 
 entry function<> -> u32
 {
-    gfx_begin(500, 360, $render);
+    gfx_setup(500, 360);
+    gfx_begin($render);
 }
 ```
 
