@@ -1,0 +1,27 @@
+__rule hasUsedMmap true;
+
+forward bignum_setp function<u32 n> -> u32;
+
+forward bignum function<p8 number> -> p32;
+forward bignum_fromInt function<u32 number> -> p32;
+
+forward bignum_destroy function<p32 bigfloat> -> u32;
+forward bignum_print function<p32 bigfloat> -> u32;
+
+forward bignum_set function<p32 dest, p32 oa> -> u32;
+forward bignum_set_fromInt function<p32 dest, u32 oa> -> u32;
+
+forward bignum_add function<p32 dest, p32 oa, p32 ob> -> u32;
+
+forward bignum_sub function<p32 dest, p32 oa, p32 ob> -> u32;
+
+forward bignum_mul function<p32 dest, p32 oa, p32 ob> -> u32;
+forward bignum_mul_intb function<p32 dest, p32 oa, u32 ob> -> u32;
+
+forward bignum_div function<p32 dest, p32 oa, p32 ob> -> u32;
+forward bignum_div_intb function<p32 dest, p32 oa, u32 ob> -> u32;
+
+forward bignum_sqrt function<p32 dest, p32 oa> -> u32;
+forward bignum_pow function<p32 dest, p32 oa> -> u32;
+forward bignum_neg function<p32 dest, p32 oa> -> u32;
+forward bignum_abs function<p32 dest, p32 oa> -> u32;

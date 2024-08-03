@@ -19,10 +19,15 @@
 __allocate__:
     push %ebp
     mov %esp, %ebp
+    pusha
+
     mov 8(%ebp), %ecx # length
     
     __alloc_macro__
     
+    mov %eax, 28(%esp)
+    popa
+
     mov %ebp, %esp
     pop %ebp
     ret
@@ -30,14 +35,21 @@ __allocate__:
 __allocate_wsize__:
     push %ebp
     mov %esp, %ebp
+    pusha
+
     addl $4, 8(%ebp)  # size + 4, save in stack
 
     mov 8(%ebp), %ecx
-    __alloc_macro__
     
+    __alloc_macro__
+
     mov 8(%ebp), %ebx
     mov %ebx, (%eax) # mov size -> addr
     add $4, %eax      # addr + 4 <- header
+   
+    # trash workaround
+    mov %eax, 28(%esp)
+    popa
 
     mov %ebp, %esp
     pop %ebp
@@ -47,12 +59,14 @@ __allocate_wsize__:
 dispose:
     push %ebp
     mov %esp, %ebp
+    pusha
 
     movl 8(%esp), %ebx   # address
     mov -4(%ebx), %ecx # data header -> size
     mov $91, %eax      # munmap
     int $0x80          # free
     
+    popa
     mov %ebp, %esp
     pop %ebp
     ret

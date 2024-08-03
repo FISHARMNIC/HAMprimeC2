@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.x": "code-text-binary",
+        "*.rst": "restructuredtext",
+        "stdio.h": "c"
+    }
+}

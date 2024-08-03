@@ -13,6 +13,14 @@ function evaluate(line) {
 
     //throwE(line, typeStack)
 
+    // just for macros
+    for(var wordNum = 0; wordNum < line.length; wordNum++) {
+        var word = line[wordNum]
+        if(objectIncludes(macros, word)) {
+            line[wordNum] = macros[word]
+        }
+    }
+
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
 
         var word = line[wordNum]
@@ -59,8 +67,6 @@ function evaluate(line) {
                 line.splice(wordNum, 1)
                 wordNum--;
             }
-        } else if(objectIncludes(macros, word)) {
-            line[wordNum] = macros[word]
         }
         
         //else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {

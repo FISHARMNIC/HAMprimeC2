@@ -7,15 +7,14 @@
 .align 4
 
 ######## user data section ########
-.extern gfx_mouse_x
-.extern gfx_mouse_y
-.extern gfx_mouse_button
-.extern gfx_keypress_keycode
-.extern gfx_keypress_key
-size: .4byte 20
-__ALLOCFOR_render__ = 0
-__STRING0__: .asciz "red"
-__ALLOCFOR_entry__ = 4
+factorial_res: .4byte 0
+__ALLOCFOR_factorial__ = 4
+__STRING0__: .asciz "0"
+__STRING1__: .asciz "1"
+__STRING2__: .asciz "1"
+__STRING3__: .asciz "0"
+__STRING4__: .asciz "0"
+__ALLOCFOR_entry__ = 24
 ###################################
 .text
 
@@ -35,107 +34,160 @@ main:
     ret
 
 ###################################
-render:
+factorial:
 push %ebp
 mov %esp, %ebp
-pusha
-sub $__ALLOCFOR_render__, %esp
-# Calling function gfx_clear
-call gfx_clear
+
+sub $__ALLOCFOR_factorial__, %esp
+# Calling function bignum_set_fromInt
+pushl $1
+mov factorial_res, %edx
+push %edx
+call bignum_set_fromInt
 mov %eax, %ebx
-mov 8(%ebp), %eax
-movb $0, %bl
-cmp $4, %eax
-sete %bl
-cmpb $1, %bl
-jne __LABEL0__
-xor %eax, %eax
-mov size, %eax
-add $10, %eax
-mov %eax, %ebx
-mov %ebx, size
-xor %eax, %eax
-mov gfx_mouse_x, %eax
-sub $5, %eax
-mov %eax, %ebx
-mov %ebx, gfx_mouse_x
-xor %eax, %eax
-mov gfx_mouse_y, %eax
-sub $5, %eax
-mov %eax, %ebx
-mov %ebx, gfx_mouse_y
-jmp __LABEL1__
+add $8, %esp
+# Loading local variable "i" @-4(%ebp)
+mov 8(%ebp), %edx
+mov %edx, -4(%ebp)
 __LABEL0__:
-mov 8(%ebp), %eax
+mov -4(%ebp), %eax
 movb $0, %bl
-cmp $5, %eax
-sete %bl
+cmp $2, %eax
+setge %bl
 cmpb $1, %bl
-jne __LABEL2__
-xor %eax, %eax
-mov size, %eax
-sub $10, %eax
+jne __LABEL1__
+# Calling function bignum_mul_intb
+mov -4(%ebp), %edx
+push %edx
+mov factorial_res, %edx
+push %edx
+mov factorial_res, %edx
+push %edx
+call bignum_mul_intb
 mov %eax, %ebx
-mov %ebx, size
-jmp __LABEL1__
-__LABEL2__:
+add $12, %esp
+xor %eax, %eax
+mov -4(%ebp), %eax
+sub $1, %eax
+mov %eax, %ebx
+mov %ebx, -4(%ebp)
+jmp __LABEL0__
 __LABEL1__:
-xor %eax, %eax
-mov gfx_mouse_x, %eax
-sub $10, %eax
-mov %eax, %ebx
-push %ebx
-xor %eax, %eax
-mov gfx_mouse_y, %eax
-sub $10, %eax
-mov %eax, %ecx
-pop %ebx
-push %ebx
-push %ecx
-# Calling function gfx_draw_rect
-mov size, %edx
-push %edx
-mov size, %edx
-push %edx
-push %ecx
-push %ebx
-call gfx_draw_rect
-mov %eax, %esi
-add $16, %esp
-pop %ebx
-pop %ecx
-popa
+movl factorial_res, %eax
+
 mov %ebp, %esp
 pop %ebp
 ret
+
+mov %ebp, %esp
+pop %ebp
+ret
+# i: 4
 entry:
 push %ebp
 mov %esp, %ebp
 
 sub $__ALLOCFOR_entry__, %esp
-# Calling function gfx_setup
-pushl $360
-pushl $500
-call gfx_setup
+# Calling function bignum_setp
+pushl $256
+call bignum_setp
 mov %eax, %ebx
-add $8, %esp
-# Calling function gfx_context_allocateColor
+add $4, %esp
+# Loading local variable "sum_index" @-4(%ebp)
+mov $0, %edx
+mov %edx, -4(%ebp)
+# Loading local variable "sum_end" @-8(%ebp)
+mov $100, %edx
+mov %edx, -8(%ebp)
+# Calling function bignum
 pushl $__STRING0__
-call gfx_context_allocateColor
+call bignum
 mov %eax, %ebx
 add $4, %esp
-# Loading local variable "graphics_context" @-4(%ebp)
-mov %ebx, -4(%ebp)
-mov $render, %ebx
-push %ebx
-# Calling function gfx_begin
-push %ebx
-call gfx_begin
-mov %eax, %ecx
+# Loading local variable "sum" @-12(%ebp)
+mov %ebx, -12(%ebp)
+# Calling function bignum
+pushl $__STRING1__
+call bignum
+mov %eax, %ebx
 add $4, %esp
+# Loading local variable "one" @-16(%ebp)
+mov %ebx, -16(%ebp)
+# Calling function bignum
+pushl $__STRING2__
+call bignum
+mov %eax, %ebx
+add $4, %esp
+# Loading local variable "divisor" @-20(%ebp)
+mov %ebx, -20(%ebp)
+# Calling function bignum
+pushl $__STRING3__
+call bignum
+mov %eax, %ebx
+add $4, %esp
+# Loading local variable "intermediate" @-24(%ebp)
+mov %ebx, -24(%ebp)
+# Calling function bignum
+pushl $__STRING4__
+call bignum
+mov %eax, %ebx
+add $4, %esp
+mov %ebx, factorial_res
+__LABEL2__:
+mov -4(%ebp), %eax
+mov -8(%ebp), %edx
+movb $0, %bl
+cmp %edx, %eax
+setl %bl
+cmpb $1, %bl
+jne __LABEL3__
+# Calling function factorial
+mov -4(%ebp), %edx
+push %edx
+call factorial
+mov %eax, %ebx
+add $4, %esp
+push %ebx
+# Calling function bignum_div
+push %ebx
+mov -16(%ebp), %edx
+push %edx
+mov -24(%ebp), %edx
+push %edx
+call bignum_div
+mov %eax, %ecx
+add $12, %esp
 pop %ebx
+# Calling function bignum_add
+mov -24(%ebp), %edx
+push %edx
+mov -12(%ebp), %edx
+push %edx
+mov -12(%ebp), %edx
+push %edx
+call bignum_add
+mov %eax, %ebx
+add $12, %esp
+xor %eax, %eax
+mov -4(%ebp), %eax
+add $1, %eax
+mov %eax, %ebx
+mov %ebx, -4(%ebp)
+jmp __LABEL2__
+__LABEL3__:
+# Calling function bignum_print
+mov -12(%ebp), %edx
+push %edx
+call bignum_print
+mov %eax, %ebx
+add $4, %esp
 
 mov %ebp, %esp
 pop %ebp
 ret
-# graphics_context: 4
+# sum_index: 4
+# sum_end: 8
+# sum: 12
+# one: 16
+# divisor: 20
+# intermediate: 24

@@ -1,10 +1,10 @@
 __rule hasUsedMmap true;
 
 forward gfx_setup function<u32 width, u32 height> -> u32;
-forward gfx_begin function<p32 fn> -> u32
+forward gfx_begin function<p32 fn> -> u32;
 
 forward gfx_draw_rect function<u32 x, u32 y, u32 w, u32 h> -> u32;
-forward gfx_draw_arc function<u32 x, u32 y, u32 size, u32 a1, u32 a2> -> u32;
+forward gfx_draw_arc function<u32 x, u32 y, u32 size, u32 aone, u32 atwo> -> u32;
 
 forward gfx_clear function<> -> u32;
 
