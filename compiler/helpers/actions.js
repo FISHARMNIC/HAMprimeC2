@@ -12,7 +12,7 @@ var assembly = {
         outputCode.autoPush(`mov${objectIncludes(globalVariables, value) ? helpers.types.sizeToSuffix(type) : ""} ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
         return r
     },
-    optimizeMove(source, destination, sType, dType) {
+    optimizeMove: function(source, destination, sType, dType) {
         debugPrint(" reoifjeorjferiojerf", source)
         debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
         if (helpers.types.isConstOrLit(source)) {
@@ -533,7 +533,7 @@ var functions = {
         var robj = []
         var oBytes = 0;
         var didVari = false
-        parr.forEach(x => {
+        parr.reverse().forEach(x => {
             if (onCom) {
                 if (didVari)
                     throwE("Cannot have parameters declared after variadic ellipsis")
@@ -548,7 +548,7 @@ var functions = {
             }
             onCom = !onCom
         })
-        return { params: robj, oBytes, didVari }
+        return { params: robj.reverse(), oBytes, didVari }
     },
     createFunction: function (fname) {
         outputCode.text.push(
@@ -775,9 +775,13 @@ var formats = {
 
         }
     },
-    readProperty: function (base, baseType, propertyName) {
+    readProperty: function (base, baseType, propertyName, readAddress = false) {
         var offset = 0
         var i = 0
+
+        //throwE(helpers.general.getMostRecentFunction().data.parameters)
+
+
         while (baseType.formatPtr.properties[i].name != propertyName) {
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
             i++
@@ -786,10 +790,14 @@ var formats = {
         //throwE(propertyType, offset)
 
         var out = helpers.registers.getFreeLabelOrRegister(propertyType)
+        oldFormatAllocs.push(out)
         if (!helpers.types.stringIsRegister(base)) {
             outputCode.autoPush(`movl ${base}, %eax`)
             base = "%eax"
         }
+
+        if(readAddress)
+            return {ptr:`${offset}(${base})`, type: propertyType}
         assembly.optimizeMove(`${offset}(${base})`, out, propertyType, propertyType)
         return out
     }

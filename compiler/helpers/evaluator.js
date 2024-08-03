@@ -14,9 +14,9 @@ function evaluate(line) {
     //throwE(line, typeStack)
 
     // just for macros
-    for(var wordNum = 0; wordNum < line.length; wordNum++) {
+    for (var wordNum = 0; wordNum < line.length; wordNum++) {
         var word = line[wordNum]
-        if(objectIncludes(macros, word)) {
+        if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
         }
     }
@@ -68,7 +68,7 @@ function evaluate(line) {
                 wordNum--;
             }
         }
-        
+
         //else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {
         //     scope[scope.length - 1].data.push(offsetWord(-1))
         // }
@@ -83,13 +83,40 @@ function evaluate(line) {
                 })
             }
             else {
-                var base = offsetWord(-1)
-                var ptype = helpers.types.guessType(base)
-                var out = actions.formats.readProperty(base, ptype, offsetWord(1))
-                line[wordNum - 1] = out
-                line.splice(wordNum, 2)
-                wordNum--
-                //throwE(line,wordNum)
+                if (offsetWord(2) == "(") {
+                    throwE("not finished")
+                }
+                else {
+                    // free old clobbers in a property chain
+                    oldFormatAllocs.forEach(x => {
+                        helpers.registers.inLineClobbers[helpers.registers.registerStringToLetterIfIs(x)] = 0
+                    })
+                    oldFormatAllocs = []
+
+                    var base = offsetWord(-1)
+                    var ptype = helpers.types.guessType(base)
+
+                    if (offsetWord(2) == "<-") { //setting
+
+                        //throwE(base, line)
+                        var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
+                        actions.assembly.optimizeMove(offsetWord(3), dest.ptr, helpers.types.guessType(offsetWord(3)), dest.type)
+                        return [""]
+                    } else {
+
+                        var out = actions.formats.readProperty(base, ptype, offsetWord(1), false)
+                        line[wordNum - 1] = out
+                        line.splice(wordNum, 2)
+                        wordNum--
+
+                        if(!(                       // negate the following: 
+                            offsetWord(2) == "." || // if next is property
+                            (objectIncludes(parser.nesters, offsetWord(2)) && offsetWord(4) == ".") // if next after fn call or something is property
+                        )) {
+                            oldFormatAllocs.pop() // actually keep this one
+                        }
+                    }
+                }
             }
             //throwE(guessType(offsetWord(-1)))
             // } else if (objectValuesIncludes(nest.nesters, offsetWord(-1))) // if like >. or ].
@@ -185,23 +212,23 @@ function evaluate(line) {
                 vtype = defines.types[offsetWord(1)]
                 line.splice(wordNum + 1, 1)
             } else if (offsetWord(2) == '<-') {
-                    vtype = helpers.types.guessType(offsetWord(3))
-                } else {
-                    vtype = defines.types.u32
-                }
+                vtype = helpers.types.guessType(offsetWord(3))
+            } else {
+                vtype = defines.types.u32
+            }
 
             if (offsetWord(2) == '<-') {
                 return actions.variables.create(offsetWord(1), vtype, offsetWord(3))
             } else {
                 return actions.variables.create(offsetWord(1), vtype, 0)
             }
-        } else if(word == "import") {
+        } else if (word == "import") {
             //throwE(line, offsetWord(1))
             globalVariables[offsetWord(2)] = newGlobalVar(defines.types[offsetWord(1)])
             outputCode.data.push(".extern " + offsetWord(2))
             wordNum += 2
         }
-        
+
         else if (offsetWord(1) == "<-") { // variable setting
             if (getLastScopeType() == keywordTypes.FORMAT) { // just creating a property
                 scope[scope.length - 1].data.properties.push({

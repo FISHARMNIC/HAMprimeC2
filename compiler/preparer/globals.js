@@ -3,8 +3,12 @@
 global.scope = [];
 global.currentStackOffset = 0;
 global.requestBracket = 0;
-
-global.macros = {}
+global.oldFormatAllocs = [] // for freeing registers in property chains like a.b.c.d
+global.macros = {
+    TRUE: "1",
+    FALSE: "0",
+    NULL: "0"
+}
 global.globalVariables = {           // Object : {variable name: type}
     "this": defines.types.u32,
 }

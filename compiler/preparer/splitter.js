@@ -177,4 +177,4 @@ function addReserved(x) {
     noExes.push(x)
 }
 
-module.exports = { split, addReserved, parseFinalCode, symbols, noExes }
+module.exports = { split, addReserved, parseFinalCode, symbols, noExes, nesters }

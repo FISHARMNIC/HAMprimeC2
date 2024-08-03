@@ -9,6 +9,7 @@ TODO:
     - working on: see ex6
     - add bignums (only supported using zmm registers)
     HIGH
+    - GET RID OF TYPESTACK COMLPETELY SOME THINGS STILL USE IT
     - "} elif {"" won't work for some reason, needs new line, maybe because it thinks array?
     _ __define only works for single words
     - FORMAT PROPERTYS CANNOT BE SET
@@ -91,6 +92,7 @@ inputCode = inputCode.map((line,lineNo) => {
     helpers.registers.clearClobbers()
     helpers.registers.resetExtendedTypes()
     typeStack = []
+    oldFormatAllocs = []
 
     lsplit = nest.nest(lsplit);
     lsplit = nest.orderDeepestFirst(lsplit)
