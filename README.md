@@ -3,7 +3,7 @@ A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). So
 # What sets HAM\` apart from other languages?
 HAM\` is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays (missing from this compiler) and implicit typing.
 # What is working so far?
-With the exception of floating point arithmetic (which *does* work in the first compiler), this compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
+This compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 - Variables
 	- Stack and global scope
 	- Implicit and forced typing
@@ -21,14 +21,15 @@ With the exception of floating point arithmetic (which *does* work in the first 
 - Control flow
 	- Nested If/elif/else statements
 	- While loops
-* I/O
-	* Uses C printf and scanf
+- I/O
+	- Uses C printf and scanf
 - Debugger
 	- Traces back to faulty line in source file
 - Graphics
 	- Expose/mouse/keyboard events
 	- Rendering simple shapes
-- Math (no floats yet)
+- Math
+    - GMP for bignums/floats (no native floats yet)
 #### differences from the first compiler
 * Much better optimization
 * Stack allocation / variables
