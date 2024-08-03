@@ -152,12 +152,7 @@ entry function<> -> u32
 ```C
 /* Assemble with scripts/lima_x11.sh */
 
-forward gfx_begin function<u32 a, u32 b, p32 fn> -> u32;
-forward gfx_rect function<u32 x, u32 y, u32 w, u32 h> -> u32;
-forward gfx_clear function<> -> u32;
-
-import u32 gfx_mouse_x;
-import u32 gfx_mouse_y;
+#include sys x11;
 
 /* __ccalled__ specifies that the function will be called from C */
 __ccalled__ render function<u32 event> -> u32
