@@ -13,7 +13,7 @@ This compiler currently allows for math expressions, iteration, conditionals, fu
 - Formats
 	- Nested formats
 	- Creating instances
-	- Property reading (setting coming very soon)
+	- Property reading and setting
 - Functions
 	- Variadic functions
 	- Forward declarations
