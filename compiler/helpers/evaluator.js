@@ -172,7 +172,16 @@ function evaluate(line) {
 
                 } else {
                     if (index.length != 1) {
-                        throwE("Multi-dimensional arrays not implemented")
+                        if(index[0] == "%") {
+
+                    
+                        var out = actions.variables.readArray(vname, index[2], index[1])
+                        line[wordNum - 1] = out
+                        line.splice(wordNum, 3)
+                        wordNum--
+                        } else {
+                            throwE("Multi-dimensional arrays not implemented")
+                        }
                     } else {
                         index = index[0]
                         var out = actions.variables.readArray(vname, index)

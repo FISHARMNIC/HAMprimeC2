@@ -7,12 +7,11 @@
 .align 4
 
 ######## user data section ########
-__ALLOCFOR_giveNewID__ = 0
-__STRING0__: .asciz "bob"
-__STRING1__: .asciz "The student %s (id #%i) is %i years old\n"
-__ALLOCFOR_entry__ = 28
-__TEMP32_0__: .4byte 0
-__TEMP32_1__: .4byte 0
+__STRING0__: .asciz "chicken"
+.comm __LABEL0__, 16 #Allocation for array
+arrGlobal: .4byte 0
+__STRING1__: .asciz "%c\n"
+__ALLOCFOR_entry__ = 0
 ###################################
 .text
 
@@ -22,7 +21,14 @@ __TEMP32_1__: .4byte 0
 user_init:
 #### compiler initation section ###
 __init__:
-
+mov $__LABEL0__, %eax
+movl $1, 0(%eax)
+movl $2, 4(%eax)
+movl $9, 8(%eax)
+mov $__STRING0__, %edx
+mov %edx, 12(%eax)
+mov %eax, %ebx
+mov %ebx, arrGlobal
 ret
 ###################################
 
@@ -32,82 +38,26 @@ main:
     ret
 
 ###################################
-giveNewID:
-push %ebp
-mov %esp, %ebp
-
-sub $__ALLOCFOR_giveNewID__, %esp
-movl 8(%ebp), %eax
-mov 12(%ebp), %edx
-mov %edx, 4(%eax)
-
-mov %ebp, %esp
-pop %ebp
-ret
 entry:
 push %ebp
 mov %esp, %ebp
 
 sub $__ALLOCFOR_entry__, %esp
-movl $8, -12(%ebp) # Allocated in __ALLOC_FOR__, setting extra byte for size
-lea -8(%ebp), %ebx # Local allocation address for Person
-movl $15, -8(%ebp)
-mov $__STRING0__, %edx
-mov %edx, -4(%ebp)
-movl $8, -24(%ebp) # Allocated in __ALLOC_FOR__, setting extra byte for size
-lea -20(%ebp), %ecx # Local allocation address for Student
-mov %ebx, -20(%ebp)
-movl $123, -16(%ebp)
-# Loading local variable "bob" @-28(%ebp)
-mov %ecx, -28(%ebp)
-# Calling function giveNewID
-pushl $321
-mov -28(%ebp), %edx
-push %edx
-call giveNewID
-mov %eax, %ebx
-add $8, %esp
-movl -28(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %ebx
-movl $16, 0(%ebx)
-movl -28(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %ebx
-mov 4(%ebx), %edx
-mov %edx, %ecx
-movl -28(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %esi
-movl -28(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %edi
-mov 0(%edi), %edx
-mov %edx, __TEMP32_0__
+mov arrGlobal, %eax
+mov 12(%eax), %ebx
+mov %ebx, %eax
+mov 3(%eax), %ecx
 push %ebx
 push %ecx
-push %esi
-push %edi
 # Calling function printf
-mov __TEMP32_0__, %edx
-push %edx
-push %esi
 push %ecx
 pushl $__STRING1__
 call printf
-mov %eax, __TEMP32_1__
-add $16, %esp
+mov %eax, %esi
+add $8, %esp
 pop %ebx
 pop %ecx
-pop %esi
-pop %edi
-mov $0, %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
-
-mov %ebp, %esp
-pop %ebp
-ret
-# bob: 28

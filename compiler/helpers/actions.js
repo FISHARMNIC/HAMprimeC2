@@ -155,13 +155,15 @@ var variables = {
         }
         return vname
     },
-    readArray: function (aname, index) {
+    readArray: function (aname, index, forceSize = false) {
 
 
         var baseRegister = "%eax"
         var baseType = -1;
 
         // yes bad code that I was doing something else with but changed it
+
+        debugPrint(index)
         if (helpers.types.isLiteral(aname)) {
             baseType = defines.types.u8
             outputCode.autoPush(
@@ -219,7 +221,7 @@ var variables = {
             throwE("Compiler error, never set 'baseType' variable")
         }
 
-        var indexMultiplier = baseType.size / 8
+        var indexMultiplier = forceSize === false ? baseType.size / 8 : forceSize
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
         var fullReg = helpers.types.conformRegisterIfIs(out, defines.types.u32)
 
@@ -233,7 +235,7 @@ var variables = {
             out = helpers.types.formatRegister('d', baseType)
         }
 
-        debugPrint(index)
+        debugPrint("$$$", index)
         if (helpers.types.isConstant(index)) {
             outputCode.autoPush(
                 `mov ${parseInt(index) * indexMultiplier}(%eax), ${out}`

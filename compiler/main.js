@@ -9,6 +9,7 @@ TODO:
     - working on: see ex6
     - add bignums (only supported using zmm registers)
     HIGH
+    - do oldFormatAllocs for array access chains too like bob[1][2][3]
     - GET RID OF TYPESTACK COMLPETELY SOME THINGS STILL USE IT
     - "} elif {"" won't work for some reason, needs new line, maybe because it thinks array?
     _ __define only works for single words
