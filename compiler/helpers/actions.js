@@ -67,18 +67,18 @@ var assembly = {
     },
     pushClobbers: function () {
 
-        Object.entries(helpers.registers.inLineClobbers).forEach(x => {
-            if (x[1] == 1) {
+        helpers.registers.clobberOrder.forEach(x => {
+            if (helpers.registers.inLineClobbers[x] == 1) {
                 //debugPrint("pushing", x)
-                this.pushToStack(helpers.types.formatRegister(x[0], defines.types.u32), defines.types.u32)
+                this.pushToStack(helpers.types.formatRegister(x, defines.types.u32), defines.types.u32)
                 //outputCode.autoPush(`push ${helpers.types.formatRegister(x[0], defines.types.u32)}`)
             }
         })
     },
     popClobbers: function () {
-        Object.entries(helpers.registers.inLineClobbers).forEach(x => {
-            if (x[1] == 1) {
-                outputCode.autoPush(`pop ${helpers.types.formatRegister(x[0], defines.types.u32)}`)
+        helpers.registers.clobberOrder.slice().reverse().forEach(x => {
+            if (helpers.registers.inLineClobbers[x] == 1) {
+                outputCode.autoPush(`pop ${helpers.types.formatRegister(x, defines.types.u32)}`)
             }
         })
     },
@@ -322,11 +322,12 @@ var variables = {
 
         var suffix = "";
 
-        outputCode.autoPush("#Set begin")
+        outputCode.autoPush("#Array set begin")
         //throwE(address, index, value)
 
         if (!helpers.types.stringIsRegister(address)) {
             outputCode.autoPush(`mov ${helpers.types.formatIfConstant(address)}, %eax`)
+            address = "%eax"
         }
 
         // two step
@@ -341,14 +342,15 @@ var variables = {
         if (helpers.types.isConstant(index)) {
             var ti = parseInt(index) * elementBytes
             outputCode.autoPush(
-                `mov${suffix} ${value}, ${ti}(%eax)`
+                `mov${suffix} ${value}, ${ti}(${address})`
             )
         } else if (helpers.types.stringIsRegister(index)) {
             outputCode.autoPush(
-                `mov${suffix} ${value}, (%eax, ${index}, ${elementBytes})`
+                `mov${suffix} ${value}, (${address}, ${index}, ${elementBytes})`
             )
-        } else if (objectIncludes(globalVariables, index) || helpers.types.stringIsEbpOffset(index)) {
+        } else if (objectIncludes(globalVariables, index) || helpers.types.stringIsEbpOffset(index)) { // if index is glob or index is ebp
             // FIX THIS poorly optimized
+            throwE("Not sure. fix the code below this")
             outputCode.autoPush(
                 `push %eax`,
                 `mov ${index}, %eax`,
@@ -566,7 +568,7 @@ var functions = {
     closeFunction: function (scope, stack, asRet = false, rVal = null) {
         var d = scope
         debugPrint(scope)
-        if("data" in d)
+        if ("data" in d)
             d = d.data
         debugPrint("SC", scope, rVal)
         if (rVal != null) {
@@ -594,82 +596,101 @@ var functions = {
         }
         //throwE(st)
     },
-    callFunction: function (fname, args, isConstructor = false, constructorType = null) {
+    callFunction: function (fname, args, isConstructor = false, constructorType = null, typeIfFromAddress = null) {
         var onCom = false
+        var callAddress = fname
+        if(typeIfFromAddress != null)
+        {
+            if("__not_a_function__" in userFunctions)
+            {
+                throwE("Do not declare a function named __not_a_function__")
+            }
+            fname = "__not_a_function__"
+            userFunctions.__not_a_function__ = {
+                name: fname,
+                parameters: [],
+                returnType: typeIfFromAddress,
+                variadic: true,
+                totalAlloc: 0,
+                saveRegs: false
+            }
+        }
         var variadic = userFunctions[fname].variadic
         //throwE(fname, args)
         var bytes = 0
         var tbuff = []
 
-        if(typeof args == "string")
-        {
-            args = [args]
-        }
 
         assembly.pushClobbers()
 
         outputCode.comment(`Calling function ${fname}`)
 
-        var ind = 0;
-        args.forEach((x) => {
-            if (onCom) {
-                if (x != ',')
-                    throwE("Expected comma")
-            } else {
-                //debugPrint(fname, userFunctions[fname].parameters)
-                var expectedType = userFunctions[fname].parameters[ind]?.type
-                //debugPrint(x)
-                var givenType = helpers.types.guessType(x)
+        if (typeof args == "string" && args.length != 0) {
+            args = [args]
+        }
 
-                //debugPrint("fwfwfwfww",givenType)
+        if (args.length != 0) {
+            var ind = 0;
+            args.forEach((x) => {
+                if (onCom) {
+                    if (x != ',')
+                        throwE("Expected comma")
+                } else {
+                    //debugPrint(fname, userFunctions[fname].parameters)
+                    var expectedType = userFunctions[fname].parameters[ind]?.type
+                    //debugPrint(x)
+                    var givenType = helpers.types.guessType(x)
 
-                if (expectedType == undefined && !variadic) {
-                    throwE(`Function '${fname}' given too many arguments`)
+                    //debugPrint("fwfwfwfww",givenType)
+
+                    if (expectedType == undefined && !variadic) {
+                        throwE(`Function '${fname}' given too many arguments: [${userFunctions[fname].parameters}]`)
+                    }
+
+                    if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && !objectCompare(expectedType, givenType))) || (!variadic && !objectCompare(expectedType, givenType))))
+                        throwW(`Argument '${x}' does not match expected type ${JSON.stringify(expectedType)}`)
+
+                    if (helpers.types.isConstOrLit(x)) {
+                        tbuff.push(`pushl \$${x}`)
+                    } else if (helpers.types.stringIsRegister(x)) {
+                        tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
+                    }
+                    else {
+
+                        //debugPrint("FMTING", givenType, x)
+                        var r = helpers.types.formatRegister('d', givenType)
+                        //debugPrint("erijgoewije", r)
+
+                        var bbuff = []
+                        if (r != "%edx")
+                            bbuff.push("xor %edx, %edx")
+
+                        // if(helpers.types.stringIsRegister(x))
+                        // {
+                        //     throwE(x, r, fname, args, givenType)
+                        // }
+                        bbuff.push(
+                            `mov ${x}, ${r}`,
+                            `push %edx`
+                        )
+                        tbuff.push(bbuff)
+                    }
+                    bytes += 4
+                    ind++
                 }
-
-                if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && !objectCompare(expectedType, givenType))) || (!variadic && !objectCompare(expectedType, givenType))))
-                    throwW(`Argument '${x}' does not match expected type ${JSON.stringify(expectedType)}`)
-
-                if (helpers.types.isConstOrLit(x)) {
-                    tbuff.push(`pushl \$${x}`)
-                } else if (helpers.types.stringIsRegister(x)) {
-                    tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
-                }
-                else {
-
-                    //debugPrint("FMTING", givenType, x)
-                    var r = helpers.types.formatRegister('d', givenType)
-                    //debugPrint("erijgoewije", r)
-
-                    var bbuff = []
-                    if (r != "%edx")
-                        bbuff.push("xor %edx, %edx")
-
-                    // if(helpers.types.stringIsRegister(x))
-                    // {
-                    //     throwE(x, r, fname, args, givenType)
-                    // }
-                    bbuff.push(
-                        `mov ${x}, ${r}`,
-                        `push %edx`
-                    )
-                    tbuff.push(bbuff)
-                }
-                bytes += 4
-                ind++
-            }
-            onCom = !onCom
-        })
+                onCom = !onCom
+            })
+        }
 
         outputCode.autoPush(...tbuff.reverse().flat())
-        var rt = isConstructor? constructorType : userFunctions[fname].returnType
+        var rt = isConstructor ? constructorType : userFunctions[fname].returnType
         // TODO HERE BROKEN : writing "true" instead breaks it. No idea
         debugPrint("RRRR", userFunctions[fname])
         var out = helpers.registers.getFreeLabelOrRegister(rt, false)
         //throwE(out, helpers.types.guessType("%ebx"))
 
         outputCode.autoPush(
-            `call ${fname}`,
+            `call ${typeIfFromAddress == null? "" : "*"}${callAddress}`,
             `mov ${helpers.types.formatRegister('a', rt)}, ${out}`
         )
 
@@ -831,19 +852,19 @@ var formats = {
             //throwE(_scope)
             _scope.constructors[fname] = _data
             userFunctions[fname] = _data
-    
+
             requestBracket = {
                 type: keywordTypes.CONSTRUCTOR,
                 data: _data
             }
-            
+
             functions.createFunction(fname)
             var save = allocations.allocateMmap("$" + helpers.formatters.formatAllocMacro(_scope.name), "Allocate for THIS")
             outputCode.autoPush(`mov %eax, __this__`)
             //throwE(defines.types)
         }
         else {
-            
+
             var _data = {
                 name: fname,
                 parameters: params_obj.params,
@@ -857,20 +878,19 @@ var formats = {
 
             _scope.methods[fname] = _data
             userFunctions[fname] = _data
-    
+
             requestBracket = {
                 type: keywordTypes.METHOD,
                 data: _data
             }
-            
+
             functions.createFunction(fname)
 
             //throwE(userFunctions)
         }
 
     },
-    callConstructor: function(className, params)
-    {
+    callConstructor: function (className, params) {
         //throwE(userFormats[className].constructors)
 
         var variadicConstructor = null
@@ -880,21 +900,17 @@ var formats = {
         // overloading
         // awful code. so many ideas going through my head. fix later
         Object.entries(userFormats[className].constructors).forEach(e => {
-            if(e[1].variadic)
-            {
+            if (e[1].variadic) {
                 variadicConstructor = e[0]
             } else {
-                if(numberOfParams == e[1].parameters.length)
-                {
+                if (numberOfParams == e[1].parameters.length) {
                     bestFit = e[0]
                 }
             }
         })
 
-        if(bestFit == null)
-        {
-            if(variadicConstructor == null)
-            {
+        if (bestFit == null) {
+            if (variadicConstructor == null) {
                 throwE(`No constructor exists for "${className}" that takes "${numberOfParams}" parameters. Either make a variadic constructor, or add one that takes this number of parameters.`)
             }
             bestFit = variadicConstructor
@@ -903,20 +919,17 @@ var formats = {
         globalVariables.__this__ = defines.types[className]
         return functions.callFunction(bestFit, params, true, globalVariables.__this__)
     },
-    closeConstructor: function(scope, stack)
-    {
+    closeConstructor: function (scope, stack) {
         // outputCode.autoPush(
         //     `mov __this__, %eax`
         // )
-        functions.closeFunction(scope,stack, false, "__this__")
+        functions.closeFunction(scope, stack, false, "__this__")
         //throwE(scope, stack)
     },
-    closeMethod: function(scope, stack)
-    {
+    closeMethod: function (scope, stack) {
         functions.closeFunction(scope, stack)
     },
-    callMethod: function(parent, method, params)
-    {
+    callMethod: function (parent, method, params) {
         var parentType = helpers.types.guessType(parent)
         actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
         return functions.callFunction(helpers.formatters.formatMethodName(parentType.formatPtr.name, method), params)

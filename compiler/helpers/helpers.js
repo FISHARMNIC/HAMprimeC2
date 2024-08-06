@@ -267,6 +267,7 @@ var variables = {
 }
 
 var registers = {
+    clobberOrder: ['b','s','c','i'],
     inLineClobbers: {
         'b': 0, // ax is reserved for function returns
         'c': 0, // dx is reserved for other stuff

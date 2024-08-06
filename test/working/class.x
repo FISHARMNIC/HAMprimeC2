@@ -1,8 +1,10 @@
-List format {
-    __rule DynamicArraysAllocateSize false;
+/*
+Example for a Java ArrayList-like class
+*/
 
+List format {
     .buffer p32;
-    .length p32;
+    .length u32;
     
     .List constructor<...> {
         this.buffer <- 0;
@@ -14,7 +16,7 @@ List format {
         this.length <- (this.length + 1);
         if(this.length == 1)
         {
-            this.buffer <- __allocate__(4);
+            this.buffer <- malloc(4);
         }
         else 
         {
@@ -24,23 +26,35 @@ List format {
         return this.buffer;
     }
 
-    /*
-    .pop method<> -> u32 {
+    .pop method<> -> any {
         this.length <- (this.length - 1);
-        create returnValue = this.buffer[this.length];
+        create returnValue <- this.buffer[this.length];
         this.buffer <- realloc(this.buffer, (this.length * 4));
         return returnValue;
     }
-    */
 
-    __rule DynamicArraysAllocateSize true;
+    .every method<p32 iterator> -> u32 {
+        create i <- 0;
+        while(i <: this.length)
+        {
+            call iterator(this.buffer[i]);
+            i <- (i + 1);
+        }
+    }
 }
+
+putint function<u32 i> {
+    printf("Printing: %i\n", i);
+}
+
 
 entry function<> -> u32
 {
     create myList <- List();
-    myList.push(1);
-    printf("%i\n", myList.buffer[0]);
+    myList.push(123);
+    myList.push(456);
+    printf("[%i,%i]\n", myList.buffer[0], myList.pop());
+    myList.push(321);
+    myList.every($putint);
     
-    /* myList.push(2); */
 }

@@ -46,8 +46,25 @@ function evaluate(line) {
 
         // #region modifications
         if (word == '(' || word == ')') {
-            line.splice(wordNum, 1)
-            wordNum--;
+            if(offsetWord(-2) == "call") {
+                var returnType = defines.types.u32
+                var offset = -2
+                if(offsetWord(1) in defines.types) // if next word is a type
+                {
+                    returnType = defines.types[offsetWord(1)]
+                    offset += 1
+                }
+
+                var fnName = offsetWord(1 + offset)
+                var params = offsetWord(3 + offset)
+
+                // call as address
+                line[wordNum] = actions.functions.callFunction(fnName, params, false, null, returnType)
+                line.splice(wordNum + 1, 4 + offset)
+            } else {
+                line.splice(wordNum, 1)
+                wordNum--;
+            }
         } else if (objectIncludes(defines.types, word)) { // types
             if (offsetWord(1) == "(") {
                 if (objectIncludes(userFormats, word)) // format constructor
