@@ -2,7 +2,7 @@ List format {
     __rule DynamicArraysAllocateSize false;
 
     .buffer p32;
-    .size 
+    .size;
 
     .append method<u32 item> -> u32
     {

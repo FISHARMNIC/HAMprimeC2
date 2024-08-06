@@ -7,8 +7,12 @@ TODO:
         - uses Memory Ownership Table for automatic freeing
         - "__disable ownership" to turn this off
     - working on: see ex6
-    - add bignums (only supported using zmm registers)
+    - Add everytime something is stored in a register, that value is stored on the compiler too
+        - before moving somethig into the same register, if its the same thing, just dont move it since it's already there
+        - NOTE: THIS ONLY WORKS IF *EVERY* MOV IS DONE USING A FUNCTION THAT TRACKS MOVS
+    - store argnum as extra "hidden" parameter in variadics
     HIGH
+    - allow $this.property to get address
     - do oldFormatAllocs for array access chains too like bob[1][2][3]
     - GET RID OF TYPESTACK COMLPETELY SOME THINGS STILL USE IT
     - "} elif {"" won't work for some reason, needs new line, maybe because it thinks array?

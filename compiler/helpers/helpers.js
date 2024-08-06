@@ -22,7 +22,8 @@ var counters = {
             }
             this.tempLabels.current[key] = 0;
         })
-    }
+    },
+    constructors: 0 // make better later, one for each format
 }
 
 var types = {
@@ -166,6 +167,7 @@ var types = {
     guessType: function (word) {
         word = String(word)
         if (variables.variableExists(word)) {
+            //throwE(globalVariables[word])
             return objCopy(variables.getVariableType(word))
         } else if (this.stringIsEbpOffset(word)) {
             return objCopy(this.getVariableFromEbpOffsetString(word).type)
@@ -194,6 +196,17 @@ var formatters = {
     },
     untypedLabel: function (number) {
         return `__LABEL${number}__`
+    },
+    formatAllocMacro: function (format) {
+        return `__SIZEOF_${format}__`
+    },
+    formatConstructorName: function(formatName)
+    {
+        return `__constructor_${formatName}_${counters.constructors++}_`
+    },
+    formatMethodName: function(formatName, methodName)
+    {
+        return `__method_${formatName}_${methodName}_`
     }
 }
 
@@ -357,7 +370,7 @@ var formats = {
             offset += types.typeToBits(e.type)
         })
         return offset / 8
-    }
+    },
 }
 
 var functions = {
@@ -399,7 +412,7 @@ var general = {
         //debugPrint(scope)
         return (scope.slice().reverse().find(x => {
             //debugPrint("3333333", x)
-            return x.type == keywordTypes.FUNCTION
+            return x.type == keywordTypes.FUNCTION || x.type == keywordTypes.METHOD || x.type == keywordTypes.CONSTRUCTOR
         }))
     },
     scopeHasIterable: function () {

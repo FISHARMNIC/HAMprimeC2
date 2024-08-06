@@ -62,6 +62,13 @@ module.exports = {
             special: false,
             dblRef: false,
         },
+        "any": {
+            size: 32,
+            float: false,
+            pointer: false,
+            special: false,
+            dblRef: false,
+        },
         "t8": {
             size: 8,
             float: false,

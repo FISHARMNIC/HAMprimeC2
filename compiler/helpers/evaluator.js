@@ -50,13 +50,19 @@ function evaluate(line) {
             wordNum--;
         } else if (objectIncludes(defines.types, word)) { // types
             if (offsetWord(1) == "(") {
-                throwE("CAST TODO")
+                if (objectIncludes(userFormats, word)) // format constructor
+                {
+                    line[wordNum] = actions.formats.callConstructor(word, offsetWord(2))
+                    line.splice(wordNum + 1, 3)
+                } else {
+                    throwE("CAST TODO")
+                }
             } else if (offsetWord(1) == "{") {
                 arrayClamp = defines.types[word]
                 line.splice(wordNum, 1)
                 wordNum--;
                 //throwE("CAMP", arrayClamp,line,wordNum)
-            } else if (offsetWord(1) == "<" && objectIncludes(userFormats, word)) // classes
+            } else if (offsetWord(1) == "<" && objectIncludes(userFormats, word)) // format initiation
             {
                 var dataLbl = actions.formats.parseParams(word, offsetWord(2))
                 line[wordNum] = dataLbl
@@ -77,14 +83,34 @@ function evaluate(line) {
         else if (word == '.') { // child property UNFINISHED
             // creating a new property
             if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
-                scope[scope.length - 1].data.properties.push({
-                    name: offsetWord(1),
-                    type: defines.types[offsetWord(2)]
-                })
+                if (offsetWord(2) == "constructor") {
+                    var nobj = objCopy(defines.types.___format_template___)
+                    nobj.formatPtr = scope[scope.length - 1].data
+                    globalVariables.__this__ = newGlobalVar(nobj)
+
+                    actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatConstructorName(scope[scope.length - 1].data.name), offsetWord(4))
+                    // HERE AUGUST 5 2024
+                } else if(offsetWord(2) == "method") {
+                    // yes this is repeated.
+                    var nobj = objCopy(defines.types.___format_template___)
+                    nobj.formatPtr = scope[scope.length - 1].data
+                    globalVariables.__this__ = newGlobalVar(nobj)
+
+                    var retType = objCopy(offsetWord(6) == "<-" ? defines.types[offsetWord(7)] : defines.types.u32) // default return if none given. Note: prob don't need objcopy for this
+                    actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatMethodName(scope[scope.length - 1].data.name, offsetWord(1)), offsetWord(4), retType)
+
+                    //throwE(line)
+                } else {
+                    scope[scope.length - 1].data.properties.push({
+                        name: offsetWord(1),
+                        type: objectIncludes(defines.types, offsetWord(2)) ? objCopy(defines.types[offsetWord(2)]) : objCopy(defines.types.u32)
+                    })
+                }
             }
             else {
                 if (offsetWord(2) == "(") {
-                    throwE("not finished")
+                    line[wordNum - 1] = actions.formats.callMethod(offsetWord(-1), offsetWord(1), offsetWord(3))
+                    line.splice(wordNum, 5)
                 }
                 else {
                     // free old clobbers in a property chain
@@ -98,7 +124,7 @@ function evaluate(line) {
 
                     if (offsetWord(2) == "<-") { //setting
 
-                        //throwE(base, line)
+                        //throwE(base, ptype.formatPtr)
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, helpers.types.guessType(offsetWord(3)), dest.type)
                         return [""]
@@ -109,7 +135,7 @@ function evaluate(line) {
                         line.splice(wordNum, 2)
                         wordNum--
 
-                        if(!(                       // negate the following: 
+                        if (!(                       // negate the following: 
                             offsetWord(2) == "." || // if next is property
                             (objectIncludes(parser.nesters, offsetWord(2)) && offsetWord(4) == ".") // if next after fn call or something is property
                         )) {
@@ -172,13 +198,13 @@ function evaluate(line) {
 
                 } else {
                     if (index.length != 1) {
-                        if(index[0] == "%") {
+                        if (index[0] == "%") {
 
-                    
-                        var out = actions.variables.readArray(vname, index[2], index[1])
-                        line[wordNum - 1] = out
-                        line.splice(wordNum, 3)
-                        wordNum--
+
+                            var out = actions.variables.readArray(vname, index[2], index[1])
+                            line[wordNum - 1] = out
+                            line.splice(wordNum, 3)
+                            wordNum--
                         } else {
                             throwE("Multi-dimensional arrays not implemented")
                         }
@@ -277,22 +303,45 @@ function evaluate(line) {
                     data: [],
                     begin: wordNum
                 })
+
             }
         } else if (word == "}") {
             var oldScope = scope.pop()
             debugPrint("EXITING", oldScope)
             var oldStack = stackVariables.pop()
+
             if (oldScope.type == keywordTypes.FORMAT) {
-                userFormats[oldScope.data.name] = {
-                    properties: oldScope.data.properties,
-                    statics: oldScope.data.statics,
-                    methods: {},
-                    inits: {},
-                    size: helpers.formats.getFormatSize(oldScope.data.properties)
-                }
+
+                // userFormats[oldScope.data.name] = {
+                //     properties: oldScope.data.properties,
+                //     statics: oldScope.data.statics,
+                //     methods: {},
+                //     constructors: {},
+                //     size: helpers.formats.getFormatSize(oldScope.data.properties)
+                // }
+                userFormats[oldScope.data.name] = objCopy(oldScope.data)
+                userFormats[oldScope.data.name].size = helpers.formats.getFormatSize(oldScope.data.properties)
+
                 var nobj = objCopy(defines.types.___format_template___)
                 nobj.formatPtr = userFormats[oldScope.data.name]
                 defines.types[oldScope.data.name] = nobj
+
+                //throwE(nobj.formatPtr.constructors)
+                outputCode.data.push(
+                    helpers.formatters.formatAllocMacro(nobj.formatPtr.name) + " = " + nobj.formatPtr.size,
+                    `# format "${nobj.formatPtr.name}" includes:`
+                )
+
+                nobj.formatPtr.properties.forEach(e => {
+                    outputCode.data.push(`#   - PROPERTY (${e.type.pointer? "p": "u"}${e.type.size}) ${e.name}`)
+                })
+                Object.entries(nobj.formatPtr.constructors).forEach(e => {
+                    outputCode.data.push(`#   - CNSTRCTR ${e[0]} (${e[1].parameters.length} parameters${e[1].variadic? ", variadic" : ""})`)
+                })
+                
+
+
+                //throwE(userFormats.List.properties)
                 //throwE(defines.types.Person.formatPtr.properties)
                 //actions.allocations.deallocStack()
             } else if (oldScope.type == keywordTypes.FUNCTION) {
@@ -330,6 +379,13 @@ function evaluate(line) {
                 line[begin] = output.out
                 line.splice(begin + 1, output.len + 2)
                 wordNum = begin
+            } else if (oldScope.type == keywordTypes.CONSTRUCTOR) {
+                //throwE(oldScope.data.cons)
+
+                actions.formats.closeConstructor(oldScope.data, oldStack)
+                // throwE(oldScope)
+            } else if (oldScope.type == keywordTypes.METHOD) {
+                actions.formats.closeMethod(oldScope.data, oldStack)
             }
             //console.log("IJWJWWO", scope)
         }
@@ -345,6 +401,8 @@ function evaluate(line) {
                         name: kname,
                         properties: [],
                         statics: [],
+                        constructors: {},
+                        methods: {},
                         size: 0
                     }
                 }

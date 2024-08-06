@@ -12,9 +12,10 @@ var assembly = {
         outputCode.autoPush(`mov${objectIncludes(globalVariables, value) ? helpers.types.sizeToSuffix(type) : ""} ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
         return r
     },
-    optimizeMove: function(source, destination, sType, dType) {
+    optimizeMove: function (source, destination, sType, dType) {
         debugPrint(" reoifjeorjferiojerf", source)
         debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
+        debugPrint(source)
         if (helpers.types.isConstOrLit(source)) {
             if (helpers.types.isLiteral(source)) {
                 if (helpers.types.stringIsRegister(destination)) {
@@ -385,12 +386,12 @@ var variables = {
 }
 
 var allocations = {
-    allocateStack: function (bytes, forceEbp = false, forceNoSize = false, note="") {
+    allocateStack: function (bytes, forceEbp = false, forceNoSize = false, note = "") {
         if (helpers.general.scopeHasIterable() && !forceEbp) {
             debugPrint("ALLOCING - DR", bytes, currentStackOffset)
             if (programRules.DynamicArraysAllocateSize && !forceNoSize) {
                 outputCode.autoPush(
-                    `# Allocating ${bytes} bytes + 1 extra for size ${note.length != 0? "\n#" + note : ""}`,
+                    `# Allocating ${bytes} bytes + 1 extra for size ${note.length != 0 ? "\n#" + note : ""}`,
                     `sub \$${bytes + 4}, %esp`,
                     `movl \$${bytes}, (%esp)`,
                     `add \$4, %esp`
@@ -408,7 +409,7 @@ var allocations = {
             if (programRules.DynamicArraysAllocateSize && !forceNoSize) {
                 currentStackOffset = (helpers.general.getMostRecentFunction().data.totalAlloc += (bytes + 4))
                 outputCode.autoPush(
-                    `${note.length != 0? "#" + note + "\n": ""}movl \$${bytes}, -${currentStackOffset}(%ebp) # Allocated in __ALLOC_FOR__, setting extra byte for size`
+                    `${note.length != 0 ? "#" + note + "\n" : ""}movl \$${bytes}, -${currentStackOffset}(%ebp) # Allocated in __ALLOC_FOR__, setting extra byte for size`
                 )
                 return `-${currentStackOffset - 4}(%ebp)`
             } else {
@@ -421,12 +422,12 @@ var allocations = {
         // currentStackOffset += bytes
         //return lbl
     },
-    allocateMmap: function (bytes, note="") {
+    allocateMmap: function (bytes, note = "") {
         //debugPrint("PUSHING")
         assembly.pushClobbers()
         assembly.pushToStack(bytes, defines.types.u32)
         outputCode.autoPush(
-            `call ${programRules.DynamicArraysAllocateSize ? "__allocate_wsize__" : "__allocate__"} ${note.length != 0? "#" + note : ""}`,
+            `call ${programRules.DynamicArraysAllocateSize ? "__allocate_wsize__" : "__allocate__"} ${note.length != 0 ? "#" + note : ""}`,
             `add $4, %esp`
         )
         assembly.popClobbers()
@@ -440,7 +441,7 @@ var allocations = {
         if (programRules.StaticArraysAllocateSize) {
             outputCode.data.push(`.4byte ${bytes} # Extra size allocation, manually enabled by StaticArraysAllocateSize = true`)
         }
-        outputCode.data.push(`.comm ${lbl}, ${bytes} ${note.length != 0? "#" + note : ""}`);
+        outputCode.data.push(`.comm ${lbl}, ${bytes} ${note.length != 0 ? "#" + note : ""}`);
         outputCode.autoPush(`mov \$${lbl}, %eax`)
         return "%eax"
     },
@@ -465,7 +466,7 @@ var allocations = {
         globalVariables[label] = newGlobalVar(defines.types.p8)
         return label
     },
-    allocateArray: function (arr, note="") {
+    allocateArray: function (arr, note = "") {
         arr = arr.slice(1, arr.length - 1)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
@@ -537,8 +538,8 @@ var functions = {
         var didVari = false
         parr.reverse().forEach(x => {
             if (onCom) {
-                if (didVari)
-                    throwE("Cannot have parameters declared after variadic ellipsis")
+                // if (didVari)
+                //     throwE("Cannot have parameters declared after variadic ellipsis")
                 if (x != ',')
                     throwE(`Expected comma at word "${x}" in ${parr}`)
             } else if (x == "...") {
@@ -557,20 +558,23 @@ var functions = {
             fname + ":",
             `push %ebp`,
             `mov %esp, %ebp`,
-            `${userFunctions[fname].saveRegs? "pusha" : ""}`,
+            `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
             `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`
         )
 
     },
-    closeFunction: function (sc, st, asRet = false, rVal = null) {
-        var d = sc.data
+    closeFunction: function (scope, stack, asRet = false, rVal = null) {
+        var d = scope
+        debugPrint(scope)
+        if("data" in d)
+            d = d.data
         debugPrint("SC", scope, rVal)
         if (rVal != null) {
             assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
         outputCode.text.push(
-            `${d.saveRegs? "popa" : ""}`,
+            `${d.saveRegs ? "popa" : ""}`,
             `mov %ebp, %esp`,
             `pop %ebp`,
             `ret`
@@ -582,7 +586,7 @@ var functions = {
             )
 
 
-            Object.entries(st).forEach(sv => {
+            Object.entries(stack).forEach(sv => {
                 outputCode.text.push(
                     `# ${sv[0]}: ${sv[1].offset}`
                 )
@@ -590,12 +594,17 @@ var functions = {
         }
         //throwE(st)
     },
-    callFunction: function (fname, args) {
+    callFunction: function (fname, args, isConstructor = false, constructorType = null) {
         var onCom = false
         var variadic = userFunctions[fname].variadic
         //throwE(fname, args)
         var bytes = 0
         var tbuff = []
+
+        if(typeof args == "string")
+        {
+            args = [args]
+        }
 
         assembly.pushClobbers()
 
@@ -653,7 +662,7 @@ var functions = {
         })
 
         outputCode.autoPush(...tbuff.reverse().flat())
-        var rt = userFunctions[fname].returnType
+        var rt = isConstructor? constructorType : userFunctions[fname].returnType
         // TODO HERE BROKEN : writing "true" instead breaks it. No idea
         debugPrint("RRRR", userFunctions[fname])
         var out = helpers.registers.getFreeLabelOrRegister(rt, false)
@@ -783,7 +792,6 @@ var formats = {
 
         //throwE(helpers.general.getMostRecentFunction().data.parameters)
 
-
         while (baseType.formatPtr.properties[i].name != propertyName) {
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
             i++
@@ -798,10 +806,120 @@ var formats = {
             base = "%eax"
         }
 
-        if(readAddress)
-            return {ptr:`${offset}(${base})`, type: propertyType}
+        if (readAddress)
+            return { ptr: `${offset}(${base})`, type: propertyType }
         assembly.optimizeMove(`${offset}(${base})`, out, propertyType, propertyType)
         return out
+    },
+    createMethodOrConstructor: function (_scope, fname, params, ret = null) {
+        if (typeof (params) == "string")
+            params = [params]
+        var params_obj = actions.functions.createParams(params)
+        var returnType = objCopy(defines.types.u32)
+
+
+        if (ret == null) // constructor
+        {
+            var _data = {
+                name: fname,
+                parameters: params_obj.params,
+                variadic: params_obj.didVari,
+                totalAlloc: 0,
+                saveRegs: false
+            }
+
+            //throwE(_scope)
+            _scope.constructors[fname] = _data
+            userFunctions[fname] = _data
+    
+            requestBracket = {
+                type: keywordTypes.CONSTRUCTOR,
+                data: _data
+            }
+            
+            functions.createFunction(fname)
+            var save = allocations.allocateMmap("$" + helpers.formatters.formatAllocMacro(_scope.name), "Allocate for THIS")
+            outputCode.autoPush(`mov %eax, __this__`)
+            //throwE(defines.types)
+        }
+        else {
+            
+            var _data = {
+                name: fname,
+                parameters: params_obj.params,
+                variadic: params_obj.didVari,
+                returnType: ret,
+                totalAlloc: 0,
+                saveRegs: false
+            }
+
+            //throwE("not done", _data)
+
+            _scope.methods[fname] = _data
+            userFunctions[fname] = _data
+    
+            requestBracket = {
+                type: keywordTypes.METHOD,
+                data: _data
+            }
+            
+            functions.createFunction(fname)
+
+            //throwE(userFunctions)
+        }
+
+    },
+    callConstructor: function(className, params)
+    {
+        //throwE(userFormats[className].constructors)
+
+        var variadicConstructor = null
+        var bestFit = null
+        var numberOfParams = params.filter(x => x != ",").length
+
+        // overloading
+        // awful code. so many ideas going through my head. fix later
+        Object.entries(userFormats[className].constructors).forEach(e => {
+            if(e[1].variadic)
+            {
+                variadicConstructor = e[0]
+            } else {
+                if(numberOfParams == e[1].parameters.length)
+                {
+                    bestFit = e[0]
+                }
+            }
+        })
+
+        if(bestFit == null)
+        {
+            if(variadicConstructor == null)
+            {
+                throwE(`No constructor exists for "${className}" that takes "${numberOfParams}" parameters. Either make a variadic constructor, or add one that takes this number of parameters.`)
+            }
+            bestFit = variadicConstructor
+        }
+
+        globalVariables.__this__ = defines.types[className]
+        return functions.callFunction(bestFit, params, true, globalVariables.__this__)
+    },
+    closeConstructor: function(scope, stack)
+    {
+        // outputCode.autoPush(
+        //     `mov __this__, %eax`
+        // )
+        functions.closeFunction(scope,stack, false, "__this__")
+        //throwE(scope, stack)
+    },
+    closeMethod: function(scope, stack)
+    {
+        functions.closeFunction(scope, stack)
+    },
+    callMethod: function(parent, method, params)
+    {
+        var parentType = helpers.types.guessType(parent)
+        actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
+        return functions.callFunction(helpers.formatters.formatMethodName(parentType.formatPtr.name, method), params)
     }
 }
 

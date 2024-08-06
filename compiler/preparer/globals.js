@@ -1,5 +1,17 @@
 // yes, it uses globals
 
+global.objCopy = function (x) {
+    return JSON.parse(JSON.stringify(x))
+}
+
+global.newGlobalVar = function (type, info = {}) {
+    return {
+        type: objCopy(type),
+        info
+    }
+}
+
+
 global.scope = [];
 global.currentStackOffset = 0;
 global.requestBracket = 0;
@@ -7,10 +19,11 @@ global.oldFormatAllocs = [] // for freeing registers in property chains like a.b
 global.macros = {
     TRUE: "1",
     FALSE: "0",
-    NULL: "0"
+    NULL: "0",
+    "this": "__this__"
 }
 global.globalVariables = {           // Object : {variable name: type}
-    "this": defines.types.u32,
+    "__this__": newGlobalVar(defines.types.u32),
 }
 global.userFunctions = {           // Object : {function name: {func name, parameters[{param name , type},...]}, return type}
     "printf": {
@@ -34,6 +47,31 @@ global.userFunctions = {           // Object : {function name: {func name, param
         name: "dispose",
         parameters: [
             { name: "pointer", type: defines.types.p32 }
+        ],
+        variadic: false,
+        returnType: defines.types.u32
+    },
+    "__allocate__": {
+        name: "__allocate__",
+        parameters: [
+            { name: "size", type: defines.types.u32 }
+        ],
+        variadic: false,
+        returnType: defines.types.p32
+    },
+    "malloc": {
+        name: "malloc",
+        parameters: [
+            { name: "size", type: defines.types.u32 }
+        ],
+        variadic: false,
+        returnType: defines.types.p32
+    },
+    "realloc": {
+        name: "realloc",
+        parameters: [
+            { name: "pointer", type: defines.types.p32 },
+            { name: "size", type: defines.types.u32 }
         ],
         variadic: false,
         returnType: defines.types.u32
@@ -87,11 +125,11 @@ global.areaHasFloat = false;
 global.keywordTypes = {
     FORMAT: 0,
     FUNCTION: 1,
-    INIT: 2,
+    CONSTRUCTOR: 2,
     METHOD: 3,
     WHILE: 4,
     IF: 5,
-    ARRAY: 6
+    ARRAY: 6,
 }
 
 global.quickSplit = function(inputCode) {
@@ -143,9 +181,7 @@ global.getTrueLine = function (execFileLikeTrue, line) {
 global.debugPrint = function () {
     console.log("\033[92m[DEBUG]\033[0m", ("\033[96m" + (debugPrint.caller.name || "*unkown caller*") + "\033[0m").padEnd(32), ...arguments);
 }
-global.objCopy = function (x) {
-    return JSON.parse(JSON.stringify(x))
-}
+
 global.throwE = function (x) {
     console.log(`[ERROR] @ line ${globalLine}: `, ...arguments)
     console.trace()
@@ -182,12 +218,6 @@ global.newStackVar = function (type, offset = currentStackOffset) {
     }
 }
 
-global.newGlobalVar = function (type, info = {}) {
-    return {
-        type: objCopy(type),
-        info
-    }
-}
 
 global.popTypeStack = function (u32ifNo = false) {
     if (typeStack.length == 0) {
