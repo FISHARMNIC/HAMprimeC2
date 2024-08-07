@@ -46,12 +46,12 @@ function evaluate(line) {
 
         // #region modifications
         if (word == '(' || word == ')') {
-            if(offsetWord(-2) == "call") {
+            if(offsetWord(-2) == "call" || (offsetWord(-3) == "call" && (offsetWord(-2) in defines.types))) {
                 var returnType = defines.types.u32
                 var offset = -2
-                if(offsetWord(1) in defines.types) // if next word is a type
+                if(offsetWord(-2) in defines.types) // if next word is a type
                 {
-                    returnType = defines.types[offsetWord(1)]
+                    returnType = defines.types[offsetWord(-2)]
                     offset += 1
                 }
 
@@ -59,8 +59,15 @@ function evaluate(line) {
                 var params = offsetWord(3 + offset)
 
                 // call as address
-                line[wordNum] = actions.functions.callFunction(fnName, params, false, null, returnType)
-                line.splice(wordNum + 1, 4 + offset)
+                if((offsetWord(-2) in defines.types))
+                {
+                    line[wordNum - 3] = actions.functions.callFunction(fnName, params, false, null, returnType)
+                    line.splice(wordNum - 2, 5)
+                } else {
+                    line[wordNum - 2] = actions.functions.callFunction(fnName, params, false, null, returnType)
+                    line.splice(wordNum - 1, 4)
+                }
+
             } else {
                 line.splice(wordNum, 1)
                 wordNum--;

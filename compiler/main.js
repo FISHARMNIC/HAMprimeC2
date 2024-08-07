@@ -12,6 +12,7 @@ TODO:
         - NOTE: THIS ONLY WORKS IF *EVERY* MOV IS DONE USING A FUNCTION THAT TRACKS MOVS
     - store argnum as extra "hidden" parameter in variadics
     HIGH
+    - Don't think that arr[a][b] <- 123; (nested setting) will work! Untested
     - allow $this.property to get address
     - do oldFormatAllocs for array access chains too like bob[1][2][3]
     - GET RID OF TYPESTACK COMLPETELY SOME THINGS STILL USE IT

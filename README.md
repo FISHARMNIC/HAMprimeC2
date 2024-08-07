@@ -1,7 +1,7 @@
 # <img src="https://github.com/FISHARMNIC/proglan2/assets/73864341/9a5327b9-ffcc-425a-b927-ad829415715b" width="20px"> HAM\` Language (New Compiler)
-A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). So far, it lacks some features that existed in the [original HAM prime compiler](https://github.com/FISHARMNIC/HAMprime/tree/main) (mainly floats and methods). However, besides including numerous new features, this new compiler is much more optimized and has less bugs than the original.
+A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). So far, it lacks some features that existed in the [original HAM prime compiler](https://github.com/FISHARMNIC/HAMprime/tree/main) (UPDATE: floats are now the only thing missing). However, besides including numerous new features, this new compiler is much more optimized and has less bugs than the original.
 # What sets HAM\` apart from other languages?
-HAM\` is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays (missing from this compiler) and implicit typing.
+HAM\` is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays and implicit typing.
 # What is working so far?
 This compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 - Variables
@@ -14,10 +14,12 @@ This compiler currently allows for math expressions, iteration, conditionals, fu
 	- Nested formats
 	- Creating instances
 	- Property reading and setting
+    - Methods and Constructors
 - Functions
 	- Variadic functions
 	- Forward declarations
 	- Seamless callee/caller C-functions
+    - Calling from pointers/addresses
 - Control flow
 	- Nested If/elif/else statements
 	- While loops
@@ -170,6 +172,69 @@ entry function<> -> u32
 {
     gfx_setup(500, 360);
     gfx_begin($render);
+}
+```
+
+**Formats as classes**
+```C
+/*
+Example for a Java ArrayList-like class
+*/
+List format {
+    .buffer p32;
+    .length u32;
+    
+    .List constructor<...> {
+        this.buffer <- 0;
+        this.length <- 0;
+    }
+
+    .push method<any element> -> p32
+    {
+        this.length <- (this.length + 1);
+        if(this.length == 1)
+        {
+            this.buffer <- malloc(4);
+        }
+        else 
+        {
+            this.buffer <- realloc(this.buffer, (this.length * 4));
+        }
+        this.buffer[this.length - 1] <- element;
+        return this.buffer;
+    }
+
+    .pop method<> -> any {
+        this.length <- (this.length - 1);
+        create returnValue <- this.buffer[this.length];
+        this.buffer <- realloc(this.buffer, (this.length * 4));
+        return returnValue;
+    }
+
+    .every method<p32 iterator> -> u32 {
+        create i <- 0;
+        while(i <: this.length)
+        {
+            call iterator(this.buffer[i]);
+            i <- (i + 1);
+        }
+    }
+}
+
+putint function<u32 i> {
+    printf("Printing: %i\n", i);
+}
+
+
+entry function<> -> u32
+{
+    create myList <- List();
+    myList.push(123);
+    myList.push(456);
+    printf("[%i,%i]\n", myList.buffer[0], myList.pop());
+    myList.push(321);
+    myList.every($putint);
+    
 }
 ```
 
