@@ -7,10 +7,24 @@ TODO:
         - uses Memory Ownership Table for automatic freeing
         - "__disable ownership" to turn this off
     - working on: see ex6
+    - add print function that guesses type. If struct it calls ".print"
     - Add everytime something is stored in a register, that value is stored on the compiler too
         - before moving somethig into the same register, if its the same thing, just dont move it since it's already there
         - NOTE: THIS ONLY WORKS IF *EVERY* MOV IS DONE USING A FUNCTION THAT TRACKS MOVS
-    - store argnum as extra "hidden" parameter in variadics
+        - NOTE: this is probably a bad idea
+            - Just write a postprocessor that removes unnecessary instructions
+    - store number of args as extra "hidden" parameter in variadics
+    - add keyword to disable packed structs
+    - add a sort of dictionary for formats so that they can have their properties called by name from a string
+        - like myVar["name"] gets the property "print"
+    - add a keyword that allows you to call a certain method from any class type
+        - Remember, the method names are just formatted functions
+        - This keyword should just call that formatted function
+            - Class name comes from guessType of the instance that is trying to call it
+        - Useful for things like a ".print" for easy printing
+        - possible way it looks: "attempt myClass.print" or maybe "force"
+    - add inline assembly
+    - "global" keyword for exporting functions and variables
     HIGH
     - Don't think that arr[a][b] <- 123; (nested setting) will work! Untested
     - allow $this.property to get address

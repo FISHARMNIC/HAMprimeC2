@@ -6,7 +6,8 @@ List format {
     .buffer p32;
     .length u32;
     
-    .List constructor<...> {
+    .List constructor<...> 
+    {
         this.buffer <- 0;
         this.length <- 0;
     }
@@ -26,14 +27,16 @@ List format {
         return this.buffer;
     }
 
-    .pop method<> -> any {
+    .pop method<> -> any 
+    {
         this.length <- (this.length - 1);
         create returnValue <- this.buffer[this.length];
         this.buffer <- realloc(this.buffer, (this.length * 4));
         return returnValue;
     }
 
-    .every method<p32 iterator> -> u32 {
+    .every method<p32 iterator> -> u32 
+    {
         create i <- 0;
         while(i <: this.length)
         {
@@ -43,7 +46,8 @@ List format {
     }
 }
 
-putint function<u32 i> {
+putint function<u32 i> 
+{
     printf("Printing: %i\n", i);
 }
 
