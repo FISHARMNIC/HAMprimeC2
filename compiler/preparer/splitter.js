@@ -57,8 +57,7 @@ function split(line) {
         // false if there is an exception (dont split)
 
         if (!inComment) {
-            if(char == "/" && charOffset(1) == "*")
-            {
+            if (char == "/" && charOffset(1) == "*") {
                 outBuffer.push(build)
                 build = ""
                 inComment = true
@@ -88,11 +87,18 @@ function split(line) {
             if (!noExe) continue; // there was a resevered sequence, dont split and skip
 
             if (symbols.includes(char)) { // splitting character
+
                 if (build != "")
                     outBuffer.push(build); // push current
-                if (char != " ")
-                    outBuffer.push(char);
-                build = ""; // clear buffer
+
+                if (char == "-" && (parseInt(nextChar) == nextChar)) {
+                    build = "-"
+                    mode = 1
+                } else {
+                    if (char != " ")
+                        outBuffer.push(char);
+                    build = ""; // clear buffer
+                }
             } else if (quoteMarks.includes(char)) { // enter special non-splitting mode in quotes
                 if (inquotes == char) { // are exiting quotes
                     outBuffer.push(build + char);
@@ -112,8 +118,7 @@ function split(line) {
             }
 
         } else {
-            if(char == "*" && charOffset(1) == "/")
-            {
+            if (char == "*" && charOffset(1) == "/") {
                 charNum++
                 inComment = false
             }
