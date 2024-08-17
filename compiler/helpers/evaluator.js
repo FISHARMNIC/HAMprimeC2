@@ -80,6 +80,9 @@ function evaluate(line) {
                     line.splice(wordNum + 1, 3)
                 } else {
                     throwE("CAST TODO")
+
+                    var type = objCopy(defines.types[word])
+
                 }
             } else if (offsetWord(1) == "{") {
                 arrayClamp = defines.types[word]
@@ -179,9 +182,10 @@ function evaluate(line) {
         {
             var num = parseFloat(word + "." + offsetWord(2))
             var asflt = String(doubleIEEE(num))
+            var outreg = actions.assembly.allocateAndSet(asflt, defines.types.f32)
             line.splice(wordNum + 1, 2)
-            line[wordNum] = asflt
-            nextNumIsFloat = true;
+            line[wordNum] = outreg
+            nextNumIsFloat = true; // faze this out
         } else if (word == parseInt(word)) // int
         {
             nextNumIsFloat = false;
@@ -551,6 +555,7 @@ function evaluate(line) {
                 var start = wordNum
                 var onNum = true;
                 var build = [];
+                var floatMath = false;
                 while (wordNum < line.length) {
                     word = line[wordNum]
                     if (onNum) {
@@ -558,12 +563,16 @@ function evaluate(line) {
                             break;
                         }
                     }
+                    if (helpers.types.guessType(word).float)
+                    {
+                        floatMath = true;
+                    }
                     build.push(word)
                     onNum = !onNum;
                     wordNum++;
                 }
-                //throwE(line)
-                var lbl = mathEngine(build)
+                //throwE(build, floatMath)
+                var lbl = floatMath ? floatEngine(build) : mathEngine(build)
                 line.splice(start, build.length + 1, lbl)
             }
             // #endregion

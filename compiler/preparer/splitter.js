@@ -141,7 +141,7 @@ function parseFinalCode() {
 .data
 .align 4
 __this__: .4byte 0
-
+__xmm_sse_temp__: .4byte 0
 ######## user data section ########
 `
         + outputCode.data.join("\n") +

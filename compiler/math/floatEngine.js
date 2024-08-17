@@ -3,82 +3,80 @@ todo. Only push non clobbered. use eax, esi, and edi since they are least likely
 (eax will never be clobbered)
 */
 
+function useAppropriateLoad(value, dest, type) {
+    if (type.float) {
+        outputCode.autoPush(`movss ${value}, ${dest}`)
+    } else {
+        outputCode.autoPush(`cvtsi2ss ${value}, ${dest}`);
+    }
+
+}
 module.exports = function (arr) {
+
     //debugPrint("MATH ON", arr, helpers.registers.inLineClobbers)
     var scanPos = 0;
     var current = arr[scanPos]
-    var mathType = defines.types.u32
-    var pushed = [];
-    Object.entries(helpers.registers.inLineClobbers).forEach(pair => {
-        if(pair[1] == 1)
-        {
-            var type = helpers.types.formatRegister(pair[0], defines.types.u32)
-            pushed.push(type)
-            outputCode.autoPush(`push ${type}`)
-        }
-    })
+    var currentType = helpers.types.guessType(current)
 
-    debugPrint("CCCCCCCC", arr)
-    outputCode.autoPush(`xor %eax, %eax`, `mov ${helpers.types.formatIfConstant(current)}, ${helpers.types.formatRegister('a', helpers.types.guessType(current))}`) // load first value into register a
+    // var pushed = [];
+    // Object.entries(helpers.registers.inLineClobbers).forEach(pair => {
+    //     if (pair[1] == 1) {
+    //         var type = helpers.types.formatRegister(pair[0], defines.types.u32)
+    //         pushed.push(type)
+    //         outputCode.autoPush(`push ${type}`)
+    //     }
+    // })
+
+    if (helpers.types.isConstant(current) || helpers.types.stringIsRegister(current)) // must be in addr first. movss and cvtsi2ss can only take source from memory or xmm
+    {
+        outputCode.autoPush(`movl ${(helpers.types.isConstant(current) ? "$" : "") + current}, __xmm_sse_temp__`)
+        current = "__xmm_sse_temp__"
+    }
+
+    useAppropriateLoad(current, "%xmm0", currentType)
 
     scanPos += 1
-    var reps = scanPos - 2;
+   // var reps = scanPos - 2;
+
     while (scanPos < arr.length - 1) {
 
-        current = helpers.types.formatIfConstant(arr[scanPos]);
+        current = arr[scanPos]
+        var next = arr[scanPos + 1]
+        var nextType = helpers.types.guessType(next)
+        console.log("hi", next)
 
-        var regA = helpers.types.formatRegister('a', defines.operators.includes(current)? mathType : helpers.types.guessType(arr[scanPos]))
-        var regB = helpers.types.formatRegister('b', mathType)
-        var regC = helpers.types.formatRegister('c', mathType)
-        var regD = helpers.types.formatRegister('d', mathType)
-
-        var item = {
-            current,
-            next: helpers.types.formatIfConstant(arr[scanPos + 1]),
-        }
-
-        if(helpers.variables.variableExists(arr[scanPos + 1]))
+        if (helpers.types.isConstant(next) || helpers.types.stringIsRegister(next)) // must be in addr first. movss and cvtsi2ss can only take source from memory or xmm
         {
-            regB = helpers.types.formatRegister('b', helpers.variables.getVariableType(arr[scanPos + 1]))
+            outputCode.autoPush(`movl ${(helpers.types.isConstant(next) ? "$" : "") + next}, __xmm_sse_temp__`)
+            next = "__xmm_sse_temp__"
         }
 
-        outputCode.autoPush(...((inD) => {
-            switch (inD.current) {
+        useAppropriateLoad(next, "%xmm1", nextType)
+
+        outputCode.autoPush(...(() => {
+            switch (current) {
                 case "+":
-                    return [`add ${inD.next}, ${regA}`]
+                    return [`addss %xmm1, %xmm0`] // s(1) += st(0). st(0) = st(1) (pop)
                 case "-":
-                    return [`sub ${inD.next}, ${regA}`]
+                    return [`subss %xmm1, %xmm0`]
                 case "*":
-                    return [
-                        `mov ${inD.next}, ${regB}`,
-                        `mul ${regB}`,
-                    ]
+                    return [`mulss %xmm1, %xmm0`]
                 case "/":
-                    return [
-                        `mov ${inD.next}, ${regB}`,
-                        `xor %edx, %edx`,
-                        `div ${regB}`,
-                    ]
-                case "%":
-                    return [
-                        `mov ${inD.next}, ${regB}`,
-                        `xor %edx, %edx`,
-                        `div ${regB}`,
-                        `mov ${regD}, ${regA}`,
-                    ]
+                    return [`divss %xmm1, %xmm0`]
                 default:
                     return ""
             }
-        })(item))
-        scanPos += 1;
+        })())
+        scanPos += 2;
     }
-    var lbl = helpers.registers.getFreeLabelOrRegister(mathType)
-    //debugPrint("MATH GOT LBL", lbl)
-    outputCode.autoPush(`mov %eax, ${lbl}`)
-    pushed.forEach(x => {
-        outputCode.autoPush(`pop ${x}`)
-    })
+    var lbl = helpers.variables.newTempLabel(defines.types.f32)
+    outputCode.autoPush(`movss %xmm0, ${lbl}`)
+    // pushed.forEach(x => {
+    //     outputCode.autoPush(`pop ${x}`)
+    // })
 
     //typeStack.push(defines.types.u32)
+
+    //throwE("dine")
     return lbl
 }

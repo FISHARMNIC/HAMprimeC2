@@ -12,6 +12,10 @@ var assembly = {
         outputCode.autoPush(`mov${objectIncludes(globalVariables, value) ? helpers.types.sizeToSuffix(type) : ""} ${helpers.types.formatIfConstOrLit(value)}, ${r}`)
         return r
     },
+    allocateAndSet: function (value, type, low = true) {
+        var reg = helpers.registers.getFreeLabelOrRegister(type)
+        return this.setRegister(value, helpers.registers.registerStringToLetterIfIs(reg), type, low)
+    },
     optimizeMove: function (source, destination, sType, dType) {
         debugPrint(" reoifjeorjferiojerf", source)
         debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
@@ -350,8 +354,9 @@ var variables = {
             )
         } else if (objectIncludes(globalVariables, index) || helpers.types.stringIsEbpOffset(index)) { // if index is glob or index is ebp
             // FIX THIS poorly optimized
-            throwE("Not sure. fix the code below this")
+            // throwE("Not sure. fix the code below this")
             outputCode.autoPush(
+                `# array load trash awful. Fix this bad optimize`,
                 `push %eax`,
                 `mov ${index}, %eax`,
                 `${(elementBytes != 1) ? `shl \$${helpers.types.typeToBytes(elementType) / 2}, %eax` : ""}`,
@@ -359,6 +364,23 @@ var variables = {
                 `add $1, %esp`,
                 `mov${suffix} ${value}, (%eax)`
             )
+
+            /* 
+            index -> eax
+            mutliply eax by "bytes"
+            add value in base pointer to eax
+            mov value to address
+
+            */
+            // outputCode.autoPush(
+            //     `push %eax`,
+            //     `mov ${index}, %eax`,
+            //     `${(elementBytes != 1) ? `shl \$${helpers.types.typeToBytes(elementType) / 2}, %eax` : ""}`,
+            //     `add (%esp), %eax`,
+            //     `add $1, %esp`,
+            //     `mov${suffix} ${value}, (%eax)`
+            // )
+
         }
 
 
@@ -599,10 +621,8 @@ var functions = {
     callFunction: function (fname, args, isConstructor = false, constructorType = null, typeIfFromAddress = null) {
         var onCom = false
         var callAddress = fname
-        if(typeIfFromAddress != null)
-        {
-            if("__not_a_function__" in userFunctions)
-            {
+        if (typeIfFromAddress != null) {
+            if ("__not_a_function__" in userFunctions) {
                 throwE("Do not declare a function named __not_a_function__")
             }
             fname = "__not_a_function__"
@@ -619,6 +639,7 @@ var functions = {
         //throwE(fname, args)
         var bytes = 0
         var tbuff = []
+
 
 
         assembly.pushClobbers()
@@ -651,29 +672,57 @@ var functions = {
                         throwW(`Argument '${x}' does not match expected type ${JSON.stringify(expectedType)}`)
 
                     if (helpers.types.isConstOrLit(x)) {
-                        tbuff.push(`pushl \$${x}`)
+
+                        if (givenType.float && fname == "printf") {
+                            throwE("No printf float literal for now... Needs optimization")
+                            tbuff.push([
+                                "",
+                                "cvtss2sd %xmm0, %xmm2",
+                                "sub $8, %esp",
+                                "movq %xmm2, (%esp)"
+                            ])
+                        } else {
+                            tbuff.push(`pushl \$${x}`)
+                        }
                     } else if (helpers.types.stringIsRegister(x)) {
-                        tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
+                        if (givenType.float && fname == "printf") {
+                            tbuff.push([
+                                "# awful optimization. do later. sorry",
+                                `mov ${x}, __xmm_sse_temp__`,
+                                `movss __xmm_sse_temp__, %xmm0`,
+                                "cvtss2sd %xmm0, %xmm2",
+                                "sub $8, %esp",
+                                "movq %xmm2, (%esp)"
+                            ])
+                        } else {
+                            tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
+                        }
                     }
                     else {
+                        if (givenType.float && fname == "printf") {
+                            tbuff.push([
+                                `movss ${x}, %xmm0`,
+                                "cvtss2sd %xmm0, %xmm2",
+                                "sub $8, %esp",
+                                "movq %xmm2, (%esp)"
+                            ])
+                        } else {
+                            var r = helpers.types.formatRegister('d', givenType)
+                            var bbuff = []
+                            if (r != "%edx")
+                                bbuff.push("xor %edx, %edx")
 
-                        //debugPrint("FMTING", givenType, x)
-                        var r = helpers.types.formatRegister('d', givenType)
-                        //debugPrint("erijgoewije", r)
-
-                        var bbuff = []
-                        if (r != "%edx")
-                            bbuff.push("xor %edx, %edx")
-
-                        // if(helpers.types.stringIsRegister(x))
-                        // {
-                        //     throwE(x, r, fname, args, givenType)
-                        // }
-                        bbuff.push(
-                            `mov ${x}, ${r}`,
-                            `push %edx`
-                        )
-                        tbuff.push(bbuff)
+                            // if(helpers.types.stringIsRegister(x))
+                            // {
+                            //     throwE(x, r, fname, args, givenType)
+                            // }
+                            bbuff.push(
+                                `# TODO optimize if variable just do movl`,
+                                `mov ${x}, ${r}`,
+                                `push %edx`
+                            )
+                            tbuff.push(bbuff)
+                        }
                     }
                     bytes += 4
                     ind++
@@ -681,6 +730,10 @@ var functions = {
                 onCom = !onCom
             })
         }
+
+        // if (fname == "printf") {
+        //     throwE(args)
+        // }
 
         outputCode.autoPush(...tbuff.reverse().flat())
         var rt = isConstructor ? constructorType : userFunctions[fname].returnType
@@ -690,7 +743,7 @@ var functions = {
         //throwE(out, helpers.types.guessType("%ebx"))
 
         outputCode.autoPush(
-            `call ${typeIfFromAddress == null? "" : "*"}${callAddress}`,
+            `call ${typeIfFromAddress == null ? "" : "*"}${callAddress}`,
             `mov ${helpers.types.formatRegister('a', rt)}, ${out}`
         )
 

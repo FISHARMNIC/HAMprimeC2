@@ -1,7 +1,8 @@
 /*
 TODO:
     NEW
-    - flag for __ccalled__ to be turned on automatically, and switches of caller saving regs
+    - flag for defaultFloats
+    - flag for __ccalled__ to be turned on automatically, and switches off caller saving regs
     - flag "NoStringDuplicates" when TRUE: any string literals with the same value use the same reference. Default TRUE
     - "own" keyword specifies who owns data. Without it its freed 
         - uses Memory Ownership Table for automatic freeing
@@ -23,8 +24,34 @@ TODO:
             - Class name comes from guessType of the instance that is trying to call it
         - Useful for things like a ".print" for easy printing
         - possible way it looks: "attempt myClass.print" or maybe "force"
+        - or maybe "<formatName>.call(<methodName>,<instance>"
+            - "Person.call(print, myPointer)"
     - add inline assembly
     - "global" keyword for exporting functions and variables
+
+    FOR FLOAT MATH
+        - guess type over everyting in parenthesis
+            - if any is a float, use float math engine instead
+        - Float literals instead of just being the number should have a string in the item BEFORE THEM be a string thats prefixed by like __ISFLOAT__ 114559229
+            - compiler generates this on float literal
+            - so like create bob <- __ISFLOAT__ 114559229;
+                - just do casting instead maybe...
+                - PLAN -----NEW USE -----
+                    - treat as cast, allocate in var, make postprocessor to fix this laziness
+                    - OR flag "floatHasBeenUsed" reset every PARENTHESIS / NEST    
+                        - if there was a float, it is set to high
+                        - used for float math
+                - PLAN -----OLD VOID-----
+                    - array that holds the type of each character in the line
+                    - example:
+                        starts:   ["create","bob","<-","u16","1234"]
+                        compiled: ["create","bob","<-","1234"]
+                        list:     [  null,  null, null, u16]
+                    - checked LAST in guesstype
+            - only for the compiler
+            - guess type uses this for casting and stuff
+
+
     HIGH
     - Don't think that arr[a][b] <- 123; (nested setting) will work! Untested
     - allow $this.property to get address
