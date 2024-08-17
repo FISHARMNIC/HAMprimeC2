@@ -3,7 +3,7 @@ Person format
     .p8 name;
     .u32 age;
 
-    .method __add(u32 next) -> u32
+    .__add method<u32 next> -> u32
     {
         this.age <- this.age + next;
     }   
@@ -15,7 +15,7 @@ Vector format
     .f32 y;
     .f32 z;
 
-    .method __add(u32 next) -> u32
+    .__add method<u32 next> -> u32
     {
         # note, add variable re-typing
         next <- Vector:(next);

@@ -1,6 +1,9 @@
 /*
 TODO:
     NEW
+    - rework variadic arguments, they should be just a normal array that points to the stack
+        - this allows for you to pass a pointer to vargs and read them from another fn
+        - currently its a "fake" array
     - make c#-like vectors 
     - make certain methods that do special things
         - eg:
@@ -36,30 +39,8 @@ TODO:
     - "global" keyword for exporting functions and variables
     - No casting to float and vice versa
 
-    FOR FLOAT MATH
-        - guess type over everyting in parenthesis
-            - if any is a float, use float math engine instead
-        - Float literals instead of just being the number should have a string in the item BEFORE THEM be a string thats prefixed by like __ISFLOAT__ 114559229
-            - compiler generates this on float literal
-            - so like create bob <- __ISFLOAT__ 114559229;
-                - just do casting instead maybe...
-                - PLAN -----NEW USE -----
-                    - treat as cast, allocate in var, make postprocessor to fix this laziness
-                    - OR flag "floatHasBeenUsed" reset every PARENTHESIS / NEST    
-                        - if there was a float, it is set to high
-                        - used for float math
-                - PLAN -----OLD VOID-----
-                    - array that holds the type of each character in the line
-                    - example:
-                        starts:   ["create","bob","<-","u16","1234"]
-                        compiled: ["create","bob","<-","1234"]
-                        list:     [  null,  null, null, u16]
-                    - checked LAST in guesstype
-            - only for the compiler
-            - guess type uses this for casting and stuff
-
-
     HIGH
+    - argc doesnt work and argv
     - Don't think that arr[a][b] <- 123; (nested setting) will work! Untested
     - allow $this.property to get address
     - do oldFormatAllocs for array access chains too like bob[1][2][3]

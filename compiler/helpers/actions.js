@@ -681,6 +681,7 @@ var functions = {
                                 "sub $8, %esp",
                                 "movq %xmm2, (%esp)"
                             ])
+                            bytes += 4
                         } else {
                             tbuff.push(`pushl \$${x}`)
                         }
@@ -694,6 +695,7 @@ var functions = {
                                 "sub $8, %esp",
                                 "movq %xmm2, (%esp)"
                             ])
+                            bytes += 4
                         } else {
                             tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
                         }
@@ -706,6 +708,7 @@ var functions = {
                                 "sub $8, %esp",
                                 "movq %xmm2, (%esp)"
                             ])
+                            bytes += 4
                         } else {
                             var r = helpers.types.formatRegister('d', givenType)
                             var bbuff = []

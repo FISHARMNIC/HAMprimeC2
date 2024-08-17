@@ -137,7 +137,7 @@ movq %xmm2, (%esp)
 pushl $__STRING0__
 call printf
 mov %eax, %ebx
-add $8, %esp
+add $12, %esp
 
 mov %ebp, %esp
 pop %ebp
