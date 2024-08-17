@@ -7,10 +7,11 @@ HAM\` is a fully compiled programming language that runs on Linux. When complete
 This compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 - Variables
 	- Stack and global scope
-	- Implicit and forced typing
+	- Implicit and forced typin
 	- Pointers an addressing
 	- External variables
 	- Arrays and strings
+    - Casting
 - Formats
 	- Nested formats
 	- Creating instances
