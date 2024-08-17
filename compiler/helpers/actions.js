@@ -560,6 +560,8 @@ var functions = {
         var robj = []
         var oBytes = 0;
         var didVari = false
+
+        console.log("\n---------\n", parr, "\n---------\n")
         parr.reverse().forEach(x => {
             if (onCom) {
                 // if (didVari)

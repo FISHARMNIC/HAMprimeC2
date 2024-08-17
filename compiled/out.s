@@ -1,18 +1,26 @@
 
 .1byte = .byte
 ######## Auto included libs #######
-
+.include "/Users/squijano/Documents/HAMprimeC2/compiler/libs/alloc.s"
 ###################################
 .data
 .align 4
 __this__: .4byte 0
 __xmm_sse_temp__: .4byte 0
 ######## user data section ########
-__ALLOCFOR_factorial__ = 0
-__STRING0__: .asciz "%f"
-__ALLOCFOR_entry__ = 12
+__ALLOCFOR___constructor_Vector_0___ = 0
+__ALLOCFOR___method_Vector_add___ = 0
+__ALLOCFOR___method_Vector_scale___ = 0
+__STRING0__: .asciz "(%f, %f, %f)\n"
+__ALLOCFOR___method_Vector_print___ = 0
+__SIZEOF_Vector__ = 12
+# format "Vector" includes:
+#   - PROPERTY (u32) x
+#   - PROPERTY (u32) y
+#   - PROPERTY (u32) z
+#   - CNSTRCTR __constructor_Vector_0_ (3 parameters)
+__ALLOCFOR_entry__ = 8
 __TEMP32_0__: .4byte 0
-__TEMP32_1__: .4byte 0
 ###################################
 .text
 
@@ -32,50 +40,191 @@ main:
     ret
 
 ###################################
-factorial:
+__constructor_Vector_0_:
 push %ebp
 mov %esp, %ebp
 
-sub $__ALLOCFOR_factorial__, %esp
-mov 8(%ebp), %eax
-movb $0, %bl
-cmp $1, %eax
-setge %bl
-cmpb $1, %bl
-jne __LABEL0__
-xor %eax, %eax
-mov 8(%ebp), %eax
-sub $1, %eax
-mov %eax, %ebx
-push %ebx
-# Calling function factorial
-push %ebx
-call factorial
-mov %eax, %ecx
+sub $__ALLOCFOR___constructor_Vector_0___, %esp
+mov $__SIZEOF_Vector__, %edx
+push %edx
+call __allocate_wsize__ #Allocate for THIS
 add $4, %esp
-pop %ebx
+mov %eax, __this__
+movl __this__, %eax
+mov 8(%ebp), %edx
+mov %edx, 0(%eax)
+movl __this__, %eax
+mov 12(%ebp), %edx
+mov %edx, 4(%eax)
+movl __this__, %eax
+mov 16(%ebp), %edx
+mov %edx, 8(%eax)
+movl __this__, %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Vector_add_:
+push %ebp
+mov %esp, %ebp
+
+sub $__ALLOCFOR___method_Vector_add___, %esp
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+movl 8(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+movl %ebx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+movl %ecx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm1
+addss %xmm1, %xmm0
+movss %xmm0, __TEMP32_0__
+movl __this__, %eax
+movl __TEMP32_0__, %edx
+mov %edx, 0(%eax)
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+movl 8(%ebp), %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+movl %ebx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+movl %ecx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm1
+addss %xmm1, %xmm0
+movss %xmm0, __TEMP32_0__
+movl __this__, %eax
+movl __TEMP32_0__, %edx
+mov %edx, 4(%eax)
+movl __this__, %eax
+mov 8(%eax), %edx
+mov %edx, %ebx
+movl 8(%ebp), %eax
+mov 8(%eax), %edx
+mov %edx, %ecx
+movl %ebx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+movl %ecx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm1
+addss %xmm1, %xmm0
+movss %xmm0, __TEMP32_0__
+movl __this__, %eax
+movl __TEMP32_0__, %edx
+mov %edx, 8(%eax)
+movl __this__, %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Vector_scale_:
+push %ebp
+mov %esp, %ebp
+
+sub $__ALLOCFOR___method_Vector_scale___, %esp
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+movl 8(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+movl %ebx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+movl %ecx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm1
+mulss %xmm1, %xmm0
+movss %xmm0, __TEMP32_0__
+movl __this__, %eax
+movl __TEMP32_0__, %edx
+mov %edx, 0(%eax)
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+movl 8(%ebp), %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+movl %ebx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+movl %ecx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm1
+mulss %xmm1, %xmm0
+movss %xmm0, __TEMP32_0__
+movl __this__, %eax
+movl __TEMP32_0__, %edx
+mov %edx, 4(%eax)
+movl __this__, %eax
+mov 8(%eax), %edx
+mov %edx, %ebx
+movl 8(%ebp), %eax
+mov 8(%eax), %edx
+mov %edx, %ecx
+movl %ebx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+movl %ecx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm1
+mulss %xmm1, %xmm0
+movss %xmm0, __TEMP32_0__
+movl __this__, %eax
+movl __TEMP32_0__, %edx
+mov %edx, 8(%eax)
+movl __this__, %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Vector_print_:
+push %ebp
+mov %esp, %ebp
+
+sub $__ALLOCFOR___method_Vector_print___, %esp
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+movl __this__, %eax
+mov 8(%eax), %edx
+mov %edx, %esi
 push %ebx
+push %esi
 push %ecx
-xor %eax, %eax
-mov 8(%ebp), %eax
-mov %ecx, %ebx
-mul %ebx
-mov %eax, %esi
-pop %ebx
+# Calling function printf
+# awful optimization. do later. sorry
+mov %esi, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+cvtss2sd %xmm0, %xmm2
+sub $8, %esp
+movq %xmm2, (%esp)
+# awful optimization. do later. sorry
+mov %ecx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+cvtss2sd %xmm0, %xmm2
+sub $8, %esp
+movq %xmm2, (%esp)
+# awful optimization. do later. sorry
+mov %ebx, __xmm_sse_temp__
+movss __xmm_sse_temp__, %xmm0
+cvtss2sd %xmm0, %xmm2
+sub $8, %esp
+movq %xmm2, (%esp)
+pushl $__STRING0__
+call printf
+mov %eax, %edi
+add $28, %esp
 pop %ecx
-mov %esi, %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
-jmp __LABEL1__
-__LABEL0__:
-__LABEL1__:
-mov $1, %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
+pop %esi
+pop %ebx
 
 mov %ebp, %esp
 pop %ebp
@@ -85,63 +234,59 @@ push %ebp
 mov %esp, %ebp
 
 sub $__ALLOCFOR_entry__, %esp
-# Loading local variable "sum_index" @-4(%ebp)
-mov $0, %edx
-mov %edx, -4(%ebp)
-# Loading local variable "sum_end" @-8(%ebp)
-mov $10, %edx
-mov %edx, -8(%ebp)
 mov $0, %ebx
-# Loading local variable "sum" @-12(%ebp)
-mov %ebx, -12(%ebp)
-__LABEL2__:
-mov -4(%ebp), %eax
-mov -8(%ebp), %edx
-movb $0, %bl
-cmp %edx, %eax
-setl %bl
-cmpb $1, %bl
-jne __LABEL3__
-# Calling function factorial
-# TODO optimize if variable just do movl
+mov $1065353216, %ecx
+mov $0, %esi
+push %ebx
+push %esi
+push %ecx
+# Calling function __constructor_Vector_0_
+push %esi
+push %ecx
+push %ebx
+call __constructor_Vector_0_
+mov %eax, %edi
+add $12, %esp
+pop %ecx
+pop %esi
+pop %ebx
+# Loading local variable "position" @-4(%ebp)
+mov %edi, -4(%ebp)
+mov $1065353216, %ebx
+mov $0, %ecx
+mov $0, %esi
+push %ebx
+push %esi
+push %ecx
+# Calling function __constructor_Vector_0_
+push %esi
+push %ecx
+push %ebx
+call __constructor_Vector_0_
+mov %eax, %edi
+add $12, %esp
+pop %ecx
+pop %esi
+pop %ebx
+# Loading local variable "velocity" @-8(%ebp)
+mov %edi, -8(%ebp)
 mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Vector_add_
+# TODO optimize if variable just do movl
+mov -8(%ebp), %edx
 push %edx
-call factorial
+call __method_Vector_add_
 mov %eax, %ebx
 add $4, %esp
-mov $1065353216, %ecx
-movl %ecx, __xmm_sse_temp__
-movss __xmm_sse_temp__, %xmm0
-movl %ebx, __xmm_sse_temp__
-cvtsi2ss __xmm_sse_temp__, %xmm1
-divss %xmm1, %xmm0
-movss %xmm0, __TEMP32_0__
-movss -12(%ebp), %xmm0
-movss __TEMP32_0__, %xmm1
-addss %xmm1, %xmm0
-movss %xmm0, __TEMP32_1__
-movl __TEMP32_1__, %edx
-mov %edx, -12(%ebp)
-xor %eax, %eax
-mov -4(%ebp), %eax
-add $1, %eax
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Vector_print_
+call __method_Vector_print_
 mov %eax, %ebx
-mov %ebx, -4(%ebp)
-jmp __LABEL2__
-__LABEL3__:
-# Calling function printf
-movss -12(%ebp), %xmm0
-cvtss2sd %xmm0, %xmm2
-sub $8, %esp
-movq %xmm2, (%esp)
-pushl $__STRING0__
-call printf
-mov %eax, %ebx
-add $12, %esp
 
 mov %ebp, %esp
 pop %ebp
 ret
-# sum_index: 4
-# sum_end: 8
-# sum: 12
+# position: 4
+# velocity: 8

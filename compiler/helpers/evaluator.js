@@ -80,7 +80,7 @@ function evaluate(line) {
                     line[wordNum] = actions.formats.callConstructor(word, offsetWord(2))
                     line.splice(wordNum + 1, 3)
                 }
-            } else if(offsetWord(1) == ":" && offsetWord(2) == "(") {
+            } else if(offsetWord(1) == ":" && offsetWord(2) == "(") { // cast
                 var type = defines.types[word]
                 line[wordNum] = actions.assembly.allocateAndSet(offsetWord(3), type)
                 line.splice(wordNum + 1, 4)
@@ -96,10 +96,14 @@ function evaluate(line) {
 
                 line.splice(wordNum + 1, 3)
             } else {
+                //throwE("~~~", word)
                 typeStack.push(objCopy(defines.types[word]))
                 line.splice(wordNum, 1)
                 wordNum--;
             }
+        } else if(objectIncludes(userFormats, word))
+        {
+            //throwE("~~~", word)
         }
 
         //else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {
@@ -132,6 +136,11 @@ function evaluate(line) {
                         name: offsetWord(1),
                         type: objectIncludes(defines.types, offsetWord(2)) ? objCopy(defines.types[offsetWord(2)]) : objCopy(defines.types.u32)
                     })
+                    var nobj = objCopy(defines.types.___format_template___)
+                    nobj.formatPtr = scope[scope.length - 1].data
+                    defines.types[scope[scope.length - 1].data.name] = nobj
+
+                    //throwE(defines.types)
                 }
             }
             else {
@@ -347,6 +356,7 @@ function evaluate(line) {
                 //     constructors: {},
                 //     size: helpers.formats.getFormatSize(oldScope.data.properties)
                 // }
+
                 userFormats[oldScope.data.name] = objCopy(oldScope.data)
                 userFormats[oldScope.data.name].size = helpers.formats.getFormatSize(oldScope.data.properties)
 
@@ -354,7 +364,6 @@ function evaluate(line) {
                 nobj.formatPtr = userFormats[oldScope.data.name]
                 defines.types[oldScope.data.name] = nobj
 
-                //throwE(nobj.formatPtr.constructors)
                 outputCode.data.push(
                     helpers.formatters.formatAllocMacro(nobj.formatPtr.name) + " = " + nobj.formatPtr.size,
                     `# format "${nobj.formatPtr.name}" includes:`
