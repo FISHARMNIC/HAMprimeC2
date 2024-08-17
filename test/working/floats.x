@@ -16,7 +16,7 @@ entry function<> -> u32
 
     while(sum_index <: sum_end)
     {
-        sum <- (sum + (1.0 / (factorial(sum_index)));
+        sum <- (sum + (1.0 / (factorial(sum_index))));
         sum_index <- (sum_index + 1);
     }
 

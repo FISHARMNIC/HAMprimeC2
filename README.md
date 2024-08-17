@@ -1,5 +1,5 @@
 # <img src="https://github.com/FISHARMNIC/proglan2/assets/73864341/9a5327b9-ffcc-425a-b927-ad829415715b" width="20px"> HAM\` Language (New Compiler)
-A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). So far, it lacks some features that existed in the [original HAM prime compiler](https://github.com/FISHARMNIC/HAMprime/tree/main) (UPDATE: floats are now the only thing missing). However, besides including numerous new features, this new compiler is much more optimized and has less bugs than the original.
+A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). (UPDATE: now featuring floats!). Besides including numerous new features, this new compiler is much more optimized and has less bugs than the original.
 # What sets HAM\` apart from other languages?
 HAM\` is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays and implicit typing.
 ### Documentation [here](https://fisharmnic.github.io/docs)
@@ -32,7 +32,8 @@ This compiler currently allows for math expressions, iteration, conditionals, fu
 	- Expose/mouse/keyboard events
 	- Rendering simple shapes
 - Math
-    - GMP for bignums/floats (no native floats yet)
+    - GMP for bignums
+    - Built in floats
 #### differences from the first compiler
 * Much better optimization
 * Stack allocation / variables
@@ -236,6 +237,39 @@ entry function<> -> u32
     myList.push(321);
     myList.every($putint);
     
+}
+
+```
+**Floats**
+
+```C
+factorial function<u32 n> -> u32
+{
+    if(n >= 1)
+    {
+        return (n * factorial(n - 1));
+    }
+    return 1;
+}
+
+entry function<> -> u32
+{
+    create sum_index <- 0;
+    create sum_end <- 10;
+
+    /* 
+    Decimal number forces a float
+    This also works: "create f32 sum <- 0;"
+    */
+    create sum <- 0.0; 
+
+    while(sum_index <: sum_end)
+    {
+        sum <- (sum + (1.0 / (factorial(sum_index))));
+        sum_index <- (sum_index + 1);
+    }
+
+    printf("%f", sum);
 }
 ```
 
