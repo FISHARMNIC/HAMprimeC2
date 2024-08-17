@@ -944,7 +944,10 @@ var formats = {
 
     },
     callConstructor: function (className, params) {
-        //throwE(userFormats[className].constructors)
+        if(Object.keys(userFormats[className].constructors).length == 0)
+        {
+            throwE("No constructors declared for class:", className)
+        }
 
         var variadicConstructor = null
         var bestFit = null

@@ -1,1 +1,1 @@
-create bob <- u16(123);
+create bob <- u8:(123);

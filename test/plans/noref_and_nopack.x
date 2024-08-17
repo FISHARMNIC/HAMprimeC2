@@ -7,7 +7,7 @@ Person format
 // "clone" passes by value instead
 change function<clone Person p, u32 new_id> -> u32
 {
-    p.age = 123;
+    p.age <- 123;
 }
 
 entry function<> -> u32

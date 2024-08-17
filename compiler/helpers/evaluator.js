@@ -68,7 +68,8 @@ function evaluate(line) {
                     line.splice(wordNum - 1, 4)
                 }
 
-            } else {
+            }
+            else {
                 line.splice(wordNum, 1)
                 wordNum--;
             }
@@ -78,12 +79,11 @@ function evaluate(line) {
                 {
                     line[wordNum] = actions.formats.callConstructor(word, offsetWord(2))
                     line.splice(wordNum + 1, 3)
-                } else {
-                    throwE("CAST TODO")
-
-                    var type = objCopy(defines.types[word])
-
                 }
+            } else if(offsetWord(1) == ":" && offsetWord(2) == "(") {
+                var type = defines.types[word]
+                line[wordNum] = actions.assembly.allocateAndSet(offsetWord(3), type)
+                line.splice(wordNum + 1, 4)
             } else if (offsetWord(1) == "{") {
                 arrayClamp = defines.types[word]
                 line.splice(wordNum, 1)

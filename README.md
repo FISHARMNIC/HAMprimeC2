@@ -259,7 +259,9 @@ entry function<> -> u32
 
     /* 
     Decimal number forces a float
-    This also works: "create f32 sum <- 0;"
+    These also work:
+        explicit type: create f32 sum <- 0;
+        explicit cast: create sum <- f32:(0);
     */
     create sum <- 0.0; 
 

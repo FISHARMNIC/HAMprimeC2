@@ -1,6 +1,12 @@
 /*
 TODO:
     NEW
+    - make c#-like vectors 
+    - make certain methods that do special things
+        - eg:
+            - something.add() allows for special instructions on how to add. 
+            - "jon + 123" if jon is a format of type person, jon. add can look 
+    - make a raytracer now that i have floats
     - flag for defaultFloats
     - flag for __ccalled__ to be turned on automatically, and switches off caller saving regs
     - flag "NoStringDuplicates" when TRUE: any string literals with the same value use the same reference. Default TRUE
@@ -28,6 +34,7 @@ TODO:
             - "Person.call(print, myPointer)"
     - add inline assembly
     - "global" keyword for exporting functions and variables
+    - No casting to float and vice versa
 
     FOR FLOAT MATH
         - guess type over everyting in parenthesis
