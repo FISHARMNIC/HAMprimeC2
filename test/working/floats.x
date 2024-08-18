@@ -21,4 +21,6 @@ entry function<> -> u32
     }
 
     printf("%f", sum);
+
+    return 0;
 }

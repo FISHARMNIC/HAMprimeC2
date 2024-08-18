@@ -1,3 +1,6 @@
+forward sqrtf function<f32 val> -> f32;
+
+// assemble with assemble_math.sh or add flag -lm
 Vector format
 {
     .x f32;
@@ -11,7 +14,7 @@ Vector format
         this.z <- z;
     }
 
-    .add method<Vector vec> -> u32
+    .add method<Vector vec> -> Vector
     {
         this.x <- this.x + vec.x;
         this.y <- this.y + vec.y;
@@ -19,13 +22,37 @@ Vector format
         return this;
     }
 
-    .scale method<Vector vec> -> u32
+    .mul method<f32 scale> -> Vector
     {
-        this.x <- this.x * vec.x;
-        this.y <- this.y * vec.y;
-        this.z <- this.z * vec.z;
+        this.x <- this.x * scale;
+        this.y <- this.y * scale;
+        this.z <- this.z * scale;
         return this;
     }
+
+    .div method<f32 scale> -> Vector
+    {
+        this.x <- this.x / scale;
+        this.y <- this.y / scale;
+        this.z <- this.z / scale;
+        return this;
+    }
+
+    .magnitude method<> -> f32
+    {
+        return(sqrtf((this.x * this.x) + (this.y * this.y) + (this.z * this.z)));
+    }
+
+    .normalize method<Vector vec> -> Vector
+    {
+        create m <- this.magnitude();
+        if(m == 0)
+        {
+            return this;
+        } 
+        return this.div(m);
+    }
+
 
 
     .print method<> -> u32
@@ -37,8 +64,10 @@ Vector format
 entry function<> -> u32
 {
     create position <- Vector(0.0,1.0,0.0);
-    create velocity <- Vector(1.0,0.0,0.0);
+    create velocity <- Vector(2.0,0.0,0.0);
+    // sqrt doesnt work! fix
     position.add(velocity);
-
     position.print();
+
+    return 0;
 }

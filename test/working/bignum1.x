@@ -9,4 +9,6 @@ entry function<> -> u32
     bignum_div(bob, bob,jon);
 
     bignum_print(bob);
+
+    return 0;
 }

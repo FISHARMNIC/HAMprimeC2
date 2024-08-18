@@ -1,6 +1,13 @@
 /*
 TODO:
     NEW
+    - "smart" type means it not only passes the value but also a second 4 byte value (before the argument) that contains info about the type of the Argument
+        -It can only be used as a parameter
+        - It passes:
+            * bit 1-2: number of bytes
+            * bit 3: is a pointer
+            * bit 4: is a float
+    - add @ for pointers
     - rework variadic arguments, they should be just a normal array that points to the stack
         - this allows for you to pass a pointer to vargs and read them from another fn
         - currently its a "fake" array
@@ -40,6 +47,7 @@ TODO:
     - No casting to float and vice versa
 
     HIGH
+    - sqrt doesnt work
     - argc doesnt work and argv
     - Don't think that arr[a][b] <- 123; (nested setting) will work! Untested
     - allow $this.property to get address

@@ -28,5 +28,7 @@ entry function<> -> u32
     garr[getgi(3,4)] <- 456;
     garr[2] <- (garr[getgi(0,1)] + 333);
     gi <- (gi - 1);
-    printf("%i %i %i\n", larr[li], garr[gi], garr[2]);
+    printf("%i %i %i\n", larr[li], garr[gi], (garr + 8)[0]);
+
+    return 0;
 }

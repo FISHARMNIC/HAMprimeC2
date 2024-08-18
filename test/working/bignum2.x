@@ -28,4 +28,6 @@ entry function<> -> u32
     }
 
     bignum_print(sum);
+
+    return 0;
 }
