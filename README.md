@@ -3,7 +3,8 @@ A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). (U
 # What sets HAM\` apart from other languages?
 HAM\` is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays and implicit typing.  
 
-Currently, I am working on an automatic garbage collection system that I recently came up with. 
+Currently, I am working on an automatic garbage collection system that I recently came up with. This can be seen [here](https://github.com/FISHARMNIC/RollCall/tree/main).  
+
 ### Documentation [here](https://fisharmnic.github.io/docs)
 # What is working so far?
 This compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
