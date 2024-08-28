@@ -28,13 +28,14 @@ __rc_requestOwnership__:
     cmpl $0, (%eax)           # if owner yet (0 = no owner)
     je 0f
         cmpl $0, 4(%eax)   
-        jne 1f                   # if restricted throw error (0 = no restriction)
+        je 1f                   # if restricted throw error (0 = no restriction)
             push %ebx
             push $__rc_transfer_error__
             call printf
             add $8, %esp
-            push $1
-            call exit            # force exit
+            movl $0, 0 # segfault for tracing
+            //push $1
+            //call exit            # force exit
         1:
     0:
 

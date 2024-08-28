@@ -115,7 +115,7 @@ module.exports = {
         }
     },
     keywords: [
-        "method","function","format","initializer", "persistent", "transient", "while", "return", "if", "elif", "else", "__rule", "__define"
+        "method","function","format","initializer", "persistent", "transient", "while", "return", "if", "elif", "else", "__rule", "__define", "own"
     ],
     priorityWords: [
         "while"

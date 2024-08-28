@@ -24,6 +24,7 @@ global.macros = {
 }
 global.globalVariables = {           // Object : {variable name: type}
     "__this__": newGlobalVar(defines.types.u32),
+    "___TEMPORARY_OWNER___": newGlobalVar(defines.types.u32)
 }
 global.userFunctions = {           // Object : {function name: {func name, parameters[{param name , type},...]}, return type}
     "printf": {
@@ -85,8 +86,9 @@ global.specialFunctions = {
 global.lineOwners = {}
 global.userFormats = {}
 global.stackVariables = [{}]
-global.nextAllocIsTransient = false;
+global.nextAllocIsTransient = false
 global.nextAllocIsPersistent = false
+global.nextThingTakesOwnership = false
 
 global.autoIncludes = []
 global.outputCode = { // object with out data

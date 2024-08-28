@@ -187,6 +187,25 @@ var types = {
             return objCopy(defines.types.f32)
         }
         return objCopy(defines.types.u32)
+    },
+    extractTypeFromConstructorName: function(word)
+    {
+        if(word.includes("__constructor_") && word[word.length - 1] == "_")
+        {
+            var i = 0;
+            word = word.slice(14).split("").reverse()
+            word = word.map(x => {
+                if(i < 2)
+                {
+                    if(x == "_")
+                        i++
+                    return ""
+                }
+                return x
+            }).filter(x => x).reverse().join("")
+
+            return defines.types[word]
+        }
     }
 }
 
@@ -429,7 +448,6 @@ var functions = {
 
 var general = {
     getMostRecentFunction: function () {
-        //debugPrint(scope)
         return (scope.slice().reverse().find(x => {
             //debugPrint("3333333", x)
             return x.type == keywordTypes.FUNCTION || x.type == keywordTypes.METHOD || x.type == keywordTypes.CONSTRUCTOR

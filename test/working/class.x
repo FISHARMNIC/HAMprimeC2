@@ -54,12 +54,17 @@ putint function<u32 i>
 
 entry function<> -> u32
 {
-    create myList <- List();
+    create myList <- own List();
+
     myList.push(123);
     myList.push(456);
     printf("[%i,%i]\n", myList.buffer[0], myList.pop());
     myList.push(321);
     myList.every($putint);
+
+
+    myList <- 12;
+    printf("%p\n",myList);
     
     return 0;
 }

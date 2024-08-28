@@ -118,6 +118,7 @@ function evaluate(line) {
                 if (offsetWord(2) == "constructor") {
                     var nobj = objCopy(defines.types.___format_template___)
                     nobj.formatPtr = scope[scope.length - 1].data
+                    nobj = helpers.types.convertTypeToHasData(nobj)
                     globalVariables.__this__ = newGlobalVar(nobj)
 
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatConstructorName(scope[scope.length - 1].data.name), offsetWord(4))
@@ -126,6 +127,7 @@ function evaluate(line) {
                     // yes this is repeated.
                     var nobj = objCopy(defines.types.___format_template___)
                     nobj.formatPtr = scope[scope.length - 1].data
+                    nobj = helpers.types.convertTypeToHasData(nobj)
                     globalVariables.__this__ = newGlobalVar(nobj)
 
                     var retType = objCopy(offsetWord(6) == "<-" ? defines.types[offsetWord(7)] : defines.types.u32) // default return if none given. Note: prob don't need objcopy for this
@@ -449,6 +451,9 @@ function evaluate(line) {
                 line.splice(wordNum--, 1)
             } else if (word == "persistent") {
                 nextAllocIsPersistent = true;
+                line.splice(wordNum--, 1)
+            } else if (word == "own") {
+                nextThingTakesOwnership = true;
                 line.splice(wordNum--, 1)
             } else if (word == "function") {
                 var fname = offsetWord(-1)

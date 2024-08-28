@@ -103,17 +103,17 @@ var variables = {
             assembly.optimizeMove(value, off, type, type)
 
             //throwE(type)
-            if("hasData" in type)
+            if("hasData" in type && nextThingTakesOwnership)
             {
-                //throwE(type)
                 outputCode.autoPush(
-                    `# requesting ownership for ${vname}`,
+                    `# requesting ownership for ${vname} (create)`,
                     `lea ${off}, %eax`,
                     `push %eax`,
                     `push ${value}`,
                     `call __rc_requestOwnership__`,
                     `add $8, %esp`
                 )
+                nextThingTakesOwnership = false
             }
             createStackVariableListOnly(vname, newStackVar(type))
             //throwE(stackVariables)
@@ -172,18 +172,29 @@ var variables = {
             throwE(`Variable ${vname} has not been declared neither locally nor globally`)
         }
 
-        if("hasData" in type)
+        if("hasData" in type && nextThingTakesOwnership)
         {
+            //throwE()
             outputCode.autoPush(
-                `# requesting ownership for ${vname}`,
+                `# requesting ownership for ${vname} (set)`,
                 `lea ${isStack? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
                 `push %eax`,
                 `push ${value}`,
                 `call __rc_requestOwnership__`,
                 `add $8, %esp`
             )
+            nextThingTakesOwnership = false
         }
         return vname
+    },
+    attemptStackCreateIfNotSet: function(vname, type, value)
+    {
+        if(objectIncludes(getAllStackVariables(), vname))
+        {
+            this.set(vname,value)
+        } else {
+            this.create(vname, type, value)
+        }
     },
     read: function (vname) {
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
@@ -480,6 +491,7 @@ var allocations = {
                 )
                 return `-${currentStackOffset - 4}(%ebp)`
             } else {
+                //console.log(helpers.general.getMostRecentFunction())
                 currentStackOffset = (helpers.general.getMostRecentFunction().data.totalAlloc += bytes)
                 return `-${currentStackOffset}(%ebp)`
             }
@@ -488,6 +500,20 @@ var allocations = {
         // createStackVariableListOnly(lbl, newStackVar(defines.types.p32)) //not actually for use, just for knowing the offset
         // currentStackOffset += bytes
         //return lbl
+    },
+    allocateMmapNoRC: function(bytes, note = "") {
+        assembly.pushClobbers()
+
+        assembly.pushToStack(bytes, defines.types.u32)
+        outputCode.autoPush(
+            `call ${programRules.DynamicArraysAllocateSize ? "__allocate_wsize__" : "__allocate__"} ${note.length != 0 ? "#" + note : ""}`,
+            `add $4, %esp`
+        )
+        assembly.popClobbers()
+
+        programRules.hasUsedMmap = true
+
+        return "%eax"
     },
     allocateMmap: function (bytes, note = "", restricted = 0) {
         //debugPrint("PUSHING")
@@ -656,13 +682,21 @@ var functions = {
         if ("data" in d)
             d = d.data
         debugPrint("SC", scope, rVal)
+
+        if(("returnType" in d) && (rVal != null) && (helpers.types.guessType(rVal).hasData == true) && nextThingTakesOwnership)
+        {
+            variables.set("___TEMPORARY_OWNER___", rVal)
+        }
+
         if (rVal != null) {
             assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
         outputCode.text.push(
             `${d.saveRegs ? "popa" : ""}`,
+            `pusha # C trashes registers. Make this move optimized later by using push clobbers`,
             `call __rc_collect__`,
+            `popa`,
             `mov %ebp, %esp`,
             `pop %ebp`,
             `ret`
@@ -984,6 +1018,9 @@ var formats = {
             functions.createFunction(fname)
             var save = allocations.allocateMmap("$" + helpers.formatters.formatAllocMacro(_scope.name), "Allocate for THIS")
             outputCode.autoPush(`mov %eax, __this__`)
+
+            nextThingTakesOwnership = true
+            variables.set("___TEMPORARY_OWNER___", `__this__`)
             //throwE(defines.types)
         }
         else {
@@ -1042,7 +1079,8 @@ var formats = {
             bestFit = variadicConstructor
         }
 
-        globalVariables.__this__ = defines.types[className]
+        //globalVariables.__this__ = defines.types[className]
+        globalVariables.__this__ = helpers.types.convertTypeToHasData(defines.types[className])
         return functions.callFunction(bestFit, params, true, globalVariables.__this__)
     },
     closeConstructor: function (scope, stack) {
