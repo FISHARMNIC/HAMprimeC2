@@ -88,7 +88,8 @@ global.userFormats = {}
 global.stackVariables = [{}]
 global.nextAllocIsTransient = false
 global.nextAllocIsPersistent = false
-global.nextThingTakesOwnership = false
+global.defaultAutomaticOwnership = true
+global.nextThingTakesOwnership = defaultAutomaticOwnership
 
 global.autoIncludes = []
 global.outputCode = { // object with out data

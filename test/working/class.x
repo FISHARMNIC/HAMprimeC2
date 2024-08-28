@@ -24,7 +24,7 @@ List format {
             this.buffer <- realloc(this.buffer, (this.length * 4));
         }
         this.buffer[this.length - 1] <- element;
-        return this.buffer;
+        return(this.buffer);
     }
 
     .pop method<> -> any 
@@ -54,7 +54,7 @@ putint function<u32 i>
 
 entry function<> -> u32
 {
-    create myList <- own List();
+    create myList <- List();
 
     myList.push(123);
     myList.push(456);

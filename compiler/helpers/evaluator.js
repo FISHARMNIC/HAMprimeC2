@@ -46,10 +46,10 @@ function evaluate(line) {
 
         // #region modifications
         if (word == '(' || word == ')') {
-            if(offsetWord(-2) == "call" || (offsetWord(-3) == "call" && (offsetWord(-2) in defines.types))) {
+            if (offsetWord(-2) == "call" || (offsetWord(-3) == "call" && (offsetWord(-2) in defines.types))) {
                 var returnType = defines.types.u32
                 var offset = -2
-                if(offsetWord(-2) in defines.types) // if next word is a type
+                if (offsetWord(-2) in defines.types) // if next word is a type
                 {
                     returnType = defines.types[offsetWord(-2)]
                     offset += 1
@@ -59,8 +59,7 @@ function evaluate(line) {
                 var params = offsetWord(3 + offset)
 
                 // call as address
-                if((offsetWord(-2) in defines.types))
-                {
+                if ((offsetWord(-2) in defines.types)) {
                     line[wordNum - 3] = actions.functions.callFunction(fnName, params, false, null, returnType)
                     line.splice(wordNum - 2, 5)
                 } else {
@@ -80,7 +79,7 @@ function evaluate(line) {
                     line[wordNum] = actions.formats.callConstructor(word, offsetWord(2))
                     line.splice(wordNum + 1, 3)
                 }
-            } else if(offsetWord(1) == ":" && offsetWord(2) == "(") { // cast
+            } else if (offsetWord(1) == ":" && offsetWord(2) == "(") { // cast
                 var type = defines.types[word]
                 line[wordNum] = actions.assembly.allocateAndSet(offsetWord(3), type)
                 line.splice(wordNum + 1, 4)
@@ -102,8 +101,7 @@ function evaluate(line) {
                 line.splice(wordNum, 1)
                 wordNum--;
             }
-        } else if(objectIncludes(userFormats, word))
-        {
+        } else if (objectIncludes(userFormats, word)) {
             //throwE("~~~", word)
         }
 
@@ -123,7 +121,7 @@ function evaluate(line) {
 
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatConstructorName(scope[scope.length - 1].data.name), offsetWord(4))
                     // HERE AUGUST 5 2024
-                } else if(offsetWord(2) == "method") {
+                } else if (offsetWord(2) == "method") {
                     // yes this is repeated.
                     var nobj = objCopy(defines.types.___format_template___)
                     nobj.formatPtr = scope[scope.length - 1].data
@@ -373,12 +371,12 @@ function evaluate(line) {
                 )
 
                 nobj.formatPtr.properties.forEach(e => {
-                    outputCode.data.push(`#   - PROPERTY (${e.type.pointer? "p": "u"}${e.type.size}) ${e.name}`)
+                    outputCode.data.push(`#   - PROPERTY (${e.type.pointer ? "p" : "u"}${e.type.size}) ${e.name}`)
                 })
                 Object.entries(nobj.formatPtr.constructors).forEach(e => {
-                    outputCode.data.push(`#   - CNSTRCTR ${e[0]} (${e[1].parameters.length} parameters${e[1].variadic? ", variadic" : ""})`)
+                    outputCode.data.push(`#   - CNSTRCTR ${e[0]} (${e[1].parameters.length} parameters${e[1].variadic ? ", variadic" : ""})`)
                 })
-                
+
 
 
                 //throwE(userFormats.List.properties)
@@ -455,6 +453,9 @@ function evaluate(line) {
             } else if (word == "own") {
                 nextThingTakesOwnership = true;
                 line.splice(wordNum--, 1)
+            } else if (word == "borrow") {
+                nextThingTakesOwnership = false;
+                line.splice(wordNum--, 1)
             } else if (word == "function") {
                 var fname = offsetWord(-1)
                 var params = offsetWord(2)
@@ -501,9 +502,27 @@ function evaluate(line) {
                     wrd = offsetWord(2)
                 } else {
                     wrd = evaluate([wrd])[0]
+                    if (line.length != 2) {
+                        throwE(`Place parenthesis around return statement [${line.join(" ")}]. like: return(stuff)`)
+                    }
                 }
 
                 actions.functions.closeFunction(helpers.general.getMostRecentFunction(), oldStack, true, wrd)
+            } else if (word == "return_new") {
+                debugPrint("closer", line, scope)
+
+                var wrd = offsetWord(1)
+                if (offsetWord(1) == "(") {
+                    wrd = offsetWord(2)
+                } else {
+                    wrd = evaluate([wrd])[0]
+                    if (line.length != 2) {
+                        throwE(`Place parenthesis around return statement [${line.join(" ")}]. like: return(stuff)`)
+                    }
+                }
+
+                outputCode.autoPush("# taking ownership AND returning")
+                actions.functions.closeFunction(helpers.general.getMostRecentFunction(), oldStack, true, wrd, true)
             }
             else if (word == "if") {
                 var localExit = helpers.variables.newUntypedLabel() // jump out of this if, but not out of whole block
@@ -581,8 +600,7 @@ function evaluate(line) {
                             break;
                         }
                     }
-                    if (helpers.types.guessType(word).float)
-                    {
+                    if (helpers.types.guessType(word).float) {
                         floatMath = true;
                     }
                     build.push(word)

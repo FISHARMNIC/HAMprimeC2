@@ -113,7 +113,7 @@ var variables = {
                     `call __rc_requestOwnership__`,
                     `add $8, %esp`
                 )
-                nextThingTakesOwnership = false
+                nextThingTakesOwnership = defaultAutomaticOwnership
             }
             createStackVariableListOnly(vname, newStackVar(type))
             //throwE(stackVariables)
@@ -183,7 +183,7 @@ var variables = {
                 `call __rc_requestOwnership__`,
                 `add $8, %esp`
             )
-            nextThingTakesOwnership = false
+            nextThingTakesOwnership = defaultAutomaticOwnership
         }
         return vname
     },
@@ -676,17 +676,21 @@ var functions = {
         )
 
     },
-    closeFunction: function (scope, stack, asRet = false, rVal = null) {
+    closeFunction: function (scope, stack, asRet = false, rVal = null, forceOwnNew = false) {
         var d = scope
         debugPrint(scope)
         if ("data" in d)
             d = d.data
         debugPrint("SC", scope, rVal)
 
-        if(("returnType" in d) && (rVal != null) && (helpers.types.guessType(rVal).hasData == true) && nextThingTakesOwnership)
-        {
-            variables.set("___TEMPORARY_OWNER___", rVal)
-        }
+        if(forceOwnNew) {
+            if(("returnType" in d) && (rVal != null) && (helpers.types.guessType(rVal).hasData == true) && forceOwnNew)
+            {
+                variables.set("___TEMPORARY_OWNER___", rVal)
+            } else {
+                throwE(`"return_new ${rVal}" doesn't return any allocated data. Use "return"`)
+            }
+        } 
 
         if (rVal != null) {
             assembly.setRegister(rVal, "a", defines.types.u32)

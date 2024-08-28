@@ -33,7 +33,7 @@ Person format
 
 entry function<> -> u32
 {
-    create bob <- own {1,2,3};
-    create nina <- own Person<age:17,name:"Nina">;
+    create bob <- {1,2,3};
+    create nina <- Person<age:17,name:"Nina">;
     nina <- 123;
 }
