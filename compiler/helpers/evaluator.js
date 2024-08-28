@@ -444,6 +444,9 @@ function evaluate(line) {
                         size: 0
                     }
                 }
+            } else if (word == "transient") {
+                nextAllocIsTransient = true;
+                line.splice(wordNum--, 1)
             } else if (word == "persistent") {
                 nextAllocIsPersistent = true;
                 line.splice(wordNum--, 1)

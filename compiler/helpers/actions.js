@@ -523,7 +523,11 @@ var allocations = {
     allocateAuto: function (bytes, forceEbpIfStack = false, note = "") {
         bytes = parseInt(bytes) // just in case
         //throwE(nextAllocIsPersistent)
-        if (bytes >= 4096 || currentStackOffset > 1e6 || scope.length == 0 || nextAllocIsPersistent) {
+        //if (bytes >= 4096 || currentStackOffset > 1e6 || scope.length == 0 || nextAllocIsPersistent) {
+        if((nextAllocIsTransient || programRules.defaultTransience) && !nextAllocIsPersistent) {
+            nextAllocIsTransient = false;
+            return this.allocateStack(bytes, forceEbpIfStack, false, note)
+        } else {
             if (scope.length == 0) {
                 return this.allocateData(bytes, note)
             } else {
@@ -531,8 +535,6 @@ var allocations = {
                 nextAllocIsPersistent = false;
                 return this.allocateMmap(bytes, note)
             }
-        } else {
-            return this.allocateStack(bytes, forceEbpIfStack, false, note)
         }
     },
     newStringLiteral: function (value) {
@@ -548,6 +550,7 @@ var allocations = {
         arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
+        //throwE(helpers.types.guessType(allocLbl))
         if("hasData" in helpers.types.guessType(allocLbl))
         {
             arrayClamp.hasData = true

@@ -85,7 +85,9 @@ global.specialFunctions = {
 global.lineOwners = {}
 global.userFormats = {}
 global.stackVariables = [{}]
-global.nextAllocIsPersistent = false;
+global.nextAllocIsTransient = false;
+global.nextAllocIsPersistent = false
+
 global.autoIncludes = []
 global.outputCode = { // object with out data
     data: [],
@@ -118,7 +120,8 @@ global.inComment = false;
 global.programRules = {
     DynamicArraysAllocateSize: true,
     StaticArraysAllocateSize: false,
-    hasUsedMmap: false
+    hasUsedMmap: false,
+    defaultTransience: false
 }
 global.nextNumIsFloat = false;
 global.areaHasFloat = false;
