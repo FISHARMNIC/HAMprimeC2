@@ -92,7 +92,7 @@ var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
         if (onStack) // inside of a function
         {
-            //throwE(vname, type, value)
+
             value = helpers.types.formatIfConstant(value)
             if (objectIncludes(getAllStackVariables(), vname)) {
                 throwE(`Variable "${vname}" already defined`)
@@ -101,9 +101,25 @@ var variables = {
             //throwE(value, off)
             outputCode.autoPush(`# Loading local variable "${vname}" @${off}`)
             assembly.optimizeMove(value, off, type, type)
+
+            //throwE(type)
+            if("hasData" in type)
+            {
+                //throwE(type)
+                outputCode.autoPush(
+                    `# requesting ownership for ${vname}`,
+                    `lea ${off}, %eax`,
+                    `push %eax`,
+                    `push ${value}`,
+                    `call __rc_requestOwnership__`,
+                    `add $8, %esp`
+                )
+            }
             createStackVariableListOnly(vname, newStackVar(type))
             //throwE(stackVariables)
         } else { // outside of function, global variable
+
+            throwE("No ownership for globs yet")
             if (objectIncludes(globalVariables, vname)) {
                 throwE(`Variable "${vname}" already defined`)
             }
@@ -129,8 +145,23 @@ var variables = {
         return vname
     },
     set: function (vname, value) {
+        
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
         var type = helpers.variables.getVariableType(vname)
+
+        var valueType = helpers.types.guessType(value);
+        if(helpers.types.guessType(value) != type)
+        {
+            throwW(`Retyping variable ${vname}`)
+            if(helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type))
+            {
+                throwW(`-- New type is smaller than original type`)
+            }
+            type = valueType
+            helpers.variables.setVariableType(vname, type)
+            //throwE(defines.types.u32)
+
+        }
 
         if (isStack) {
             assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
@@ -139,6 +170,18 @@ var variables = {
             //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
         } else {
             throwE(`Variable ${vname} has not been declared neither locally nor globally`)
+        }
+
+        if("hasData" in type)
+        {
+            outputCode.autoPush(
+                `# requesting ownership for ${vname}`,
+                `lea ${isStack? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
+                `push %eax`,
+                `push ${value}`,
+                `call __rc_requestOwnership__`,
+                `add $8, %esp`
+            )
         }
         return vname
     },
@@ -446,17 +489,25 @@ var allocations = {
         // currentStackOffset += bytes
         //return lbl
     },
-    allocateMmap: function (bytes, note = "") {
+    allocateMmap: function (bytes, note = "", restricted = 0) {
         //debugPrint("PUSHING")
         assembly.pushClobbers()
+
+        outputCode.autoPush(`pushl \$${restricted}`)
         assembly.pushToStack(bytes, defines.types.u32)
         outputCode.autoPush(
-            `call ${programRules.DynamicArraysAllocateSize ? "__allocate_wsize__" : "__allocate__"} ${note.length != 0 ? "#" + note : ""}`,
-            `add $4, %esp`
+            `call __rc_allocate__`,
+            `add $8, %esp`
         )
+        // outputCode.autoPush(
+        //     `call ${programRules.DynamicArraysAllocateSize ? "__allocate_wsize__" : "__allocate__"} ${note.length != 0 ? "#" + note : ""}`,
+        //     `add $4, %esp`
+        // )
         assembly.popClobbers()
 
         programRules.hasUsedMmap = true
+        helpers.registers.extendedTypes.a = objCopy(defines.types.u32)
+        helpers.registers.extendedTypes.a.hasData = true
 
         return "%eax"
     },
@@ -471,10 +522,12 @@ var allocations = {
     },
     allocateAuto: function (bytes, forceEbpIfStack = false, note = "") {
         bytes = parseInt(bytes) // just in case
-        if (bytes >= 4096 || currentStackOffset > 1e6 || nextAllocIsPersistent || scope.length == 0) {
+        //throwE(nextAllocIsPersistent)
+        if (bytes >= 4096 || currentStackOffset > 1e6 || scope.length == 0 || nextAllocIsPersistent) {
             if (scope.length == 0) {
                 return this.allocateData(bytes, note)
             } else {
+                //throwE("mmap")
                 nextAllocIsPersistent = false;
                 return this.allocateMmap(bytes, note)
             }
@@ -492,8 +545,13 @@ var allocations = {
     },
     allocateArray: function (arr, note = "") {
         arr = arr.slice(1, arr.length - 1)
+        arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
+        if("hasData" in helpers.types.guessType(allocLbl))
+        {
+            arrayClamp.hasData = true
+        }
 
         var ebpOff;
 
@@ -561,7 +619,7 @@ var functions = {
         var oBytes = 0;
         var didVari = false
 
-        console.log("\n---------\n", parr, "\n---------\n")
+        //console.log("\n---------\n", parr, "\n---------\n")
         parr.reverse().forEach(x => {
             if (onCom) {
                 // if (didVari)
@@ -601,6 +659,7 @@ var functions = {
 
         outputCode.text.push(
             `${d.saveRegs ? "popa" : ""}`,
+            `call __rc_collect__`,
             `mov %ebp, %esp`,
             `pop %ebp`,
             `ret`
@@ -819,13 +878,13 @@ var formats = {
             // FIXED? // old: temporarily disabled stack allocations since if you do loops it will be overriting the same thing
             var allocLbl = allocations.allocateAuto(userFormats[fname].size)
             //var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
-            var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types[fname]) // what it's saved in
+            
             //throwE(saveLbl, helpers.registers.extendedTypes.c)
             if (helpers.types.stringIsEbpOffset(allocLbl)) {
                 //throwE("Compiler shouldn't be here", parr, allocLbl)
                 //throwE(allocLbl, parr)
+                var saveLbl = helpers.registers.getFreeLabelOrRegister(defines.types[fname])
                 var allocOffset = parseInt(helpers.types.getOffsetFromEbpOffsetString(allocLbl))
-
 
                 outputCode.autoPush(`lea ${allocLbl}, ${saveLbl} # Local allocation address for ${fname}`)
                 //throwE(outputCode)
@@ -843,6 +902,9 @@ var formats = {
                 })
                 return saveLbl
             } else { // global
+                var hasDataType = helpers.types.convertTypeToHasData(defines.types[fname])
+                var saveLbl = helpers.registers.getFreeLabelOrRegister(hasDataType) // what it's saved in
+
                 if (helpers.types.stringIsEsp(allocLbl)) {
                     outputCode.autoPush(`mov %esp, ${saveLbl} # Local allocation address for ${fname}`)
                 } else {

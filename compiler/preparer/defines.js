@@ -105,6 +105,14 @@ module.exports = {
             dblRef: false,
             formatPtr: null
         },
+        "___special_pointer_template___": {
+            size: 0,
+            float: false,
+            pointer: true,
+            special: true,
+            hasData: true,
+            typePtr: null,
+        }
     },
     keywords: [
         "method","function","format","initializer", "persistent", "while", "return", "if", "elif", "else", "__rule", "__define"

@@ -1,0 +1,1 @@
+12(%ebp) is correct, loading address of variable coreclty

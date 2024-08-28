@@ -164,6 +164,12 @@ var types = {
         }
         return variables.getStackVariableWithOffset(this.getOffsetFromEbpOffsetString(word))
     },
+    convertTypeToHasData: function (type)
+    {
+        type = objCopy(type)
+        type.hasData = true
+        return type
+    },
     guessType: function (word) {
         word = String(word)
         if (variables.variableExists(word)) {
@@ -235,6 +241,19 @@ var variables = {
             return globalVariables[vname].type
         }
         //return this.checkIfOnStack(vname) ? getAllStackVariables()[vname].type : globalVariables[vname].type
+    },
+    setVariableType(vname, newType) {
+        if(this.checkIfOnStack(vname))
+            {
+                getAllStackVariables()[vname].type = newType
+            }
+            else if(this.checkIfParameter(vname))
+            {
+                throwE("WIP")
+                //return 
+            } else {
+                return globalVariables[vname].type = newType
+            }
     },
     getStackVarOffset: function(vname) {
         return getAllStackVariables()[vname].offset

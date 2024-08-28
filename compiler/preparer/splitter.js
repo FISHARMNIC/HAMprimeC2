@@ -140,8 +140,8 @@ function parseFinalCode() {
 .1byte = .byte
 ######## Auto included libs #######
 `
-        + autoIncludes.map(x => `.include "${x}"`).join(" ") +
-        `
++ autoIncludes.map(x => `\n.include "${x}"\n`).join("\n") +
+`
 ###################################
 .data
 .align 4
@@ -149,8 +149,8 @@ __this__: .4byte 0
 __xmm_sse_temp__: .4byte 0
 ######## user data section ########
 `
-        + outputCode.data.join("\n") +
-        `
++ outputCode.data.join("\n") +
+`
 ###################################
 .text
 

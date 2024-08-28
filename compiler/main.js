@@ -106,7 +106,7 @@ global.inputCodeLikeTrue = inputCode.split("\n")
 inputCode = quickSplit(inputCode)
 
 preprocess(inputCode)
-console.log(inputCode)
+//console.log(inputCode)
 //console.log(helpers.registers)
 
 global.previewNextLine = function()
@@ -147,6 +147,7 @@ inputCode = inputCode.map((line,lineNo) => {
 
 helpers.variables.genTempLabels();
 
+autoIncludes.push(mainDir + "/libs/gcollect.s")
 if (programRules.hasUsedMmap)
 {
     autoIncludes.push(mainDir + "/libs/alloc.s")
@@ -156,6 +157,11 @@ var out = parser.parseFinalCode()
 
 lineOwners["offset"] = out.index; // text section offset (must add to each key)
 lineOwners["file"] = INPUTFILE;
+
+if(!MODE_DEBUG)
+{
+    console.log("\n----- Note: debug mode is of -----\n")
+}
 
 fs.writeFileSync(__dirname + "/../compiled/out.s", out.out)
 fs.writeFileSync(__dirname + "/../compiled/debugInfo.json", JSON.stringify(lineOwners))

@@ -92,6 +92,7 @@ function evaluate(line) {
             } else if (offsetWord(1) == "<" && objectIncludes(userFormats, word)) // format initiation
             {
                 var dataLbl = actions.formats.parseParams(word, offsetWord(2))
+
                 line[wordNum] = dataLbl
 
                 line.splice(wordNum + 1, 3)

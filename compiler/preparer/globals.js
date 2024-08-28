@@ -11,7 +11,7 @@ global.newGlobalVar = function (type, info = {}) {
     }
 }
 
-
+global.MODE_DEBUG = false;
 global.scope = [];
 global.currentStackOffset = 0;
 global.requestBracket = 0;
@@ -179,7 +179,8 @@ global.getTrueLine = function (execFileLikeTrue, line) {
 }
 
 global.debugPrint = function () {
-    console.log("\033[92m[DEBUG]\033[0m", ("\033[96m" + (debugPrint.caller.name || "*unkown caller*") + "\033[0m").padEnd(32), ...arguments);
+    if(MODE_DEBUG)
+        console.log("\033[92m[DEBUG]\033[0m", ("\033[96m" + (debugPrint.caller.name || "*unkown caller*") + "\033[0m").padEnd(32), ...arguments);
 }
 
 global.throwE = function (x) {
