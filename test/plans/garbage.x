@@ -37,5 +37,11 @@ entry function<> -> u32
 {
     create bob <- {1,2,3};
     create nina <- Person<age:17,name:"Nina">;
+    create i <- 0;
+    while(i <: 100)
+    {
+        nina <- Person<age:17,name:"Nina">;
+        i <- i + 1;
+    }
     nina <- 123;
 }
