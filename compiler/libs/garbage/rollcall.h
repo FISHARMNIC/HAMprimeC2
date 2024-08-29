@@ -6,6 +6,8 @@
 #define FALSE (0)
 #define TRUE (1)
 
+#define BYTES_PER_GC 50
+
 void *__rc_allocate__(int, int);
 void __rc_collect__();
 

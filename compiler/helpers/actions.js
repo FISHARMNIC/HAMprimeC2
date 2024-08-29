@@ -701,11 +701,15 @@ var functions = {
             assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
+        if(programRules.optimizeMemory) {
+            outputCode.text.push(
+                `${d.saveRegs ? "popa" : ""}`,
+                `pusha # C trashes registers. Make this move optimized later by using push clobbers`,
+                `call __rc_collect__`,
+                `popa`,
+            )
+        }
         outputCode.text.push(
-            `${d.saveRegs ? "popa" : ""}`,
-            `pusha # C trashes registers. Make this move optimized later by using push clobbers`,
-            `call __rc_collect__`,
-            `popa`,
             `mov %ebp, %esp`,
             `pop %ebp`,
             `ret`

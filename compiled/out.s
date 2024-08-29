@@ -72,10 +72,6 @@ movl $0, 0(%eax)
 movl __this__, %eax
 movl $0, 4(%eax)
 movl __this__, %eax
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret
@@ -162,17 +158,9 @@ movl __this__, %eax
 mov 0(%eax), %edx
 mov %edx, %ebx
 mov %ebx, %eax
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret
@@ -230,17 +218,9 @@ pop %ebx
 movl __this__, %eax
 mov %edi, 0(%eax)
 mov -4(%ebp), %eax
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret
@@ -286,10 +266,6 @@ mov %eax, %ebx
 mov %ebx, -4(%ebp)
 jmp __LABEL3__
 __LABEL4__:
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret
@@ -307,10 +283,6 @@ pushl $__STRING0__
 call printf
 mov %eax, %ebx
 add $8, %esp
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret
@@ -398,17 +370,9 @@ call printf
 mov %eax, %ebx
 add $8, %esp
 mov $0, %eax
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret
-
-pusha # C trashes registers. Make this move optimized later by using push clobbers
-call __rc_collect__
-popa
 mov %ebp, %esp
 pop %ebp
 ret

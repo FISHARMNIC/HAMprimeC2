@@ -124,7 +124,8 @@ global.programRules = {
     DynamicArraysAllocateSize: true,
     StaticArraysAllocateSize: false,
     hasUsedMmap: false,
-    defaultTransience: false
+    defaultTransience: false,
+    optimizeMemory: false
 }
 global.nextNumIsFloat = false;
 global.areaHasFloat = false;

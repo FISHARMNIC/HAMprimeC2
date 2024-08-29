@@ -2,11 +2,20 @@
 #include "linked.h"
 
 __linked_t *Roster = 0;
+static int allocted_bytes = 0;
 
 void *__rc_allocate__(int size_bytes, int restricted)
 {
     // Note, here using malloc which also stores size.
     // In compiler use mmap2
+
+    // automatic allocation done at over BYTES_PER_GC bytes allocated
+    if(allocated_bytes > BYTES_PER_GC)
+    {
+        __rc_collect__();
+        allocated_bytes = 0;
+    }
+    allocated_bytes++;
 
     // old
     //roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t));
