@@ -5,11 +5,6 @@ IMPORTANT / BROKEN
 
 
 Next steps:
-    - dont run collector all of the time. Make it be triggered after like 5 allocations
-        - slows program down a lot
-        - or maybe multi threaded??!!?!?!?
-    - do thorough testing with EVERYTHING to make sure it all works
-    - returns should take ownership
     - merge to main!!!
     
     DONE / FIXED
@@ -23,6 +18,11 @@ Next steps:
         Fix this and the comment below about __rule.
     - Make sure that function do the same thing as Constructors
     - nested structs dont take ownership. See formats.x
+    - returns should take ownership
+    - dont run collector all of the time. Make it be triggered after like 5 allocations
+        - slows program down a lot
+        - or maybe multi threaded??!!?!?!? (NOTE: ended up not doing this. Just runs after a certain allocated bytes
+    - do thorough testing with EVERYTHING to make sure it all works
 */
 
 // __rule defaultTransience true;
