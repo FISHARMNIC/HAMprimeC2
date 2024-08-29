@@ -103,8 +103,7 @@ var variables = {
             assembly.optimizeMove(value, off, type, type)
 
             //throwE(type)
-            if("hasData" in type && nextThingTakesOwnership)
-            {
+            if ("hasData" in type && nextThingTakesOwnership) {
                 outputCode.autoPush(
                     `# requesting ownership for ${vname} (create)`,
                     `lea ${off}, %eax`,
@@ -119,7 +118,7 @@ var variables = {
             //throwE(stackVariables)
         } else { // outside of function, global variable
 
-            throwE("No ownership for globs yet")
+            //throwE("No ownership for globs yet")
             if (objectIncludes(globalVariables, vname)) {
                 throwE(`Variable "${vname}" already defined`)
             }
@@ -141,20 +140,31 @@ var variables = {
                 }
 
             }
+
+            if ("hasData" in type && nextThingTakesOwnership) {
+                outputCode.autoPush(
+                    `# requesting ownership for ${vname} (create)`,
+                    `push \$${vname}`,
+                    `push ${value}`,
+                    `call __rc_requestOwnership__`,
+                    `add $8, %esp`
+                )
+                nextThingTakesOwnership = defaultAutomaticOwnership
+            }
+
         }
+
         return vname
     },
     set: function (vname, value) {
-        
+
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
         var type = helpers.variables.getVariableType(vname)
 
         var valueType = helpers.types.guessType(value);
-        if(helpers.types.guessType(value) != type)
-        {
+        if (helpers.types.guessType(value) != type) {
             throwW(`Retyping variable ${vname}`)
-            if(helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type))
-            {
+            if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
                 throwW(`-- New type is smaller than original type`)
             }
             type = valueType
@@ -172,12 +182,11 @@ var variables = {
             throwE(`Variable ${vname} has not been declared neither locally nor globally`)
         }
 
-        if("hasData" in type && nextThingTakesOwnership)
-        {
+        if ("hasData" in type && nextThingTakesOwnership) {
             //throwE()
             outputCode.autoPush(
                 `# requesting ownership for ${vname} (set)`,
-                `lea ${isStack? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
+                `lea ${isStack ? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
                 `push %eax`,
                 `push ${value}`,
                 `call __rc_requestOwnership__`,
@@ -187,11 +196,9 @@ var variables = {
         }
         return vname
     },
-    attemptStackCreateIfNotSet: function(vname, type, value)
-    {
-        if(objectIncludes(getAllStackVariables(), vname))
-        {
-            this.set(vname,value)
+    attemptStackCreateIfNotSet: function (vname, type, value) {
+        if (objectIncludes(getAllStackVariables(), vname)) {
+            this.set(vname, value)
         } else {
             this.create(vname, type, value)
         }
@@ -501,7 +508,7 @@ var allocations = {
         // currentStackOffset += bytes
         //return lbl
     },
-    allocateMmapNoRC: function(bytes, note = "") {
+    allocateMmapNoRC: function (bytes, note = "") {
         assembly.pushClobbers()
 
         assembly.pushToStack(bytes, defines.types.u32)
@@ -550,7 +557,7 @@ var allocations = {
         bytes = parseInt(bytes) // just in case
         //throwE(nextAllocIsPersistent)
         //if (bytes >= 4096 || currentStackOffset > 1e6 || scope.length == 0 || nextAllocIsPersistent) {
-        if((nextAllocIsTransient || programRules.defaultTransience) && !nextAllocIsPersistent) {
+        if ((nextAllocIsTransient || programRules.defaultTransience) && !nextAllocIsPersistent) {
             nextAllocIsTransient = false;
             return this.allocateStack(bytes, forceEbpIfStack, false, note)
         } else {
@@ -577,8 +584,7 @@ var allocations = {
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
         //throwE(helpers.types.guessType(allocLbl))
-        if("hasData" in helpers.types.guessType(allocLbl))
-        {
+        if ("hasData" in helpers.types.guessType(allocLbl)) {
             arrayClamp.hasData = true
         }
 
@@ -683,14 +689,13 @@ var functions = {
             d = d.data
         debugPrint("SC", scope, rVal)
 
-        if(forceOwnNew) {
-            if(("returnType" in d) && (rVal != null) && (helpers.types.guessType(rVal).hasData == true) && forceOwnNew)
-            {
+        if (forceOwnNew) {
+            if (("returnType" in d) && (rVal != null) && (helpers.types.guessType(rVal).hasData == true) && forceOwnNew) {
                 variables.set("___TEMPORARY_OWNER___", rVal)
             } else {
                 throwE(`"return_new ${rVal}" doesn't return any allocated data. Use "return"`)
             }
-        } 
+        }
 
         if (rVal != null) {
             assembly.setRegister(rVal, "a", defines.types.u32)
@@ -914,12 +919,12 @@ var formats = {
                     passed[parr[i - 1]] = parr[i + 1];
                 }
             })
-            //throwE(userFormats[fname].size)
+            // console.log(passed)
 
             // FIXED? // old: temporarily disabled stack allocations since if you do loops it will be overriting the same thing
             var allocLbl = allocations.allocateAuto(userFormats[fname].size)
             //var allocLbl = allocations.allocateAuto(userFormats[fname].size)          // what it's allocated into
-            
+
             //throwE(saveLbl, helpers.registers.extendedTypes.c)
             if (helpers.types.stringIsEbpOffset(allocLbl)) {
                 //throwE("Compiler shouldn't be here", parr, allocLbl)
@@ -931,13 +936,24 @@ var formats = {
                 //throwE(outputCode)
 
                 var off = 0
+                //console.log(userFormats[fname].properties)
                 userFormats[fname].properties.forEach(p => {
                     var value = passed[p.name]
                     if (value == undefined) {
                         throwE(`Property ${p} not given`);
                     }
-                    debugPrint("LOCFFSET", off, allocOffset)
+
                     assembly.optimizeMove(value, `-${allocOffset - off}(%ebp)`, helpers.types.guessType(value), p.type)
+
+                    if ("hasData" in helpers.types.guessType(value) && nextThingTakesOwnership) {
+                        outputCode.autoPush(
+                            `# requesting ownership (setting sub property)`,
+                            `lea -${allocOffset - off}(%ebp), %edx`,
+                            `push %edx`,
+                            `push ${value}`,
+                            `call __rc_requestOwnership__`,
+                            `add $8, %esp`)
+                    }
 
                     off += helpers.types.typeToBytes(p.type)
                 })
@@ -960,7 +976,20 @@ var formats = {
                     }
                     assembly.optimizeMove(value, `${off}(%eax)`, helpers.types.guessType(value), p.type)
 
+                    if ("hasData" in helpers.types.guessType(value) && nextThingTakesOwnership) {
+                        outputCode.autoPush(
+                            `# requesting ownership (setting sub property)`,
+                            `lea ${off}(%eax), %edx`,
+                            `push %edx`,
+                            `push ${value}`,
+                            `call __rc_requestOwnership__`,
+                            `add $8, %esp`)
+                    }
+
                     off += helpers.types.typeToBytes(p.type)
+
+                    //throwE("here and isebp offset if statement above")
+                    console.log()
                 })
                 return saveLbl
             }
@@ -1055,8 +1084,7 @@ var formats = {
 
     },
     callConstructor: function (className, params) {
-        if(Object.keys(userFormats[className].constructors).length == 0)
-        {
+        if (Object.keys(userFormats[className].constructors).length == 0) {
             throwE("No constructors declared for class:", className)
         }
 

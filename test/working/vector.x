@@ -1,6 +1,7 @@
+// assemble with assemble_math.sh or add flag -lm
+
 forward sqrtf function<f32 val> -> f32;
 
-// assemble with assemble_math.sh or add flag -lm
 Vector format
 {
     .x f32;
@@ -50,7 +51,7 @@ Vector format
         {
             return this;
         } 
-        return this.div(m);
+        return (this.div(m));
     }
 
 

@@ -20,7 +20,7 @@ entry function<> -> u32
         sum_index <- (sum_index + 1);
     }
 
-    printf("%f", sum);
+    printf("%f\n", sum);
 
     return 0;
 }

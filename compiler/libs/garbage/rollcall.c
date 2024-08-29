@@ -8,8 +8,13 @@ void *__rc_allocate__(int size_bytes, int restricted)
     // Note, here using malloc which also stores size.
     // In compiler use mmap2
 
-    roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t));
-    described_buffer_t *described_buffer = malloc(sizeof(roster_entry_t *) + size_bytes);
+    // old
+    //roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t));
+    //described_buffer_t *described_buffer = malloc(sizeof(roster_entry_t *) + size_bytes);
+
+    //Better, only one malloc call and one free
+    roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t) + sizeof(roster_entry_t *) + size_bytes);
+    described_buffer_t *described_buffer = (described_buffer_t *) (((char*)roster_entry) + sizeof(roster_entry_t));
 
     assert(roster_entry != 0);
     assert(described_buffer != 0);
@@ -52,12 +57,11 @@ void __rc_collect__()
         if (owner_points_to != owner_should_point_to)
         {
             printf("|- Discarding Roster[%i] @%p\n", index, owner_should_point_to);
-            free(owner_should_point_to - 1);
+            //free(owner_should_point_to - 1);
             list = __linked_remove(&Roster, index);
         }
         else
         {
-
             list = list->next;
             index++;
         }
