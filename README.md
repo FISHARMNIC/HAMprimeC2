@@ -11,8 +11,9 @@ The documentation can be viewed [here](https://fisharmnic.github.io/docs)
 # What is working so far?
 This compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 - Variables
+	- Implicit and forced typing
+    - Garbage collection
 	- Stack and global scope
-	- Implicit and forced typin
 	- Pointers an addressing
 	- External variables
 	- Arrays and strings
