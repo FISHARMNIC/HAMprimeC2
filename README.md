@@ -3,9 +3,11 @@ A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). (U
 # What sets HAM\` apart from other languages?
 HAM\` is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays and implicit typing.  
 
-Currently, I am working on an automatic garbage collection system that I recently came up with. This can be seen [here](https://github.com/FISHARMNIC/RollCall/tree/main). It is currently availible in the "collector" tree and is being tested.
+## Massive Update!
+Automatic garbage collection is here! After some tweaks from my original design (which can be viewed [here](https://github.com/FISHARMNIC/RollCall/tree/main)), the garbage collection system is now fully working (and super fast!). All data is now allocated globally unless specified (see the documentation).
 
-### Documentation [here](https://fisharmnic.github.io/docs)
+# Documentation 
+The documentation can be viewed [here](https://fisharmnic.github.io/docs)
 # What is working so far?
 This compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 - Variables
@@ -46,8 +48,6 @@ This compiler currently allows for math expressions, iteration, conditionals, fu
 * No more corner cases where certain things won't work
 * Parenthesis math 
 * Seamless C inclusion
-# Features a new IDE
-<img width="500" alt="IDE" src="https://github.com/FISHARMNIC/HAMprimeC2/assets/73864341/4434942e-023f-4092-8913-dfc529c500a7">
 
 
 ### Interesting examples
@@ -278,6 +278,10 @@ entry function<> -> u32
     printf("%f", sum);
 }
 ```
+
+# Features a new IDE
+This is still being worked on! The debugging is broken for now and editing may not work. This was more of a side project that I will finish when I am done with the compiler.
+<img width="500" alt="IDE" src="https://github.com/FISHARMNIC/HAMprimeC2/assets/73864341/4434942e-023f-4092-8913-dfc529c500a7">
 
 ### How to run
 * Dependencies

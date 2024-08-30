@@ -1,6 +1,8 @@
 /*
 TODO:
     NEW
+    - fix "__rule defaultTransience true", currently breaks compiler
+    - add rule that just disables garbage collection completely
     - "smart" type means it not only passes the value but also a second 4 byte value (before the argument) that contains info about the type of the Argument
         -It can only be used as a parameter
         - It passes:

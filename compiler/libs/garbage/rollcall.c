@@ -16,7 +16,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
         __rc_collect__();
         allocated_bytes = 0;
     }
-    allocated_bytes += size_bytes;
+    allocated_bytes += sizeof(roster_entry_t) + sizeof(roster_entry_t *) + size_bytes;
 
     // old
     //roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t));
@@ -59,7 +59,6 @@ void __rc_collect__()
         {
             owner_points_to = *((int **)roster_entry->owner);
         }
-        
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
         //printf("Checking [@%p]: %p vs %p\n", roster_entry, owner_points_to, owner_should_point_to);
