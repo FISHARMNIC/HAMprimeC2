@@ -86,6 +86,67 @@ var assembly = {
             }
         })
     },
+    copyData: function(source) {
+        //throwE("not done TODO")
+
+        var stype = helpers.types.guessType(source)
+        // TODO make sure to read hasData
+
+        var extension = helpers.types.sizeToSuffix(stype)
+
+        if(helpers.registers.inLineClobbers['s'] != 0)
+            outputCode.autoPush(`push %esi`)
+        if(helpers.registers.inLineClobbers['i'] != 0)
+            outputCode.autoPush(`push %edi`)
+        if(helpers.registers.inLineClobbers['c'] != 0)
+            outputCode.autoPush(`push %ecx`)
+
+        // need to get size of source. if using hasData thats in the entry reference.
+        //                             otherwise, the size has to be given
+        //                             if it's a format then just count the size
+
+        if ("formatPtr" in stype && stype.formatPtr != null)
+            {
+                var fmtSize = helpers.formats.getFormatSize(stype.formatPtr.properties)
+                outputCode.autoPush(
+                    `# copying format`,
+                    `lea ${source}, %esi`,
+                    `mov ${alloced}, %edi`,
+                    `mov \$${fmtSize}, %ecx`,
+                    `rep movsb`
+                )
+        } else if("hasData" in stype)
+        {
+            outputCode.autoPush(
+                `# copying buffer`,
+                `lea ${source}, %esi`,
+                `mov (%esi), %ecx`,
+                `mov -4(%ecx), %ecx`,
+                `pushl 8(%ecx)`,
+                `call __rc_allocate__`,
+                `pop %ecx`,
+                `mov %eax, %edi`,
+                `rep movsb`,
+            )
+        } else 
+        {
+            throwE("Unable to copy reference that holds no data regarding it's size")
+        }
+
+        if(helpers.registers.inLineClobbers['c'] != 0)
+            outputCode.autoPush(`pop %ecx`)
+        if(helpers.registers.inLineClobbers['i'] != 0)
+            outputCode.autoPush(`pop %edi`)
+        if(helpers.registers.inLineClobbers['s'] != 0)
+            outputCode.autoPush(`pop %esi`)
+
+
+
+        helpers.registers.extendedTypes.a == objCopy(stype)
+        return "%eax"
+
+        throwE(stype)
+    }
 }
 
 var variables = {

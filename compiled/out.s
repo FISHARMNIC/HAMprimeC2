@@ -14,13 +14,8 @@ __this__: .4byte 0
 __xmm_sse_temp__: .4byte 0
 ___TEMPORARY_OWNER___: .4byte 0 
 ######## user data section ########
-__SIZEOF_Person__ = 8
-# format "Person" includes:
-#   - PROPERTY (u32) age
-#   - PROPERTY (p8) name
-__STRING0__: .asciz "Nina"
-__STRING1__: .asciz "Nina"
-__ALLOCFOR_entry__ = 12
+__STRING0__: .asciz "%i %i \n"
+__ALLOCFOR_entry__ = 8
 ###################################
 .text
 
@@ -53,67 +48,47 @@ movl $1, 0(%eax)
 movl $2, 4(%eax)
 movl $3, 8(%eax)
 mov %eax, %ebx
-# Loading local variable "bob" @-4(%ebp)
+# Loading local variable "arr" @-4(%ebp)
 mov %ebx, -4(%ebp)
-# requesting ownership for bob (create)
+# requesting ownership for arr (create)
 lea -4(%ebp), %eax
 push %eax
 push %ebx
 call __rc_requestOwnership__
 add $8, %esp
-pushl $0
-pushl $8
+# copying buffer
+lea -4(%ebp), %esi
+mov (%esi), %ecx
+mov -4(%ecx), %ecx
+pushl 8(%ecx)
 call __rc_allocate__
-add $8, %esp
-mov %eax, %ebx # Local allocation address for Person
-movl $17, 0(%eax)
-mov $__STRING0__, %edx
-mov %edx, 4(%eax)
-# Loading local variable "nina" @-8(%ebp)
-mov %ebx, -8(%ebp)
-# requesting ownership for nina (create)
-lea -8(%ebp), %eax
-push %eax
+pop %ecx
+mov %eax, %edi
+rep movsb
+# Loading local variable "bob" @-8(%ebp)
+mov %eax, -8(%ebp)
+#Array set begin
+mov -8(%ebp), %eax
+movl $4, 4(%eax)
+#Set end
+mov -8(%ebp), %eax
+mov 4(%eax), %ebx
+mov -4(%ebp), %eax
+mov 4(%eax), %ecx
 push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-# Loading local variable "i" @-12(%ebp)
-mov $0, %edx
-mov %edx, -12(%ebp)
-__LABEL0__:
-mov -12(%ebp), %eax
-movb $0, %bl
-cmp $1000, %eax
-setl %bl
-cmpb $1, %bl
-jne __LABEL1__
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ebx # Local allocation address for Person
-movl $17, 0(%eax)
-mov $__STRING1__, %edx
-mov %edx, 4(%eax)
-mov %ebx, -8(%ebp)
-# requesting ownership for nina (set)
-lea -8(%ebp), %eax
-push %eax
+push %ecx
+# Calling function printf
+push %ecx
 push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-xor %eax, %eax
-mov -12(%ebp), %eax
-add $1, %eax
-mov %eax, %ebx
-mov %ebx, -12(%ebp)
-jmp __LABEL0__
-__LABEL1__:
-movl $123, -8(%ebp)
+pushl $__STRING0__
+call printf
+mov %eax, %esi
+add $12, %esp
+pop %ecx
+pop %ebx
 
 mov %ebp, %esp
 pop %ebp
 ret
-# bob: 4
-# nina: 8
-# i: 12
+# arr: 4
+# bob: 8

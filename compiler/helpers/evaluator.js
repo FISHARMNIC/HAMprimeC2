@@ -456,6 +456,13 @@ function evaluate(line) {
             } else if (word == "borrow") {
                 nextThingTakesOwnership = false;
                 line.splice(wordNum--, 1)
+            } else if (word == "copy") {
+                if(offsetWord(1) != "(")
+                {
+                    throwE(`Copy must be called like a function with parenthesis`)
+                }
+                line[wordNum] = actions.assembly.copyData(offsetWord(2))
+                line.splice(wordNum + 1, 3)
             } else if (word == "function") {
                 var fname = offsetWord(-1)
                 var params = offsetWord(2)
