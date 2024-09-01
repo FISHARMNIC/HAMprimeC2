@@ -14,7 +14,7 @@ This compiler currently allows for math expressions, iteration, conditionals, fu
 	- Implicit and forced typing
     - Garbage collection
 	- Stack and global scope
-	- Pointers an addressing
+	- Pointers and addressing
 	- External variables
 	- Arrays and strings
     - Casting
