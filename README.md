@@ -50,6 +50,12 @@ This compiler currently allows for math expressions, iteration, conditionals, fu
 * Parenthesis math 
 * Seamless C inclusion
 
+# Features a new IDE
+This is still being worked on, and editing still has some issues. This was more of a side project that I will finish when I am done with the compiler.
+<img width="1371" alt="Screen Shot 2024-09-01 at 2 04 22 PM" src="https://github.com/user-attachments/assets/cfe4b1e0-f41a-48b7-9ed6-ac4226521163">
+
+
+
 
 ### Interesting examples
 **Basic demo**
@@ -279,10 +285,6 @@ entry function<> -> u32
     printf("%f", sum);
 }
 ```
-
-# Features a new IDE
-This is still being worked on! The debugging is broken for now and editing may not work. This was more of a side project that I will finish when I am done with the compiler.
-<img width="500" alt="IDE" src="https://github.com/FISHARMNIC/HAMprimeC2/assets/73864341/4434942e-023f-4092-8913-dfc529c500a7">
 
 ### How to run
 * Dependencies
