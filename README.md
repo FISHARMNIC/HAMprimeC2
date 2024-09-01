@@ -52,8 +52,8 @@ This compiler currently allows for math expressions, iteration, conditionals, fu
 
 # Features a new IDE
 This is still being worked on, and editing still has some issues. This was more of a side project that I will finish when I am done with the compiler.
-<img width="1371" alt="Screen Shot 2024-09-01 at 2 04 22 PM" src="https://github.com/user-attachments/assets/cfe4b1e0-f41a-48b7-9ed6-ac4226521163">
 
+<img width="1371" alt="Screen Shot 2024-09-01 at 2 08 47 PM" src="https://github.com/user-attachments/assets/d52bb6a3-23dc-4ddf-9732-3075921e9da7">
 
 
 
