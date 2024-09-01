@@ -1,6 +1,8 @@
 /*
 TODO:
     NEW
+    - add type chains that give pointers multiple types as they are dereferenced
+        - p8~p32~p16 bob
     - fix "__rule defaultTransience true", currently breaks compiler
     - add rule that just disables garbage collection completely
     - "smart" type means it not only passes the value but also a second 4 byte value (before the argument) that contains info about the type of the Argument

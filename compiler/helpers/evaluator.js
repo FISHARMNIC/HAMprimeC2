@@ -103,6 +103,45 @@ function evaluate(line) {
             }
         } else if (objectIncludes(userFormats, word)) {
             //throwE("~~~", word)
+        } else if (word == "@") {
+            var numberOfDeref = 1
+            while (offsetWord(numberOfDeref) == "@")
+                numberOfDeref++
+            line.splice(wordNum, numberOfDeref)
+
+            var derefData;
+            if (line[wordNum] == "(") {
+                derefData = offsetWord(1)
+                line.splice(wordNum, 3)
+            } else {
+                derefData = line[wordNum]
+                line.splice(wordNum, 1)
+            }
+
+            var baseType = helpers.types.guessType(derefData)
+            var retType = objCopy(baseType)
+            retType.pointer = false
+
+            outputCode.autoPush(
+                `# dereferencing ${derefData}`
+            )
+            if (numberOfDeref > 1) {
+                throwE("Multiple dereferences not included yet")
+            } else {
+                var reg = helpers.registers.getFreeLabelOrRegister(retType)
+                line[wordNum] = reg
+                if (helpers.types.stringIsRegister(derefData) || objectIncludes(globalVariables, derefData)) {
+                    outputCode.autoPush(
+                        `mov${helpers.types.sizeToSuffix(retType)} (${derefData}), ${reg}`
+                    )
+                }
+                else {
+                    outputCode.autoPush(
+                        `mov ${reg}, %eax`,
+                        `mov${helpers.types.sizeToSuffix(retType)} (%eax), ${reg}`
+                    )
+                }
+            }
         }
 
         //else if(word == ',' && scope[scope.length - 1].type == keywordTypes.ARRAY) {
@@ -457,8 +496,7 @@ function evaluate(line) {
                 nextThingTakesOwnership = false;
                 line.splice(wordNum--, 1)
             } else if (word == "copy") {
-                if(offsetWord(1) != "(")
-                {
+                if (offsetWord(1) != "(") {
                     throwE(`Copy must be called like a function with parenthesis`)
                 }
                 line[wordNum] = actions.assembly.copyData(offsetWord(2))
