@@ -29,7 +29,7 @@ module.exports = function (command) {
     } else if (command == "asm") {
         return String(fs.readFileSync(`${__dirname}/../compiled/out.s`))
     } else if (command == "assemble") {
-        return execute(`limactl shell debian gcc ${__dirname}/../compiled/out.s -o ${__dirname}/../compiled/out -g -no-pie -m32 -fno-asynchronous-unwind-tables`)
+        return execute(`limactl shell debian gcc ${__dirname}/../compiled/out.s ${__dirname}/../compiler/libs/garbage/bin/garbage_linked.o ${__dirname}/../compiler/libs/garbage/bin/garbage_rollcall.o -o ${__dirname}/../compiled/out -g -no-pie -m32 -fno-asynchronous-unwind-tables`)
     } else if (command == "run") {
         var out
         var code = 0

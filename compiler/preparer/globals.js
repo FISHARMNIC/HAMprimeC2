@@ -38,8 +38,8 @@ global.userFunctions = {           // Object : {function name: {func name, param
     "sprintf": {
         name: 'sprintf',
         parameters: [
-            {name: "destination", type: defines.types.p8},
-            {name: "format", type: defines.types.p8}
+            { name: "destination", type: defines.types.p8 },
+            { name: "format", type: defines.types.p8 }
         ],
         variadic: true,
         returnType: defines.types.u32
@@ -79,7 +79,7 @@ global.userFunctions = {           // Object : {function name: {func name, param
     }
 }
 global.specialFunctions = {
-    size: function(params) {
+    size: function (params) {
         throwE("todo")
     }
 }
@@ -139,7 +139,7 @@ global.keywordTypes = {
     ARRAY: 6,
 }
 
-global.quickSplit = function(inputCode) {
+global.quickSplit = function (inputCode) {
     return inputCode.replace(/\n/g, ";").split(";").filter(x => x).map(x => x.replace(/\t/g, ""))
 }
 
@@ -171,34 +171,75 @@ global.getAllStackVariables = function () {
     return obj
 }
 
+function removeTabs(e) {
+    return e.split("").map(x => x == "\t" ? "" : x).join("")
+    // e = e.split("")
+    // var flag = false
+    // //console.log(`\n==========${e}==========\n`)
+    // e = e.map(x => {
+    //     //console.log(`Checking ${x}, ${flag}`)
+    //     if (flag) {
+    //         return x
+    //     }
+    //     if (x == " ") {
+    //         return ""
+    //     }
+    //     flag = true
+    //     return x
+    // }).filter(x => x)
+    // return e.join("")
+}
+
 global.getTrueLine = function (execFileLikeTrue, line) {
-    var lookAtFile = 0;
-    var lookAtSpliced = 0;
-    while (line != lookAtSpliced) {
-        //console.log(execFileLikeTrue[lookAtFile].split("").filter(x => x != " " && x != "\t").slice(0,2).join(""))
-        if (execFileLikeTrue[lookAtFile] != "" && execFileLikeTrue[lookAtFile].split("").filter(x => x != " " && x != "\t").slice(0, 2).join("") != "//") {
-            lookAtSpliced++;
+    var lineRead = -1
+    var lookAtFile = -1;
+    //console.log(":::", execFileLikeTrue)
+    while (lineRead != line) {
+        lookAtFile++
+        lineRead++
+        execFileLikeTrue[lookAtFile] = removeTabs(execFileLikeTrue[lookAtFile])
+        //console.log("::::", execFileLikeTrue[lookAtFile], lineRead, lookAtFile)
+        while (execFileLikeTrue[lookAtFile].length == 0) //skip
+        {
+            lookAtFile++
         }
-        lookAtFile++;
     }
-    //gave up
-    return lookAtFile + ((execFileLikeTrue[lookAtFile - 1] != "" && execFileLikeTrue[lookAtFile - 1].split("").filter(x => x != " " && x != "\t").slice(0, 2).join("") != "//") ? -1 : 0);
+    return lookAtFile
+
 }
 
 global.debugPrint = function () {
-    if(MODE_DEBUG)
+    if (MODE_DEBUG)
         console.log("\033[92m[DEBUG]\033[0m", ("\033[96m" + (debugPrint.caller.name || "*unkown caller*") + "\033[0m").padEnd(32), ...arguments);
 }
 
+function drawColLine(l, isError = false) {
+    if (l - 1 < 0 || l - 1 > inputCodeLikeTrue.length - 1) return
+    console.log("\033[93m" + String(l).padEnd(4) + "\033[0m: ", inputCodeLikeTrue[l - 1], isError ? "\033[33m<<HERE\033[0m" : "")
+}
+
 global.throwE = function (x) {
-    console.log(`[ERROR] @ line ${globalLine}: `, ...arguments)
+    var lineE = getTrueLine(inputCodeLikeTrue, globalLine)
     console.trace()
     console.log("\n\n================== THIS WAS THROWE ==================\n\n")
-    console.log(getTrueLine(inputCodeLikeTrue, globalLine))
+
+    console.log("\033[31m[ERROR]\033[0m on \033[96m[line " + lineE + 1 + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
+    console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
+    drawColLine(lineE - 1)
+    drawColLine(lineE)
+    drawColLine(lineE + 1, true)
+    drawColLine(lineE + 2)
+    console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
+
     process.exit(126)
+
+    //console.log(lineE)
 }
 global.throwW = function (x) {
-    console.log(`[WARNING] @ line ${globalLine}: `, ...arguments)
+    var lineE = getTrueLine(inputCodeLikeTrue, globalLine)
+    console.log("\033[93m[WARNING]\033[0m on \033[96m[line " + (lineE + 1) + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
+    //console.log(inputCodeLikeTrue[lineE], inputCodeLikeTrue[lineE].trim())
+    console.log("\033[96m--->\033[0m", removeTabs(inputCodeLikeTrue[lineE]).trim(), "\n")
 }
 
 //taken from: https://stackoverflow.com/questions/65538406/convert-javascript-number-to-float-single-precision-ieee-754-and-receive-integ

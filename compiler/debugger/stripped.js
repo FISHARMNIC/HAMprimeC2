@@ -5,21 +5,26 @@ var execFileLikeTrue;
 var execFile;
 var pathStr = `gdb -ex run -ex 'quit' --args ${__dirname + '/../../compiled/out'}`
 
-function getTrueLine(execFileLikeTrue, line)
-{
-    var lookAtFile = 0;
-    var lookAtSpliced = 0;
-    while(line != lookAtSpliced)
-    {
-        //console.log(execFileLikeTrue[lookAtFile].split("").filter(x => x != " " && x != "\t").slice(0,2).join(""))
-        if(execFileLikeTrue[lookAtFile] != "" && execFileLikeTrue[lookAtFile].split("").filter(x => x != " " && x != "\t").slice(0,2).join("") != "//")
+function removeTabs(e) {
+    return e.split("").map(x => x == "\t" ? "" : x).join("")
+}
+
+function getTrueLine(execFileLikeTrue, line) {
+    var lineRead = -1
+    var lookAtFile = -1;
+    //console.log(":::", execFileLikeTrue)
+    while (lineRead != line) {
+        lookAtFile++
+        lineRead++
+        execFileLikeTrue[lookAtFile] = removeTabs(execFileLikeTrue[lookAtFile])
+        //console.log("::::", execFileLikeTrue[lookAtFile], lineRead, lookAtFile)
+        while (execFileLikeTrue[lookAtFile].length == 0) //skip
         {
-            lookAtSpliced++;
+            lookAtFile++
         }
-        lookAtFile++;
     }
-    //gave up
-    return lookAtFile + ((execFileLikeTrue[lookAtFile - 1] != "" && execFileLikeTrue[lookAtFile - 1].split("").filter(x => x != " " && x != "\t").slice(0,2).join("") != "//") ? -1 : 0);
+    return lookAtFile
+
 }
 
 function output(e, out, ste) {
@@ -31,6 +36,8 @@ function output(e, out, ste) {
         console.log(`stderr: ${ste}`);
         return;
     }
+
+    //console.log(out)
 
     out = out.toString();
     var index = out.indexOf("out.s:")
