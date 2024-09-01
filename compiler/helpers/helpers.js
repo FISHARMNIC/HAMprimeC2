@@ -27,6 +27,34 @@ var counters = {
 }
 
 var types = {
+    areEqual: function(a,b) {
+        return(
+            a.size == b.size &&
+            a.float == b.float &&
+            a.pointer == b.pointer &&
+            a.special == b.special &&
+            a.dblRef == b.dblRef &&
+            a.formatPtr == b.formatPtr &&
+            a.hasData == b.hasData
+        )
+    },
+    convertTypeObjToName: function(type) {
+        var name = null;
+        Object.entries(defines.types).every(x => {
+            if(this.areEqual(type,x[1]))
+            {
+                name = x[0]
+                return false
+            }
+            return true
+        })
+
+        if(name == null && ("formatPtr" in type))
+        {
+            name = type.formatPtr.name
+        }
+        return name
+    },
     derefType: function(type) {
         var c = objCopy(type)
         c.pointer = false
@@ -62,6 +90,7 @@ var types = {
         }
         if (x.special) {
             // TODO: special asm parsing
+            throwE("Not finished")
         } else {
             if (x.pointer) {
                 return `.4byte`

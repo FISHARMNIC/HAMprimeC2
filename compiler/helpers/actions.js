@@ -87,10 +87,8 @@ var assembly = {
         })
     },
     copyData: function(source) {
-        //throwE("not done TODO")
 
         var stype = helpers.types.guessType(source)
-        // TODO make sure to read hasData
 
         var extension = helpers.types.sizeToSuffix(stype)
 
@@ -223,8 +221,8 @@ var variables = {
         var type = helpers.variables.getVariableType(vname)
 
         var valueType = helpers.types.guessType(value);
-        if (helpers.types.guessType(value) != type) {
-            throwW(`Retyping variable ${vname}`)
+        if (!helpers.types.areEqual(valueType,type)) {
+            throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
             if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
                 throwW(`-- New type is smaller than original type`)
             }
@@ -410,22 +408,25 @@ var variables = {
     },
     readAddress: function (name) {
         var reg = helpers.registers.getFreeLabelOrRegister(defines.types.p32)
-        if (helpers.variables.checkIfOnStack(name)) { // if local
-            var addr = helpers.variables.getStackVarOffset(name)
-            outputCode.text.push(
-                `mov %esp, ${reg}`,
-                `sub \$${addr}, ${reg}`
-            )
-        } else if (helpers.types.stringIsEbpOffset(name)) {
-            var off = helpers.types.getOffsetFromEbpOffsetString(name)
-            throwE("unfinished")
-        } else if (helpers.variables.checkIfParameter(name)) {
-            throwE("unfinished")
-        } else {
-            outputCode.text.push(
-                `mov \$${name}, ${reg}`
-            )
-        }
+        outputCode.autoPush(
+            `lea ${name}, ${reg}`
+        )
+        // if (helpers.variables.checkIfOnStack(name)) { // if local
+        //     var addr = helpers.variables.getStackVarOffset(name)
+        //     outputCode.text.push(
+        //         `mov %esp, ${reg}`,
+        //         `sub \$${addr}, ${reg}`
+        //     )
+        // } else if (helpers.types.stringIsEbpOffset(name)) {
+        //     var off = helpers.types.getOffsetFromEbpOffsetString(name)
+        //     throwE("unfinished")
+        // } else if (helpers.variables.checkIfParameter(name)) {
+        //     throwE("unfinished")
+        // } else {
+        //     outputCode.text.push(
+        //         `mov \$${name}, ${reg}`
+        //     )
+        // }
         return reg
     },
     loadArrayIndex: function (address, index, value) {
@@ -840,8 +841,11 @@ var functions = {
                         throwE(`Function '${fname}' given too many arguments: [${userFunctions[fname].parameters}]`)
                     }
 
-                    if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && !objectCompare(expectedType, givenType))) || (!variadic && !objectCompare(expectedType, givenType))))
-                        throwW(`Argument '${x}' does not match expected type ${JSON.stringify(expectedType)}`)
+                    var et_s = expectedType == undefined? "" : helpers.types.convertTypeObjToName(expectedType)
+                    var gt_s = helpers.types.convertTypeObjToName(givenType)
+
+                    if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s))))
+                        throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}"`)
 
                     if (helpers.types.isConstOrLit(x)) {
 
