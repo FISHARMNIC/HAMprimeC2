@@ -60,12 +60,6 @@ add $8, %esp
 mov %eax, __this__
 movl __this__, %edx
 mov %edx, ___TEMPORARY_OWNER___
-# requesting ownership for ___TEMPORARY_OWNER___ (set)
-lea ___TEMPORARY_OWNER___, %eax
-push %eax
-push __this__
-call __rc_requestOwnership__
-add $8, %esp
 movl __this__, %eax
 movl $0, 0(%eax)
 movl __this__, %eax

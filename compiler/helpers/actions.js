@@ -221,7 +221,7 @@ var variables = {
         var type = helpers.variables.getVariableType(vname)
 
         var valueType = helpers.types.guessType(value);
-        if (!helpers.types.areEqual(valueType,type)) {
+        if (!helpers.types.areEqual(valueType,type) && vname != "___TEMPORARY_OWNER___") {
             throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
             if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
                 throwW(`-- New type is smaller than original type`)
