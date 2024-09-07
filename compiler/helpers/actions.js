@@ -637,7 +637,7 @@ var allocations = {
         outputCode.data.push(
             `${label}: .asciz "${value}"`
         )
-        globalVariables[label] = newGlobalVar(defines.types.p8)
+        globalVariables[label] = newGlobalVar(defines.types.string)
         return label
     },
     allocateArray: function (arr, note = "") {

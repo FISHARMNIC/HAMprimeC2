@@ -468,7 +468,7 @@ function evaluate(line) {
         }
         // #endregion
         // #region Keywords
-        else if (defines.keywords.includes(word)) // keyword   
+        else if (defines.keywords.includes(word) && (!(offsetWord(-1) == "."))) // keyword   
         {
             var kname = offsetWord(-1)
             if (word == "format") {

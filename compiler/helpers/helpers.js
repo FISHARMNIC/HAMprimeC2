@@ -35,7 +35,8 @@ var types = {
             a.special == b.special &&
             a.dblRef == b.dblRef &&
             a.formatPtr == b.formatPtr &&
-            a.hasData == b.hasData
+            a.hasData == b.hasData &&
+            a.advptr == b.advptr
         )
     },
     convertTypeObjToName: function(type) {
@@ -48,10 +49,18 @@ var types = {
             }
             return true
         })
+        
 
-        if(name == null && ("formatPtr" in type))
+        if(name == null)
         {
-            name = type.formatPtr.name
+            if("formatPtr" in type)
+            {
+                name = type.formatPtr.name
+            } else if("advptr" in type){
+                if(type.size == 8)
+                    name = "string"
+            }
+
         }
         return name
     },

@@ -43,7 +43,7 @@ module.exports = function (arr) {
         current = arr[scanPos]
         var next = arr[scanPos + 1]
         var nextType = helpers.types.guessType(next)
-        console.log("hi", next)
+        //console.log("hi", next)
 
         if (helpers.types.isConstant(next) || helpers.types.stringIsRegister(next)) // must be in addr first. movss and cvtsi2ss can only take source from memory or xmm
         {

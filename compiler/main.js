@@ -1,11 +1,7 @@
 /*
 TODO:
     NEW
-    - New data type called "string" which forces dynamic alloc and allows for adding 
-        - Want to show difference between char* and string
-        - Pointer should just add values, strings should combine
-        - justg give it a special flag like "advptr"
-        -
+    - add automatic ftoa / itoa for string joining with numbers
     - dynamically allocated strings so that you can do easy concatenation
         - output is new data that has been allocated for garbage collection
     - add type chains that give pointers multiple types as they are dereferenced

@@ -11,11 +11,13 @@ __this__: .4byte 0
 __xmm_sse_temp__: .4byte 0
 ___TEMPORARY_OWNER___: .4byte 0 
 ######## user data section ########
-__STRING0__: .asciz "hello"
-__STRING1__: .asciz " jon "
-__STRING2__: .asciz "and bob"
-__STRING3__: .asciz "output: %s\n"
-__ALLOCFOR_entry__ = 4
+__STRING0__: .asciz "Nico"
+__STRING1__: .asciz "Nina"
+__STRING2__: .asciz "Hello "
+__STRING3__: .asciz " and "
+__STRING4__: .asciz "!"
+__STRING5__: .asciz "output: %s\n"
+__ALLOCFOR_entry__ = 12
 ###################################
 .text
 
@@ -40,31 +42,39 @@ push %ebp
 mov %esp, %ebp
 
 sub $__ALLOCFOR_entry__, %esp
-movl $__STRING0__, %ebx
-# Loading local variable "str" @-4(%ebp)
-mov %ebx, -4(%ebp)
-movl $__STRING1__, %ebx
-movl $__STRING2__, %ecx
-push %ecx
-push %ebx
+# Loading local variable "nameA" @-4(%ebp)
+mov $__STRING0__, %edx
+mov %edx, -4(%ebp)
+# Loading local variable "nameB" @-8(%ebp)
+mov $__STRING1__, %edx
+mov %edx, -8(%ebp)
+movl $__STRING4__, %edx
+push %edx
+mov -8(%ebp), %edx
+push %edx
+movl $__STRING3__, %edx
+push %edx
 mov -4(%ebp), %edx
 push %edx
-pushl $3
+movl $__STRING2__, %edx
+push %edx
+pushl $5
 call strjoinmany
-add $16, %esp
-mov %eax, %esi
-mov %esi, -4(%ebp)
-# requesting ownership for str (set)
-lea -4(%ebp), %eax
+add $24, %esp
+mov %eax, %ebx
+# Loading local variable "out" @-12(%ebp)
+mov %ebx, -12(%ebp)
+# requesting ownership for out (create)
+lea -12(%ebp), %eax
 push %eax
-push %esi
+push %ebx
 call __rc_requestOwnership__
 add $8, %esp
 # Calling function printf
 # TODO optimize if variable just do movl
-mov -4(%ebp), %edx
+mov -12(%ebp), %edx
 push %edx
-pushl $__STRING3__
+pushl $__STRING5__
 call printf
 mov %eax, %ebx
 add $8, %esp
@@ -77,4 +87,6 @@ ret
 mov %ebp, %esp
 pop %ebp
 ret
-# str: 4
+# nameA: 4
+# nameB: 8
+# out: 12

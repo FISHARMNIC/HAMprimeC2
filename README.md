@@ -3,13 +3,15 @@ A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). (U
 # What sets HAM\` apart from other languages?
 HAM\` is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays and implicit typing.  
 
+
 ## Massive Update!
-Automatic garbage collection is here! After some tweaks from my original design (which can be viewed [here](https://github.com/FISHARMNIC/RollCall/tree/main)), the garbage collection system is now fully working (and super fast!). All data is now allocated globally unless specified (see the documentation).
+ - Automatic garbage collection is here! After some tweaks from my original design (which can be viewed [here](https://github.com/FISHARMNIC/RollCall/tree/main)), the garbage collection system is now fully working (and super fast!). All data is now allocated globally unless specified (see the documentation).
+ - Multiple can now be added together using "+"
 
 # Documentation 
 The documentation can be viewed [here](https://fisharmnic.github.io/docs)
 # What is working so far?
-This compiler currently allows for math expressions, iteration, conditionals, functions, formats, allocation, and more. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
+All of the things below work. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 - Variables
 	- Implicit and forced typing
     - Garbage collection
@@ -38,6 +40,8 @@ This compiler currently allows for math expressions, iteration, conditionals, fu
 - Graphics
 	- Expose/mouse/keyboard events
 	- Rendering simple shapes
+- Strings
+    - Easy concatenation
 - Math
     - GMP for bignums
     - Built in floats
@@ -283,6 +287,20 @@ entry function<> -> u32
     }
 
     printf("%f", sum);
+}
+```
+
+**Strings**
+```C
+entry function<> -> u32
+{
+    create nameA <- "Nico";
+    create nameB <- "Nina";
+
+    create out <- ("Hello " + nameA + " and " + nameB + "!");
+
+    printf("output: %s\n", out);
+    return 0;
 }
 ```
 
