@@ -110,7 +110,7 @@ var comms = {
         if (errorData != "OK") {
             var problematicLineHAM = parseInt(errorData.slice(0, errorData.indexOf(" ")))
             var problematicLineASM = parseInt(errorData.slice(errorData.indexOf(" ")))
-            getTerminal().value = "Segmentation Fault\n"
+            getTerminal().value = "Segmentation Fault\n" + "Line: " + problematicLineHAM  + "\nAssembly: " + problematicLineASM + "\n"
             if (problematicLineHAM != -1) {
                 highlightErr(highlighter, problematicLineHAM - 1, "[SEG]")
                 highlightErr(assembly_viewer, problematicLineASM - 1)

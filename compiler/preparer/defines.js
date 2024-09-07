@@ -97,6 +97,14 @@ module.exports = {
             special: false, 
             dblRef: false
         },
+        "string": {
+            size: 8,
+            float: false,
+            pointer: true,  
+            special: false,
+            dblRef: false,
+            advptr: true
+        },
         "___format_template___": {
             size: 0,
             float: false,
@@ -115,7 +123,7 @@ module.exports = {
         }
     },
     keywords: [
-        "copy", "method","function","format","initializer", "persistent", "transient", "while", "return", "return_new", "if", "elif", "else", "__rule", "__define", "own", "borrow"
+        "copy", "print", "println", "method","function","format","initializer", "persistent", "transient", "while", "return", "return_new", "if", "elif", "else", "__rule", "__define", "own", "borrow"
     ],
     priorityWords: [
         "while"

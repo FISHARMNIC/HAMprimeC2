@@ -61,7 +61,7 @@ entry function<> -> u32
     myList.push(321);
     myList.every($putint);
 
-    myList <- 12;
+    // myList <- 12;
     
     return 0;
 }

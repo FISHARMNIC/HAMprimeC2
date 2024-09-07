@@ -1,6 +1,13 @@
 /*
 TODO:
     NEW
+    - New data type called "string" which forces dynamic alloc and allows for adding 
+        - Want to show difference between char* and string
+        - Pointer should just add values, strings should combine
+        - justg give it a special flag like "advptr"
+        -
+    - dynamically allocated strings so that you can do easy concatenation
+        - output is new data that has been allocated for garbage collection
     - add type chains that give pointers multiple types as they are dereferenced
         - p8~p32~p16 bob
     - fix "__rule defaultTransience true", currently breaks compiler
@@ -95,6 +102,7 @@ global.actions = require('./helpers/actions.js')
 global.helpers = require('./helpers/helpers.js')
 global.evaluator = require('./helpers/evaluator.js')
 global.mathEngine = require("./math/mathEngine.js");
+global.stringAdder = require("./math/stringAdder.js");
 global.floatEngine = require("./math/floatEngine.js");
 global.prioritizeWord = require("./helpers/priority.js")
 global.preprocess = require("./preprocessor/pre.js")

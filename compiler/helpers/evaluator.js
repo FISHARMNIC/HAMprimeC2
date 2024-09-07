@@ -483,7 +483,54 @@ function evaluate(line) {
                         size: 0
                     }
                 }
-            } else if (word == "transient") {
+            } else if (word == "print" || word == "println") {
+                //throwE("WIP")
+
+                if (offsetWord(1) != "(") {
+                    throwE(`Print must be called like a function with parenthesis`)
+                } else if (offsetWord(3) != ")") {
+                    throwE(`Print can only take one value`)
+                }
+
+                var data = offsetWord(2)
+                var dataType = helpers.types.guessType(data)
+                if ("formatPtr" in dataType) {
+                    throwE("Printing structs not finished")
+                    // should just call print method of class
+                } else if ("hasData" in dataType) {
+                    throwE("Printing buffers not finished")
+                    // print all items correspondingly 
+                } else {
+                    if (dataType.pointer) {
+                        if (dataType.size == 8) {
+                            actions.assembly.pushClobbers();
+                            actions.assembly.pushToStack(data, dataType)
+                            outputCode.autoPush(
+                                `call puts`,
+                                `add $4, %esp`
+                            )
+                            actions.assembly.popClobbers();
+                        } else {
+                            throwE("Print cannot display buffers yet")
+                        }
+                    } else {
+                    throwE("The print function is still in development ")
+                    var bytes = helpers.types.typeToBytes(dataType)
+
+                    if (bytes == 8) {
+
+                    } else if (bytes == 16) {
+
+                    } else (bytes == 32)
+                    {
+
+                    }
+                }
+                }
+                //throwE("WIP")
+            }
+
+            else if (word == "transient") {
                 nextAllocIsTransient = true;
                 line.splice(wordNum--, 1)
             } else if (word == "persistent") {
@@ -498,6 +545,8 @@ function evaluate(line) {
             } else if (word == "copy") {
                 if (offsetWord(1) != "(") {
                     throwE(`Copy must be called like a function with parenthesis`)
+                } else if (offsetWord(3) != ")") {
+                    throwE(`Copy can only take one value`)
                 }
                 line[wordNum] = actions.assembly.copyData(offsetWord(2))
                 line.splice(wordNum + 1, 3)
@@ -638,6 +687,7 @@ function evaluate(line) {
                 var onNum = true;
                 var build = [];
                 var floatMath = false;
+                var stringMath = false;
                 while (wordNum < line.length) {
                     word = line[wordNum]
                     if (onNum) {
@@ -647,13 +697,18 @@ function evaluate(line) {
                     }
                     if (helpers.types.guessType(word).float) {
                         floatMath = true;
+                    } else if(helpers.types.guessType(word).advptr)
+                    {
+                        stringMath = true
                     }
                     build.push(word)
                     onNum = !onNum;
                     wordNum++;
                 }
-                //throwE(build, floatMath)
-                var lbl = floatMath ? floatEngine(build) : mathEngine(build)
+               // throwE(build, stringMath)
+                
+                var lbl = stringMath? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
+                //throwE(outputCode.text)
                 line.splice(start, build.length + 1, lbl)
             }
             // #endregion

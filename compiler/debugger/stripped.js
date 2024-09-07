@@ -1,31 +1,11 @@
 const { exec, execSync } = require("child_process");
 const fs = require("fs");
 
+const getTrueLine = require("./fns.js")
+
 var execFileLikeTrue;
 var execFile;
 var pathStr = `gdb -ex run -ex 'quit' --args ${__dirname + '/../../compiled/out'}`
-
-function removeTabs(e) {
-    return e.split("").map(x => x == "\t" ? "" : x).join("")
-}
-
-function getTrueLine(execFileLikeTrue, line) {
-    var lineRead = -1
-    var lookAtFile = -1;
-    //console.log(":::", execFileLikeTrue)
-    while (lineRead != line) {
-        lookAtFile++
-        lineRead++
-        execFileLikeTrue[lookAtFile] = removeTabs(execFileLikeTrue[lookAtFile])
-        //console.log("::::", execFileLikeTrue[lookAtFile], lineRead, lookAtFile)
-        while (execFileLikeTrue[lookAtFile].length == 0) //skip
-        {
-            lookAtFile++
-        }
-    }
-    return lookAtFile
-
-}
 
 function output(e, out, ste) {
     if (e) {
@@ -88,4 +68,4 @@ catch(error)
 }
 exec(pathStr, output);
 
-module.exports = getTrueLine
+//module.exports = getTrueLine
