@@ -9,19 +9,28 @@ module.exports = function (arr) {
         var current = arr[scanPos]
         var ctype = helpers.types.guessType(current)
         if (!(ctype.pointer == true && ctype.size == 8)) { // not a advptr
-                actions.assembly.pushToStack(current)
-                if (ctype.pointer || !ctype.float) { // int or pointer
+                if("formatPtr" in ctype) {                  // instance
+                    actions.assembly.pushClobbers()
+                    var out = actions.formats.callMethod(current, "toString", "")
+                    helpers.registers.deClobberRegister(helpers.registers.registerStringToLetterIfIs(out))
+                    actions.assembly.popClobbers()
+
+                    current = "%eax"
+                } else if (ctype.pointer || !ctype.float) { // int or pointer
+                    actions.assembly.pushToStack(current)
                     outputCode.autoPush(
                         `call itos`,
                         `add $4, %esp`
                     )
+                    current = "%eax"
                 } else { // float 
+                    actions.assembly.pushToStack(current)
                     outputCode.autoPush(
                         `call ftos`,
                         `add $4, %esp`
                     )
+                    current = "%eax"
                 }
-            current = "%eax"
         }
         actions.assembly.pushToStack(current, defines.types.string)
         numStrs++

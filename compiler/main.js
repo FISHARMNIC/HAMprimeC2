@@ -3,9 +3,6 @@ TODO:
     NEW
     - garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data
-    - add automatic ftoa / itoa for string joining with numbers
-    - dynamically allocated strings so that you can do easy concatenation
-        - output is new data that has been allocated for garbage collection
     - add type chains that give pointers multiple types as they are dereferenced
         - p8~p32~p16 bob
     - fix "__rule defaultTransience true", currently breaks compiler
@@ -16,7 +13,6 @@ TODO:
             * bit 1-2: number of bytes
             * bit 3: is a pointer
             * bit 4: is a float
-    - add @ for pointers
     - rework variadic arguments, they should be just a normal array that points to the stack
         - this allows for you to pass a pointer to vargs and read them from another fn
         - currently its a "fake" array
@@ -170,11 +166,16 @@ lineOwners["file"] = INPUTFILE;
 
 if(!MODE_DEBUG)
 {
-    console.log("\n----- Note: debug mode is of -----\n")
+    console.log("\n----- Note: debug mode is off -----\n")
 }
 
 fs.writeFileSync(__dirname + "/../compiled/out.s", out.out)
 fs.writeFileSync(__dirname + "/../compiled/debugInfo.json", JSON.stringify(lineOwners))
+
+console.log("\033[93m======== Program Compiled Successfully ======\033[0m")
+console.log("|| Output in  : \033[96m" + __dirname + "/../compiled/out.s" + "\033[0m")
+console.log("|| Debug info : \033[96m" + __dirname + "/../compiled/debugInfo.json" + "\033[0m")
+console.log("\033[93m=============================================\033[0m")
 
 //console.log(lineOwners)
 // the compiler goes LEFT TO RIGHT NOW

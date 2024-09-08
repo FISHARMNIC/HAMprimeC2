@@ -1,5 +1,5 @@
 entry function<>;
 {
     // this all works, but so far print fn is still very restricted in what it can do
-    print("Hello World!");
+    print_("Hello World!");
 }

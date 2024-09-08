@@ -407,7 +407,12 @@ var registers = {
         return variables.newTempLabel(type)
     },
     clobberRegister: function (register) {
-        this.inLineClobbers[register] = 1
+        //if(register.length == 1)
+            this.inLineClobbers[register] = 1
+    },
+    deClobberRegister: function (register) {
+        if(register.length == 1)
+            this.inLineClobbers[register] = 0
     },
     registerStringToLetterIfIs(rstr) {
         if (types.stringIsRegister(rstr)) {

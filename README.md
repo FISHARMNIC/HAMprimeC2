@@ -10,6 +10,7 @@ HAM\` is a fully compiled programming language that runs on Linux. When complete
     - convert floats and integers to strings
  - Multiple strings can now be added together using "+"
     - Any numbers will be automatically converted to strings like: ("bob " + 123) becomes "bob 123"
+    - Any formats will automatically has their method "toString" called
 
 # Documentation 
 The documentation can be viewed [here](https://fisharmnic.github.io/docs)
@@ -92,17 +93,92 @@ entry function<p8 args, u32 argv> -> u32
 }
 ```
 
-**Strings**
+**Formats as classes**
 ```C
+/*
+Example for a Java ArrayList-like class
+*/
+List format {
+    .buffer p32;
+    .length u32;
+    
+    .List constructor<...> {
+        this.buffer <- 0;
+        this.length <- 0;
+    }
+
+    .push method<any element> -> p32
+    {
+        this.length <- (this.length + 1);
+        if(this.length == 1)
+        {
+            this.buffer <- malloc(4);
+        }
+        else 
+        {
+            this.buffer <- realloc(this.buffer, (this.length * 4));
+        }
+        this.buffer[this.length - 1] <- element;
+        return this.buffer;
+    }
+
+    .pop method<> -> any {
+        this.length <- (this.length - 1);
+        create returnValue <- this.buffer[this.length];
+        this.buffer <- realloc(this.buffer, (this.length * 4));
+        return returnValue;
+    }
+
+    .every method<p32 iterator> -> u32 {
+        create i <- 0;
+        while(i <: this.length)
+        {
+            call iterator(this.buffer[i]);
+            i <- (i + 1);
+        }
+    }
+}
+
+putint function<u32 i> {
+    printf("Printing: %i\n", i);
+}
+
+
 entry function<> -> u32
 {
-    create nameA <- "Nico";
-    create nameB <- "Nina";
+    create myList <- List();
+    myList.push(123);
+    myList.push(456);
+    printf("[%i,%i]\n", myList.buffer[0], myList.pop());
+    myList.push(321);
+    myList.every($putint);
+    return 0;
+}
+```
+
+**Strings**
+```C
+User format
+{
+    .name string;
+    .ID u32;
+
+    .toString method<> -> {
+        return(this.name + this.ID);
+    }
+}
+
+entry function<> -> u32
+{
+    create me <- User<name:"Nico",ID:123>;
+
+    create awesomePerson <- "Nina";
     create age <- 123.456;
 
-    create out <- ("Hello " + nameA + " and " + nameB + "! I am " + age + " years old.");
+    create out <- ("Hello " + me + " and " + awesomePerson + "! I am " + age + " years old.");
 
     printf("output: %s\n", out);
+
     return 0;
 }
 ```
@@ -210,69 +286,6 @@ entry function<> -> u32
 }
 ```
 
-**Formats as classes**
-```C
-/*
-Example for a Java ArrayList-like class
-*/
-List format {
-    .buffer p32;
-    .length u32;
-    
-    .List constructor<...> {
-        this.buffer <- 0;
-        this.length <- 0;
-    }
-
-    .push method<any element> -> p32
-    {
-        this.length <- (this.length + 1);
-        if(this.length == 1)
-        {
-            this.buffer <- malloc(4);
-        }
-        else 
-        {
-            this.buffer <- realloc(this.buffer, (this.length * 4));
-        }
-        this.buffer[this.length - 1] <- element;
-        return this.buffer;
-    }
-
-    .pop method<> -> any {
-        this.length <- (this.length - 1);
-        create returnValue <- this.buffer[this.length];
-        this.buffer <- realloc(this.buffer, (this.length * 4));
-        return returnValue;
-    }
-
-    .every method<p32 iterator> -> u32 {
-        create i <- 0;
-        while(i <: this.length)
-        {
-            call iterator(this.buffer[i]);
-            i <- (i + 1);
-        }
-    }
-}
-
-putint function<u32 i> {
-    printf("Printing: %i\n", i);
-}
-
-
-entry function<> -> u32
-{
-    create myList <- List();
-    myList.push(123);
-    myList.push(456);
-    printf("[%i,%i]\n", myList.buffer[0], myList.pop());
-    myList.push(321);
-    myList.every($putint);
-    
-}
-
-```
 **Floats**
 
 ```C

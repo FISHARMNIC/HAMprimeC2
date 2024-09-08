@@ -85,35 +85,33 @@ var assembly = {
             }
         })
     },
-    copyData: function(source) {
+    copyData: function (source) {
 
         var stype = helpers.types.guessType(source)
 
         var extension = helpers.types.sizeToSuffix(stype)
 
-        if(helpers.registers.inLineClobbers['s'] != 0)
+        if (helpers.registers.inLineClobbers['s'] != 0)
             outputCode.autoPush(`push %esi`)
-        if(helpers.registers.inLineClobbers['i'] != 0)
+        if (helpers.registers.inLineClobbers['i'] != 0)
             outputCode.autoPush(`push %edi`)
-        if(helpers.registers.inLineClobbers['c'] != 0)
+        if (helpers.registers.inLineClobbers['c'] != 0)
             outputCode.autoPush(`push %ecx`)
 
         // need to get size of source. if using hasData thats in the entry reference.
         //                             otherwise, the size has to be given
         //                             if it's a format then just count the size
 
-        if ("formatPtr" in stype && stype.formatPtr != null)
-            {
-                var fmtSize = helpers.formats.getFormatSize(stype.formatPtr.properties)
-                outputCode.autoPush(
-                    `# copying format`,
-                    `lea ${source}, %esi`,
-                    `mov ${alloced}, %edi`,
-                    `mov \$${fmtSize}, %ecx`,
-                    `rep movsb`
-                )
-        } else if("hasData" in stype)
-        {
+        if ("formatPtr" in stype && stype.formatPtr != null) {
+            var fmtSize = helpers.formats.getFormatSize(stype.formatPtr.properties)
+            outputCode.autoPush(
+                `# copying format`,
+                `lea ${source}, %esi`,
+                `mov ${alloced}, %edi`,
+                `mov \$${fmtSize}, %ecx`,
+                `rep movsb`
+            )
+        } else if ("hasData" in stype) {
             outputCode.autoPush(
                 `# copying buffer`,
                 `lea ${source}, %esi`,
@@ -125,16 +123,15 @@ var assembly = {
                 `mov %eax, %edi`,
                 `rep movsb`,
             )
-        } else 
-        {
+        } else {
             throwE("Unable to copy reference that holds no data regarding it's size")
         }
 
-        if(helpers.registers.inLineClobbers['c'] != 0)
+        if (helpers.registers.inLineClobbers['c'] != 0)
             outputCode.autoPush(`pop %ecx`)
-        if(helpers.registers.inLineClobbers['i'] != 0)
+        if (helpers.registers.inLineClobbers['i'] != 0)
             outputCode.autoPush(`pop %edi`)
-        if(helpers.registers.inLineClobbers['s'] != 0)
+        if (helpers.registers.inLineClobbers['s'] != 0)
             outputCode.autoPush(`pop %esi`)
 
 
@@ -220,7 +217,7 @@ var variables = {
         var type = helpers.variables.getVariableType(vname)
 
         var valueType = helpers.types.guessType(value);
-        if (!helpers.types.areEqual(valueType,type) && vname != "___TEMPORARY_OWNER___") {
+        if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___") {
             throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
             if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
                 throwW(`-- New type is smaller than original type`)
@@ -762,7 +759,7 @@ var functions = {
             assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
-        if(programRules.optimizeMemory) {
+        if (programRules.optimizeMemory) {
             outputCode.text.push(
                 `pusha # C trashes registers. Make this move optimized later by using push clobbers`,
                 `call __rc_collect__`,
@@ -840,7 +837,7 @@ var functions = {
                         throwE(`Function '${fname}' given too many arguments: [${userFunctions[fname].parameters}]`)
                     }
 
-                    var et_s = expectedType == undefined? "" : helpers.types.convertTypeObjToName(expectedType)
+                    var et_s = expectedType == undefined ? "" : helpers.types.convertTypeObjToName(expectedType)
                     var gt_s = helpers.types.convertTypeObjToName(givenType)
 
                     if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s))))
@@ -1066,6 +1063,7 @@ var formats = {
         }
     },
     readProperty: function (base, baseType, propertyName, readAddress = false) {
+        //throwE("bob")
         var offset = 0
         var i = 0
 
@@ -1194,9 +1192,34 @@ var formats = {
         functions.closeFunction(scope, stack)
     },
     callMethod: function (parent, method, params) {
-        var parentType = helpers.types.guessType(parent)
-        actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
-        return functions.callFunction(helpers.formatters.formatMethodName(parentType.formatPtr.name, method), params)
+        var parentType;
+        var formattedName;
+        // throwE(params)
+        if (objectIncludes(defines.types, parent)) { // formatName.method()
+            if (method == "call") {
+                //throwE(parentType)
+
+                if (typeof params == "string") {
+                    throwE("Need at least two parameters, the instance and the method")
+                }
+                var parentType = defines.types[parent]
+                actions.assembly.optimizeMove(params[0], "__this__", parentType, parentType)
+                formattedName = helpers.formatters.formatMethodName(parent, params[2])
+                params.splice(0, 4)
+            } else {
+                throwE("Static methods not implemented yet")
+            }
+        } else { // instance.method()
+            parentType = helpers.types.guessType(parent)
+            if(!objectIncludes(parentType.formatPtr.methods, method))
+            {
+                throwE(`Method "${method}" does not include in format "${parentType.formatPtr.name}"`)
+            }
+            actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
+            formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
+        }
+        //throwE(formattedName, params)
+        return functions.callFunction(formattedName, params)
     }
 }
 

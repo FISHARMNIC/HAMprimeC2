@@ -95,7 +95,7 @@ function evaluate(line) {
                 line[wordNum] = dataLbl
 
                 line.splice(wordNum + 1, 3)
-            } else {
+            } else if(offsetWord(1) != "."){ // IF BROKEN REMOVE IF, keep else
                 //throwE("~~~", word)
                 typeStack.push(objCopy(defines.types[word]))
                 line.splice(wordNum, 1)
@@ -149,7 +149,7 @@ function evaluate(line) {
         // }
         // #endregion
         // #region Formats and Numbers
-        else if (word == '.') { // child property UNFINISHED
+        else if (word == ".") { // child property
             // creating a new property
             if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
                 if (offsetWord(2) == "constructor") {
@@ -185,6 +185,7 @@ function evaluate(line) {
             }
             else {
                 if (offsetWord(2) == "(") {
+                    //throwE(line)
                     line[wordNum - 1] = actions.formats.callMethod(offsetWord(-1), offsetWord(1), offsetWord(3))
                     line.splice(wordNum, 5)
                 }
@@ -483,7 +484,7 @@ function evaluate(line) {
                         size: 0
                     }
                 }
-            } else if (word == "print" || word == "println") {
+            } else if (word == "print_" || word == "println_") {
                 //throwE("WIP")
 
                 if (offsetWord(1) != "(") {

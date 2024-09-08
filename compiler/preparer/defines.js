@@ -123,7 +123,7 @@ module.exports = {
         }
     },
     keywords: [
-        "copy", "print", "println", "method","function","format","initializer", "persistent", "transient", "while", "return", "return_new", "if", "elif", "else", "__rule", "__define", "own", "borrow"
+        "copy", "print_", "println_", "method","function","format","initializer", "persistent", "transient", "while", "return", "return_new", "if", "elif", "else", "__rule", "__define", "own", "borrow"
     ],
     priorityWords: [
         "while"
