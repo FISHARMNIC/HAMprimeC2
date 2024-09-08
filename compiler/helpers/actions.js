@@ -217,7 +217,9 @@ var variables = {
         var type = helpers.variables.getVariableType(vname)
 
         var valueType = helpers.types.guessType(value);
+
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___") {
+            
             throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
             if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
                 throwW(`-- New type is smaller than original type`)
@@ -1211,12 +1213,13 @@ var formats = {
             }
         } else { // instance.method()
             parentType = helpers.types.guessType(parent)
-            if(!objectIncludes(parentType.formatPtr.methods, method))
+            formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
+            if(!objectIncludes(parentType.formatPtr.methods, formattedName))
             {
+                //throwE(parentType.formatPtr.methods, method)
                 throwE(`Method "${method}" does not include in format "${parentType.formatPtr.name}"`)
             }
             actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
-            formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
         }
         //throwE(formattedName, params)
         return functions.callFunction(formattedName, params)

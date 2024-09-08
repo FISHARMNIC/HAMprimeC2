@@ -1,6 +1,7 @@
 /*
 TODO:
     NEW
+    - add char to string
     - garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data
     - add type chains that give pointers multiple types as they are dereferenced

@@ -95,7 +95,7 @@ function evaluate(line) {
                 line[wordNum] = dataLbl
 
                 line.splice(wordNum + 1, 3)
-            } else if(offsetWord(1) != "."){ // IF BROKEN REMOVE IF, keep else
+            } else if (offsetWord(1) != ".") { // IF BROKEN REMOVE IF, keep else
                 //throwE("~~~", word)
                 typeStack.push(objCopy(defines.types[word]))
                 line.splice(wordNum, 1)
@@ -498,35 +498,40 @@ function evaluate(line) {
                 if ("formatPtr" in dataType) {
                     throwE("Printing structs not finished")
                     // should just call print method of class
-                } else if ("hasData" in dataType) {
+                } else if ("advptr" in dataType) {
+                    actions.assembly.pushClobbers();
+                    actions.assembly.pushToStack(data, dataType)
+                    outputCode.autoPush(
+                        `call puts`,
+                        `add $4, %esp`
+                    )
+                    actions.assembly.popClobbers();
+                }
+
+                else if ("hasData" in dataType) {
                     throwE("Printing buffers not finished")
                     // print all items correspondingly 
                 } else {
                     if (dataType.pointer) {
+                        throwE("Print cannot display buffers yet")
                         if (dataType.size == 8) {
-                            actions.assembly.pushClobbers();
-                            actions.assembly.pushToStack(data, dataType)
-                            outputCode.autoPush(
-                                `call puts`,
-                                `add $4, %esp`
-                            )
-                            actions.assembly.popClobbers();
+
                         } else {
-                            throwE("Print cannot display buffers yet")
+                            
                         }
                     } else {
-                    throwE("The print function is still in development ")
-                    var bytes = helpers.types.typeToBytes(dataType)
+                        throwE("The print function is still in development ")
+                        var bytes = helpers.types.typeToBytes(dataType)
 
-                    if (bytes == 8) {
+                        if (bytes == 8) {
 
-                    } else if (bytes == 16) {
+                        } else if (bytes == 16) {
 
-                    } else (bytes == 32)
-                    {
+                        } else (bytes == 32)
+                        {
 
+                        }
                     }
-                }
                 }
                 //throwE("WIP")
             }
@@ -699,17 +704,16 @@ function evaluate(line) {
                     var vtype = helpers.types.guessType(word)
                     if (vtype.float) {
                         floatMath = true;
-                    } else if(vtype.advptr)
-                    {
+                    } else if (vtype.advptr) {
                         stringMath = true
                     }
                     build.push(word)
                     onNum = !onNum;
                     wordNum++;
                 }
-               // throwE(build, stringMath)
-                
-                var lbl = stringMath? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
+                // throwE(build, stringMath)
+
+                var lbl = stringMath ? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
                 //throwE(outputCode.text)
                 line.splice(start, build.length + 1, lbl)
             }

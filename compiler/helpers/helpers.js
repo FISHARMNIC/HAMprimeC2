@@ -62,6 +62,10 @@ var types = {
             }
 
         }
+        if("hasData" in type)
+        {
+            name += ":dynamic"
+        }
         return name
     },
     derefType: function(type) {
