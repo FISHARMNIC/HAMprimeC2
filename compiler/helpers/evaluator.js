@@ -79,7 +79,11 @@ function evaluate(line) {
                     line[wordNum] = actions.formats.callConstructor(word, offsetWord(2))
                     line.splice(wordNum + 1, 3)
                 }
-            } else if (offsetWord(1) == ":" && offsetWord(2) == "(") { // cast
+            } else if (offsetWord(1) == ":") { // cast
+                if(offsetWord(2) != "(")
+                {
+                    throwE("Must cast with parenthesis after colon. Like 'type:(data)'")
+                }
                 var type = defines.types[word]
                 line[wordNum] = actions.assembly.allocateAndSet(offsetWord(3), type)
                 line.splice(wordNum + 1, 4)
@@ -449,13 +453,15 @@ function evaluate(line) {
 
                 var begin = oldScope.begin
                 var output = actions.allocations.allocateArray(line.slice(begin), `Allocation for array`)
+
                 lastArrayType = output.arrayType
                 arrayClamp = defines.types.u32
 
 
 
                 line[begin] = output.out
-                line.splice(begin + 1, output.len + 2)
+                line.splice(begin + 1, output.len + 1) //HERE IF BUG MAKE output.len + 2
+                //throwE(line)
                 wordNum = begin
             } else if (oldScope.type == keywordTypes.CONSTRUCTOR) {
                 //throwE(oldScope.data.cons)
@@ -496,28 +502,35 @@ function evaluate(line) {
                 var data = offsetWord(2)
                 var dataType = helpers.types.guessType(data)
                 if ("formatPtr" in dataType) {
-                    throwE("Printing structs not finished")
+                    var out = actions.formats.callMethod(data, "toString", "")
+                    helpers.registers.deClobberRegister(helpers.registers.registerStringToLetterIfIs(out))
+
+                    actions.assembly.pushToStack(out, defines.types.string)
+                    outputCode.autoPush(
+                        `call puts`,
+                        `add $4, %esp`
+                    )
                     // should just call print method of class
                 } else if ("advptr" in dataType) {
-                    actions.assembly.pushClobbers();
+                    //actions.assembly.pushClobbers();
                     actions.assembly.pushToStack(data, dataType)
                     outputCode.autoPush(
                         `call puts`,
                         `add $4, %esp`
                     )
-                    actions.assembly.popClobbers();
+                    //actions.assembly.popClobbers();
                 }
 
                 else if ("hasData" in dataType) {
                     throwE("Printing buffers not finished")
-                    // print all items correspondingly 
+                    // todo: get length from entryReference and print all items correspondingly
                 } else {
                     if (dataType.pointer) {
                         throwE("Print cannot display buffers yet")
                         if (dataType.size == 8) {
 
                         } else {
-                            
+
                         }
                     } else {
                         throwE("The print function is still in development ")

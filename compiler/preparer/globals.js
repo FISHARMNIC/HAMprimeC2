@@ -93,6 +93,22 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.string
     },
+    "strjoinmany" : {
+        name: "strjoinmany",
+        parameters: [
+            { name: "number", type: defines.types.u32 },
+        ],
+        variadic: true,
+        returnType: defines.types.string
+    },
+    "strlen" : {
+        name: "strlen",
+        parameters: [
+            { name: "string", type: defines.types.string },
+        ],
+        variadic: false,
+        returnType: defines.types.u32
+    }
 }
 global.specialFunctions = {
     size: function (params) {

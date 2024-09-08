@@ -1,3 +1,9 @@
+/*
+Issue is:
+    Somewhere, the code is writing to text instead of init.
+    Still outside of function, so it never gets run.
+*/
+
 create arrGlobal <- {1,2,{3,4,5}, "chicken"};
 
 entry function<> -> u32

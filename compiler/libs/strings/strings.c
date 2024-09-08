@@ -1,7 +1,7 @@
 void *__rc_allocate__(int, int);
 int sprintf(char*, const char*, ...);
 
-// BSD strlen implementation
+//BSD strlen implementation
 int strlen(char *str)
 {
     char *s;

@@ -2,8 +2,10 @@
 TODO:
     NEW
     - add char to string
-    - garbage collector should only be triggered at the end of functions
+    - !! IMPORTANT !! garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data
+    - IDE gets all functions from globals.js and uses it that you can do like a function lookup and see how it works.
+        - server converts to JSON, sends to client, client parses back to JS obj
     - add type chains that give pointers multiple types as they are dereferenced
         - p8~p32~p16 bob
     - fix "__rule defaultTransience true", currently breaks compiler

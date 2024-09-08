@@ -299,7 +299,12 @@ var variables = {
             throwE("WIP")
             //return 
         } else {
-            return globalVariables[vname].type
+            var r = globalVariables[vname]
+            if(r == undefined)
+            {
+                throwE(`Variable "${vname}" does not exist`)
+            }
+            return r.type
         }
         //return this.checkIfOnStack(vname) ? getAllStackVariables()[vname].type : globalVariables[vname].type
     },

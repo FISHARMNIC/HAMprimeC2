@@ -155,6 +155,7 @@ var variables = {
             var off = allocations.allocateStack(helpers.types.typeToBytes(type), true, true) // store in stack
             //throwE(value, off)
             outputCode.autoPush(`# Loading local variable "${vname}" @${off}`)
+
             assembly.optimizeMove(value, off, type, type)
 
             //throwE(type)
@@ -219,7 +220,6 @@ var variables = {
         var valueType = helpers.types.guessType(value);
 
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___") {
-            
             throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
             if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
                 throwW(`-- New type is smaller than original type`)
@@ -639,7 +639,10 @@ var allocations = {
         return label
     },
     allocateArray: function (arr, note = "") {
-        arr = arr.slice(1, arr.length - 1)
+        // IF ERROR HERE BUG ISSUE CRASH REMOVE REMOVE NEXT UNCOMMENTED LINE AND UNCOMMENT NEXT LINE
+        //arr = arr.slice(1, arr.length - 1)
+        arr = arr.slice(1,arr.indexOf("}"))
+        //throwE(arr)
         arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
