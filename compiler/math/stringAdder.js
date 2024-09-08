@@ -1,5 +1,4 @@
-module.exports = function(arr)
-{
+module.exports = function (arr) {
     var scanPos = 0
     var numStrs = 0;
     var reps = scanPos - 2;
@@ -7,7 +6,24 @@ module.exports = function(arr)
     arr.reverse()
     //outputCode.autoPush(`pusha`)
     while (scanPos < arr.length) {
-        actions.assembly.pushToStack(arr[scanPos], defines.types.string)
+        var current = arr[scanPos]
+        var ctype = helpers.types.guessType(current)
+        if (!(ctype.pointer == true && ctype.size == 8)) { // not a advptr
+                actions.assembly.pushToStack(current)
+                if (ctype.pointer || !ctype.float) { // int or pointer
+                    outputCode.autoPush(
+                        `call itos`,
+                        `add $4, %esp`
+                    )
+                } else { // float 
+                    outputCode.autoPush(
+                        `call ftos`,
+                        `add $4, %esp`
+                    )
+                }
+            current = "%eax"
+        }
+        actions.assembly.pushToStack(current, defines.types.string)
         numStrs++
         scanPos += 2
     }
@@ -19,7 +35,7 @@ module.exports = function(arr)
         `mov %eax, ${retLbl}`
     )
 
-   // outputCode.autoPush(`popa`)
+    // outputCode.autoPush(`popa`)
 
     return retLbl
 }

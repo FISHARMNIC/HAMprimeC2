@@ -1,6 +1,8 @@
 /*
 TODO:
     NEW
+    - garbage collector should only be triggered at the end of functions
+        - in case inline-data causes trigger, which makes them lose the data
     - add automatic ftoa / itoa for string joining with numbers
     - dynamically allocated strings so that you can do easy concatenation
         - output is new data that has been allocated for garbage collection

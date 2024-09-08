@@ -695,9 +695,10 @@ function evaluate(line) {
                             break;
                         }
                     }
-                    if (helpers.types.guessType(word).float) {
+                    var vtype = helpers.types.guessType(word)
+                    if (vtype.float) {
                         floatMath = true;
-                    } else if(helpers.types.guessType(word).advptr)
+                    } else if(vtype.advptr)
                     {
                         stringMath = true
                     }

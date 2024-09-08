@@ -1,4 +1,5 @@
 void *__rc_allocate__(int, int);
+int sprintf(char*, const char*, ...);
 
 // BSD strlen implementation
 int strlen(char *str)
@@ -39,4 +40,30 @@ char* strjoinmany(int numberOfStrings, ...)
 
     asm volatile("popa");
     return allocatedBufferOrigin;
+}
+
+char* ftos(float num)
+{
+    static char obuff[35];
+    int len = sprintf(obuff, "%f", num) + 1;
+    char* o = __rc_allocate__(len, 0);
+    while(len >= 0)
+    {
+        o[len] = obuff[len];
+        len--;
+    }
+    return o;
+}
+
+char* itos(int num)
+{
+    static char obuff[11];
+    int len = sprintf(obuff, "%i", num) + 1;
+    char* o = __rc_allocate__(len, 0);
+    while(len >= 0)
+    {
+        o[len] = obuff[len];
+        len--;
+    }
+    return o;
 }

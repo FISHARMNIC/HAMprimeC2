@@ -52,10 +52,9 @@ var assembly = {
     },
     pushToStack: function (value, type) {
         debugPrint(value, helpers.types.conformRegisterIfIs(value, defines.types.u32))
-        if (helpers.types.isConstant(value)) {
+        if (helpers.types.isConstant(value) || objectIncludes(globalVariables, value)) {
             outputCode.autoPush(`pushl \$${value}`)
-        } else if (helpers.types.stringIsRegister(value)) {
-
+        } else if (helpers.types.stringIsRegister(value) || helpers.types.stringIsEbpOffset(value)) {
             outputCode.autoPush(`push ${helpers.types.conformRegisterIfIs(value, defines.types.u32)}`)
         } else {
             this.setRegister(value, 'd', type)

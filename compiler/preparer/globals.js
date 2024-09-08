@@ -76,7 +76,23 @@ global.userFunctions = {           // Object : {function name: {func name, param
         ],
         variadic: false,
         returnType: defines.types.u32
-    }
+    },
+    "itos": {
+        name: "itos",
+        parameters: [
+            { name: "number", type: defines.types.u32 },
+        ],
+        variadic: false,
+        returnType: defines.types.string
+    },
+    "ftos": {
+        name: "ftos",
+        parameters: [
+            { name: "number", type: defines.types.f32 },
+        ],
+        variadic: false,
+        returnType: defines.types.string
+    },
 }
 global.specialFunctions = {
     size: function (params) {
