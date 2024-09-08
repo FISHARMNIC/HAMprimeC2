@@ -6,7 +6,10 @@ HAM\` is a fully compiled programming language that runs on Linux. When complete
 
 ## Massive Update!
  - Automatic garbage collection is here! After some tweaks from my original design (which can be viewed [here](https://github.com/FISHARMNIC/RollCall/tree/main)), the garbage collection system is now fully working (and super fast!). All data is now allocated globally unless specified (see the documentation).
- - Multiple can now be added together using "+"
+ - ftos and itos
+    - convert floats and integers to strings
+ - Multiple strings can now be added together using "+"
+    - Any numbers will be automatically converted to strings like: ("bob " + 123) becomes "bob 123"
 
 # Documentation 
 The documentation can be viewed [here](https://fisharmnic.github.io/docs)
