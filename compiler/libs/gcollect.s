@@ -43,18 +43,47 @@ __rc_requestOwnership__:
     mov %ebx, (%ecx)             # load owner with data
     mov %ecx, (%eax)             # set .owner
 
-    // pusha
-    // push %eax
-    // pushl (%eax)
-    // pushl $_e_
-    // call printf
-    // add $12, %esp
-    // popa
-
     popa
     mov %ebp, %esp
     pop %ebp
 
     ret
 
+__rc_transferOrCopyIfNoOwner__:
+    push %ebp
+    mov %esp, %ebp
+    pusha
 
+    /*
+    8(%ebp)  : memory buffer
+    12(%ebp) : owner
+    */
+
+    mov 8(%ebp), %ebx # buffer
+    mov -4(%ebx), %eax # entry reference 
+
+    cmpl $0, (%eax) # check if no owner
+
+    /* 
+        if there is already an owner, duplicate the data 
+        if there is no owner, then simply transfer ownership
+    */
+    jne 0f 
+        /* if yes owner */
+        mov %ebx, %esi
+        mov (%esi), %ecx
+        mov -4(%ecx), %ecx
+        pushl 8(%ecx)
+        call __rc_allocate__
+        pop %ecx
+        mov %eax, %edi
+        rep movsb
+        mov %eax, 8(%ebp) # load buffer param
+    
+    0:      
+
+    call __rc_requestOwnership__ # params already in stack, just own the data     
+
+    popa
+    mov %ebp, %esp
+    pop %ebp

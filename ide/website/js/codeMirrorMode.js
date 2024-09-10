@@ -4,7 +4,7 @@ function matchAll(stream, words) {
 
 var operators = ["<<", ">>", "<:", ":>", "==", "<=", ">=", "->", "<-", "+", "-", "*", "/", "|", "&", "%", "<", ">", "{", "}", "[", "]"]
 var inComment = false
-CodeMirror.defineMode("HAM", function () {
+CodeMirror.defineMode("HAM", () => {
   return {
     token: function (stream, state) {
       if (stream.eatSpace()) return null;
@@ -18,6 +18,12 @@ CodeMirror.defineMode("HAM", function () {
         stream.next()
         return "comment"
       }
+
+      else if (stream.match("//")) { // comments
+        stream.skipToEnd();
+        return "comment";
+      } 
+
       else if (matchAll(stream, highlightingInfo.allVars)) {
         return "keyword"
       }
@@ -35,9 +41,6 @@ CodeMirror.defineMode("HAM", function () {
         return "string"
       } else if (stream.match(/".*?"/)) { // strings
         return "string";
-      } else if (stream.match("//")) { // comments
-        stream.skipToEnd();
-        return "comment";
       } else {
         stream.next();
         return null;

@@ -44,7 +44,7 @@ module.exports = function (command) {
         catch (error) {
             console.log("error", error.status)
             code = error.status
-            out = [replace0s(String(error.stdout)).split("\n").filter(x => x)]
+            out = ["::PROGRAM FAILED::"]//[replace0s(String(error.stdout)).split("\n").filter(x => x)]
         }
         console.log(out)
         return JSON.stringify({ code, out })

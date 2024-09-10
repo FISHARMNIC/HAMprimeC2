@@ -559,9 +559,11 @@ function evaluate(line) {
                 line.splice(wordNum--, 1)
             } else if (word == "own") {
                 nextThingTakesOwnership = true;
+                nextThingForcesBorrow = false;
                 line.splice(wordNum--, 1)
             } else if (word == "borrow") {
                 nextThingTakesOwnership = false;
+                nextThingForcesBorrow = true;
                 line.splice(wordNum--, 1)
             } else if (word == "copy") {
                 if (offsetWord(1) != "(") {

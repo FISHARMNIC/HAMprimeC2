@@ -219,6 +219,7 @@ var variables = {
 
         var valueType = helpers.types.guessType(value);
 
+        // Re-type
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___") {
             throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
             if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
@@ -236,7 +237,7 @@ var variables = {
             assembly.optimizeMove(value, vname, type, type)
             //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
         } else {
-            throwE(`Variable ${vname} has not been declared neither locally nor globally`)
+            throwE(`Variable ${vname} has not been declared in this scope`)
         }
 
         if ("hasData" in type && nextThingTakesOwnership) {

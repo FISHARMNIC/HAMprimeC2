@@ -47,7 +47,7 @@ var comms = {
     compile: function () {
         show("terminal")
         var out = JSON.parse(get("compile/" + currentOpenFile)).data
-        if (out[out.length - 2] == "================== THIS WAS THROWE ==================") { // won't work anymore, update
+        if (out[out.length - 2] == "================== THIS WAS THROWE ==================") { // TODO update, not sure if still works
             console.log("F")
             document.getElementById("zone_terminal_ta").value = out.join("\n")
             var failedLine = out[out.length - 1]
@@ -77,7 +77,12 @@ var comms = {
         getTerminal().value = "Compiling..."
         var out = JSON.parse(get("run"))
         console.log(out)
-        getTerminal().value = out.out.join("\n") + "\n" + "Exited with code: " + out.code
+        if (out.out.length == 1 && out.out[0] == "::PROGRAM FAILED::") {
+            getTerminal().value = "PROGRAM FAILIURE... DEBUGGING"
+            this.debug()
+        } else {
+            getTerminal().value = out.out.join("\n") + "\n" + "Exited with code: " + out.code
+        }
     },
     loadFile: function (file) {
         highlightingInfo = {}
@@ -92,7 +97,7 @@ var comms = {
         send(JSON.stringify({ textContent, currentOpenFile }))
         document.getElementById("saveIcon").hidden = true
     },
-    createFile: function(name) {
+    createFile: function (name) {
         get(`createFile/${name}`)
         renderFiles()
     },
@@ -103,9 +108,9 @@ var comms = {
         });
 
         (async () => {
-             this.compile()
+            this.compile()
             await wait(100);
-             this.runCompiled();
+            this.runCompiled();
         })();
     },
     debug: function (file) {
@@ -119,7 +124,7 @@ var comms = {
         if (errorData != "OK") {
             var problematicLineHAM = parseInt(errorData.slice(0, errorData.indexOf(" ")))
             var problematicLineASM = parseInt(errorData.slice(errorData.indexOf(" ")))
-            getTerminal().value = "Segmentation Fault\n" + "Line: " + problematicLineHAM  + "\nAssembly: " + problematicLineASM + "\n"
+            getTerminal().value = "Segmentation Fault\n" + "Line: " + problematicLineHAM + "\nAssembly: " + problematicLineASM + "\n"
             if (problematicLineHAM != -1) {
                 highlightErr(highlighter, problematicLineHAM - 1, "[SEG]")
                 highlightErr(assembly_viewer, problematicLineASM - 1)
@@ -129,8 +134,7 @@ var comms = {
         }
         getTerminal().value += out.data.join("\n")
     },
-    getDebugInfo: function (line)
-    {
+    getDebugInfo: function (line) {
         return JSON.parse(get("getDebugInfo"))
     }
 }

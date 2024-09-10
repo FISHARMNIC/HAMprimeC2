@@ -130,7 +130,8 @@ global.stackVariables = [{}]
 global.nextAllocIsTransient = false
 global.nextAllocIsPersistent = false
 global.defaultAutomaticOwnership = true
-global.nextThingTakesOwnership = defaultAutomaticOwnership
+global.nextThingTakesOwnership = defaultAutomaticOwnership //false
+global.nextThingForcesBorrow = false
 
 global.autoIncludes = []
 global.outputCode = { // object with out data

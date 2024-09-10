@@ -17,7 +17,7 @@ var editor = CodeMirror.fromTextArea(textarea, {
 
 var highlighter = CodeMirror.fromTextArea(highlight, {
     lineNumbers: false,
-    mode: 'text/x-c++src',
+    mode: 'none',
     theme: 'idea',
     readOnly: true,
     scrollbarStyle: null,

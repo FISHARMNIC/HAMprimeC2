@@ -1,7 +1,25 @@
 /*
 TODO:
     NEW
-    - add char to string
+    - string compare
+
+
+    - !! IMPORTANT, BIG FIX !!
+        - one way to do it could be a run-time function that:
+            - returns the reference if there is no owner
+            - copies and returns new reference if there is owner
+
+        - Anything thats of type "hasData" should be AUTOMATICALLY COPIED if you are trying to set another variable to it
+            - makes the language simpler
+        - Only changes owner and uses same reference if you specify "own" / "borrow"
+        - "Return" should also do this
+        - How to fix:
+            - assigning of type "hasData" should automatically run the copyData function
+            - only if you specify "own" / "borrow" (which can be a flag similar to how "persistent" worked) does it do all of the ownership stuff
+                - use nextThingTakesOwnership along with a second flag for nextThingForcesBorrow
+    
+    
+            - add char to string
     - !! IMPORTANT !! garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data
     - IDE gets all functions from globals.js and uses it that you can do like a function lookup and see how it works.
