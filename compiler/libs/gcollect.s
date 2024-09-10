@@ -63,27 +63,29 @@ __rc_transferOrCopyIfNoOwner__:
     mov -4(%ebx), %eax # entry reference 
 
     cmpl $0, (%eax) # check if no owner
-
     /* 
         if there is already an owner, duplicate the data 
         if there is no owner, then simply transfer ownership
     */
     jne 0f 
         /* if yes owner */
-        mov %ebx, %esi
-        mov (%esi), %ecx
-        mov -4(%ecx), %ecx
-        pushl 8(%ecx)
+        mov %ebx, %esi # olf buffer = src
+        pushl 8(%eax)  # size for allocation, used after fn call too
         call __rc_allocate__
-        pop %ecx
-        mov %eax, %edi
-        rep movsb
-        mov %eax, 8(%ebp) # load buffer param
+        pop %ecx       # restore size for alloc ^^^ since it was pushed
+        mov %eax, %edi # new buffer = destination
+        rep movsb      # copy 
+        mov %eax, 8(%ebp) # buffer param (for __reqown__) reset to new buff
     
     0:      
 
-    call __rc_requestOwnership__ # params already in stack, just own the data     
+    // PUSHA OFFSETS STACK FRAME FOR CALL
+    pushl 12(%ebp)
+    pushl 8(%ebp)
+    call __rc_requestOwnership__ # params already in stack, just own the data
+    add $8, %esp     
 
     popa
     mov %ebp, %esp
     pop %ebp
+    ret

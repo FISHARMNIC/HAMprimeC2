@@ -165,7 +165,7 @@ var variables = {
                     `lea ${off}, %eax`,
                     `push %eax`,
                     `push ${value}`,
-                    `call __rc_requestOwnership__`,
+                    `call __rc_transferOrCopyIfNoOwner__`,
                     `add $8, %esp`
                 )
                 nextThingTakesOwnership = defaultAutomaticOwnership
@@ -202,7 +202,7 @@ var variables = {
                     `# requesting ownership for ${vname} (create)`,
                     `push \$${vname}`,
                     `push ${value}`,
-                    `call __rc_requestOwnership__`,
+                    `call __rc_transferOrCopyIfNoOwner__`,
                     `add $8, %esp`
                 )
                 nextThingTakesOwnership = defaultAutomaticOwnership
@@ -247,7 +247,7 @@ var variables = {
                 `lea ${isStack ? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
                 `push %eax`,
                 `push ${value}`,
-                `call __rc_requestOwnership__`,
+                `call __rc_transferOrCopyIfNoOwner__`,
                 `add $8, %esp`
             )
             nextThingTakesOwnership = defaultAutomaticOwnership
@@ -632,17 +632,63 @@ var allocations = {
         }
     },
     newStringLiteral: function (value) {
+
+        //throwE("currently switching strings to automatic rcalloc")
+
+        // TODO check if a string of the same value has alr been alloced, and use that static reference
+
+        // statically allocate the string
         var label = helpers.formatters.stringLiteral(helpers.counters.stringLiterals++)
         outputCode.data.push(
             `${label}: .asciz "${value}"`
         )
         globalVariables[label] = newGlobalVar(defines.types.string)
-        return label
+
+        var allocLbl = allocations.allocateAuto(value.length + 1, false, `String: ${value}`)
+
+        if (helpers.registers.inLineClobbers['s'] != 0)
+            outputCode.autoPush(`push %esi`)
+        if (helpers.registers.inLineClobbers['i'] != 0)
+            outputCode.autoPush(`push %edi`)
+        if (helpers.registers.inLineClobbers['c'] != 0)
+            outputCode.autoPush(`push %ecx`)
+
+        outputCode.autoPush(
+            `mov ${allocLbl}, %edi`, // dest
+            `mov \$${label}, %esi`,   // static str
+            `mov \$${value.length + 1}, %ecx`,
+            `rep movsb`
+        )
+
+        if (helpers.registers.inLineClobbers['c'] != 0)
+            outputCode.autoPush(`pop %ecx`)
+        if (helpers.registers.inLineClobbers['i'] != 0)
+            outputCode.autoPush(`pop %edi`)
+        if (helpers.registers.inLineClobbers['s'] != 0)
+            outputCode.autoPush(`pop %esi`)
+
+
+        var out = helpers.registers.getFreeLabelOrRegister(defines.types.string)
+        outputCode.autoPush(
+            `mov ${allocLbl}, ${out}`
+        )
+
+        return out
+
+        // old code
+        // var label = helpers.formatters.stringLiteral(helpers.counters.stringLiterals++)
+        // outputCode.data.push(
+        //     `${label}: .asciz "${value}"`
+        // )
+        // globalVariables[label] = newGlobalVar(defines.types.string)
+        // return label
+
+
     },
     allocateArray: function (arr, note = "") {
         // IF ERROR HERE BUG ISSUE CRASH REMOVE REMOVE NEXT UNCOMMENTED LINE AND UNCOMMENT NEXT LINE
         //arr = arr.slice(1, arr.length - 1)
-        arr = arr.slice(1,arr.indexOf("}"))
+        arr = arr.slice(1, arr.indexOf("}"))
         //throwE(arr)
         arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
@@ -1023,7 +1069,7 @@ var formats = {
                             `lea -${allocOffset - off}(%ebp), %edx`,
                             `push %edx`,
                             `push ${value}`,
-                            `call __rc_requestOwnership__`,
+                            `call __rc_transferOrCopyIfNoOwner__`,
                             `add $8, %esp`)
                     }
 
@@ -1054,7 +1100,7 @@ var formats = {
                             `lea ${off}(%eax), %edx`,
                             `push %edx`,
                             `push ${value}`,
-                            `call __rc_requestOwnership__`,
+                            `call __rc_transferOrCopyIfNoOwner__`,
                             `add $8, %esp`)
                     }
 
@@ -1218,8 +1264,7 @@ var formats = {
         } else { // instance.method()
             parentType = helpers.types.guessType(parent)
             formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
-            if(!objectIncludes(parentType.formatPtr.methods, formattedName))
-            {
+            if (!objectIncludes(parentType.formatPtr.methods, formattedName)) {
                 //throwE(parentType.formatPtr.methods, method)
                 throwE(`Method "${method}" does not include in format "${parentType.formatPtr.name}"`)
             }
