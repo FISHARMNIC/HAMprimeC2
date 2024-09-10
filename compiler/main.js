@@ -32,7 +32,6 @@ TODO:
         - uses Memory Ownership Table for automatic freeing
         - "__disable ownership" to turn this off
     - working on: see ex6
-    - add print function that guesses type. If struct it calls ".print"
     - Add everytime something is stored in a register, that value is stored on the compiler too
         - before moving somethig into the same register, if its the same thing, just dont move it since it's already there
         - NOTE: THIS ONLY WORKS IF *EVERY* MOV IS DONE USING A FUNCTION THAT TRACKS MOVS
@@ -41,7 +40,7 @@ TODO:
     - store number of args as extra "hidden" parameter in variadics
     - add keyword to disable packed structs
     - add a sort of dictionary for formats so that they can have their properties called by name from a string
-        - like myVar["name"] gets the property "print"
+        - like myVar["name"] gets the property "name"
     - add a keyword that allows you to call a certain method from any class type
         - Remember, the method names are just formatted functions
         - This keyword should just call that formatted function
@@ -105,9 +104,13 @@ global.prioritizeWord = require("./helpers/priority.js")
 global.preprocess = require("./preprocessor/pre.js")
 
 global.mainDir = __dirname
-
+global.returnHighlight = false
 // load input file and split into lines
-
+if(process.argv[2] == "__FLAG_HIGHLIGHT__")
+{
+    returnHighlight = true
+    process.argv.splice(2,1)
+}
 var INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
 
 global.inputCode = String(fs.readFileSync(INPUTFILE))
@@ -174,6 +177,17 @@ if(!MODE_DEBUG)
 
 fs.writeFileSync(__dirname + "/../compiled/out.s", out.out)
 fs.writeFileSync(__dirname + "/../compiled/debugInfo.json", JSON.stringify(lineOwners))
+
+if(returnHighlight)
+{
+    var rinfo = {
+        functions: Object.keys(userFunctions),
+        keywords: [...defines.keywords, "constructor", "create", "...", "call", "."],
+        types: Object.keys(defines.types),
+        allVars: [...__anyVarEverMade,"this"]
+    }
+    fs.writeFileSync(__dirname + "/../compiled/highlightInfo.json", JSON.stringify(rinfo))
+}
 
 console.log("\033[93m======== Program Compiled Successfully ======\033[0m")
 console.log("|| Output in  : \033[96m" + __dirname + "/../compiled/out.s" + "\033[0m")

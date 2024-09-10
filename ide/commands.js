@@ -18,7 +18,7 @@ function execute(command, stringify = true) {
         return out
     } catch(error)
     {
-        console.log("FAILLL", error)
+        console.log("FAILLL", String(error))
         return -1
     }
 }
@@ -28,8 +28,13 @@ module.exports = function (command) {
         return execute(`ls -p ${__dirname}/../test/working`)
     } else if (command == "asm") {
         return String(fs.readFileSync(`${__dirname}/../compiled/out.s`))
+    } else if (command == "highlightInfo")
+    {
+        return String(fs.readFileSync(`${__dirname}/../compiled/highlightInfo.json`))
+    } else if (command == "getDebugInfo") {
+        return String(fs.readFileSync(`${__dirname}/../compiled/debugInfo.json`))
     } else if (command == "assemble") {
-        return execute(`limactl shell debian gcc ${__dirname}/../compiled/out.s ${__dirname}/../compiler/libs/garbage/bin/garbage_linked.o ${__dirname}/../compiler/libs/garbage/bin/garbage_rollcall.o -o ${__dirname}/../compiled/out -g -no-pie -m32 -fno-asynchronous-unwind-tables`)
+        return execute(`limactl shell debian gcc ${__dirname}/../compiled/out.s ${__dirname}/../compiler/libs/strings/bin/strings.o ${__dirname}/../compiler/libs/garbage/bin/garbage_linked.o ${__dirname}/../compiler/libs/garbage/bin/garbage_rollcall.o -o ${__dirname}/../compiled/out -g -no-pie -m32 -fno-asynchronous-unwind-tables`)
     } else if (command == "run") {
         var out
         var code = 0
@@ -45,6 +50,8 @@ module.exports = function (command) {
         return JSON.stringify({ code, out })
     } else if (command == "debug") {
         return execute("limactl shell debian node ../compiler/debugger/stripped")
+    } else if (command == "highlights") {
+        return execute(`node ${__dirname}/../compiler/main.js __FLAG_HIGHLIGHT__ ${sub}`)
     } else if (command.includes("/")) {
         var iof = command.indexOf("/")
         var sub = command.slice(iof + 1)
@@ -56,7 +63,7 @@ module.exports = function (command) {
         } else if (command == "compile") {
             var out;
             try {
-                out = execute(`node ${__dirname}/../compiler/main.js ${sub}`)
+                out = execute(`node ${__dirname}/../compiler/main.js __FLAG_HIGHLIGHT__ ${sub}`)
             }
             catch (error) {
                 out = formatOutput(String(error.stdout))

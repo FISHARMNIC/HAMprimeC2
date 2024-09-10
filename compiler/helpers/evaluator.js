@@ -171,11 +171,13 @@ function evaluate(line) {
                     nobj = helpers.types.convertTypeToHasData(nobj)
                     globalVariables.__this__ = newGlobalVar(nobj)
 
+                    __addToAnyVarEverMade(offsetWord(1))
                     var retType = objCopy(offsetWord(6) == "<-" ? defines.types[offsetWord(7)] : defines.types.u32) // default return if none given. Note: prob don't need objcopy for this
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatMethodName(scope[scope.length - 1].data.name, offsetWord(1)), offsetWord(4), retType)
 
                     //throwE(line)
                 } else {
+                    __addToAnyVarEverMade(offsetWord(1))
                     scope[scope.length - 1].data.properties.push({
                         name: offsetWord(1),
                         type: objectIncludes(defines.types, offsetWord(2)) ? objCopy(defines.types[offsetWord(2)]) : objCopy(defines.types.u32)
@@ -346,7 +348,7 @@ function evaluate(line) {
             wordNum += 2
         }
 
-        else if (offsetWord(1) == "<-") { // variable setting
+        else if (offsetWord(1) == "<-") { // variable setting // THIS IS OLD... SHOULD BE REMOVED TODO HERE
             if (getLastScopeType() == keywordTypes.FORMAT) { // just creating a property
                 scope[scope.length - 1].data.properties.push({
                     name: word,

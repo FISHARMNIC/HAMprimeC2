@@ -17,6 +17,10 @@ module.exports = function (arr) {
 
                     current = "%eax"
                 } else if (ctype.pointer || !ctype.float) { // int or pointer
+                    if(ctype.size == 8 && !ctype.pointer)
+                    {
+                        throwE("Adding chars not done yet")
+                    }
                     actions.assembly.pushToStack(current)
                     outputCode.autoPush(
                         `call itos`,

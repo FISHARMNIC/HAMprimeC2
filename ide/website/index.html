@@ -23,10 +23,13 @@
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/idea.min.css">
     </link>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/oceanic-next.min.css">
+    </link>
 
 </head>
 
-<body style="font-family: 'Courier New', monospace;">
+<body style="font-family: 'Courier New', monospace;height:100%; overflow-y: hidden;background-color: #242e32;scrollbar-color: red">
 
     <ul class="nav">
         <li><i title="compile" class="fa fa-check-circle navli" aria-hidden="true" style="font-size:30px;color:white;"
@@ -36,20 +39,22 @@
             <li><i title="compile and debug" class="fa fa-bug navli" aria-hidden="true"
                     style="font-size:30px;color:white;" onclick="comms.debug()"></i></li>
     </ul>
+    <!-- c2c2c2 -->
     <div class="container" >
         <div class="container__left"
-            style="width: 11%; overflow-y: scroll; overflow-x: hidden;  height: 100%;border: 2px solid var(--env); border-top: none; background-color: #c2c2c2;"
+         
+            style="width: 11%; overflow-y: scroll; overflow-x: hidden;  height: 100%;border: 2px solid var(--env); border-top: none; background-color: #4b5052;" 
             id="zone_files">Files</div>
         <div class="resizer" data-direction="horizontal"></div>
         <div class="container__right">
             <div class="container">
                 <!-- #region CODE -->
-                <div id="zone_code" class="container__left" style="min-width: 70%; max-width:70%; overflow-y: scroll">
+                <div id="zone_code" class="container__left" style="min-width: 70%; max-width:70%; overflow-y: scroll; background-color: #415259;">
                     <div style="display: grid; width: 100%;height: 100%;">
-                        <div style="grid-column: 1;grid-row: 1;direction: rtl;" class="unselectable">
+                        <div style="grid-column: 1;grid-row: 1;direction: rtl;font-size: 17px;" class="unselectable">
                             <textarea id="highlight" name="code" class="unselectable"></textarea>
                         </div>
-                        <div style="grid-column: 1;grid-row: 1;">
+                        <div style="grid-column: 1;grid-row: 1;font-size: 17px;">
                             <textarea id="code" name="code"></textarea>
                         </div>
                     </div>
@@ -61,17 +66,18 @@
                 </div>
                 <!-- #endregion -->
                 <div class="resizer" data-direction="horizontal"></div>
-                <div class="container__right2" style="border-bottom: 2px solid var(--env); border-right: 2px solid var(--env);">
-                    <div class="container__top" id="zone_terminal_correspondent" style="height: 50%; width: 100%;">
+                <div class="container__right2" style="border-bottom: 2px solid var(--env); border-right: 2px solid var(--env);background-color: #415259;">
+                    <div class="container__top" id="zone_terminal_correspondent" style="height: 50%; width: 100%;background-color: #415259;">
                         <textarea id="assembly" name="code"></textarea>
                     </div>
                     <div class="resizer" data-direction="vertical"></div>
                     <div class="container__bottom" id="zone_terminal">
-                        <table style="height: 100%;border-collapse: collapse;">
+                        <table style="height: 100%; width: 100%; border-collapse: collapse;">
                             <tr>
                                 <td valign="top">
                                     <div id="main">
-                                        <textarea style="height:50vh;width:100%;font-size: 17px;"
+                                        <!-- scale for height if want later here change height:50vh to something else -->
+                                        <textarea style="height:50vh;width:115%;font-size: 17px;margin-top: 7px;margin-left: -8%;border-radius: 10px;background-color: #657f89;color: white;"
                                             id="zone_terminal_ta"></textarea>
                                         </code>
                                     </div>
@@ -93,6 +99,7 @@
             </div>
         </div>
     </div>
+    <script src="js/codeMirrorMode.js"></script>
     <script src="js/showhide.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/comms.js"></script>

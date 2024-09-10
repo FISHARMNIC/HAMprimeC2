@@ -145,9 +145,9 @@ var assembly = {
 
 var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
+        __addToAnyVarEverMade(vname)
         if (onStack) // inside of a function
         {
-
             value = helpers.types.formatIfConstant(value)
             if (objectIncludes(getAllStackVariables(), vname)) {
                 throwE(`Variable "${vname}" already defined`)
@@ -728,6 +728,7 @@ var functions = {
                 didVari = true
             } else {
                 var type = popTypeStack(true)
+                __addToAnyVarEverMade(x)
                 robj.push({ name: x, type })
                 oBytes += helpers.types.typeToBytes(type)
             }
@@ -1128,7 +1129,6 @@ var formats = {
             //throwE(defines.types)
         }
         else {
-
             var _data = {
                 name: fname,
                 parameters: params_obj.params,

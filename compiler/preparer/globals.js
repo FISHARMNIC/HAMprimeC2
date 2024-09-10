@@ -11,6 +11,15 @@ global.newGlobalVar = function (type, info = {}) {
     }
 }
 
+// ONLY FOR HIGHLIGHTING IN IDE
+global.__anyVarEverMade = []
+global.__addToAnyVarEverMade = function(x)
+{
+    if(!__anyVarEverMade.includes(x))
+        __anyVarEverMade.push(x)
+}
+
+
 global.MODE_DEBUG = false;
 global.scope = [];
 global.currentStackOffset = 0;

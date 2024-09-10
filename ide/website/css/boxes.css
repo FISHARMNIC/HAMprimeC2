@@ -25,7 +25,6 @@
 
 }
 .container__right {
-    /* Take the remaining width */
     flex: 1;
 
     min-width: 89%;
@@ -39,7 +38,6 @@
 }
 
 .container__right2 {
-    /* Take the remaining width */
     /* flex: 1; */
 
     min-width: 30%;
@@ -53,20 +51,16 @@
 }
 
 .container__top {
-    /* Initial height */
     min-height: 30%;
     max-height: 100vh;
-    /* Misc */
     align-items: center;
     display: flex;
     justify-content: center;
 
 }
 .container__bottom {
-    /* Take the remaining height */
     flex: 1;
 
-    /* Misc */
     align-items: center;
     /* display: flex; */
     justify-content: center;

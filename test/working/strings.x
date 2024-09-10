@@ -15,7 +15,7 @@ entry function<> -> u32
     create awesomePerson <- "Nina";
     create age <- 123.456;
 
-    create out <- "Hello " + me + " and " + awesomePerson + "! I am " + age + " years old.";
+    create out <- "Hello " + me + " and " + awesomePerson + "! I am " + age + " years old";
 
     printf("output: %s\n", out);
 

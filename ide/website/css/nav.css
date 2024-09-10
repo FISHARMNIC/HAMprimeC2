@@ -1,5 +1,6 @@
 :root {
-    --env: rgb(127, 138, 151);
+    --env: #242e32;
+    /* --env: rgb(127, 138, 151); */
 }
 
 ul.nav {
@@ -13,7 +14,7 @@ ul.nav {
 
 .navli {
     display: block;
-    color: white;
+    color: rgb(148, 148, 148);
     text-align: center;
     padding: 14px 10px;
     text-decoration: none;
@@ -33,9 +34,10 @@ ul.fs {
 }
 
 button.fs {
-    background-color: #c2c2c2;
+    background-color: #4b5052;
+    /* c2c2c2 */
     border: none;
-    color: rgb(0, 0, 0);
+    color: rgb(242, 242, 242);
     padding: 5px;
     text-align: left;
     text-decoration: none;
@@ -45,8 +47,9 @@ button.fs {
     width: 100%;
 }
 
+/* dedede */
 button.fs:hover {
-    background-color: #dedede;
+    background-color: #5a6164;
 }
 
 textarea {
@@ -85,11 +88,17 @@ textarea::-webkit-scrollbar {
 }
 
 .highlight_red {
-    background-color: rgb(255, 160, 160);
+    background-color: rgb(123, 84, 84);
+    color: white;
 }
 
 .highlight_yellow {
-    background-color: rgb(255, 245, 160);
+    background-color: rgb(155, 148, 87);
+    color: white;
+}
+
+.highlight_gray {
+    background-color: #1d2528;
 }
 
 .fa:hover, .fas:hover {
@@ -135,7 +144,7 @@ div.undoredo {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    position: absolute; top: 75px; left: 67.5%;
+    position: absolute; top: 75px; left: 66.4%;
     align-items: center;
     padding: 6px;
     padding-bottom: 3.5px;

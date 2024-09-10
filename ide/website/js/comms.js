@@ -1,6 +1,8 @@
 var site = window.location.origin
 var currentOpenFile;
 var fileIsSaved = false
+var highlightingInfo = {}
+var debugInfoJSON = {}
 
 function getTerminal() {
     return document.getElementById("zone_terminal_ta")
@@ -45,13 +47,19 @@ var comms = {
     compile: function () {
         show("terminal")
         var out = JSON.parse(get("compile/" + currentOpenFile)).data
-        if (out[out.length - 2] == "================== THIS WAS THROWE ==================") {
+        if (out[out.length - 2] == "================== THIS WAS THROWE ==================") { // won't work anymore, update
             console.log("F")
             document.getElementById("zone_terminal_ta").value = out.join("\n")
             var failedLine = out[out.length - 1]
             highlightErr(highlighter, failedLine, "[ERR]")
         } else {
             console.log("W")
+            highlightingInfo = JSON.parse(get("highlightInfo"))
+            debugInfoJSON = comms.getDebugInfo()
+
+            editor.setValue(editor.getValue())
+            document.getElementById("saveIcon").hidden = true
+
             var out_as = JSON.parse(get("assemble")).data
             document.getElementById("zone_terminal_ta").value = out.join("\n") + out_as.join("\n")
             var out_asm = this.getOutput()
@@ -72,6 +80,7 @@ var comms = {
         getTerminal().value = out.out.join("\n") + "\n" + "Exited with code: " + out.code
     },
     loadFile: function (file) {
+        highlightingInfo = {}
         var out = get(`read/${file}`)
         currentOpenFile = file
         editor.setValue(out)
@@ -119,7 +128,11 @@ var comms = {
             getTerminal().value = "No run-time errors\n"
         }
         getTerminal().value += out.data.join("\n")
+    },
+    getDebugInfo: function (line)
+    {
+        return JSON.parse(get("getDebugInfo"))
     }
 }
 
-comms.loadFile("recursion.x")
+comms.loadFile("class.x")
