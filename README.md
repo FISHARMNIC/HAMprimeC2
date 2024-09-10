@@ -11,6 +11,7 @@ HAM' is a fully compiled programming language that runs on Linux. When completed
  - Multiple strings can now be added together using "+"
     - Any numbers will be automatically converted to strings like: ("bob " + 123) becomes "bob 123"
     - Any formats will automatically has their method "toString" called
+ - Big IDE update! (See below)
 
 # Documentation 
 The documentation can be viewed [here](https://fisharmnic.github.io/docs)
@@ -59,13 +60,16 @@ All of the things below work. See examples [here](https://github.com/FISHARMNIC/
 * Seamless C inclusion
 
 # Features a new IDE
-This is still being worked on, and editing still has some issues. This was more of a side project that I will finish when I am done with the compiler.
+The updated IDE now shows you what each line compiles into assembly. Simply click on the line and the window on the right will jump to its portion of code. After compiling, you can click the bug icon to check if there are any segmentation issues, and the IDE will display both the problematic line and assembly instruction. The smart highlighting system will not working until after you have compiled a program, which can be done with either the checkmark button (just compile), or the arrow (compile and run).
 
-<img width="1371" alt="Screen Shot 2024-09-01 at 2 08 47 PM" src="https://github.com/user-attachments/assets/d52bb6a3-23dc-4ddf-9732-3075921e9da7">
+<p align="center">
+<img width="500" alt="ide_1" src="https://github.com/user-attachments/assets/ad9c5a09-92ae-46dd-967e-efdbef06e778">
+<img width="500" alt="ide_2" src="https://github.com/user-attachments/assets/00797139-0ad3-4eea-a723-a849b0f94eef">
+</p>
+Note: This is still being worked on, and editing still has some issues. This was more of a side project that I will finish when I am done with the compiler.
 
 
-
-### Interesting examples
+# Interesting examples
 **Basic demo**
 ```C
 
