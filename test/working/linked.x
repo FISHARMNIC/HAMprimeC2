@@ -50,11 +50,7 @@ Linked format
     
     .remove method<u32 index> -> u32
     {
-        if(index == -1)
-        {
-            
-        }
-        elif(index == 0)
+        if(index <: 1)
         {
             this <- this.next;
         }
@@ -69,7 +65,8 @@ Linked format
     
     .replace method<u32 index, u32 value> -> u32
     {
-    
+        create reference <- this.find(index);
+        reference.current <- value;
     }
 }
 
@@ -77,15 +74,14 @@ Linked format
 entry function<> -> u32
 {
     create myList <- Linked(1);
-    printf("%p\n", myList);
     myList.add(2);
-    printf("%p\n", myList);
     myList.add(3);
-    printf("%p\n", myList);
-    myList.remove(0);
-    printf("%p\n", myList);
     
-    myList.add(4);
+    printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
+
+    myList.remove(0);
+    myList.add(5);
+    myList.replace(2,4);
     
     printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
     

@@ -74,18 +74,17 @@ function evaluate(line) {
             }
         } else if (objectIncludes(defines.types, word)) { // types
             if (offsetWord(1) == "(") {
-                if(defines.types[word]?.formatPtr != null)
+                if (defines.types[word]?.formatPtr != null)
                     //throwE("EEEEEEE", userFormats)
-                // not in userFormats yet!
-                if (objectIncludes(userFormats, word)) // format constructor
-                {
-                    line[wordNum] = actions.formats.callConstructor(word, offsetWord(2))
-                    line.splice(wordNum + 1, 3)
+                    // not in userFormats yet!
+                    if (objectIncludes(userFormats, word)) // format constructor
+                    {
+                        line[wordNum] = actions.formats.callConstructor(word, offsetWord(2))
+                        line.splice(wordNum + 1, 3)
 
-                }
+                    }
             } else if (offsetWord(1) == ":") { // cast
-                if(offsetWord(2) != "(")
-                {
+                if (offsetWord(2) != "(") {
                     throwE("Must cast with parenthesis after colon. Like 'type:(data)'")
                 }
                 var type = defines.types[word]
@@ -175,7 +174,7 @@ function evaluate(line) {
                     nobj = helpers.types.convertTypeToHasData(nobj)
                     globalVariables.__this__ = newGlobalVar(nobj)
 
-                    
+
                     __addToAnyVarEverMade(offsetWord(1))
                     var retType = objCopy(offsetWord(6) == "->" ? defines.types[offsetWord(7)] : defines.types.u32) // default return if none given. Note: prob don't need objcopy for this
                     //throwE(retType)
@@ -195,10 +194,10 @@ function evaluate(line) {
                         name: offsetWord(1),
                         type: objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.u32)
                     })
-                    
+
                     var nobj = objCopy(defines.types.___format_template___)
                     nobj.formatPtr = scope[scope.length - 1].data
-                    nobj.hasData = true
+                    //nobj.hasData = true
                     defines.types[scope[scope.length - 1].data.name] = nobj
 
                     userFormats[scope[scope.length - 1].data.name].properties = scope[scope.length - 1].data.properties
@@ -229,7 +228,21 @@ function evaluate(line) {
                         //console.log("SEEEEE", base, ptype, offsetWord(1), line)
                         //console.log("EEEEE", helpers.variables.getVariableType("end"))
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
+                        nextThingTakesOwnership = defaultAutomaticOwnership
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, helpers.types.guessType(offsetWord(3)), dest.type)
+
+                        if ("hasData" in helpers.types.guessType(offsetWord(3))) {
+                            outputCode.autoPush(
+                                `# requesting ownership for ${base} (property)`,
+                                `lea ${dest.ptr}, %eax`,
+                                `push %eax`,
+                                `push ${offsetWord(3)}`,
+                                `call __rc_requestOwnership__`,
+                                `add $8, %esp`
+                            )
+                        }
+
+
                         return [""]
                     } else {
 

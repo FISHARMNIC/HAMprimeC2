@@ -17,6 +17,8 @@ var assembly = {
         return this.setRegister(value, helpers.registers.registerStringToLetterIfIs(reg), type, low)
     },
     optimizeMove: function (source, destination, sType, dType) {
+
+
         debugPrint(" reoifjeorjferiojerf", source)
         debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
         debugPrint(source)
@@ -166,8 +168,10 @@ var assembly = {
 var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
         __addToAnyVarEverMade(vname)
+
         if (onStack) // inside of a function
         {
+            //console.log(vname, type, nextThingTakesOwnership)
             value = helpers.types.formatIfConstant(value)
             if (objectIncludes(getAllStackVariables(), vname)) {
                 throwE(`Variable "${vname}" already defined`)
@@ -181,6 +185,7 @@ var variables = {
 
             //throwE(type)
             if ("hasData" in type && nextThingTakesOwnership) {
+
                 outputCode.autoPush(
                     `# requesting ownership for ${vname} (create)`,
                     `lea ${off}, %eax`,
@@ -189,8 +194,8 @@ var variables = {
                     `call __rc_requestOwnership__`,
                     `add $8, %esp`
                 )
-                nextThingTakesOwnership = defaultAutomaticOwnership
             }
+            nextThingTakesOwnership = defaultAutomaticOwnership
             createStackVariableListOnly(vname, newStackVar(type))
             //throwE(stackVariables)
         } else { // outside of function, global variable
@@ -226,8 +231,9 @@ var variables = {
                     `call __rc_requestOwnership__`,
                     `add $8, %esp`
                 )
-                nextThingTakesOwnership = defaultAutomaticOwnership
+                
             }
+            nextThingTakesOwnership = defaultAutomaticOwnership
 
         }
 
@@ -265,7 +271,6 @@ var variables = {
         }
 
         if ("hasData" in type && nextThingTakesOwnership) {
-            //throwE()
             outputCode.autoPush(
                 `# requesting ownership for ${vname} (set)`,
                 `lea ${isStack ? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
@@ -274,8 +279,9 @@ var variables = {
                 `call __rc_requestOwnership__`,
                 `add $8, %esp`
             )
-            nextThingTakesOwnership = defaultAutomaticOwnership
+            
         }
+        nextThingTakesOwnership = defaultAutomaticOwnership
         return vname
     },
     attemptStackCreateIfNotSet: function (vname, type, value) {
@@ -1051,6 +1057,7 @@ var formats = {
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
                     }
+                    nextThingTakesOwnership = defaultAutomaticOwnership
 
                     off += helpers.types.typeToBytes(p.type)
                 })
@@ -1082,6 +1089,7 @@ var formats = {
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
                     }
+                    nextThingTakesOwnership = defaultAutomaticOwnership
 
                     off += helpers.types.typeToBytes(p.type)
 
@@ -1262,7 +1270,7 @@ var formats = {
         }
 
         var r = functions.callFunction(formattedName, params)
-        console.log(formattedName)
+        //console.log(formattedName)
         if("modifiesThis" in userFunctions[formattedName])
         {
             outputCode.autoPush("# Loading into __this__ because function modified it ")
