@@ -1192,6 +1192,8 @@ var formats = {
 
         var variadicConstructor = null
         var bestFit = null
+        if(typeof params == "string")
+            params = [params]
         var numberOfParams = params.filter(x => x != ",").length
 
         // overloading

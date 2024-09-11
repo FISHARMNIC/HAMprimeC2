@@ -1,15 +1,11 @@
-/*
-This file does not work yet and is stil being worked on
-*/
-
 Linked format 
 {
     .current u32;
     .next Linked;
     
-    
-    .Linked constructor<> -> u32
+    .Linked constructor<u32 value> -> u32
     {
+        this.current <- value;
         this.next <- 0;
     }
     
@@ -23,10 +19,26 @@ Linked format
         return reference;
     }
     
-    .add method<> -> u32
+    .find method<u32 index> -> u32
+    {
+        create reference <- borrow this;
+        create i <- 0;
+        while(i <: index)
+        {
+            if(reference.next == 0)
+            {
+                return 0;
+            }
+            reference <- reference.next;
+            i <- i + 1;
+        }
+        return(reference.current);
+    }
+    
+    .add method<u32 value> -> u32
     {
         create end <- this.findLast();
-        create newAddr <- Linked();
+        create newAddr <- Linked(value);
         end.next <- newAddr;
     }
 }
@@ -34,5 +46,11 @@ Linked format
 
 entry function<> -> u32
 {
+    create myList <- Linked(1);
+    myList.add(2);
+    myList.add(3);
     
+    printf("%i %i %i\n", myList.find(0), myList.find(1), myList.find(2));
+    
+    return 0;
 }
