@@ -302,7 +302,7 @@ var variables = {
             var r = globalVariables[vname]
             if(r == undefined)
             {
-                throwE(`Variable "${vname}" does not exist`)
+               throwE(`Variable "${vname}" does not exist`)
             }
             return r.type
         }

@@ -3,6 +3,14 @@
     /* --env: rgb(127, 138, 151); */
 }
 
+.cm-num {
+    color: #e7c9a0;
+}
+
+.cm-brack {
+    color: #e7e169;
+}
+
 ul.nav {
     list-style-type: none;
     margin: 0;
@@ -101,13 +109,15 @@ textarea::-webkit-scrollbar {
     background-color: #1d2528;
 }
 
-.fa:hover, .fas:hover {
+.fa:hover,
+.fas:hover {
     transition: transform .5s;
     transform: scale(1.1);
     cursor: pointer;
 }
 
-.fa, .fas {
+.fa,
+.fas {
     transition: transform .5s;
     transform: scale(1)
 }
@@ -144,7 +154,9 @@ div.undoredo {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    position: absolute; top: 75px; left: 66.4%;
+    position: absolute;
+    top: 75px;
+    left: 66.4%;
     align-items: center;
     padding: 6px;
     padding-bottom: 3.5px;
@@ -158,7 +170,9 @@ div.saveIcon {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    position: absolute; top: 68.5px; left: 65%;
+    position: absolute;
+    top: 68.5px;
+    left: 65%;
     align-items: center;
     color: blue;
     /* font-style: blue; */

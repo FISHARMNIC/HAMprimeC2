@@ -2,7 +2,9 @@ function matchAll(stream, words) {
   return words == undefined ? false : words.some(x => stream.match(x))
 }
 
-var operators = ["<<", ">>", "<:", ":>", "==", "<=", ">=", "->", "<-", "+", "-", "*", "/", "|", "&", "%", "<", ">", "{", "}", "[", "]"]
+var operators = ["<<", ">>", "<:", ":>", "==", "<=", ">=", "->", "<-", "+", "-", "*", "/", "|", "&", "%", "<", ">","(", ")"]
+var brackets = ["{", "}", "[", "]"]
+
 var inComment = false
 CodeMirror.defineMode("HAM", function () {
   return {
@@ -17,15 +19,20 @@ CodeMirror.defineMode("HAM", function () {
         }
         stream.next()
         return "comment"
-      }
+      } else if (stream.match("//")) { // comments
+        stream.skipToEnd();
+        return "comment";
+      } 
       else if (matchAll(stream, highlightingInfo.allVars)) {
         return "keyword"
       }
       else if (matchAll(stream, highlightingInfo.keywords)) {
         return "def"
+      } else if(matchAll(stream, brackets)){
+        return "brack"
       }
       else if (matchAll(stream, highlightingInfo.functions)) {
-        return "keyword"
+        return "num"
       }
       else if (matchAll(stream, highlightingInfo.types)) // types
       {
@@ -35,9 +42,6 @@ CodeMirror.defineMode("HAM", function () {
         return "string"
       } else if (stream.match(/".*?"/)) { // strings
         return "string";
-      } else if (stream.match("//")) { // comments
-        stream.skipToEnd();
-        return "comment";
       } else {
         stream.next();
         return null;

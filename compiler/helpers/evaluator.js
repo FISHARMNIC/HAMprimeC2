@@ -74,10 +74,14 @@ function evaluate(line) {
             }
         } else if (objectIncludes(defines.types, word)) { // types
             if (offsetWord(1) == "(") {
+                if(defines.types[word]?.formatPtr != null)
+                    //throwE("EEEEEEE", userFormats)
+                // not in userFormats yet!
                 if (objectIncludes(userFormats, word)) // format constructor
                 {
                     line[wordNum] = actions.formats.callConstructor(word, offsetWord(2))
                     line.splice(wordNum + 1, 3)
+
                 }
             } else if (offsetWord(1) == ":") { // cast
                 if(offsetWord(2) != "(")
@@ -171,8 +175,10 @@ function evaluate(line) {
                     nobj = helpers.types.convertTypeToHasData(nobj)
                     globalVariables.__this__ = newGlobalVar(nobj)
 
+                    
                     __addToAnyVarEverMade(offsetWord(1))
-                    var retType = objCopy(offsetWord(6) == "<-" ? defines.types[offsetWord(7)] : defines.types.u32) // default return if none given. Note: prob don't need objcopy for this
+                    var retType = objCopy(offsetWord(6) == "->" ? defines.types[offsetWord(7)] : defines.types.u32) // default return if none given. Note: prob don't need objcopy for this
+                    //throwE(retType)
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatMethodName(scope[scope.length - 1].data.name, offsetWord(1)), offsetWord(4), retType)
 
                     //throwE(line)
@@ -208,6 +214,8 @@ function evaluate(line) {
                     if (offsetWord(2) == "<-") { //setting
 
                         //throwE(base, ptype.formatPtr)
+                        //console.log("SEEEEE", base, ptype, offsetWord(1), line)
+                        //console.log("EEEEE", helpers.variables.getVariableType("end"))
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, helpers.types.guessType(offsetWord(3)), dest.type)
                         return [""]
@@ -481,17 +489,20 @@ function evaluate(line) {
         {
             var kname = offsetWord(-1)
             if (word == "format") {
+                // IF BROKEN FIX HERE TODO BUG CRASH SEP 11
+                var d = {
+                    name: kname,
+                    properties: [],
+                    statics: [],
+                    constructors: {},
+                    methods: {},
+                    size: 0
+                }
                 requestBracket = {
                     type: keywordTypes.FORMAT,
-                    data: {
-                        name: kname,
-                        properties: [],
-                        statics: [],
-                        constructors: {},
-                        methods: {},
-                        size: 0
-                    }
+                    data: d
                 }
+                userFormats[kname] = d
             } else if (word == "print_" || word == "println_") {
                 //throwE("WIP")
 

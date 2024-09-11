@@ -1,6 +1,8 @@
 /*
 TODO:
     NEW
+    - CANT CREATE FORMAT INSTANCE INSIDE FORMAT. SEE LINKED
+    - be able to return something like Format:dynamic so like List:dynamic 
     - add char to string
     - !! IMPORTANT !! garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data
@@ -182,7 +184,7 @@ if(returnHighlight)
 {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: [...defines.keywords, "constructor", "create", "...", "call", "."],
+        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@"],
         types: Object.keys(defines.types),
         allVars: [...__anyVarEverMade,"this"]
     }

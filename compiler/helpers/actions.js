@@ -123,7 +123,21 @@ var assembly = {
                 `mov %eax, %edi`,
                 `rep movsb`,
             )
-        } else {
+        } else if("advptr" in stype)
+        {
+            outputCode.autoPush(
+                `# copying string`,
+                `mov ${source}, %esi`,
+                `mov -4(%esi), %ecx`,
+                `push %ecx`,
+                `call __rc_allocate__`,
+                `pop %ecx`,
+                `mov %eax, %edi`,
+                `rep movsb`,
+            )
+        }
+        
+        else {
             throwE("Unable to copy reference that holds no data regarding it's size")
         }
 
@@ -137,7 +151,13 @@ var assembly = {
 
 
         helpers.registers.extendedTypes.a == objCopy(stype)
-        return "%eax"
+
+        var oreg = helpers.registers.getFreeLabelOrRegister(stype)
+        outputCode.autoPush(
+            `mov %eax, ${oreg}`
+        )
+        return oreg
+
 
         throwE(stype)
     }
@@ -156,6 +176,7 @@ var variables = {
             //throwE(value, off)
             outputCode.autoPush(`# Loading local variable "${vname}" @${off}`)
 
+            //console.log(value,defines.types)
             assembly.optimizeMove(value, off, type, type)
 
             //throwE(type)
@@ -633,6 +654,7 @@ var allocations = {
     newStringLiteral: function (value) {
         var label = helpers.formatters.stringLiteral(helpers.counters.stringLiterals++)
         outputCode.data.push(
+            `.4byte ${value.length + 1}`,
             `${label}: .asciz "${value}"`
         )
         globalVariables[label] = newGlobalVar(defines.types.string)
@@ -1060,7 +1082,7 @@ var formats = {
                     off += helpers.types.typeToBytes(p.type)
 
                     //throwE("here and isebp offset if statement above")
-                    console.log()
+                    //console.log()
                 })
                 return saveLbl
             }
@@ -1069,13 +1091,16 @@ var formats = {
         }
     },
     readProperty: function (base, baseType, propertyName, readAddress = false) {
-        //throwE("bob")
+        //throwE(baseType.formatPtr.properties[1])
         var offset = 0
         var i = 0
 
         //throwE(helpers.general.getMostRecentFunction().data.parameters)
 
+        // should NOT be a normal type!!! TODO HERE SEP 11
+        //console.log(base, baseType)
         while (baseType.formatPtr.properties[i].name != propertyName) {
+            //console.log(baseType.formatPtr.properties[i], i)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
             i++
         }
@@ -1129,6 +1154,7 @@ var formats = {
             //throwE(defines.types)
         }
         else {
+            //console.log("RETTTTT", ret)
             var _data = {
                 name: fname,
                 parameters: params_obj.params,
@@ -1141,6 +1167,11 @@ var formats = {
             //throwE("not done", _data)
 
             _scope.methods[fname] = _data
+
+            //throwE(userFormats)
+            userFormats[_scope.name] = _scope
+
+
             userFunctions[fname] = _data
 
             requestBracket = {
@@ -1199,7 +1230,6 @@ var formats = {
     callMethod: function (parent, method, params) {
         var parentType;
         var formattedName;
-        // throwE(params)
         if (objectIncludes(defines.types, parent)) { // formatName.method()
             if (method == "call") {
                 //throwE(parentType)
