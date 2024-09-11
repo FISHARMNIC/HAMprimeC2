@@ -235,6 +235,10 @@ var variables = {
     },
     set: function (vname, value) {
 
+        if(vname == "__this__")
+        {
+            helpers.general.setModifiesThis()
+        }
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
         var type = helpers.variables.getVariableType(vname)
 
@@ -1098,7 +1102,7 @@ var formats = {
         //throwE(helpers.general.getMostRecentFunction().data.parameters)
 
         // should NOT be a normal type!!! TODO HERE SEP 11
-        //console.log(base, baseType)
+        //console.log(base, baseType.formatPtr.properties[1].type.formatPtr)
         while (baseType.formatPtr.properties[i].name != propertyName) {
             //console.log(baseType.formatPtr.properties[i], i)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
@@ -1256,8 +1260,16 @@ var formats = {
             }
             actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
         }
-        //throwE(formattedName, params)
-        return functions.callFunction(formattedName, params)
+
+        var r = functions.callFunction(formattedName, params)
+        console.log(formattedName)
+        if("modifiesThis" in userFunctions[formattedName])
+        {
+            outputCode.autoPush("# Loading into __this__ because function modified it ")
+            actions.assembly.optimizeMove("__this__", parent, parentType, parentType)
+        }
+        
+        return r;
     }
 }
 

@@ -507,6 +507,14 @@ var general = {
     },
     scopeHasIterable: function () {
         return scope.some(x => x.type == keywordTypes.WHILE)
+    },
+    setModifiesThis: function()
+    {
+        var fn = this.getMostRecentFunction()
+        var fnName = fn.data.name
+        var e = scope.find(e => e.data.name == fnName)
+        e.data.modifiesThis = true
+        userFunctions[fnName].modifiesThis = true
     }
 }
 module.exports = {

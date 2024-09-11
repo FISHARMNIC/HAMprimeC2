@@ -1,7 +1,11 @@
 // yes, it uses globals
 
-global.objCopy = function (x) {
-    return JSON.parse(JSON.stringify(x))
+// global.objCopy = function (x) {
+//     return JSON.parse(JSON.stringify(x))
+// }
+
+global.objCopy = function(x) {
+    return structuredClone(x)
 }
 
 global.newGlobalVar = function (type, info = {}) {

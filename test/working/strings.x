@@ -3,7 +3,8 @@ User format
     .name string;
     .ID u32;
 
-    .toString method<> -> {
+    .toString method<> -> string
+    {
         return(this.name + this.ID);
     }
 }

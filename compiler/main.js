@@ -1,7 +1,11 @@
 /*
 TODO:
     NEW
-    - CANT CREATE FORMAT INSTANCE INSIDE FORMAT. SEE LINKED
+    - add auto return guesstype of statement on return
+    - "own" doens't force ownership unless the data has hasData. Make it force calling the function regardless
+    - MAKE SURE THAT BORROW COPIES TYPE AND REMOVES HASDATA FROM TYPE
+    - add setting pointer like @bob = 123;
+    - maybe do something like pass by reference how cpp does NOT pass by pointer 
     - be able to return something like Format:dynamic so like List:dynamic 
     - add char to string
     - !! IMPORTANT !! garbage collector should only be triggered at the end of functions
@@ -196,7 +200,6 @@ console.log("|| Output in  : \033[96m" + __dirname + "/../compiled/out.s" + "\03
 console.log("|| Debug info : \033[96m" + __dirname + "/../compiled/debugInfo.json" + "\033[0m")
 console.log("\033[93m=============================================\033[0m")
 
-//console.log(lineOwners)
 // the compiler goes LEFT TO RIGHT NOW
 
 // actions.variables.create("bob",defines.types.u32,123);

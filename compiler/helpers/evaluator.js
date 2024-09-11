@@ -184,13 +184,25 @@ function evaluate(line) {
                     //throwE(line)
                 } else {
                     __addToAnyVarEverMade(offsetWord(1))
+                    // IF BUG ::::: SEP 11
+                    /*
                     scope[scope.length - 1].data.properties.push({
                         name: offsetWord(1),
                         type: objectIncludes(defines.types, offsetWord(2)) ? objCopy(defines.types[offsetWord(2)]) : objCopy(defines.types.u32)
                     })
+                    */
+                    scope[scope.length - 1].data.properties.push({
+                        name: offsetWord(1),
+                        type: objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.u32)
+                    })
+                    
                     var nobj = objCopy(defines.types.___format_template___)
                     nobj.formatPtr = scope[scope.length - 1].data
+                    nobj.hasData = true
                     defines.types[scope[scope.length - 1].data.name] = nobj
+
+                    userFormats[scope[scope.length - 1].data.name].properties = scope[scope.length - 1].data.properties
+                    //console.log("ADDED", userFormats[scope[scope.length - 1].data.name].properties)
 
                     //throwE(defines.types)
                 }
@@ -356,8 +368,8 @@ function evaluate(line) {
             wordNum += 2
         }
 
-        else if (offsetWord(1) == "<-") { // variable setting // THIS IS OLD... SHOULD BE REMOVED TODO HERE
-            if (getLastScopeType() == keywordTypes.FORMAT) { // just creating a property
+        else if (offsetWord(1) == "<-") { // variable setting 
+            if (getLastScopeType() == keywordTypes.FORMAT) { // just creating a property // THIS IS OLD... SHOULD BE REMOVED TODO HERE
                 scope[scope.length - 1].data.properties.push({
                     name: word,
                     type: popTypeStack()

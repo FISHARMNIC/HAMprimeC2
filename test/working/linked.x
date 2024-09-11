@@ -19,7 +19,7 @@ Linked format
         return reference;
     }
     
-    .find method<u32 index> -> u32
+    .find method<u32 index> -> Linked
     {
         create reference <- borrow this;
         create i <- 0;
@@ -32,7 +32,13 @@ Linked format
             reference <- reference.next;
             i <- i + 1;
         }
-        return(reference.current);
+        return(reference);
+    }
+    
+    .index method<u32 index> -> u32
+    {
+        create ref <- this.find(index);
+        return(ref.current);
     }
     
     .add method<u32 value> -> u32
@@ -41,16 +47,47 @@ Linked format
         create newAddr <- Linked(value);
         end.next <- newAddr;
     }
+    
+    .remove method<u32 index> -> u32
+    {
+        if(index == -1)
+        {
+            
+        }
+        elif(index == 0)
+        {
+            this <- this.next;
+        }
+        else
+        {
+            create previous <- this.find(index - 1);
+
+            create skipped <- previous.next.next;
+            previous.next <- skipped; 
+        }
+    }
+    
+    .replace method<u32 index, u32 value> -> u32
+    {
+    
+    }
 }
 
 
 entry function<> -> u32
 {
     create myList <- Linked(1);
+    printf("%p\n", myList);
     myList.add(2);
+    printf("%p\n", myList);
     myList.add(3);
+    printf("%p\n", myList);
+    myList.remove(0);
+    printf("%p\n", myList);
     
-    printf("%i %i %i\n", myList.find(0), myList.find(1), myList.find(2));
+    myList.add(4);
+    
+    printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
     
     return 0;
 }

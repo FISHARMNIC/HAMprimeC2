@@ -37,13 +37,13 @@ highlighter.setSize("100%", "100%")
 
 function highlightErr(view, line, msg = null, _name = "__marked_err") {
 
-    console.log(line)
+    //console.log(line)
     if (view[_name] != undefined) {
         view[_name].clear();
     }
 
     if (msg != null && view == highlighter) {
-        console.log("HIH")
+        //console.log("HIH")
         if ((highlighter[_name + "_word"]) != undefined) {
             highlighter[_name + "_word"].clear();
         }
@@ -91,15 +91,16 @@ function __removeTabs(e) {
 }
 
 function __getTrueLine(execFileLikeTrue, line) {
+
+    //console.log(execFileLikeTrue)
     var lineRead = -1
     var lookAtFile = -1;
     //console.log(":::", execFileLikeTrue)
-    while (lineRead != line) {
+    while (lineRead != line && lookAtFile < execFileLikeTrue.length) {
         lookAtFile++
         lineRead++
         execFileLikeTrue[lookAtFile] = __removeTabs(execFileLikeTrue[lookAtFile])
-        //console.log("::::", execFileLikeTrue[lookAtFile], lineRead, lookAtFile)
-        while (execFileLikeTrue[lookAtFile].length == 0) //skip
+        while (lookAtFile < execFileLikeTrue.length && execFileLikeTrue[lookAtFile].length == 0) //skip
         {
             lookAtFile++
         }
@@ -128,6 +129,7 @@ function getLineFromAsm(asmLine){
             return -1
     }
     if (offset >= 0) {
+        //console.log(execFileLikeTrue)
         var info = data[offset]
         var tline = __getTrueLine(execFileLikeTrue, info[0].line)
         return tline
@@ -176,7 +178,7 @@ function asmLineFromCode(line)
 
 function clrset()
 {
-    console.log("cc")
+    //console.log("cc")
     clearHighlightedAsmLine()
     clearHighlightedAsmLine(assembly_viewer)
 
