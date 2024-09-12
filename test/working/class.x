@@ -6,12 +6,13 @@ List format {
     .buffer p32;
     .length u32;
     
-    .List constructor<...> 
+    .List constructor<...>
     {
         this.buffer <- 0;
         this.length <- 0;
     }
 
+    /*Not the most efficient way, but its meant to show that it can allocate and reallocate just fine*/
     .push method<any element> -> p32
     {
         this.length <- (this.length + 1);

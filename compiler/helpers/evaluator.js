@@ -228,10 +228,10 @@ function evaluate(line) {
                         //console.log("SEEEEE", base, ptype, offsetWord(1), line)
                         //console.log("EEEEE", helpers.variables.getVariableType("end"))
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
-                        nextThingTakesOwnership = defaultAutomaticOwnership
+                        
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, helpers.types.guessType(offsetWord(3)), dest.type)
 
-                        if ("hasData" in helpers.types.guessType(offsetWord(3))) {
+                        if ("hasData" in helpers.types.guessType(offsetWord(3)) && nextThingTakesOwnership) {
                             outputCode.autoPush(
                                 `# requesting ownership for ${base} (property)`,
                                 `lea ${dest.ptr}, %eax`,
@@ -241,6 +241,8 @@ function evaluate(line) {
                                 `add $8, %esp`
                             )
                         }
+                        
+                        nextThingTakesOwnership = defaultAutomaticOwnership
 
 
                         return [""]

@@ -172,9 +172,9 @@ div.saveIcon {
     overflow: hidden;
     position: absolute;
     top: 68.5px;
-    left: 65%;
+    left: 63%;
     align-items: center;
-    color: blue;
+    color: rgb(136, 136, 255);
     /* font-style: blue; */
     font-size: 30px;
     padding: 6.5px;
