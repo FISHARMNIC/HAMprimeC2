@@ -75,12 +75,12 @@ Note: This is still being worked on, and editing still has some issues. This was
 
 
 # Interesting examples
-* [Class](###Formats-as-classes)
-* [Strings](###Strings)
-* [Variadics](###Variadics)
-* [C Inclusion](###C-Inclusion)
-* [Graphics](###Graphics)
-* [Floats](###Floats)
+* [Class](#Formats-as-classes)
+* [Strings](#Strings)
+* [Variadics](#Variadics)
+* [C Inclusion](#C-Inclusion)
+* [Graphics](#Graphics)
+* [Floats](#Floats)
 
 ### Formats as classes
 ```C
