@@ -14,6 +14,7 @@ entry_reference struct
 }
 */
 
+
 __rc_requestOwnership__:
     push %ebp
     mov %esp, %ebp

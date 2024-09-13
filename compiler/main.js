@@ -1,14 +1,16 @@
 /*
 TODO:
     NEW
+    - !! IMPORTANT !!
+        - optimize __rc_quick_check__
+        - change it so by default, all functions save registers automatically
+        - be careful when calling from c functions. Maybe add like __c_fn__to specify that caller has to save regs
+    - make structs not packed
     - add auto return guesstype of statement on return
     - "own" doens't force ownership unless the data has hasData. Make it force calling the function regardless
     - MAKE SURE THAT BORROW COPIES TYPE AND REMOVES HASDATA FROM TYPE
     - add setting pointer like @bob = 123;
     - maybe do something like pass by reference how cpp does NOT pass by pointer 
-    - be able to return something like !dynamic Format so like !dynamic Linked 
-        - useful for example for a method that retuns a format like .find in Linked
-            - Without it, Linked by default does not return hasData type
     - add char to string
     - !! IMPORTANT !! garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data
@@ -190,7 +192,7 @@ if(returnHighlight)
 {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic"],
+        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward"],
         types: Object.keys(defines.types),
         allVars: [...__anyVarEverMade,"this"]
     }

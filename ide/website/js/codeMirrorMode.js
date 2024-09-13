@@ -23,12 +23,13 @@ CodeMirror.defineMode("HAM", function () {
         stream.skipToEnd();
         return "comment";
       } 
+      else if (matchAll(stream, highlightingInfo.keywords)) {
+        return "def"
+      } 
       else if (matchAll(stream, highlightingInfo.allVars)) {
         return "keyword"
       }
-      else if (matchAll(stream, highlightingInfo.keywords)) {
-        return "def"
-      } else if(matchAll(stream, brackets)){
+      else if(matchAll(stream, brackets)){
         return "brack"
       }
       else if (matchAll(stream, highlightingInfo.functions)) {

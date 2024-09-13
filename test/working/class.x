@@ -31,9 +31,9 @@ List format {
     .pop method<> -> any 
     {
         this.length <- (this.length - 1);
-        create returnValue <- this.buffer[this.length];
+        create retValue <- this.buffer[this.length];
         this.buffer <- realloc(this.buffer, (this.length * 4));
-        return returnValue;
+        return retValue;
     }
 
     .every method<p32 iterator> -> u32 

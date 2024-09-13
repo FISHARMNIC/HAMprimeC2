@@ -1,8 +1,23 @@
 #include "rollcall.h"
 #include "linked.h"
 
+#include <stdio.h>
 __linked_t *Roster = 0;
 static int allocated_bytes = 0;
+
+int __disable_gc__ = 0;
+
+void __rc_quick_check__()
+{
+    asm volatile("pusha");
+    if(allocated_bytes > BYTES_PER_GC && __disable_gc__ == 0)
+    {
+        //printf("trigger\n");
+        __rc_collect__();
+        allocated_bytes = 0;
+    }
+    asm volatile("popa");
+}
 
 void *__rc_allocate__(int size_bytes, int restricted)
 {
@@ -10,12 +25,12 @@ void *__rc_allocate__(int size_bytes, int restricted)
     // In compiler use mmap2
 
     // automatic allocation done at over BYTES_PER_GC bytes allocated
-    if(allocated_bytes > BYTES_PER_GC)
-    {
-        //printf("trigger\n");
-        __rc_collect__();
-        allocated_bytes = 0;
-    }
+    // if(allocated_bytes > BYTES_PER_GC && __disable_gc__ == 0)
+    // {
+    //     //printf("trigger\n");
+    //     __rc_collect__();
+    //     allocated_bytes = 0;
+    // }
     allocated_bytes += sizeof(roster_entry_t) + sizeof(roster_entry_t *) + size_bytes;
 
     // old
@@ -64,7 +79,7 @@ void __rc_collect__()
         //printf("Checking [@%p]: %p vs %p\n", roster_entry, owner_points_to, owner_should_point_to);
         if (owner_points_to != owner_should_point_to)
         {
-            //printf("|- Discarding Roster[%i] @%p\n", index, owner_should_point_to);
+            printf("|- Discarding Roster[%i] @%p\n", index, owner_should_point_to);
             list = __linked_remove(&Roster, index);
         }
         else

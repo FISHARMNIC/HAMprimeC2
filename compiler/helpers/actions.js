@@ -248,6 +248,8 @@ var variables = {
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
         var type = helpers.variables.getVariableType(vname)
 
+        //throwE(helpers.types.guessType(value))
+
         var valueType = helpers.types.guessType(value);
 
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___") {
@@ -261,16 +263,16 @@ var variables = {
 
         }
 
-        if (isStack) {
-            assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
-        } else if (objectIncludes(globalVariables, vname)) {       // if glob var
-            assembly.optimizeMove(value, vname, type, type)
-            //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
-        } else {
-            throwE(`Variable ${vname} has not been declared neither locally nor globally`)
-        }
+        // if (isStack) {
+        //     assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
+        // } else if (objectIncludes(globalVariables, vname)) {       // if glob var
+        //     assembly.optimizeMove(value, vname, type, type)
+        //     //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
+        // } else {
+        //     throwE(`Variable ${vname} has not been declared neither locally nor globally`)
+        // }
 
-        if ("hasData" in type && nextThingTakesOwnership) {
+        if (("hasData" in type && nextThingTakesOwnership) || (value == "__this__" && vname == "___TEMPORARY_OWNER___")) {
             outputCode.autoPush(
                 `# requesting ownership for ${vname} (set)`,
                 `lea ${isStack ? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
@@ -280,6 +282,15 @@ var variables = {
                 `add $8, %esp`
             )
             
+        } else {
+            if (isStack) {
+                assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
+            } else if (objectIncludes(globalVariables, vname)) {       // if glob var
+                assembly.optimizeMove(value, vname, type, type)
+                //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
+            } else {
+                throwE(`Variable ${vname} has not been declared neither locally nor globally`)
+            }
         }
         nextThingTakesOwnership = defaultAutomaticOwnership
         return vname
@@ -773,8 +784,10 @@ var functions = {
             fname + ":",
             `push %ebp`,
             `mov %esp, %ebp`,
-            `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
-            `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`
+            //`pusha`,
+            //`${userFunctions[fname].saveRegs ? "pusha" : ""}`,
+            `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`,
+            
         )
 
     },
@@ -803,9 +816,15 @@ var functions = {
                 `call __rc_collect__`,
                 `popa`,
             )
+        } else {
+            outputCode.text.push(
+                `call __rc_quick_check__`
+            )
         }
         outputCode.text.push(
+            
             `${d.saveRegs ? "popa" : ""}`,
+            //`popa`,
             `mov %ebp, %esp`,
             `pop %ebp`,
             `ret`

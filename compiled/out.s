@@ -13,6 +13,7 @@
 __this__: .4byte 0
 __xmm_sse_temp__: .4byte 0
 ___TEMPORARY_OWNER___: .4byte 0 
+.extern __disable_gc__
 ######## user data section ########
 __ALLOCFOR___constructor_Linked_0___ = 0
 __ALLOCFOR___method_Linked_findLast___ = 4
@@ -53,7 +54,6 @@ main:
 __constructor_Linked_0_:
 push %ebp
 mov %esp, %ebp
-
 sub $__ALLOCFOR___constructor_Linked_0___, %esp
 pushl $0
 mov $__SIZEOF_Linked__, %edx
@@ -61,14 +61,19 @@ push %edx
 call __rc_allocate__
 add $8, %esp
 mov %eax, __this__
-movl __this__, %edx
-mov %edx, ___TEMPORARY_OWNER___
+# requesting ownership for ___TEMPORARY_OWNER___ (set)
+lea ___TEMPORARY_OWNER___, %eax
+push %eax
+push __this__
+call __rc_requestOwnership__
+add $8, %esp
 movl __this__, %eax
 mov 8(%ebp), %edx
 mov %edx, 0(%eax)
 movl __this__, %eax
 movl $0, 4(%eax)
 movl __this__, %eax
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -76,7 +81,6 @@ ret
 __method_Linked_findLast_:
 push %ebp
 mov %esp, %ebp
-
 sub $__ALLOCFOR___method_Linked_findLast___, %esp
 # Loading local variable "reference" @-4(%ebp)
 movl __this__, %edx
@@ -97,10 +101,12 @@ mov %ebx, -4(%ebp)
 jmp __LABEL0__
 __LABEL1__:
 mov -4(%ebp), %eax
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -109,7 +115,6 @@ ret
 __method_Linked_find_:
 push %ebp
 mov %esp, %ebp
-
 sub $__ALLOCFOR___method_Linked_find___, %esp
 # Loading local variable "reference" @-4(%ebp)
 movl __this__, %edx
@@ -134,6 +139,7 @@ sete %cl
 cmpb $1, %cl
 jne __LABEL4__
 mov $0, %eax
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -153,10 +159,12 @@ mov %ebx, -8(%ebp)
 jmp __LABEL2__
 __LABEL3__:
 mov -4(%ebp), %eax
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -166,7 +174,6 @@ ret
 __method_Linked_index_:
 push %ebp
 mov %esp, %ebp
-
 sub $__ALLOCFOR___method_Linked_index___, %esp
 movl __this__, %edx
 mov %edx, __this__
@@ -183,10 +190,12 @@ movl -4(%ebp), %eax
 mov 0(%eax), %edx
 mov %edx, %ebx
 mov %ebx, %eax
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -195,7 +204,6 @@ ret
 __method_Linked_add_:
 push %ebp
 mov %esp, %ebp
-
 sub $__ALLOCFOR___method_Linked_add___, %esp
 movl __this__, %edx
 mov %edx, __this__
@@ -228,6 +236,7 @@ push %eax
 push -8(%ebp)
 call __rc_requestOwnership__
 add $8, %esp
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -237,7 +246,6 @@ ret
 __method_Linked_remove_:
 push %ebp
 mov %esp, %ebp
-
 sub $__ALLOCFOR___method_Linked_remove___, %esp
 mov 8(%ebp), %eax
 movb $0, %bl
@@ -279,6 +287,7 @@ mov %edx, 4(%eax)
 jmp __LABEL7__
 __LABEL8__:
 __LABEL7__:
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -286,7 +295,6 @@ ret
 __method_Linked_replace_:
 push %ebp
 mov %esp, %ebp
-
 sub $__ALLOCFOR___method_Linked_replace___, %esp
 movl __this__, %edx
 mov %edx, __this__
@@ -302,6 +310,7 @@ mov %ebx, -4(%ebp)
 movl -4(%ebp), %eax
 mov 12(%ebp), %edx
 mov %edx, 0(%eax)
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -310,7 +319,6 @@ ret
 entry:
 push %ebp
 mov %esp, %ebp
-
 sub $__ALLOCFOR_entry__, %esp
 # Calling function __constructor_Linked_0_
 pushl $1
@@ -447,10 +455,12 @@ pop %ecx
 pop %esi
 pop %ebx
 mov $0, %eax
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp

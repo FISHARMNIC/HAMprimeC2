@@ -41,6 +41,7 @@ ul.nav {
     background-color: #415259;
     /* justify-self: center; */
     align-self: center;
+    margin-top: -7px;
     width: 99.8%;
 }
 
@@ -179,8 +180,8 @@ div.undoredo {
     padding: 0;
     overflow: hidden;
     position: absolute;
-    top: 75px;
-    left: 66.4%;
+    top: 77px;
+    left: 67%;
     align-items: center;
     padding: 6px;
     padding-bottom: 3.5px;
