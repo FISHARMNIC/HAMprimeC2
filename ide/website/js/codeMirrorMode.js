@@ -2,7 +2,7 @@ function matchAll(stream, words) {
   return words == undefined ? false : words.some(x => stream.match(x))
 }
 
-var operators = ["<<", ">>", "<:", ":>", "==", "<=", ">=", "->", "<-", "+", "-", "*", "/", "|", "&", "%", "<", ">","(", ")"]
+var operators = ["<<", ">>", "<:", ":>", "==", "<=", ">=", "->", "<-", "+", "-", "*", "/", "|", "&", "%", "<", ">","(", ")", ":"]
 var brackets = ["{", "}", "[", "]"]
 
 var inComment = false

@@ -15,9 +15,27 @@ function evaluate(line) {
 
     // just for macros
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
+        // HERE is where forced dynamic should be like "Linked:dynamic"
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
+        } else if(objectIncludes(defines.types,word) && line[wordNum + 1] == ":" && line[wordNum + 2] == "dynamic")
+        {
+            var ogtype = defines.types[word]
+            var cpy = objCopy(ogtype)
+            if("formatPtr" in ogtype)
+            {
+                cpy.formatPtr = ogtype.formatPtr
+            }
+            cpy.hasData = true;
+            defines.types[`__${word}__dynamicdef__`] = cpy
+            line[wordNum] = `__${word}__dynamicdef__`
+            line.splice(wordNum + 1, 2)
+            /*
+            should work like creates a second type called __Linked__dynamicdef__ which is a clone of the original one but has hasData enabled
+            And then replaces the three words "Linked:dynamic" with __Linked__dynamicdef__
+            */
+            //throwE("WIP dynamic buffering")
         }
     }
 
@@ -241,7 +259,7 @@ function evaluate(line) {
                                 `add $8, %esp`
                             )
                         }
-                        
+
                         nextThingTakesOwnership = defaultAutomaticOwnership
 
 

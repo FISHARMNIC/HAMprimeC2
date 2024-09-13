@@ -265,6 +265,16 @@ function drawColLine(l, isError = false) {
 
 global.throwE = function (x) {
     var lineE = getTrueLine(inputCodeLikeTrue, globalLine)
+    if(returnHighlight)
+    {
+        console.log(JSON.stringify(
+            {
+                issue: true,
+                desc: [...arguments],
+                line: lineE
+            }
+        ))
+    } else {
     console.trace()
     console.log("\n\n================== THIS WAS THROWE ==================\n\n")
 
@@ -276,8 +286,10 @@ global.throwE = function (x) {
     drawColLine(lineE + 2)
     console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
 
-    process.exit(126)
 
+    }
+
+    process.exit(126)
     //console.log(lineE)
 }
 global.throwW = function (x) {

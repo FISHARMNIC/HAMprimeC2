@@ -6,7 +6,9 @@ TODO:
     - MAKE SURE THAT BORROW COPIES TYPE AND REMOVES HASDATA FROM TYPE
     - add setting pointer like @bob = 123;
     - maybe do something like pass by reference how cpp does NOT pass by pointer 
-    - be able to return something like Format:dynamic so like List:dynamic 
+    - be able to return something like !dynamic Format so like !dynamic Linked 
+        - useful for example for a method that retuns a format like .find in Linked
+            - Without it, Linked by default does not return hasData type
     - add char to string
     - !! IMPORTANT !! garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data
@@ -188,7 +190,7 @@ if(returnHighlight)
 {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@"],
+        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic"],
         types: Object.keys(defines.types),
         allVars: [...__anyVarEverMade,"this"]
     }

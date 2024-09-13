@@ -9,7 +9,7 @@ function formatOutput(out) {
 }
 
 const { execSync } = require('child_process')
-function execute(command, stringify = true) {
+function execute(command, stringify = true, acceptError = false) {
     try {
         var out = String(execSync(command))
         if (stringify) {
@@ -18,6 +18,15 @@ function execute(command, stringify = true) {
         return out
     } catch(error)
     {
+        if(acceptError)
+        {
+            var out = String(error.stdout)
+            console.log("Error but OK", out)
+            if (stringify) {
+                out = formatOutput(out)
+            }
+            return out
+        }
         console.log("FAILLL", String(error))
         return -1
     }
@@ -42,7 +51,7 @@ module.exports = function (command) {
             out = execute(`limactl shell debian "${__dirname}/../compiled/out"`, false).split("\n").map(x => replace0s(x)).filter(x => x)
         }
         catch (error) {
-            console.log("error", error.status)
+            console.log("error", out)
             code = error.status
             out = [replace0s(String(error.stdout)).split("\n").filter(x => x)]
         }
@@ -63,7 +72,7 @@ module.exports = function (command) {
         } else if (command == "compile") {
             var out;
             try {
-                out = execute(`node ${__dirname}/../compiler/main.js __FLAG_HIGHLIGHT__ ${sub}`)
+                out = execute(`node ${__dirname}/../compiler/main.js __FLAG_HIGHLIGHT__ ${sub}`, true, true)
             }
             catch (error) {
                 out = formatOutput(String(error.stdout))

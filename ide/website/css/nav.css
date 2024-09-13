@@ -3,6 +3,27 @@
     /* --env: rgb(127, 138, 151); */
 }
 
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px; 
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #415259;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--env);
+    border: 1px solid black;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+ }
+
+
 .cm-num {
     color: #e7c9a0;
 }
@@ -16,8 +37,11 @@ ul.nav {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: var(--env);
-    width: 100.27%;
+    border: 3px solid var(--env);
+    background-color: #415259;
+    /* justify-self: center; */
+    align-self: center;
+    width: 99.8%;
 }
 
 .navli {
@@ -174,7 +198,7 @@ div.saveIcon {
     top: 68.5px;
     left: 63%;
     align-items: center;
-    color: rgb(136, 136, 255);
+    color: #657F89;
     /* font-style: blue; */
     font-size: 30px;
     padding: 6.5px;

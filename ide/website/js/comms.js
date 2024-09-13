@@ -1,5 +1,6 @@
 var site = window.location.origin
 var currentOpenFile;
+var currentCompiledFile = null;
 var fileIsSaved = false
 var highlightingInfo = {}
 var debugInfoJSON = {}
@@ -47,11 +48,19 @@ var comms = {
     compile: function () {
         show("terminal")
         var out = JSON.parse(get("compile/" + currentOpenFile)).data
-        if (out[out.length - 2] == "================== THIS WAS THROWE ==================") { // won't work anymore, update
+        console.log(out[0])
+        if(out[0][0] == "{")
+        {
+            out = JSON.parse(out[0])
+        }
+        if ("issue" in out && out.issue == true) {
             console.log("F")
-            document.getElementById("zone_terminal_ta").value = out.join("\n")
-            var failedLine = out[out.length - 1]
+            //document.getElementById("zone_terminal_ta").value = out.join("\n")
+            var failedLine = out.line
             highlightErr(highlighter, failedLine, "[ERR]")
+            getTerminal().value = `Error on line [${failedLine}]:\n \t${out.desc}`
+
+            return false
         } else {
             console.log("W")
             highlightingInfo = JSON.parse(get("highlightInfo"))
@@ -61,9 +70,11 @@ var comms = {
             document.getElementById("saveIcon").hidden = true
 
             var out_as = JSON.parse(get("assemble")).data
-            document.getElementById("zone_terminal_ta").value = out.join("\n") + out_as.join("\n")
+            getTerminal().value = out.join("\n") + out_as.join("\n")
             var out_asm = this.getOutput()
             assembly_viewer.setValue(out_asm)
+
+            return true
         }
     },
     getOutput: function () {
@@ -76,8 +87,16 @@ var comms = {
         show("terminal")
         getTerminal().value = "Compiling..."
         var out = JSON.parse(get("run"))
-        console.log(out)
-        getTerminal().value = out.out.join("\n") + "\n" + "Exited with code: " + out.code
+        console.log(out.out.join("\n"))
+        currentCompiledFile = currentOpenFile
+        if(out.out.join("\n") == "undefined")
+        {
+            getTerminal().value = "Program segfaulted. Debugging..."
+            this.debug()
+        } else {
+            console.log(out)
+            getTerminal().value = out.out.join("\n") + "\n" + "Exited with code: " + out.code
+        }
     },
     loadFile: function (file) {
         highlightingInfo = {}
@@ -103,12 +122,19 @@ var comms = {
         });
 
         (async () => {
-             this.compile()
+            if(this.compile())
+            {
             await wait(100);
              this.runCompiled();
+            }
         })();
     },
     debug: function (file) {
+
+        if(currentCompiledFile != currentOpenFile)
+        {
+            getTerminal().value = `Open file does not match compiled file\nPlease compile first`
+        } else {
         var _out = this.getOutput()
         assembly_viewer.setValue(_out)
 
@@ -128,6 +154,7 @@ var comms = {
             getTerminal().value = "No run-time errors\n"
         }
         getTerminal().value += out.data.join("\n")
+    }
     },
     getDebugInfo: function (line)
     {

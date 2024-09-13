@@ -17,8 +17,7 @@ var editor = CodeMirror.fromTextArea(textarea, {
 
 var highlighter = CodeMirror.fromTextArea(highlight, {
     lineNumbers: false,
-    mode: 'text/x-c++src',
-    theme: 'idea',
+    mode: null,
     readOnly: true,
     scrollbarStyle: null,
 })
@@ -34,22 +33,36 @@ assembly_viewer.setSize("100%", "100%")
 editor.setSize("100%", "100%")
 highlighter.setSize("100%", "100%")
 
-
-function highlightErr(view, line, msg = null, _name = "__marked_err") {
-
-    //console.log(line)
+function clrErr(view = highlighter, _name = "__marked_err")
+{
+    
     if (view[_name] != undefined) {
         view[_name].clear();
+        view[_name] = undefined
     }
 
-    if (msg != null && view == highlighter) {
-        //console.log("HIH")
-        if ((highlighter[_name + "_word"]) != undefined) {
-            highlighter[_name + "_word"].clear();
-        }
+    if ((view[_name + "_word"]) != undefined) {
+        view[_name + "_word"].clear();
+        view[_name + "_word"] = undefined
+    }
 
-        highlighter.setValue("\n".repeat(line) + " ".repeat(68) + msg)
-        highlighter[_name + "_word"] = highlighter.markText(
+    if(view.__clearMe__)
+    {
+        view.setValue("")
+        view.__clearMe__ = false
+    }
+}
+function highlightErr(view, line, msg = null, _name = "__marked_err") {
+
+    clrErr(view, _name)
+    // if (view[_name] != undefined) {
+    //     view[_name].clear();
+    // }
+
+    if (msg != null) {
+        view.__clearMe__ = true
+        view.setValue("\n".repeat(line) + " ".repeat(68) + msg)
+        view[_name + "_word"] = view.markText(
             { line: line, ch: 75 },
             { line: line, ch: 999 },
             { className: "highlight_yellow", atomic: true }
@@ -79,6 +92,8 @@ function clearHighlightedAsmLine(o = editor)
 
 function eoc() {
     document.getElementById("saveIcon").hidden = false
+    clrErr(highlighter)
+    clrErr(assembly_viewer)
 }
 
 editor.on('change', eoc)
@@ -192,11 +207,11 @@ function clrset()
 
 // highlighter.setValue(Array(1000).fill(" ".repeat(1000)).join("\n"))
 
-assembly_viewer.on('cursorActivity', function () {
-    var lineNo = assembly_viewer.getCursor().line
+// assembly_viewer.on('cursorActivity', function () {
+//     var lineNo = assembly_viewer.getCursor().line
 
-    var line = getLineFromAsm(lineNo)
-    clearHighlightedAsmLine()
+//     var line = getLineFromAsm(lineNo)
+//     clearHighlightedAsmLine()
 
-    highlightLineFromAsm(line)
-})
+//     highlightLineFromAsm(line)
+// })

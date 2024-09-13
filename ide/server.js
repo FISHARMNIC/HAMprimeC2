@@ -1,3 +1,10 @@
+/*
+TODO:
+  Add support for warnings (multiple at a time)
+*/
+
+
+
 var http = require('http');
 
 var finalhandler = require('finalhandler')
