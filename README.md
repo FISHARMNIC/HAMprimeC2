@@ -1,5 +1,5 @@
 # <img src="https://github.com/FISHARMNIC/proglan2/assets/73864341/9a5327b9-ffcc-425a-b927-ad829415715b" width="20px"> HAM' Language (New Compiler)
-A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). (UPDATE: now featuring floats!). Besides including numerous new features, this new compiler is much more optimized and has less bugs than the original.
+A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). Besides including numerous new features, this new compiler is much more optimized and has less bugs than the original.
 # What sets HAM' apart from other languages?
 HAM' is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays and implicit typing.  
 
@@ -40,13 +40,16 @@ All of the things below work. See examples [here](https://github.com/FISHARMNIC/
 	- While loops
 - I/O
 	- Uses C printf and scanf
+	- WIP easy `print_` function
 - Debugger
 	- Traces back to faulty line in source file
+	- Works best on IDE (see below)
 - Graphics
 	- Expose/mouse/keyboard events
 	- Rendering simple shapes
 - Strings
     - Easy concatenation
+    - Automatic conversion from formats and numbers
 - Math
     - GMP for bignums
     - Built in floats
@@ -58,6 +61,8 @@ All of the things below work. See examples [here](https://github.com/FISHARMNIC/
 * No more corner cases where certain things won't work
 * Parenthesis math 
 * Seamless C inclusion
+* Automatic memory management
+* And much, much more!
 
 # Features a new IDE
 The updated IDE now shows you what each line compiles into assembly. Simply click on the line and the window on the right will jump to its portion of code. After compiling, you can click the bug icon to check if there are any segmentation issues, and the IDE will display both the problematic line and assembly instruction. The smart highlighting system will not working until after you have compiled a program, which can be done with either the checkmark button (just compile), or the arrow (compile and run).
@@ -70,97 +75,110 @@ Note: This is still being worked on, and editing still has some issues. This was
 
 
 # Interesting examples
-**Basic demo**
-```C
+* [Class](###Formats-as-classes)
+* [Strings](###Strings)
+* [Variadics](###Variadics)
+* [C Inclusion](###C-Inclusion)
+* [Graphics](###Graphics)
+* [Floats](###Floats)
 
-// functions
-getNum function<u32 n> -> u32
-{
-    return(n);
-}
-
-entry function<p8 args, u32 argv> -> u32
-{
-    // Stack variables
-    create x <- 0;
-    create y <- 9;
-
-    // Looping
-    while(x <: getNum(3))
-    {
-        // C printf
-        printf("%i\n", (x * x));
-        x <- (x + 1);
-    }
-    
-    return 0;
-}
-```
-
-**Formats as classes**
+### Formats as classes
 ```C
 /*
-Example for a Java ArrayList-like class
+Example for a linked list format
 */
-List format {
-    .buffer p32;
-    .length u32;
+Linked format 
+{
+    .current u32;
+    .next Linked;
     
-    .List constructor<...> {
-        this.buffer <- 0;
-        this.length <- 0;
-    }
-
-    .push method<any element> -> p32
+    .Linked constructor<u32 value> -> u32
     {
-        this.length <- (this.length + 1);
-        if(this.length == 1)
-        {
-            this.buffer <- malloc(4);
-        }
-        else 
-        {
-            this.buffer <- realloc(this.buffer, (this.length * 4));
-        }
-        this.buffer[this.length - 1] <- element;
-        return this.buffer;
+        this.current <- value;
+        this.next <- 0;
     }
-
-    .pop method<> -> any {
-        this.length <- (this.length - 1);
-        create returnValue <- this.buffer[this.length];
-        this.buffer <- realloc(this.buffer, (this.length * 4));
-        return returnValue;
+    
+    .findLast method<> -> Linked
+    {
+        create reference <- borrow this;
+        while(reference.next != 0)
+        {
+            reference <- reference.next;
+        }
+        return reference;
     }
-
-    .every method<p32 iterator> -> u32 {
+    
+    .find method<u32 index> -> Linked
+    {
+        create reference <- borrow this;
         create i <- 0;
-        while(i <: this.length)
+        while(i <: index)
         {
-            call iterator(this.buffer[i]);
-            i <- (i + 1);
+            if(reference.next == 0)
+            {
+                return 0;
+            }
+            reference <- reference.next;
+            i <- i + 1;
+        }
+        return(reference);
+    }
+    
+    .index method<u32 index> -> u32
+    {
+        create ref <- this.find(index);
+        return(ref.current);
+    }
+    
+    .add method<u32 value> -> u32
+    {
+        create end <- this.findLast();
+        create newAddr <- Linked(value);
+        end.next <- newAddr;
+    }
+    
+    .remove method<u32 index> -> u32
+    {
+        if(index <: 1)
+        {
+            this <- this.next;
+        }
+        else
+        {
+            create previous <- this.find(index - 1);
+
+            create skipped <- previous.next.next;
+            previous.next <- skipped; 
         }
     }
-}
-
-putint function<u32 i> {
-    printf("Printing: %i\n", i);
+    
+    .replace method<u32 index, u32 value> -> u32
+    {
+        create reference <- this.find(index);
+        reference.current <- value;
+    }
 }
 
 
 entry function<> -> u32
 {
-    create myList <- List();
-    myList.push(123);
-    myList.push(456);
-    printf("[%i,%i]\n", myList.buffer[0], myList.pop());
-    myList.push(321);
-    myList.every($putint);
+    create myList <- Linked(1);
+    myList.add(2);
+    myList.add(3);
+    
+    printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
+
+    myList.remove(0);
+    myList.add(5);
+    myList.replace(2,4);
+    
+    printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
+    
     return 0;
 }
 ```
 
-**Strings**
+### Strings
 ```C
 User format
 {
@@ -187,7 +205,7 @@ entry function<> -> u32
 }
 ```
 
-**Variadics**
+### Variadics
 ```C
 myVariadic function<u32 numberOfArgs, ...> -> u32
 {
@@ -227,7 +245,7 @@ entry function<> -> u32
 }
 ```
 
-**C inclusion**
+### C inclusion
 ```C
 // make sure to assemble with -lpthread
 forward pthread_create function<u32 a, u32 b, u32 c, u32 d>;
@@ -265,7 +283,7 @@ entry function<> -> u32
 }
 ```
 
-**Graphics**
+### Graphics
 ```C
 /* Assemble with scripts/lima_x11.sh */
 
@@ -290,7 +308,7 @@ entry function<> -> u32
 }
 ```
 
-**Floats**
+### Floats
 
 ```C
 factorial function<u32 n> -> u32
