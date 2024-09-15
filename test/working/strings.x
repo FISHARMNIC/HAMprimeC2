@@ -3,9 +3,9 @@ User format
     .name string;
     .ID u32;
 
-    .toString method<> -> string
+    .toString method<> -> string:dynamic
     {
-        return(this.name + this.ID);
+        return_new(this.name + this.ID);
     }
 }
 

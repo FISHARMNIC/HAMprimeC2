@@ -19,12 +19,10 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if(objectIncludes(defines.types,word) && line[wordNum + 1] == ":" && line[wordNum + 2] == "dynamic")
-        {
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && line[wordNum + 2] == "dynamic") {
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
-            if("formatPtr" in ogtype)
-            {
+            if ("formatPtr" in ogtype) {
                 cpy.formatPtr = ogtype.formatPtr
             }
             cpy.hasData = true;
@@ -90,7 +88,7 @@ function evaluate(line) {
                 line.splice(wordNum, 1)
                 wordNum--;
             }
-        } else if (objectIncludes(defines.types, word)) { // types
+        } else if (objectIncludes(defines.types, word)) { // types. Lazy code,  fix later
             if (offsetWord(1) == "(") {
                 if (defines.types[word]?.formatPtr != null)
                     //throwE("EEEEEEE", userFormats)
@@ -120,7 +118,39 @@ function evaluate(line) {
                 line[wordNum] = dataLbl
 
                 line.splice(wordNum + 1, 3)
-            } else if (offsetWord(1) != ".") { // IF BROKEN REMOVE IF, keep else
+            } else if (offsetWord(1) == "[") { // array allocation
+                var num = offsetWord(2)
+                var bytes = helpers.types.typeToBytes(defines.types[word])//helpers.types.typeToBytesWithFmts(defines.types[word])
+
+                if (offsetWord(3) == "]") {
+                    var out= helpers.registers.getFreeLabelOrRegister(defines.types[word])
+                    if (num == parseInt(num)) { // literal
+                        num = parseInt(num)
+                        
+                        actions.allocations.allocateMmap(bytes, `Asked for ${num} allocations of "${word}"`)
+                        outputCode.autoPush(
+                            `mov %eax, ${out}`
+                        )
+                    } else {
+                        outputCode.autoPush(
+                            `# Asked for ${num} allocations of "${word}"`,
+                            `mov \$${bytes}, %edx`,
+                            `mov ${num}, %eax`,
+                            `mul %edx`,
+                            `pushl $0`,
+                            `push %eax`,
+                            `call __rc_allocate__`,
+                            `add $8, %esp`,
+                            `mov %eax, ${out}`
+                        )
+                    }
+                    line[wordNum] = out
+                    line.splice(wordNum + 1, 3)
+                } else {
+                    throwE("To create a typed allocation, do TPYE[SIZE]")
+                }
+            }
+            else if (offsetWord(1) != ".") { // NEEDS TO GO LASTTTTTT. IF BROKEN REMOVE IF, keep else
                 //throwE("~~~", word)
                 typeStack.push(objCopy(defines.types[word]))
                 line.splice(wordNum, 1)
@@ -176,6 +206,7 @@ function evaluate(line) {
         // #region Formats and Numbers
         else if (word == ".") { // child property
             // creating a new property
+           
             if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
                 if (offsetWord(2) == "constructor") {
                     var nobj = objCopy(defines.types.___format_template___)
@@ -246,7 +277,7 @@ function evaluate(line) {
                         //console.log("SEEEEE", base, ptype, offsetWord(1), line)
                         //console.log("EEEEE", helpers.variables.getVariableType("end"))
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
-                        
+
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, helpers.types.guessType(offsetWord(3)), dest.type)
 
                         if ("hasData" in helpers.types.guessType(offsetWord(3)) && nextThingTakesOwnership) {
@@ -270,6 +301,8 @@ function evaluate(line) {
                         line[wordNum - 1] = out
                         line.splice(wordNum, 2)
                         wordNum--
+
+                        //throwE(line)
 
                         if (!(                       // negate the following: 
                             offsetWord(2) == "." || // if next is property
@@ -351,6 +384,7 @@ function evaluate(line) {
                         line[wordNum - 1] = out
                         line.splice(wordNum, 3)
                         wordNum--
+                        // throwE(line, wordNum, helpers.types.guessType(line[wordNum]))
                     }
                 }
             }
@@ -384,6 +418,7 @@ function evaluate(line) {
                 vtype = defines.types[offsetWord(1)]
                 line.splice(wordNum + 1, 1)
             } else if (offsetWord(2) == '<-') {
+                //console.log("______", line)
                 vtype = helpers.types.guessType(offsetWord(3))
             } else {
                 vtype = defines.types.u32

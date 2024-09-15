@@ -105,6 +105,14 @@ module.exports = {
             dblRef: false,
             advptr: true
         },
+        "char": {
+            size: 8,
+            float: false,
+            pointer: false,
+            special: false,
+            dblRef: false,
+            isChar: true,
+        },
         "___format_template___": {
             size: 0,
             float: false,

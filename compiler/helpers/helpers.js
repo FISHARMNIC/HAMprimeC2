@@ -113,11 +113,19 @@ var types = {
         }
     },
     typeToBits: function (x) {
-        if (x.pointer || x.templatePtr != undefined) return 32 // HERE IF BROKEN Mar 12 2023 delete || x.templatePre != undefined
+        if (x.pointer || "formatPtr" in x) return 32 // HERE IF BROKEN Mar 12 2023 delete || x.templatePre != undefined
         return parseInt(x.size)
     },
     typeToBytes: function (x) {
         return this.typeToBits(x) / 8
+    },
+    typeToBytesWithFmts: function(type) {
+        if("formatPtr" in type)
+        {
+            return formats.getFormatSize(type.formatPtr.properties)
+        } else {
+            return this.typeToBytes(type)
+        }
     },
     sizeToSuffix: function (x) {
         var t = this.typeToBits(x)
@@ -143,10 +151,10 @@ var types = {
         if (register == 'p')
             register = 'b'
 
-        if (type.templatePtr != undefined) { // format register for a format / struct
+        if (type.formatPtr != undefined) { // format register for a format / struct
             return `%e${register}${endLetter}`
         } else {
-            if (type.pointer || type.size == 32) return `%e${register}${endLetter}`
+            if ("formatPtr" in type || type.pointer || type.size == 32) return `%e${register}${endLetter}`
             if (type.size == 16) return `%${register}${endLetter}`
             if (type.size == 8) return low ? `%${register}l` : `%${register}h`
             throwE("Unknown type [" + JSON.stringify(type) + "]")
@@ -214,6 +222,8 @@ var types = {
     },
     guessType: function (word) {
         word = String(word)
+
+        //console.log(":::", word)
         if (variables.variableExists(word)) {
             //throwE(globalVariables[word])
             return objCopy(variables.getVariableType(word))

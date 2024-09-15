@@ -1,3 +1,9 @@
+/*
+Example linked list format. In my opinion, this is a good demo on how simple HAM can be
+* Notice how seamless things like adding a new element, or removing one
+* Compare it to something like C. No mallocs, frees, pointer confusion, etc.
+*/
+
 Linked format 
 {
     .current u32;
@@ -16,6 +22,7 @@ Linked format
         {
             reference <- reference.next;
         }
+        
         return reference;
     }
     
@@ -23,6 +30,7 @@ Linked format
     {
         create reference <- borrow this;
         create i <- 0;
+        
         while(i <: index)
         {
             if(reference.next == 0)
@@ -32,7 +40,7 @@ Linked format
             reference <- reference.next;
             i <- i + 1;
         }
-        return(reference);
+        return reference;
     }
     
     .index method<u32 index> -> u32
@@ -44,6 +52,7 @@ Linked format
     .add method<u32 value> -> u32
     {
         create end <- this.findLast();
+        
         create newAddr <- Linked(value);
         end.next <- newAddr;
     }

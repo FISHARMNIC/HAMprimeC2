@@ -125,8 +125,7 @@ var assembly = {
                 `mov %eax, %edi`,
                 `rep movsb`,
             )
-        } else if("advptr" in stype)
-        {
+        } else if ("advptr" in stype) {
             outputCode.autoPush(
                 `# copying string`,
                 `mov ${source}, %esi`,
@@ -138,7 +137,7 @@ var assembly = {
                 `rep movsb`,
             )
         }
-        
+
         else {
             throwE("Unable to copy reference that holds no data regarding it's size")
         }
@@ -231,7 +230,7 @@ var variables = {
                     `call __rc_requestOwnership__`,
                     `add $8, %esp`
                 )
-                
+
             }
             nextThingTakesOwnership = defaultAutomaticOwnership
 
@@ -241,8 +240,7 @@ var variables = {
     },
     set: function (vname, value) {
 
-        if(vname == "__this__")
-        {
+        if (vname == "__this__") {
             helpers.general.setModifiesThis()
         }
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
@@ -281,7 +279,7 @@ var variables = {
                 `call __rc_requestOwnership__`,
                 `add $8, %esp`
             )
-            
+
         } else {
             if (isStack) {
                 assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
@@ -329,6 +327,7 @@ var variables = {
         // yes bad code that I was doing something else with but changed it
 
         debugPrint(index)
+
         if (helpers.types.isLiteral(aname)) {
             baseType = defines.types.u8
             outputCode.autoPush(
@@ -386,7 +385,15 @@ var variables = {
             throwE("Compiler error, never set 'baseType' variable")
         }
 
-        var indexMultiplier = forceSize === false ? baseType.size / 8 : forceSize
+        var indexMultiplier;
+        if ("formatPtr" in baseType) {
+            indexMultiplier = 4
+        } else if (forceSize === false) {
+            indexMultiplier = baseType.size / 8
+        } else {
+            indexMultiplier = forceSize
+        }
+
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
         var fullReg = helpers.types.conformRegisterIfIs(out, defines.types.u32)
 
@@ -684,7 +691,7 @@ var allocations = {
     allocateArray: function (arr, note = "") {
         // IF ERROR HERE BUG ISSUE CRASH REMOVE REMOVE NEXT UNCOMMENTED LINE AND UNCOMMENT NEXT LINE
         //arr = arr.slice(1, arr.length - 1)
-        arr = arr.slice(1,arr.indexOf("}"))
+        arr = arr.slice(1, arr.indexOf("}"))
         //throwE(arr)
         arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
@@ -787,7 +794,7 @@ var functions = {
             //`pusha`,
             //`${userFunctions[fname].saveRegs ? "pusha" : ""}`,
             `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`,
-            
+
         )
 
     },
@@ -822,7 +829,7 @@ var functions = {
             )
         }
         outputCode.text.push(
-            
+
             `${d.saveRegs ? "popa" : ""}`,
             //`popa`,
             `mov %ebp, %esp`,
@@ -1223,7 +1230,7 @@ var formats = {
 
         var variadicConstructor = null
         var bestFit = null
-        if(typeof params == "string")
+        if (typeof params == "string")
             params = [params]
         var numberOfParams = params.filter(x => x != ",").length
 
@@ -1280,8 +1287,7 @@ var formats = {
         } else { // instance.method()
             parentType = helpers.types.guessType(parent)
             formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
-            if(!objectIncludes(parentType.formatPtr.methods, formattedName))
-            {
+            if (!objectIncludes(parentType.formatPtr.methods, formattedName)) {
                 //throwE(parentType.formatPtr.methods, method)
                 throwE(`Method "${method}" does not include in format "${parentType.formatPtr.name}"`)
             }
@@ -1290,12 +1296,11 @@ var formats = {
 
         var r = functions.callFunction(formattedName, params)
         //console.log(formattedName)
-        if("modifiesThis" in userFunctions[formattedName])
-        {
+        if ("modifiesThis" in userFunctions[formattedName]) {
             outputCode.autoPush("# Loading into __this__ because function modified it ")
             actions.assembly.optimizeMove("__this__", parent, parentType, parentType)
         }
-        
+
         return r;
     }
 }
