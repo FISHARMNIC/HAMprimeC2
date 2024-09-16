@@ -28,13 +28,19 @@ var counters = {
 
 var types = {
     areEqual: function(a,b) {
+        //console.log()
+        var aHas = ("formatPtr" in a)
+        var bHas = ("formatPtr" in b)
+        var aName = (aHas && a.formatPtr != null) ? a.formatPtr.name : null
+        var bName = (bHas && b.formatPtr != null) ? b.formatPtr.name : null
+        var fmteq = aName == bName
         return(
             a.size == b.size &&
             a.float == b.float &&
             a.pointer == b.pointer &&
             a.special == b.special &&
             a.dblRef == b.dblRef &&
-            a.formatPtr == b.formatPtr &&
+            fmteq &&
             a.hasData == b.hasData &&
             a.advptr == b.advptr
         )

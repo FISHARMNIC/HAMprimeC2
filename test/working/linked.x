@@ -9,7 +9,7 @@ Linked format
     .current u32;
     .next Linked;
     
-    .Linked constructor<u32 value> -> u32
+    .Linked constructor<u32 value>
     {
         this.current <- value;
         this.next <- 0;
@@ -35,7 +35,7 @@ Linked format
         {
             if(reference.next == 0)
             {
-                return 0;
+                return(Linked:(0));
             }
             reference <- reference.next;
             i <- i + 1;

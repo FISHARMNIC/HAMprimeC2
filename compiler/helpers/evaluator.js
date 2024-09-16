@@ -164,14 +164,23 @@ function evaluate(line) {
                 numberOfDeref++
             line.splice(wordNum, numberOfDeref)
 
-            var derefData;
+            var derefData
+            var setting = false
             if (line[wordNum] == "(") {
                 derefData = offsetWord(1)
+                if(offsetWord(3) == "<-")
+                    setting = true
                 line.splice(wordNum, 3)
             } else {
                 derefData = line[wordNum]
+                if(offsetWord(1) == "<-")
+                    setting = true
                 line.splice(wordNum, 1)
             }
+
+            // needs to have hasData etc. Think
+            if(setting)
+                throwE("Setting pointer WIP")
 
             var baseType = helpers.types.guessType(derefData)
             var retType = objCopy(baseType)
@@ -437,12 +446,13 @@ function evaluate(line) {
 
         else if (offsetWord(1) == "<-") { // variable setting 
             if (getLastScopeType() == keywordTypes.FORMAT) { // just creating a property // THIS IS OLD... SHOULD BE REMOVED TODO HERE
-                scope[scope.length - 1].data.properties.push({
-                    name: word,
-                    type: popTypeStack()
-                })
+                throwE('Please use ".property type" as "property <- type" is deprecated')
+                // scope[scope.length - 1].data.properties.push({
+                //     name: word,
+                //     type: popTypeStack()
+                // })
             } else {
-                typeStack.push(defines.types.u32)
+                //typeStack.push(defines.types.u32)
                 return actions.variables.set(word, offsetWord(2))
             }
         } else if (word[0] == '"' && word[word.length - 1] == '"') { // string literal

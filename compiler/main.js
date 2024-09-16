@@ -1,6 +1,12 @@
 /*
 TODO:
     NEW
+    - see plans/settingptr.x
+    - !! IMPORTANT !! 
+        - if not nextThingTakesOwnership, copy type and remove hasData
+        - MAKE SURE THAT BORROW COPIES TYPE AND REMOVES HASDATA FROM TYPE
+    - In linked.x,doing ref <- ref.next removes dynamic attr as .next is not of hasData
+    - Automatic return typing, see warns on linked.x
     - Multiple pointer types
         - like char ***
         - Instead of having pointer:true or false, give it a number, like pointer:5
@@ -12,9 +18,7 @@ TODO:
     - make structs not packed
     - add auto return guesstype of statement on return
     - "own" doens't force ownership unless the data has hasData. Make it force calling the function regardless
-    - MAKE SURE THAT BORROW COPIES TYPE AND REMOVES HASDATA FROM TYPE
-    - add setting pointer like @bob = 123;
-    - maybe do something like pass by reference how cpp does NOT pass by pointer 
+    - add setting pointer like @bob <- 123;
     - add char to string
     - !! IMPORTANT !! garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data

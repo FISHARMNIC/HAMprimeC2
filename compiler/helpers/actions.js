@@ -250,7 +250,7 @@ var variables = {
 
         var valueType = helpers.types.guessType(value);
 
-        if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___") {
+        if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___" && vname != "__this__") {
             throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
             if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
                 throwW(`-- New type is smaller than original type`)
@@ -851,6 +851,20 @@ var functions = {
         }
 
         if (rVal != null) {
+
+            if(!("name" in scope && scope.name.includes("__constructor_")))
+            {
+                // TODO HERE
+                var givenRetType = helpers.types.guessType(rVal)
+                var scopeRetType = scope.data.returnType
+               // console.log("::", givenRetType, scopeRetType)
+                if(!helpers.types.areEqual(givenRetType, scopeRetType))
+                {
+                    var gtname = helpers.types.convertTypeObjToName(givenRetType)
+                    throwW(`Return type "${gtname}" does not match expected return type "${helpers.types.convertTypeObjToName(scopeRetType)}"\n ^^^^^^^ [FIXED BY] Retyping function to return "${gtname}"`)
+                    scope.data.returnType = givenRetType
+                }
+            }
             assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
@@ -1173,7 +1187,6 @@ var formats = {
         //throwE(helpers.general.getMostRecentFunction().data.parameters)
 
         // should NOT be a normal type!!! TODO HERE SEP 11
-        //console.log(base, baseType.formatPtr.properties[1].type.formatPtr)
         while (baseType.formatPtr.properties[i].name != propertyName) {
             //console.log(baseType.formatPtr.properties[i], i)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
