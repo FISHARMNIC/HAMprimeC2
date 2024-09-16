@@ -290,7 +290,6 @@ function evaluate(line) {
                                 `add $8, %esp`
                             )
                         }
-
                         nextThingTakesOwnership = defaultAutomaticOwnership
 
 

@@ -95,7 +95,7 @@ entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-# Loading local variable "arrsz" @-4(%ebp)
+# Loading local variable "size" @-4(%ebp)
 mov $5, %edx
 mov %edx, -4(%ebp)
 # Asked for -4(%ebp) allocations of "Person"
@@ -120,6 +120,12 @@ movl $17, 4(%eax)
 #Array set begin
 mov -8(%ebp), %eax
 mov %ebx, 0(%eax)
+# requesting ownership for array index
+lea 0(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
 #Set end
 pushl $0
 pushl $8
@@ -132,6 +138,12 @@ movl $17, 4(%eax)
 #Array set begin
 mov -8(%ebp), %eax
 mov %ebx, 4(%eax)
+# requesting ownership for array index
+lea 4(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
 #Set end
 pushl $0
 pushl $8
@@ -144,6 +156,12 @@ movl $53, 4(%eax)
 #Array set begin
 mov -8(%ebp), %eax
 mov %ebx, 8(%eax)
+# requesting ownership for array index
+lea 8(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
 #Set end
 pushl $0
 pushl $8
@@ -156,6 +174,12 @@ movl $62, 4(%eax)
 #Array set begin
 mov -8(%ebp), %eax
 mov %ebx, 12(%eax)
+# requesting ownership for array index
+lea 12(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
 #Set end
 pushl $0
 pushl $8
@@ -168,14 +192,21 @@ movl $10, 4(%eax)
 #Array set begin
 mov -8(%ebp), %eax
 mov %ebx, 16(%eax)
+# requesting ownership for array index
+lea 16(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
 #Set end
 # Loading local variable "i" @-12(%ebp)
 mov $0, %edx
 mov %edx, -12(%ebp)
 __LABEL0__:
 mov -12(%ebp), %eax
+mov -4(%ebp), %edx
 movb $0, %bl
-cmp $5, %eax
+cmp %edx, %eax
 setl %bl
 cmpb $1, %bl
 jne __LABEL1__
@@ -211,6 +242,6 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# arrsz: 4
+# size: 4
 # arr: 8
 # i: 12

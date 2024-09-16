@@ -11,9 +11,9 @@ Person format
 
 entry function<> -> u32
 {
-    create arrsz <- 5;
-    create arr <- Person[arrsz];
-    
+    create size <- 5;
+    create arr <- Person[size];
+
     arr[0] <- Person<name:"Nico",age:17>;
     arr[1] <- Person<name:"Nina",age:17>;
     arr[2] <- Person<name:"Mom",age:53>;
@@ -21,7 +21,7 @@ entry function<> -> u32
     arr[4] <- Person<name:"Rio",age:10>;
     
     create i <- 0;
-    while(i <: 5)
+    while(i <: size)
     {
         print_(arr[i]);
         i <- i + 1;

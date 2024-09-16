@@ -505,6 +505,9 @@ var variables = {
         }
 
         // two step
+
+        var finalSettingAddr = null
+
         if (!(helpers.types.isConstant(value) || helpers.types.stringIsRegister(value))) {
             outputCode.autoPush(`mov ${value}, %edx`)
             value = "%edx"
@@ -515,16 +518,29 @@ var variables = {
 
         if (helpers.types.isConstant(index)) {
             var ti = parseInt(index) * elementBytes
+            finalSettingAddr = `${ti}(${address})`
             outputCode.autoPush(
                 `mov${suffix} ${value}, ${ti}(${address})`
             )
         } else if (helpers.types.stringIsRegister(index)) {
+            finalSettingAddr = `(${address}, ${index}, ${elementBytes})`
             outputCode.autoPush(
                 `mov${suffix} ${value}, (${address}, ${index}, ${elementBytes})`
             )
         } else if (objectIncludes(globalVariables, index) || helpers.types.stringIsEbpOffset(index)) { // if index is glob or index is ebp
             // FIX THIS poorly optimized
             // throwE("Not sure. fix the code below this")
+            if(helpers.types.guessType(index).size != 32)
+            {
+                // just use size to suffix. FIX later
+                throwE("Attempting to index array with non-32bit variable")
+            }
+
+            // outputCode.autoPush(
+            //     `# array load trash awful. Fix this bad optimize`,
+            //     `lea (%eax, ${index}, ${helpers.types.typeToBytes(elementType)}), %eax`,
+            //     `mov${suffix} ${value}, (%eax)`
+            // )
             outputCode.autoPush(
                 `# array load trash awful. Fix this bad optimize`,
                 `push %eax`,
@@ -534,6 +550,7 @@ var variables = {
                 `add $1, %esp`,
                 `mov${suffix} ${value}, (%eax)`
             )
+            finalSettingAddr = "eax"
 
             /* 
             index -> eax
@@ -552,6 +569,26 @@ var variables = {
             // )
 
         }
+
+        if ("hasData" in valueType && nextThingTakesOwnership) {
+            if(finalSettingAddr == null)
+            {
+                throwE("Error, no setting address for ownership. Shouldn't get here...")
+            }
+
+            outputCode.autoPush("# requesting ownership for array index")
+            if(finalSettingAddr != "%eax")
+            {
+                outputCode.autoPush(`lea ${finalSettingAddr}, %eax`)
+            }
+            outputCode.autoPush(
+                `push %eax`,
+                `push ${value}`,
+                `call __rc_requestOwnership__`,
+                `add $8, %esp`
+            )
+        }
+        nextThingTakesOwnership = defaultAutomaticOwnership
 
 
         outputCode.autoPush("#Set end")
