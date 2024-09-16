@@ -1,11 +1,11 @@
-# <img src="https://github.com/FISHARMNIC/proglan2/assets/73864341/9a5327b9-ffcc-425a-b927-ad829415715b" width="20px"> HAM' Language (New Compiler)
-A new compiler for my 32-bit compiled programming language HAM\` (HAM prime). Besides including numerous new features, this new compiler is much more optimized and has less bugs than the original.
+# <img src="https://github.com/FISHARMNIC/proglan2/assets/73864341/9a5327b9-ffcc-425a-b927-ad829415715b" width="20px"> HAM' Language
 # What sets HAM' apart from other languages?
-HAM' is a fully compiled programming language that runs on Linux. When completed, it will provide a mixed experience that can be tailored to any programmer’s needs. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With the incorporation of pointers, it seeks to provide the control of C. Furthermore, it also comes with several built-in features like dynamically sized arrays and implicit typing.  
+HAM' (HAM prime) is a fully compiled programming language that runs on Linux. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic allocation/deallocation.  
 
+Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
 
 ## Massive Update!
- - Automatic garbage collection is here! After some tweaks from my original design (which can be viewed [here](https://github.com/FISHARMNIC/RollCall/tree/main)), the garbage collection system is now fully working (and super fast!). All data is now allocated globally unless specified (see the documentation).
+ - Automatic garbage collection is here! After some tweaks from my [original design](https://github.com/FISHARMNIC/RollCall/tree/main)) the garbage collection system is now fully working (and rather fast)! All data is now allocated globally unless specified (see the documentation).
  - ftos and itos
     - convert floats and integers to strings
  - Multiple strings can now be added together using "+"
@@ -13,8 +13,6 @@ HAM' is a fully compiled programming language that runs on Linux. When completed
     - Any formats will automatically has their method "toString" called
  - Big IDE update! (See below)
 
-# Documentation 
-The documentation can be viewed [here](https://fisharmnic.github.io/docs)
 # What is working so far?
 All of the things below work. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 - Variables
