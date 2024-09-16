@@ -1,6 +1,10 @@
 /*
 TODO:
     NEW
+    - Multiple pointer types
+        - like char ***
+        - Instead of having pointer:true or false, give it a number, like pointer:5
+        - When 0, no longer a pointer. This is eq to false. Otherwise >0 eq to true
     - !! IMPORTANT !!
         - optimize __rc_quick_check__
         - change it so by default, all functions save registers automatically

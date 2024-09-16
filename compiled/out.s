@@ -15,28 +15,22 @@ __xmm_sse_temp__: .4byte 0
 ___TEMPORARY_OWNER___: .4byte 0 
 .extern __disable_gc__
 ######## user data section ########
-.4byte 7
-__STRING0__: .asciz "Name: "
+__ALLOCFOR___constructor_List_0___ = 0
+__ALLOCFOR___method_List_push___ = 0
+__ALLOCFOR___method_List_pop___ = 4
+__ALLOCFOR___method_List_every___ = 4
+__SIZEOF_List__ = 8
+# format "List" includes:
+#   - PROPERTY (p32) buffer
+#   - PROPERTY (u32) length
+#   - CNSTRCTR __constructor_List_0_ (0 parameters, variadic)
+.4byte 15
+__STRING0__: .asciz "Printing: %i\n"
+__ALLOCFOR_putint__ = 0
 .4byte 10
-__STRING1__: .asciz " || Age: "
-.4byte 3
-__STRING2__: .asciz "\n"
-__ALLOCFOR___method_Person_toString___ = 0
-__SIZEOF_Person__ = 8
-# format "Person" includes:
-#   - PROPERTY (p8) name
-#   - PROPERTY (u32) age
-.4byte 5
-__STRING3__: .asciz "Nico"
-.4byte 5
-__STRING4__: .asciz "Nina"
-.4byte 4
-__STRING5__: .asciz "Mom"
-.4byte 4
-__STRING6__: .asciz "Dad"
-.4byte 4
-__STRING7__: .asciz "Rio"
-__ALLOCFOR_entry__ = 12
+__STRING1__: .asciz "[%i,%i]\n"
+__ALLOCFOR_entry__ = 4
+__TEMP32_0__: .4byte 0
 ###################################
 .text
 
@@ -56,36 +50,246 @@ main:
     ret
 
 ###################################
-__method_Person_toString_:
+__constructor_List_0_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_Person_toString___, %esp
-movl __this__, %eax
-mov 0(%eax), %edx
-mov %edx, %ebx
-movl __this__, %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-pushl $__STRING2__
-push %ecx
-call itos
-add $4, %esp
+sub $__ALLOCFOR___constructor_List_0___, %esp
+pushl $0
+mov $__SIZEOF_List__, %edx
+push %edx
+call __rc_allocate__
+add $8, %esp
+mov %eax, __this__
+# requesting ownership for ___TEMPORARY_OWNER___ (set)
+lea ___TEMPORARY_OWNER___, %eax
 push %eax
-pushl $__STRING1__
-push %ebx
-pushl $__STRING0__
-pushl $5
-call strjoinmany
-add $24, %esp
-mov %eax, %esi
-# taking ownership AND returning
-mov %esi, ___TEMPORARY_OWNER___
-mov %esi, %eax
+push __this__
+call __rc_requestOwnership__
+add $8, %esp
+movl __this__, %eax
+movl $0, 0(%eax)
+movl __this__, %eax
+movl $0, 4(%eax)
+movl __this__, %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
+__method_List_push_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_push___, %esp
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+push %ebx
+xor %eax, %eax
+mov %ebx, %eax
+add $1, %eax
+mov %eax, %ecx
+pop %ebx
+movl __this__, %eax
+mov %ecx, 4(%eax)
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+movb $0, %cl
+cmp $1, %ebx
+sete %cl
+cmpb $1, %cl
+jne __LABEL0__
+# Calling function malloc
+pushl $4
+call malloc
+mov %eax, %ebx
+add $4, %esp
+movl __this__, %eax
+mov %ebx, 0(%eax)
+jmp __LABEL1__
+__LABEL0__:
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+push %ebx
+xor %eax, %eax
+mov %ebx, %eax
+mov $4, %ebx
+mul %ebx
+mov %eax, %ecx
+pop %ebx
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %esi
+push %ebx
+push %esi
+push %ecx
+# Calling function realloc
+push %ecx
+push %esi
+call realloc
+mov %eax, %edi
+add $8, %esp
+pop %ecx
+pop %esi
+pop %ebx
+movl __this__, %eax
+mov %edi, 0(%eax)
+jmp __LABEL1__
+__LABEL2__:
+__LABEL1__:
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+push %ebx
+xor %eax, %eax
+mov %ebx, %eax
+sub $1, %eax
+mov %eax, %ecx
+pop %ebx
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %esi
+#Array set begin
+mov 8(%ebp), %edx
+mov %edx, (%esi, %ecx, 4)
+#Set end
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+mov %ebx, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_List_pop_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_pop___, %esp
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+push %ebx
+xor %eax, %eax
+mov %ebx, %eax
+sub $1, %eax
+mov %eax, %ecx
+pop %ebx
+movl __this__, %eax
+mov %ecx, 4(%eax)
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+mov %ecx, %eax
+mov (%eax, %ebx, 4), %esi
+# Loading local variable "retValue" @-4(%ebp)
+mov %esi, -4(%ebp)
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+push %ebx
+xor %eax, %eax
+mov %ebx, %eax
+mov $4, %ebx
+mul %ebx
+mov %eax, %ecx
+pop %ebx
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %esi
+push %ebx
+push %esi
+push %ecx
+# Calling function realloc
+push %ecx
+push %esi
+call realloc
+mov %eax, %edi
+add $8, %esp
+pop %ecx
+pop %esi
+pop %ebx
+movl __this__, %eax
+mov %edi, 0(%eax)
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# retValue: 4
+__method_List_every_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_every___, %esp
+# Loading local variable "i" @-4(%ebp)
+mov $0, %edx
+mov %edx, -4(%ebp)
+__LABEL3__:
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+mov -4(%ebp), %eax
+movb $0, %cl
+cmp %ebx, %eax
+setl %cl
+cmpb $1, %cl
+jne __LABEL4__
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+mov %ebx, %eax
+mov -4(%ebp), %edx
+mov %edx, %edx
+mov (%eax, %edx, 4), %ecx
+push %ebx
+push %ecx
+# Calling function __not_a_function__
+push %ecx
+call *8(%ebp)
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+pop %ebx
+xor %eax, %eax
+mov -4(%ebp), %eax
+add $1, %eax
+mov %eax, %ebx
+mov %ebx, -4(%ebp)
+jmp __LABEL3__
+__LABEL4__:
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# i: 4
+putint:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR_putint__, %esp
+# Calling function printf
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+pushl $__STRING0__
+call printf
+mov %eax, %ebx
+add $8, %esp
 call __rc_quick_check__
 
 mov %ebp, %esp
@@ -95,142 +299,75 @@ entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
-# Loading local variable "size" @-4(%ebp)
-mov $5, %edx
-mov %edx, -4(%ebp)
-# Asked for -4(%ebp) allocations of "Person"
-mov $4, %edx
-mov -4(%ebp), %eax
-mul %edx
-pushl $0
-push %eax
-call __rc_allocate__
-add $8, %esp
+# Calling function __constructor_List_0_
+call __constructor_List_0_
 mov %eax, %ebx
-# Loading local variable "arr" @-8(%ebp)
-mov %ebx, -8(%ebp)
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ebx # Local allocation address for Person
-mov $__STRING3__, %edx
-mov %edx, 0(%eax)
-movl $17, 4(%eax)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ebx, 0(%eax)
-# requesting ownership for array index
-lea 0(%eax), %eax
+# Loading local variable "myList" @-4(%ebp)
+mov %ebx, -4(%ebp)
+# requesting ownership for myList (create)
+lea -4(%ebp), %eax
 push %eax
 push %ebx
 call __rc_requestOwnership__
 add $8, %esp
-#Set end
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ebx # Local allocation address for Person
-mov $__STRING4__, %edx
-mov %edx, 0(%eax)
-movl $17, 4(%eax)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ebx, 4(%eax)
-# requesting ownership for array index
-lea 4(%eax), %eax
-push %eax
-push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ebx # Local allocation address for Person
-mov $__STRING5__, %edx
-mov %edx, 0(%eax)
-movl $53, 4(%eax)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ebx, 8(%eax)
-# requesting ownership for array index
-lea 8(%eax), %eax
-push %eax
-push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ebx # Local allocation address for Person
-mov $__STRING6__, %edx
-mov %edx, 0(%eax)
-movl $62, 4(%eax)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ebx, 12(%eax)
-# requesting ownership for array index
-lea 12(%eax), %eax
-push %eax
-push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ebx # Local allocation address for Person
-mov $__STRING7__, %edx
-mov %edx, 0(%eax)
-movl $10, 4(%eax)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ebx, 16(%eax)
-# requesting ownership for array index
-lea 16(%eax), %eax
-push %eax
-push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-# Loading local variable "i" @-12(%ebp)
-mov $0, %edx
-mov %edx, -12(%ebp)
-__LABEL0__:
-mov -12(%ebp), %eax
 mov -4(%ebp), %edx
-movb $0, %bl
-cmp %edx, %eax
-setl %bl
-cmpb $1, %bl
-jne __LABEL1__
-mov -8(%ebp), %eax
-xor %ebx, %ebx
-mov -12(%ebp), %edx
-mov %edx, %edx
-mov (%eax, %edx, 4), %ebx
-mov %ebx, __this__
-push %ebx
-# Calling function __method_Person_toString_
-call __method_Person_toString_
-mov %eax, %ecx
-pop %ebx
-push %ecx
-call puts
-add $4, %esp
-xor %eax, %eax
-mov -12(%ebp), %eax
-add $1, %eax
+mov %edx, __this__
+# Calling function __method_List_push_
+pushl $123
+call __method_List_push_
 mov %eax, %ebx
-mov %ebx, -12(%ebp)
-jmp __LABEL0__
-__LABEL1__:
+add $4, %esp
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_List_push_
+pushl $456
+call __method_List_push_
+mov %eax, %ebx
+add $4, %esp
+movl -4(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+mov %ebx, %eax
+mov 0(%eax), %ecx
+mov -4(%ebp), %edx
+mov %edx, __this__
+push %ebx
+push %ecx
+# Calling function __method_List_pop_
+call __method_List_pop_
+mov %eax, %esi
+pop %ecx
+pop %ebx
+push %ebx
+push %esi
+push %ecx
+# Calling function printf
+push %esi
+push %ecx
+pushl $__STRING1__
+call printf
+mov %eax, %edi
+add $12, %esp
+pop %ecx
+pop %esi
+pop %ebx
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_List_push_
+pushl $321
+call __method_List_push_
+mov %eax, %ebx
+add $4, %esp
+lea putint, %ebx
+mov -4(%ebp), %edx
+mov %edx, __this__
+push %ebx
+# Calling function __method_List_every_
+push %ebx
+call __method_List_every_
+mov %eax, %ecx
+add $4, %esp
+pop %ebx
 mov $0, %eax
 call __rc_quick_check__
 
@@ -242,6 +379,4 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# size: 4
-# arr: 8
-# i: 12
+# myList: 4

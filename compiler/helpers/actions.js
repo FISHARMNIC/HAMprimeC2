@@ -270,7 +270,7 @@ var variables = {
         //     throwE(`Variable ${vname} has not been declared neither locally nor globally`)
         // }
 
-        if (("hasData" in type && nextThingTakesOwnership) || (value == "__this__" && vname == "___TEMPORARY_OWNER___")) {
+        if (("hasData" in type && nextThingTakesOwnership) || (vname == "___TEMPORARY_OWNER___")) {
             outputCode.autoPush(
                 `# requesting ownership for ${vname} (set)`,
                 `lea ${isStack ? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
