@@ -93,7 +93,6 @@ module.exports = {
             special: false,
             dblRef: false,
         },
-
         "any": {
             size: 32,
             float: false,
@@ -131,6 +130,14 @@ module.exports = {
             dblRef: false
         },
         "string": {
+            size: 8,
+            float: false,
+            pointer: true,  
+            special: false,
+            dblRef: false,
+            advptr: true
+        },
+        "conststr": {
             size: 8,
             float: false,
             pointer: true,  

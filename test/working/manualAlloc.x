@@ -5,9 +5,11 @@ Person format
     
     // dev note: in future have something similar to type "array" where string by default is dyanmic
     // need to be careful for static strings though
+    
+    // todo #2, make return automatically guess if needs to do return_new
     .toString method<> -> string:dynamic
     {
-        return_new("Name: " + this.name + " || Age: " + this.age + "\n");
+        return_new("Name: " + this.name + " || Age: " + this.age);
     }
 }
 
@@ -26,7 +28,7 @@ entry function<> -> u32
     create i <- 0;
     while(i <: size)
     {
-        print_(arr[i]);
+        print_(arr[i] + "\n");
         i <- i + 1;
     }
     

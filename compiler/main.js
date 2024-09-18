@@ -7,6 +7,11 @@ TODO:
         - This is partly done for setting and creating variables
     - !! IMPORTANT !! just make global arrays allocated dynamically
         - removes confusion between p8 and array8 
+        - Make string literals of type conststr which has dynamic set to off
+            - normal strings have dynamic enabled
+            - but what happens when you set of type string to a literal?
+                - like .bob string, then me.bob <- "hello"
+                - in theory nothing? Since setting static to dyn won't trigger ownership
     - add push and pop for array types
     - throw error if defining function or variable that is keyword
     - see plans/settingptr.x

@@ -15,23 +15,28 @@ __xmm_sse_temp__: .4byte 0
 ___TEMPORARY_OWNER___: .4byte 0 
 .extern __disable_gc__
 ######## user data section ########
-__ALLOCFOR___constructor_Linked_0___ = 0
-__ALLOCFOR___method_Linked_findLast___ = 4
-__ALLOCFOR___method_Linked_find___ = 8
-__ALLOCFOR___method_Linked_index___ = 4
-__ALLOCFOR___method_Linked_add___ = 8
-__ALLOCFOR___method_Linked_remove___ = 8
-__ALLOCFOR___method_Linked_replace___ = 4
-__SIZEOF_Linked__ = 8
-# format "Linked" includes:
-#   - PROPERTY (u32) current
-#   - PROPERTY (p0) next
-#   - CNSTRCTR __constructor_Linked_0_ (1 parameters)
-.4byte 11
-__STRING0__: .asciz "%i %i %i\n"
-.4byte 11
-__STRING1__: .asciz "%i %i %i\n"
-__ALLOCFOR_entry__ = 4
+.4byte 7
+__STRING0__: .asciz "Name: "
+.4byte 10
+__STRING1__: .asciz " || Age: "
+__ALLOCFOR___method_Person_toString___ = 0
+__SIZEOF_Person__ = 8
+# format "Person" includes:
+#   - PROPERTY (p8) name
+#   - PROPERTY (u32) age
+.4byte 5
+__STRING2__: .asciz "Nico"
+.4byte 5
+__STRING3__: .asciz "Nina"
+.4byte 4
+__STRING4__: .asciz "Mom"
+.4byte 4
+__STRING5__: .asciz "Dad"
+.4byte 4
+__STRING6__: .asciz "Dog"
+.4byte 3
+__STRING7__: .asciz "\n"
+__ALLOCFOR_entry__ = 12
 ###################################
 .text
 
@@ -51,142 +56,30 @@ main:
     ret
 
 ###################################
-__constructor_Linked_0_:
+__method_Person_toString_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___constructor_Linked_0___, %esp
-pushl $0
-mov $__SIZEOF_Linked__, %edx
-push %edx
-call __rc_allocate__
-add $8, %esp
-mov %eax, __this__
-movl __this__, %edx
-mov %edx, ___TEMPORARY_OWNER___
+sub $__ALLOCFOR___method_Person_toString___, %esp
 movl __this__, %eax
-mov 8(%ebp), %edx
-mov %edx, 0(%eax)
-movl __this__, %eax
-movl $0, 4(%eax)
-movl __this__, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Linked_findLast_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_findLast___, %esp
-# Loading local variable "reference" @-4(%ebp)
-movl __this__, %edx
-mov %edx, -4(%ebp)
-__LABEL0__:
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ebx
-movb $0, %cl
-cmp $0, %ebx
-setne %cl
-cmpb $1, %cl
-jne __LABEL1__
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ebx
-mov %ebx, -4(%ebp)
-jmp __LABEL0__
-__LABEL1__:
-mov -4(%ebp), %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# reference: 4
-__method_Linked_find_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_find___, %esp
-# Loading local variable "reference" @-4(%ebp)
-movl __this__, %edx
-mov %edx, -4(%ebp)
-# Loading local variable "i" @-8(%ebp)
-mov $0, %edx
-mov %edx, -8(%ebp)
-__LABEL2__:
-mov -8(%ebp), %eax
-mov 8(%ebp), %edx
-movb $0, %bl
-cmp %edx, %eax
-setl %bl
-cmpb $1, %bl
-jne __LABEL3__
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ebx
-movb $0, %cl
-cmp $0, %ebx
-sete %cl
-cmpb $1, %cl
-jne __LABEL4__
-mov $0, %ebx
-mov %ebx, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-jmp __LABEL5__
-__LABEL4__:
-__LABEL5__:
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ebx
-mov %ebx, -4(%ebp)
-xor %eax, %eax
-mov -8(%ebp), %eax
-add $1, %eax
-mov %eax, %ebx
-mov %ebx, -8(%ebp)
-jmp __LABEL2__
-__LABEL3__:
-mov -4(%ebp), %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# reference: 4
-# i: 8
-__method_Linked_index_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_index___, %esp
-movl __this__, %edx
-mov %edx, __this__
-# Calling function __method_Linked_find_
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
-call __method_Linked_find_
-mov %eax, %ebx
-add $4, %esp
-# Loading local variable "ref" @-4(%ebp)
-mov %ebx, -4(%ebp)
-movl -4(%ebp), %eax
 mov 0(%eax), %edx
 mov %edx, %ebx
-mov %ebx, %eax
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+push %ecx
+call itos
+add $4, %esp
+push %eax
+pushl $__STRING1__
+push %ebx
+pushl $__STRING0__
+pushl $4
+call strjoinmany
+add $20, %esp
+mov %eax, %esi
+# taking ownership AND returning
+mov %esi, ___TEMPORARY_OWNER___
+mov %esi, %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
@@ -197,271 +90,160 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# ref: 4
-__method_Linked_add_:
+entry:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_add___, %esp
-movl __this__, %edx
-mov %edx, __this__
-# Calling function __method_Linked_findLast_
-call __method_Linked_findLast_
+sub $__ALLOCFOR_entry__, %esp
+# Loading local variable "size" @-4(%ebp)
+mov $5, %edx
+mov %edx, -4(%ebp)
+# Asked for -4(%ebp) allocations of "Person"
+mov $4, %edx
+mov -4(%ebp), %eax
+mul %edx
+pushl $0
+push %eax
+call __rc_allocate__
+add $8, %esp
 mov %eax, %ebx
-# Loading local variable "end" @-4(%ebp)
-mov %ebx, -4(%ebp)
-# Calling function __constructor_Linked_0_
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
-call __constructor_Linked_0_
-mov %eax, %ebx
-add $4, %esp
-# Loading local variable "newAddr" @-8(%ebp)
+# Loading local variable "arr" @-8(%ebp)
 mov %ebx, -8(%ebp)
-# requesting ownership for newAddr (create)
+# requesting ownership for arr (create)
 lea -8(%ebp), %eax
 push %eax
 push %ebx
 call __rc_requestOwnership__
 add $8, %esp
-movl -4(%ebp), %eax
-mov -8(%ebp), %edx
-mov %edx, 4(%eax)
-# requesting ownership for -4(%ebp) (property)
-lea 4(%eax), %eax
+pushl $0
+pushl $8
+call __rc_allocate__
+add $8, %esp
+mov %eax, %ebx # Local allocation address for Person
+mov $__STRING2__, %edx
+mov %edx, 0(%eax)
+movl $17, 4(%eax)
+#Array set begin
+mov -8(%ebp), %eax
+mov %ebx, 0(%eax)
+# requesting ownership for array index
+lea 0(%eax), %eax
 push %eax
-push -8(%ebp)
+push %ebx
 call __rc_requestOwnership__
 add $8, %esp
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# end: 4
-# newAddr: 8
-__method_Linked_remove_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_remove___, %esp
-mov 8(%ebp), %eax
+#Set end
+pushl $0
+pushl $8
+call __rc_allocate__
+add $8, %esp
+mov %eax, %ebx # Local allocation address for Person
+mov $__STRING3__, %edx
+mov %edx, 0(%eax)
+movl $17, 4(%eax)
+#Array set begin
+mov -8(%ebp), %eax
+mov %ebx, 4(%eax)
+# requesting ownership for array index
+lea 4(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
+#Set end
+pushl $0
+pushl $8
+call __rc_allocate__
+add $8, %esp
+mov %eax, %ebx # Local allocation address for Person
+mov $__STRING4__, %edx
+mov %edx, 0(%eax)
+movl $48, 4(%eax)
+#Array set begin
+mov -8(%ebp), %eax
+mov %ebx, 8(%eax)
+# requesting ownership for array index
+lea 8(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
+#Set end
+pushl $0
+pushl $8
+call __rc_allocate__
+add $8, %esp
+mov %eax, %ebx # Local allocation address for Person
+mov $__STRING5__, %edx
+mov %edx, 0(%eax)
+movl $43, 4(%eax)
+#Array set begin
+mov -8(%ebp), %eax
+mov %ebx, 12(%eax)
+# requesting ownership for array index
+lea 12(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
+#Set end
+pushl $0
+pushl $8
+call __rc_allocate__
+add $8, %esp
+mov %eax, %ebx # Local allocation address for Person
+mov $__STRING6__, %edx
+mov %edx, 0(%eax)
+movl $10, 4(%eax)
+#Array set begin
+mov -8(%ebp), %eax
+mov %ebx, 16(%eax)
+# requesting ownership for array index
+lea 16(%eax), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
+#Set end
+# Loading local variable "i" @-12(%ebp)
+mov $0, %edx
+mov %edx, -12(%ebp)
+__LABEL0__:
+mov -12(%ebp), %eax
+mov -4(%ebp), %edx
 movb $0, %bl
-cmp $1, %eax
+cmp %edx, %eax
 setl %bl
 cmpb $1, %bl
-jne __LABEL6__
-movl __this__, %eax
-mov 4(%eax), %edx
-mov %edx, %ebx
-# requesting ownership for __this__ (set)
-lea __this__, %eax
-push %eax
+jne __LABEL1__
+mov -8(%ebp), %eax
+xor %ebx, %ebx
+mov -12(%ebp), %edx
+mov %edx, %edx
+mov (%eax, %edx, 4), %ebx
+pushl $__STRING7__
 push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-jmp __LABEL7__
-__LABEL6__:
+mov %ebx, __this__
+push %ebx
+# Calling function __method_Person_toString_
+call __method_Person_toString_
+mov %eax, %ecx
+pop %ebx
+pop %ebx
+push %eax
+pushl $2
+call strjoinmany
+add $12, %esp
+mov %eax, %ecx
+push %ecx
+call puts
+add $4, %esp
 xor %eax, %eax
-mov 8(%ebp), %eax
-sub $1, %eax
+mov -12(%ebp), %eax
+add $1, %eax
 mov %eax, %ebx
-movl __this__, %edx
-mov %edx, __this__
-push %ebx
-# Calling function __method_Linked_find_
-push %ebx
-call __method_Linked_find_
-mov %eax, %ecx
-add $4, %esp
-pop %ebx
-# Loading local variable "previous" @-4(%ebp)
-mov %ecx, -4(%ebp)
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ebx
-mov 4(%ebx), %edx
-mov %edx, %ecx
-# Loading local variable "skipped" @-8(%ebp)
-mov %ecx, -8(%ebp)
-mov -8(%ebp), %ebx
-movl -4(%ebp), %eax
-mov %ebx, 4(%eax)
-# requesting ownership for -4(%ebp) (property)
-lea 4(%eax), %eax
-push %eax
-push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-jmp __LABEL7__
-__LABEL8__:
-__LABEL7__:
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Linked_replace_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_replace___, %esp
-movl __this__, %edx
-mov %edx, __this__
-# Calling function __method_Linked_find_
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
-call __method_Linked_find_
-mov %eax, %ebx
-add $4, %esp
-# Loading local variable "reference" @-4(%ebp)
-mov %ebx, -4(%ebp)
-movl -4(%ebp), %eax
-mov 12(%ebp), %edx
-mov %edx, 0(%eax)
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# reference: 4
-entry:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR_entry__, %esp
-# Calling function __constructor_Linked_0_
-pushl $1
-call __constructor_Linked_0_
-mov %eax, %ebx
-add $4, %esp
-# Loading local variable "myList" @-4(%ebp)
-mov %ebx, -4(%ebp)
-# requesting ownership for myList (create)
-lea -4(%ebp), %eax
-push %eax
-push %ebx
-call __rc_requestOwnership__
-add $8, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $2
-call __method_Linked_add_
-mov %eax, %ebx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $3
-call __method_Linked_add_
-mov %eax, %ebx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_index_
-pushl $0
-call __method_Linked_index_
-mov %eax, %ebx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ebx
-# Calling function __method_Linked_index_
-pushl $1
-call __method_Linked_index_
-mov %eax, %ecx
-add $4, %esp
-pop %ebx
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ebx
-push %ecx
-# Calling function __method_Linked_index_
-pushl $2
-call __method_Linked_index_
-mov %eax, %esi
-add $4, %esp
-pop %ecx
-pop %ebx
-push %ebx
-push %esi
-push %ecx
-# Calling function printf
-push %esi
-push %ecx
-push %ebx
-pushl $__STRING0__
-call printf
-mov %eax, %edi
-add $16, %esp
-pop %ecx
-pop %esi
-pop %ebx
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_remove_
-pushl $0
-call __method_Linked_remove_
-mov %eax, %ebx
-add $4, %esp
-# Loading into __this__ because function modified it 
-movl __this__, %edx
-mov %edx, -4(%ebp)
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $5
-call __method_Linked_add_
-mov %eax, %ebx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_replace_
-pushl $4
-pushl $2
-call __method_Linked_replace_
-mov %eax, %ebx
-add $8, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_index_
-pushl $0
-call __method_Linked_index_
-mov %eax, %ebx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ebx
-# Calling function __method_Linked_index_
-pushl $1
-call __method_Linked_index_
-mov %eax, %ecx
-add $4, %esp
-pop %ebx
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ebx
-push %ecx
-# Calling function __method_Linked_index_
-pushl $2
-call __method_Linked_index_
-mov %eax, %esi
-add $4, %esp
-pop %ecx
-pop %ebx
-push %ebx
-push %esi
-push %ecx
-# Calling function printf
-push %esi
-push %ecx
-push %ebx
-pushl $__STRING1__
-call printf
-mov %eax, %edi
-add $16, %esp
-pop %ecx
-pop %esi
-pop %ebx
+mov %ebx, -12(%ebp)
+jmp __LABEL0__
+__LABEL1__:
 mov $0, %eax
 call __rc_quick_check__
 
@@ -473,4 +255,6 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# myList: 4
+# size: 4
+# arr: 8
+# i: 12
