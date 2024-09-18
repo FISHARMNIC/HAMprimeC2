@@ -762,7 +762,7 @@ var allocations = {
             `.4byte ${value.length + 1}`,
             `${label}: .asciz "${value}"`
         )
-        globalVariables[label] = newGlobalVar(defines.types.string)
+        globalVariables[label] = newGlobalVar(defines.types.conststr)
         return label
     },
     allocateArray: function (arr, note = "") {

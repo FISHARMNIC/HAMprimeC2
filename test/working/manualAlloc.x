@@ -7,7 +7,7 @@ Person format
     // need to be careful for static strings though
     
     // todo #2, make return automatically guess if needs to do return_new
-    .toString method<> -> string:dynamic
+    .toString method<> -> string
     {
         return_new("Name: " + this.name + " || Age: " + this.age);
     }

@@ -43,7 +43,7 @@ global.userFunctions = {           // Object : {function name: {func name, param
     "printf": {
         name: 'printf',
         parameters: [
-            { name: "format", type: defines.types.string }
+            { name: "format", type: defines.types.conststr }
         ],
         variadic: true,
         returnType: defines.types.u32

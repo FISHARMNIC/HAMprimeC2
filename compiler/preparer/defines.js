@@ -135,7 +135,8 @@ module.exports = {
             pointer: true,  
             special: false,
             dblRef: false,
-            advptr: true
+            advptr: true,
+            hasData: true
         },
         "conststr": {
             size: 8,
