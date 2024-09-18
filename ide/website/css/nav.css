@@ -45,6 +45,37 @@ ul.nav {
     width: 99.8%;
 }
 
+.checker {
+ /* position: absolute; */
+    padding-top: 20px;
+    padding-left: 10px;
+    color: white;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+    float: left;
+    cursor: pointer;
+    min-width: 100px;
+}
+
+.inli {
+    color: var(--env);
+    font-size: 15px;
+    position: absolute;
+    top: 20px;
+    left: 200px;
+    height: 20px;
+    border-radius: 5px;
+}
+
+
+.toggler {
+    transform: scale(1.7);
+    margin-right: 10px;
+    /* width: 50px;
+    height:100px; */
+}
+
 .navli {
     display: block;
     color: rgb(148, 148, 148);

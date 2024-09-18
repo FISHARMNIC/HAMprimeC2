@@ -2,6 +2,7 @@
 
 __rc_transfer_error__: .asciz "[Roll-Call Error] Could not transfer reference %p\n"
 //_e_: .asciz "Setting ownership @%p: %i\n"
+.globl __rc_requestOwnership__
 .text
 
 /*

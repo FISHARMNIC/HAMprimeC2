@@ -37,6 +37,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     //roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t));
     //described_buffer_t *described_buffer = malloc(sizeof(roster_entry_t *) + size_bytes);
 
+    //printf(":::: Attempting malloc of size %i\n", size_bytes);
     //Better, only one malloc call and one free
     roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t) + sizeof(roster_entry_t *) + size_bytes);
     described_buffer_t *described_buffer = (described_buffer_t *) (((char*)roster_entry) + sizeof(roster_entry_t));
@@ -90,4 +91,23 @@ void __rc_collect__()
     }
 
     //printf("\\---------------------/\n");
+}
+
+/// @brief 
+/// @param dest Memory address of destination
+/// @param src  Source pointer
+/// @param elementSize 
+/// @return destination
+int* __copydata__(int* dest, int* src, int elementSize)
+{
+    // get size of destination in bytes
+    described_buffer_t* srcBuffer = (described_buffer_t*)(src - 1);
+    described_buffer_t* destBuffer = (described_buffer_t*)(dest - 1);
+    int srcSize = srcBuffer->entry_reference->size;
+    int destSize = destBuffer->entry_reference->size;
+
+    //printf("::: attempting mov %i\n", elementSize * srcSize);
+    memcpy(dest, src, elementSize * (srcSize < destSize? srcSize : destSize));
+
+    return dest;
 }

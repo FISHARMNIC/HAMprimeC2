@@ -168,6 +168,11 @@ var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
         __addToAnyVarEverMade(vname)
 
+        
+        if(helpers.general.isReserved(vname))
+        {
+            throwE(`Cannot create variable named "${vname}" as it is a reserved word`)
+        }
         if (onStack) // inside of a function
         {
             //console.log(vname, type, nextThingTakesOwnership)
@@ -329,7 +334,7 @@ var variables = {
         debugPrint(index)
 
         if (helpers.types.isLiteral(aname)) {
-            baseType = defines.types.u8
+            baseType = objCopy(defines.types.u8)
             outputCode.autoPush(
                 `mov \$${aname}, %eax`,
             )
@@ -394,7 +399,16 @@ var variables = {
             indexMultiplier = forceSize
         }
 
+        if(!("elementsHaveData" in baseType)) {
+            delete baseType.hasData
+        } else {
+            //throwE("yay, this should have been thrown if the array type has data itself. you can delete this line")
+        }
+
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
+        
+        //throwE(helpers.types.guessType(out))
+
         var fullReg = helpers.types.conformRegisterIfIs(out, defines.types.u32)
 
         if (baseType.size != 32) {
@@ -491,7 +505,6 @@ var variables = {
         var indexType = helpers.types.guessType(index)
         var valueType = helpers.types.guessType(value)
 
-
         var indexIsVar = objectIncludes(globalVariables, index)
 
         var suffix = "";
@@ -570,7 +583,14 @@ var variables = {
 
         }
 
-        if ("hasData" in valueType && nextThingTakesOwnership) {
+       // console.log(helpers.types.guessType(type.address))
+        if (("hasData" in valueType || "elementsHaveData" in arrType) && nextThingTakesOwnership) {
+            if(!("elementsHaveData" in arrType)) {
+                throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(valueType)}"`)
+            } else if(!("hasData" in valueType)) {
+                throwE(`Assigning static "${helpers.types.convertTypeObjToName(valueType)}" to array expecting a "${helpers.types.convertTypeObjToName(arrType)}"`)
+            }
+
             if(finalSettingAddr == null)
             {
                 throwE("Error, no setting address for ownership. Shouldn't get here...")
@@ -734,6 +754,10 @@ var allocations = {
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
         //throwE(helpers.types.guessType(allocLbl))
+        if("hasData" in arrayClamp)
+            {
+                arrayClamp.elementsHaveData = true
+            }
         if ("hasData" in helpers.types.guessType(allocLbl)) {
             arrayClamp.hasData = true
         }
@@ -824,6 +848,10 @@ var functions = {
         return { params: robj.reverse(), oBytes, didVari }
     },
     createFunction: function (fname) {
+        if(helpers.general.isReserved(fname))
+        {
+            throwE(`Cannot create function "${fname}" as it is a reserved word`)
+        }
         outputCode.text.push(
             fname + ":",
             `push %ebp`,
@@ -955,7 +983,7 @@ var functions = {
                     var et_s = expectedType == undefined ? "" : helpers.types.convertTypeObjToName(expectedType)
                     var gt_s = helpers.types.convertTypeObjToName(givenType)
 
-                    if (!helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s))))
+                    if (!(expectedType == undefined? false : "acceptsAny" in expectedType) && !helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s))))
                         throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}"`)
 
                     if (helpers.types.isConstOrLit(x)) {

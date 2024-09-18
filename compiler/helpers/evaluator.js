@@ -19,15 +19,25 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && line[wordNum + 2] == "dynamic") {
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "dynamicChildren")) {
+            
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
             if ("formatPtr" in ogtype) {
                 cpy.formatPtr = ogtype.formatPtr
             }
-            cpy.hasData = true;
-            defines.types[`__${word}__dynamicdef__`] = cpy
-            line[wordNum] = `__${word}__dynamicdef__`
+            if(line[wordNum + 2] == "dynamic")
+            {
+                cpy.hasData = true;
+                defines.types[`__${word}__dynamicdef__`] = cpy
+                line[wordNum] = `__${word}__dynamicdef__`
+
+            } else {
+                cpy.elementsHaveData = true;
+                defines.types[`__${word}__dynamicChildrendef__`] = cpy
+                line[wordNum] = `__${word}__dynamicChildrendef__`
+            }
+            
             line.splice(wordNum + 1, 2)
             /*
             should work like creates a second type called __Linked__dynamicdef__ which is a clone of the original one but has hasData enabled
@@ -123,7 +133,19 @@ function evaluate(line) {
                 var bytes = helpers.types.typeToBytes(defines.types[word])//helpers.types.typeToBytesWithFmts(defines.types[word])
 
                 if (offsetWord(3) == "]") {
-                    var out= helpers.registers.getFreeLabelOrRegister(defines.types[word])
+                    var elementsHaveData = false
+                    if(defines.types[word].hasData || "formatPtr" in defines.types[word])
+                        elementsHaveData = true
+                    var newType = helpers.types.convertTypeToHasData(defines.types[word])
+                    newType.pointer = true // if broken delete
+                    if(elementsHaveData)
+                    {
+                        newType.elementsHaveData = true
+                    }
+
+                    var out= helpers.registers.getFreeLabelOrRegister(newType)
+
+                    //throwE(helpers.types.guessType(out))
                     if (num == parseInt(num)) { // literal
                         num = parseInt(num)
                         
@@ -663,14 +685,56 @@ function evaluate(line) {
             } else if (word == "borrow") {
                 nextThingTakesOwnership = false;
                 line.splice(wordNum--, 1)
-            } else if (word == "copy") {
+            } else if (word == "duplicate") {
                 if (offsetWord(1) != "(") {
-                    throwE(`Copy must be called like a function with parenthesis`)
+                    throwE(`Duplicate must be called like a function with parenthesis`)
                 } else if (offsetWord(3) != ")") {
-                    throwE(`Copy can only take one value`)
+                    throwE(`Duplicate can only take one value`)
                 }
                 line[wordNum] = actions.assembly.copyData(offsetWord(2))
                 line.splice(wordNum + 1, 3)
+            } else if(word == "copy")
+            {
+                if (offsetWord(1) != "(") {
+                    throwE(`Copy must be called like a function with parenthesis`)
+                }  else if (offsetWord(3) != ")") {
+                    throwE(`Copy doens't have the right parameters`)
+                }
+
+                var dest = offsetWord(2)[0]
+                var src = offsetWord(2)[2]
+                var srcType = helpers.types.guessType(src)
+                var destType = helpers.types.guessType(dest)
+                
+                if(!("hasData" in srcType) || !("hasData" in destType))
+                {
+                    //throwE(`Cannot copy non-dynamically allocated data. Use memcpy instead`, srcType)
+                }
+                if(!helpers.types.areEqual(srcType, destType))
+                {
+                    throwW(`Attempting to copy data type "${helpers.types.convertTypeObjToName(srcType)}" into "${helpers.types.convertTypeObjToName(destType)}"`)
+                }
+
+               // throwE(dest)
+
+                outputCode.autoPush(
+                    `# copying buffer`,
+                    `pushl \$${helpers.types.typeToBytes(srcType)}`
+                )
+
+                actions.assembly.pushToStack(src, srcType)
+                actions.assembly.pushToStack(dest, destType)
+                var oreg = helpers.registers.getFreeLabelOrRegister(destType)
+
+                outputCode.autoPush(
+                    "call __copydata__",
+                    "add $12, %esp",
+                    `mov %eax, ${oreg}`
+                )
+
+                line[wordNum] = oreg
+                line.splice(wordNum + 1, 3)
+
             } else if (word == "function") {
                 var fname = offsetWord(-1)
                 var params = offsetWord(2)

@@ -42,7 +42,8 @@ var types = {
             a.dblRef == b.dblRef &&
             fmteq &&
             a.hasData == b.hasData &&
-            a.advptr == b.advptr
+            a.advptr == b.advptr &&
+            a.elementsHaveData == b.elementsHaveData
         )
     },
     convertTypeObjToName: function(type) {
@@ -175,7 +176,7 @@ var types = {
     stringIsEbpOffset: function (str) {
         debugPrint("============", str)
         if(String(str) == "undefined")
-            throwE("Undef?")
+            throwE("[INTERNAL ERROR] Got undefined")
         return str.substring(str.indexOf("(")) == "(%ebp)"
     },
     getOffsetFromEbpOffsetString: function (str) {
@@ -515,6 +516,9 @@ var functions = {
 
 
 var general = {
+    isReserved: function(word) {
+        return (objectIncludes(defines.types,(word)) || defines.keywords.includes(word))
+    },
     getMostRecentFunction: function () {
         return (scope.slice().reverse().find(x => {
             //debugPrint("3333333", x)

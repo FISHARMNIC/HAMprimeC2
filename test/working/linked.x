@@ -7,6 +7,7 @@ Example linked list format. In my opinion, this is a good demo on how simple HAM
 Linked format 
 {
     .current u32;
+    /* dev note: once borrowing removes hasData, make this Linked:dynamic OR make formats dynamic by def */
     .next Linked;
     
     .Linked constructor<u32 value>

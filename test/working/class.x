@@ -3,7 +3,7 @@ Example for a Java ArrayList-like class
 */
 
 List format {
-    .buffer p32;
+    .buffer array;
     .length u32;
     
     .List constructor<...>
@@ -13,30 +13,31 @@ List format {
     }
 
     /*Not the most efficient way, but its meant to show that it can allocate and reallocate just fine*/
-    .push method<any element> -> p32
+    .push method<u32 element> -> array
     {
         this.length <- (this.length + 1);
         if(this.length == 1)
         {
-            this.buffer <- malloc(4);
+            this.buffer <- u32[1];
         }
         else 
         {
-            this.buffer <- realloc(this.buffer, (this.length * 4));
+            this.buffer <- copy(u32[this.length], this.buffer);
         }
         this.buffer[this.length - 1] <- element;
         return(this.buffer);
     }
 
-    .pop method<> -> any 
+    .pop method<> -> u32 
     {
         this.length <- (this.length - 1);
         create retValue <- this.buffer[this.length];
-        this.buffer <- realloc(this.buffer, (this.length * 4));
+
+        this.buffer <- copy(u32[this.length], this.buffer);
         return retValue;
     }
 
-    .every method<p32 iterator> -> u32 
+    .every method<any iterator> -> u32 
     {
         create i <- 0;
         while(i <: this.length)

@@ -3,6 +3,8 @@ Person format
     .name string;
     .age u32;
     
+    // Note: in future have something similar to type "array" where string by default is dyanmic
+    // need to be careful for static strings though
     .toString method<> -> string:dynamic
     {
         return_new("Name: " + this.name + " || Age: " + this.age + "\n");
@@ -12,6 +14,8 @@ Person format
 entry function<> -> u32
 {
     create size <- 5;
+    // Note: do dynamic children properly with this
+    /* arrays shouldn't automatically take ownership unless dynamicChildren */
     create arr <- Person[size];
 
     arr[0] <- Person<name:"Nico",age:17>;

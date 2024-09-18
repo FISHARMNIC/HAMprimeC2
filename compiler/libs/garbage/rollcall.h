@@ -10,6 +10,8 @@
 
 void *__rc_allocate__(int, int);
 void __rc_collect__();
+void __rc_requestOwnership__(void*, void*);
+void* memcpy(void*, void*, int);
 
 typedef struct roster_entry_t
 {

@@ -1,6 +1,10 @@
 /*
 TODO:
     NEW
+    - !! IMPORTANT !! just make global arrays allocated dynamically
+        - removes confusion between p8 and array8 
+    - add push and pop for array types
+    - throw error if defining function or variable that is keyword
     - see plans/settingptr.x
     - !! IMPORTANT !! 
         - if not nextThingTakesOwnership, copy type and remove hasData
@@ -200,7 +204,7 @@ if(returnHighlight)
 {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward"],
+        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren"],
         types: Object.keys(defines.types),
         allVars: [...__anyVarEverMade,"this"]
     }

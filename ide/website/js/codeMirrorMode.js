@@ -26,6 +26,10 @@ CodeMirror.defineMode("HAM", function () {
       else if (matchAll(stream, highlightingInfo.keywords)) {
         return "def"
       } 
+      else if (matchAll(stream, highlightingInfo.types)) // types
+      {
+        return "number"
+      } 
       else if (matchAll(stream, highlightingInfo.allVars)) {
         return "keyword"
       }
@@ -35,10 +39,7 @@ CodeMirror.defineMode("HAM", function () {
       else if (matchAll(stream, highlightingInfo.functions)) {
         return "num"
       }
-      else if (matchAll(stream, highlightingInfo.types)) // types
-      {
-        return "number"
-      } else if (matchAll(stream, operators)) // ops
+      else if (matchAll(stream, operators)) // ops
       {
         return "string"
       } else if (stream.match(/".*?"/)) { // strings

@@ -34,6 +34,30 @@ module.exports = {
             special: false,
             dblRef: false,
         },
+        "array8": {
+            size: 8,
+            float: false,
+            pointer: true,  
+            special: false,
+            dblRef: false,
+            hasData: true
+        },
+        "array16": {
+            size: 16,
+            float: false,
+            pointer: true,
+            special: false,
+            dblRef: false,
+            hasData: true
+        },
+        "array": {
+            size: 32,
+            float: false,
+            pointer: true,
+            special: false,
+            dblRef: false,
+            hasData: true
+        },
         "dp32": {
             size: 64,
             float: false,
@@ -62,12 +86,21 @@ module.exports = {
             special: false,
             dblRef: false,
         },
+        "integer": {
+            size: 32,
+            float: false,
+            pointer: false,
+            special: false,
+            dblRef: false,
+        },
+
         "any": {
             size: 32,
             float: false,
             pointer: false,
             special: false,
             dblRef: false,
+            acceptsAny: true
         },
         "t8": {
             size: 8,
@@ -131,7 +164,7 @@ module.exports = {
         }
     },
     keywords: [
-        "copy", "print_", "println_", "method","function","format","initializer", "persistent", "transient", "while", "return_new", "return", "if", "elif", "else", "__rule", "__define", "own", "borrow"
+        "duplicate", "copy", "print_", "println_", "method","function","format","initializer", "persistent", "transient", "while", "return_new", "return", "if", "elif", "else", "__rule", "__define", "own", "borrow"
     ],
     priorityWords: [
         "while"
