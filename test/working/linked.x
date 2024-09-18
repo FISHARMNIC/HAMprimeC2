@@ -7,19 +7,8 @@ Example linked list format. In my opinion, this is a good demo on how simple HAM
 Linked format 
 {
     .current u32;
-    .next Linked;
-    /* In theory, .next should be a Linked:dynamic.
-       |> This is because each next element will be 
-       |> dynamically alloated.
-       * However, it is not needed since statics will
-         attempt to automatically take ownership on 
-         dynamics.
-       * It also allows for there not needing to be
-         "borrow" statements on lines like:
-       |> reference <- reference.next
-       * Since "reference" should just be looking at
-         the data, not owning it.
-    */
+    /* Since next is allocated dynamically, we should show that */
+    .next Linked:dynamic;
     
     .Linked constructor<u32 value>
     {
@@ -32,7 +21,7 @@ Linked format
         create reference <- borrow this;
         while(reference.next != 0)
         {
-            reference <- reference.next;
+            reference <- borrow reference.next;
         }
         
         return reference;
@@ -47,9 +36,10 @@ Linked format
         {
             if(reference.next == 0)
             {
+                /* Return null */
                 return(Linked:(0));
             }
-            reference <- reference.next;
+            reference <- borrow reference.next;
             i <- i + 1;
         }
         return reference;
@@ -65,13 +55,8 @@ Linked format
     {
         create end <- this.findLast();
         
+        /* This is where we dynamically allocate .next */
         create newAddr <- Linked(value);
-        /* Note that here, newAddr is dynamic while "end.next" is not.
-           However, if the destination is not dynamic, it doens't 
-           matter. As long as the value is dynamic, the ownership
-           will be transferred to the destination unless the keyword
-           "borrow" was used.
-        */
         end.next <- newAddr;
     }
     
@@ -86,8 +71,18 @@ Linked format
             // note, wont work for end of arr. Fix soon
             create previous <- this.find(index - 1);
 
-            create skipped <- previous.next.next;
-            previous.next <- skipped; 
+            /*
+            Here, you don't actually need the borrow or cast
+            However, creating skipped takes ownership, and then
+            previous.next takes that ownership right after. 
+            Since there is no need for skipped to have ownership,
+            the data can be borrowed then cast back into a dynamic
+            
+            If this is confusing, just ignore "borrow" and the 
+            "Linked:dynamic:()" cast
+            */
+            create skipped <- borrow previous.next.next;
+            previous.next <- Linked:dynamic:(skipped); 
         }
     }
     

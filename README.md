@@ -83,14 +83,18 @@ Note: This is still being worked on, and editing still has some issues. This was
 ### Formats as classes
 ```C
 /*
-Example for a linked list format
+Example linked list format. In my opinion, this is a good demo on how simple HAM can be
+* Notice how seamless things like adding a new element, or removing one
+* Compare it to something like C. No mallocs, frees, pointer confusion, etc.
+* The only "hurdle" is the idea of borrowing, which can be understood quickly
 */
+
 Linked format 
 {
     .current u32;
-    .next Linked;
+    .next Linked:dynamic;
     
-    .Linked constructor<u32 value> -> u32
+    .Linked constructor<u32 value>
     {
         this.current <- value;
         this.next <- 0;
@@ -101,8 +105,9 @@ Linked format
         create reference <- borrow this;
         while(reference.next != 0)
         {
-            reference <- reference.next;
+            reference <- borrow reference.next;
         }
+        
         return reference;
     }
     
@@ -110,16 +115,17 @@ Linked format
     {
         create reference <- borrow this;
         create i <- 0;
+        
         while(i <: index)
         {
             if(reference.next == 0)
             {
-                return 0;
+                return(Linked:(0));
             }
-            reference <- reference.next;
+            reference <- borrow reference.next;
             i <- i + 1;
         }
-        return(reference);
+        return reference;
     }
     
     .index method<u32 index> -> u32
@@ -131,6 +137,7 @@ Linked format
     .add method<u32 value> -> u32
     {
         create end <- this.findLast();
+        
         create newAddr <- Linked(value);
         end.next <- newAddr;
     }
@@ -143,6 +150,7 @@ Linked format
         }
         else
         {
+            /* Yes, I know this won't work for the end of an array. Fix coming */
             create previous <- this.find(index - 1);
 
             create skipped <- previous.next.next;
