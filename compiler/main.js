@@ -1,14 +1,15 @@
 /*
 TODO:
     NEW
+    - !! IMPORTANT !! 
+        - if not nextThingTakesOwnership, copy type and remove hasData
+        - MAKE SURE THAT BORROW COPIES TYPE AND REMOVES HASDATA FROM TYPE
+        - This is partly done for setting and creating variables
     - !! IMPORTANT !! just make global arrays allocated dynamically
         - removes confusion between p8 and array8 
     - add push and pop for array types
     - throw error if defining function or variable that is keyword
     - see plans/settingptr.x
-    - !! IMPORTANT !! 
-        - if not nextThingTakesOwnership, copy type and remove hasData
-        - MAKE SURE THAT BORROW COPIES TYPE AND REMOVES HASDATA FROM TYPE
     - In linked.x,doing ref <- ref.next removes dynamic attr as .next is not of hasData
     - Automatic return typing, see warns on linked.x
     - Multiple pointer types

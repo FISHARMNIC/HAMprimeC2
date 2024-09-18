@@ -168,9 +168,8 @@ var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
         __addToAnyVarEverMade(vname)
 
-        
-        if(helpers.general.isReserved(vname))
-        {
+
+        if (helpers.general.isReserved(vname)) {
             throwE(`Cannot create variable named "${vname}" as it is a reserved word`)
         }
         if (onStack) // inside of a function
@@ -188,16 +187,22 @@ var variables = {
             assembly.optimizeMove(value, off, type, type)
 
             //throwE(type)
-            if ("hasData" in type && nextThingTakesOwnership) {
+            if ("hasData" in type) {
 
-                outputCode.autoPush(
-                    `# requesting ownership for ${vname} (create)`,
-                    `lea ${off}, %eax`,
-                    `push %eax`,
-                    `push ${value}`,
-                    `call __rc_requestOwnership__`,
-                    `add $8, %esp`
-                )
+                if (nextThingTakesOwnership) {
+                    outputCode.autoPush(
+                        `# requesting ownership for ${vname} (create)`,
+                        `lea ${off}, %eax`,
+                        `push %eax`,
+                        `push ${value}`,
+                        `call __rc_requestOwnership__`,
+                        `add $8, %esp`
+                    )
+                } else {
+                    type = objCopy(type)
+                    delete type.hasData
+                    //throwE(type)
+                }
             }
             nextThingTakesOwnership = defaultAutomaticOwnership
             createStackVariableListOnly(vname, newStackVar(type))
@@ -256,6 +261,18 @@ var variables = {
         var valueType = helpers.types.guessType(value);
 
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___" && vname != "__this__") {
+            
+            // make sure its not just that value is dynamic and variable is not
+            var checkT = helpers.types.convertTypeToHasData(type)
+            //var checkT = helpers.types.convertTypeToHasData(type)
+            //console.log("\n-----",checkT,valueType,"------\n", ":::::", nextThingTakesOwnership, ":::::")
+            if(!((helpers.types.areEqual(checkT, valueType)) && !nextThingTakesOwnership))
+            {
+            
+            if(helpers.types.areEqual(checkT, valueType))
+            {
+                throwE(`Assigning a dynamic "${helpers.types.convertTypeObjToName(type)}" to a static.\n\t[FIX] Use "borrow"`)
+            }
             throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
             if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
                 throwW(`-- New type is smaller than original type`)
@@ -263,6 +280,7 @@ var variables = {
             type = valueType
             helpers.variables.setVariableType(vname, type)
             //throwE(defines.types.u32)
+        }
 
         }
 
@@ -275,16 +293,21 @@ var variables = {
         //     throwE(`Variable ${vname} has not been declared neither locally nor globally`)
         // }
 
-        if (("hasData" in type && nextThingTakesOwnership) || (vname == "___TEMPORARY_OWNER___")) {
-            outputCode.autoPush(
-                `# requesting ownership for ${vname} (set)`,
-                `lea ${isStack ? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
-                `push %eax`,
-                `push ${value}`,
-                `call __rc_requestOwnership__`,
-                `add $8, %esp`
-            )
-
+        if (("hasData" in type)) {
+            if (nextThingTakesOwnership || (vname == "___TEMPORARY_OWNER___")) {
+                outputCode.autoPush(
+                    `# requesting ownership for ${vname} (set)`,
+                    `lea ${isStack ? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
+                    `push %eax`,
+                    `push ${value}`,
+                    `call __rc_requestOwnership__`,
+                    `add $8, %esp`
+                )
+            } else {
+                type = objCopy(type)
+                delete type.hasData
+                //throwE(type)
+            }
         } else {
             if (isStack) {
                 assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
@@ -399,14 +422,14 @@ var variables = {
             indexMultiplier = forceSize
         }
 
-        if(!("elementsHaveData" in baseType)) {
+        if (!("elementsHaveData" in baseType)) {
             delete baseType.hasData
         } else {
             //throwE("yay, this should have been thrown if the array type has data itself. you can delete this line")
         }
 
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
-        
+
         //throwE(helpers.types.guessType(out))
 
         var fullReg = helpers.types.conformRegisterIfIs(out, defines.types.u32)
@@ -543,8 +566,7 @@ var variables = {
         } else if (objectIncludes(globalVariables, index) || helpers.types.stringIsEbpOffset(index)) { // if index is glob or index is ebp
             // FIX THIS poorly optimized
             // throwE("Not sure. fix the code below this")
-            if(helpers.types.guessType(index).size != 32)
-            {
+            if (helpers.types.guessType(index).size != 32) {
                 // just use size to suffix. FIX later
                 throwE("Attempting to index array with non-32bit variable")
             }
@@ -583,22 +605,20 @@ var variables = {
 
         }
 
-       // console.log(helpers.types.guessType(type.address))
+        // console.log(helpers.types.guessType(type.address))
         if (("hasData" in valueType || "elementsHaveData" in arrType) && nextThingTakesOwnership) {
-            if(!("elementsHaveData" in arrType)) {
+            if (!("elementsHaveData" in arrType)) {
                 throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(valueType)}"`)
-            } else if(!("hasData" in valueType)) {
+            } else if (!("hasData" in valueType)) {
                 throwE(`Assigning static "${helpers.types.convertTypeObjToName(valueType)}" to array expecting a "${helpers.types.convertTypeObjToName(arrType)}"`)
             }
 
-            if(finalSettingAddr == null)
-            {
+            if (finalSettingAddr == null) {
                 throwE("Error, no setting address for ownership. Shouldn't get here...")
             }
 
             outputCode.autoPush("# requesting ownership for array index")
-            if(finalSettingAddr != "%eax")
-            {
+            if (finalSettingAddr != "%eax") {
                 outputCode.autoPush(`lea ${finalSettingAddr}, %eax`)
             }
             outputCode.autoPush(
@@ -754,10 +774,9 @@ var allocations = {
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
         //throwE(helpers.types.guessType(allocLbl))
-        if("hasData" in arrayClamp)
-            {
-                arrayClamp.elementsHaveData = true
-            }
+        if ("hasData" in arrayClamp) {
+            arrayClamp.elementsHaveData = true
+        }
         if ("hasData" in helpers.types.guessType(allocLbl)) {
             arrayClamp.hasData = true
         }
@@ -848,8 +867,7 @@ var functions = {
         return { params: robj.reverse(), oBytes, didVari }
     },
     createFunction: function (fname) {
-        if(helpers.general.isReserved(fname))
-        {
+        if (helpers.general.isReserved(fname)) {
             throwE(`Cannot create function "${fname}" as it is a reserved word`)
         }
         outputCode.text.push(
@@ -880,14 +898,12 @@ var functions = {
 
         if (rVal != null) {
 
-            if(!("name" in scope && scope.name.includes("__constructor_")))
-            {
+            if (!("name" in scope && scope.name.includes("__constructor_"))) {
                 // TODO HERE
                 var givenRetType = helpers.types.guessType(rVal)
                 var scopeRetType = scope.data.returnType
-               // console.log("::", givenRetType, scopeRetType)
-                if(!helpers.types.areEqual(givenRetType, scopeRetType))
-                {
+                // console.log("::", givenRetType, scopeRetType)
+                if (!helpers.types.areEqual(givenRetType, scopeRetType)) {
                     var gtname = helpers.types.convertTypeObjToName(givenRetType)
                     throwW(`Return type "${gtname}" does not match expected return type "${helpers.types.convertTypeObjToName(scopeRetType)}"\n ^^^^^^^ [FIXED BY] Retyping function to return "${gtname}"`)
                     scope.data.returnType = givenRetType
@@ -983,7 +999,7 @@ var functions = {
                     var et_s = expectedType == undefined ? "" : helpers.types.convertTypeObjToName(expectedType)
                     var gt_s = helpers.types.convertTypeObjToName(givenType)
 
-                    if (!(expectedType == undefined? false : "acceptsAny" in expectedType) && !helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s))))
+                    if (!(expectedType == undefined ? false : "acceptsAny" in expectedType) && !helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s))))
                         throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}"`)
 
                     if (helpers.types.isConstOrLit(x)) {

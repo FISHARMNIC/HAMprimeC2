@@ -60,12 +60,8 @@ push %edx
 call __rc_allocate__
 add $8, %esp
 mov %eax, __this__
-# requesting ownership for ___TEMPORARY_OWNER___ (set)
-lea ___TEMPORARY_OWNER___, %eax
-push %eax
-push __this__
-call __rc_requestOwnership__
-add $8, %esp
+movl __this__, %edx
+mov %edx, ___TEMPORARY_OWNER___
 movl __this__, %eax
 movl $0, 0(%eax)
 movl __this__, %eax
@@ -166,7 +162,7 @@ mov 8(%ebp), %edx
 mov %edx, (%esi, %ecx, 4)
 #Set end
 movl __this__, %eax
-mov 0(%eax), %edx
+mov 4(%eax), %edx
 mov %edx, %ebx
 mov %ebx, %eax
 call __rc_quick_check__

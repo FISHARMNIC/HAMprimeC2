@@ -7,8 +7,19 @@ Example linked list format. In my opinion, this is a good demo on how simple HAM
 Linked format 
 {
     .current u32;
-    /* dev note: once borrowing removes hasData, make this Linked:dynamic OR make formats dynamic by def */
     .next Linked;
+    /* In theory, .next should be a Linked:dynamic.
+       |> This is because each next element will be 
+       |> dynamically alloated.
+       * However, it is not needed since statics will
+         attempt to automatically take ownership on 
+         dynamics.
+       * It also allows for there not needing to be
+         "borrow" statements on lines like:
+       |> reference <- reference.next
+       * Since "reference" should just be looking at
+         the data, not owning it.
+    */
     
     .Linked constructor<u32 value>
     {
@@ -55,6 +66,12 @@ Linked format
         create end <- this.findLast();
         
         create newAddr <- Linked(value);
+        /* Note that here, newAddr is dynamic while "end.next" is not.
+           However, if the destination is not dynamic, it doens't 
+           matter. As long as the value is dynamic, the ownership
+           will be transferred to the destination unless the keyword
+           "borrow" was used.
+        */
         end.next <- newAddr;
     }
     
@@ -66,6 +83,7 @@ Linked format
         }
         else
         {
+            // note, wont work for end of arr. Fix soon
             create previous <- this.find(index - 1);
 
             create skipped <- previous.next.next;

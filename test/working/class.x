@@ -13,7 +13,7 @@ List format {
     }
 
     /*Not the most efficient way, but its meant to show that it can allocate and reallocate just fine*/
-    .push method<u32 element> -> array
+    .push method<u32 element> -> u32
     {
         this.length <- (this.length + 1);
         if(this.length == 1)
@@ -25,7 +25,7 @@ List format {
             this.buffer <- copy(u32[this.length], this.buffer);
         }
         this.buffer[this.length - 1] <- element;
-        return(this.buffer);
+        return(this.length);
     }
 
     .pop method<> -> u32 
