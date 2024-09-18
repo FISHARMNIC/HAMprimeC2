@@ -35,6 +35,7 @@ global.macros = {
     NULL: "0",
     "this": "__this__"
 }
+global.allStringLiterals = {}
 global.globalVariables = {           // Object : {variable name: type}
     "__this__": newGlobalVar(defines.types.u32),
     "___TEMPORARY_OWNER___": newGlobalVar(defines.types.u32)

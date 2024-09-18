@@ -26,14 +26,12 @@ __STRING0__: .asciz "Nico"
 __STRING1__: .asciz "Nina"
 .4byte 7
 __STRING2__: .asciz "Hello "
-.4byte 6
-__STRING3__: .asciz " and "
 .4byte 8
-__STRING4__: .asciz "! I am "
+__STRING3__: .asciz "! I am "
 .4byte 11
-__STRING5__: .asciz " years old"
+__STRING4__: .asciz " years old"
 .4byte 13
-__STRING6__: .asciz "output: %s\n"
+__STRING5__: .asciz "output: %s\n"
 __ALLOCFOR_entry__ = 16
 ###################################
 .text
@@ -112,14 +110,14 @@ mov %edx, -8(%ebp)
 mov $1123477881, %ebx
 # Loading local variable "age" @-12(%ebp)
 mov %ebx, -12(%ebp)
-pushl $__STRING5__
+pushl $__STRING4__
 push -12(%ebp)
 call ftos
 add $4, %esp
 push %eax
-pushl $__STRING4__
-push -8(%ebp)
 pushl $__STRING3__
+push -8(%ebp)
+pushl $__STRING2__
 mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __method_User_toString_
@@ -143,7 +141,7 @@ add $8, %esp
 # TODO optimize if variable just do movl
 mov -16(%ebp), %edx
 push %edx
-pushl $__STRING6__
+pushl $__STRING5__
 call printf
 mov %eax, %ebx
 add $8, %esp

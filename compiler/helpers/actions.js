@@ -757,11 +757,19 @@ var allocations = {
         }
     },
     newStringLiteral: function (value) {
+
+        //if string already exists
+        if(objectIncludes(allStringLiterals, value)) // "string" : "__STRING123__"
+        {
+            return allStringLiterals[value]
+        }
+
         var label = helpers.formatters.stringLiteral(helpers.counters.stringLiterals++)
         outputCode.data.push(
             `.4byte ${value.length + 1}`,
             `${label}: .asciz "${value}"`
         )
+        allStringLiterals[value] = label
         globalVariables[label] = newGlobalVar(defines.types.conststr)
         return label
     },
