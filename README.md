@@ -191,8 +191,9 @@ User format
     .name string;
     .ID u32;
 
-    .toString method<> -> {
-        return(this.name + this.ID);
+    .toString method<> -> string:dynamic
+    {
+        return_new(this.name + this.ID);
     }
 }
 
@@ -203,7 +204,7 @@ entry function<> -> u32
     create awesomePerson <- "Nina";
     create age <- 123.456;
 
-    create out <- ("Hello " + me + " and " + awesomePerson + "! I am " + age + " years old.");
+    create out <- "Hello " + me + " and " + awesomePerson + "! I am " + age + " years old";
 
     printf("output: %s\n", out);
 
