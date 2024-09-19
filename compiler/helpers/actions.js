@@ -542,6 +542,7 @@ var variables = {
 
         // two step
 
+        //console.log(address)
         var finalSettingAddr = null
 
         if (!(helpers.types.isConstant(value) || helpers.types.stringIsRegister(value))) {
@@ -578,11 +579,11 @@ var variables = {
             // )
             outputCode.autoPush(
                 `# array load trash awful. Fix this bad optimize`,
-                `push %eax`,
+                `push ${address}`,
                 `mov ${index}, %eax`,
                 `${(elementBytes != 1) ? `shl \$${helpers.types.typeToBytes(elementType) / 2}, %eax` : ""}`,
                 `add (%esp), %eax`,
-                `add $1, %esp`,
+                `add $4, %esp`,
                 `mov${suffix} ${value}, (%eax)`
             )
             finalSettingAddr = "eax"
@@ -1107,7 +1108,7 @@ var functions = {
 
         if (helpers.types.isConstant(index)) {
             outputCode.autoPush(
-                `mov ${index + 8}(%ebp), ${out}`
+                `mov ${parseInt(index) + 8}(%ebp), ${out}`
             )
         } else if (helpers.types.stringIsRegister(index)) {
             actions.assembly.optimizeMove(index, "%eax", helpers.types.getRegisterType(index), defines.types.u32)

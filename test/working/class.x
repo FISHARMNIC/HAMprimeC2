@@ -6,18 +6,34 @@ List format {
     .buffer array;
     .length u32;
     
-    .List constructor<...>
+    /* Constructor */
+    .List constructor<>
     {
         this.buffer <- 0;
         this.length <- 0;
     }
+    
+    /* Constructor overloading */
+    .List constructor<u32 size, ...>
+    {
+        this.buffer <- u32[size];
+        this.length <- size;
+        
+        create i <- 0;
+        while(i <: size)
+        {
+            this.buffer[i] <- __arguments[i + 1];
+            i <- i + 1;
+        }
+    }
 
-    /*Not the most efficient way, but its meant to show that it can allocate and reallocate just fine*/
+    /* Method */
     .push method<u32 element> -> u32
     {
         this.length <- (this.length + 1);
         if(this.length == 1)
         {
+            /*Not the most efficient way, but its meant to show that it can allocate and reallocate just fine*/
             this.buffer <- u32[1];
         }
         else 
@@ -46,6 +62,20 @@ List format {
             i <- (i + 1);
         }
     }
+    
+    .toString method<> -> string
+    {
+        /* "[" is a static string so "" needs to be added */
+        create build <- "[" + "";
+        create i <- 0;
+        while(i <: (this.length - 1))
+        {
+            build <- build + this.buffer[i] + ",";
+            i <- i + 1;
+        }
+        build <- build + this.buffer[i] + "]";
+        return build;
+    }
 }
 
 putint function<u32 i> 
@@ -62,8 +92,11 @@ entry function<> -> u32
     printf("[%i,%i]\n", myList.buffer[0], myList.pop());
     myList.push(321);
     myList.every($putint);
-
-    // myList <- 12;
+    
+    This currently breaks it
+    create secondList <- List(3, 1, 2, 3);
+    /* Calls toString */ 
+    print_(secondList);
     
     return 0;
 }

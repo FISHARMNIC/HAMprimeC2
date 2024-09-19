@@ -388,7 +388,7 @@ function evaluate(line) {
             } else {
                 if (vname == "__arguments") {
                     var index = index[0]
-
+                    
                     //debugPrint(line)
                     var out = actions.functions.readArgument(index)
                     line[wordNum - 1] = out
@@ -944,7 +944,7 @@ function evaluate(line) {
 
 
                 outputCode.autoPush(
-                    `mov${helpers.types.stringIsRegister(lbl) ? "b" : ""} \$0, ${lbl}`,
+                    `mov${helpers.types.stringIsRegister(lbl) ? "" : "b"} \$0, ${lbl}`,
                     `cmp ${right}, ${left}`,
                     `${defines.conditionalMap[cond]} ${lbl}`,
                 )

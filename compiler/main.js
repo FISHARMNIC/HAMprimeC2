@@ -210,7 +210,7 @@ if(returnHighlight)
 {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren"],
+        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments"],
         types: Object.keys(defines.types),
         allVars: [...__anyVarEverMade,"this"]
     }

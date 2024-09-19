@@ -137,7 +137,9 @@ function parseFinalCode() {
     //console.log(outputCode)
     var out =
         `
-.1byte = .byte
+.macro .1byte v
+.byte \\v
+.endm
 ######## Auto included libs #######
 `
 + autoIncludes.map(x => `\n.include "${x}"\n`).join("\n") +

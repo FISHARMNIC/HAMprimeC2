@@ -105,6 +105,7 @@ var types = {
         return x
     },
     typeToAsm: function (x) {
+        //console.log("::::", x.size)
         if (x.float) {
             return `.4byte`
         }
@@ -115,6 +116,7 @@ var types = {
             if (x.pointer) {
                 return `.4byte`
             } else {
+                
                 return `.${x.size / 8 == 1 ? "" : x.size / 8}byte`
             }
         }
@@ -162,8 +164,15 @@ var types = {
             return `%e${register}${endLetter}`
         } else {
             if ("formatPtr" in type || type.pointer || type.size == 32) return `%e${register}${endLetter}`
-            if (type.size == 16) return `%${register}${endLetter}`
-            if (type.size == 8) return low ? `%${register}l` : `%${register}h`
+            if (type.size == 16) {
+                return `%${register}${endLetter}`
+            }
+            if (type.size == 8) {
+                if(register == "s" || register == "i")
+                    throwE("[INTERNAL ERROR] Attempting to accept 8bit esi or edi")
+ 
+                return low ? `%${register}l` : `%${register}h`
+            }
             throwE("Unknown type [" + JSON.stringify(type) + "]")
         }
     },
@@ -411,8 +420,10 @@ var registers = {
     },
     getFreeRegister: function (type, clobber = true) {
         var register = -1
+        var bytes = types.typeToBytes(type)
         Object.entries(this.inLineClobbers).every((x, i) => {
-            if (x[1] == 0) {
+            //throwE("CEHCK THIS LINE IF IT RIGHT")
+            if (x[1] == 0 && (bytes != 1? true : !(x[0] == "s" || x[0] == "i"))) {
                 register = x[0]
                 if (clobber) {
                     this.inLineClobbers[register] = 1
