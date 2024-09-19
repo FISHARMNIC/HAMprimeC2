@@ -93,7 +93,6 @@ entry function<> -> u32
     myList.push(321);
     myList.every($putint);
     
-    This currently breaks it
     create secondList <- List(3, 1, 2, 3);
     /* Calls toString */ 
     print_(secondList);
