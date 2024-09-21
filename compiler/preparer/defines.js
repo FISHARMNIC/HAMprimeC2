@@ -162,6 +162,15 @@ module.exports = {
             dblRef: false,
             formatPtr: null
         },
+        "___format_template_dynamic___": {
+            size: 0,
+            float: false,
+            pointer: true,
+            special: true,
+            dblRef: false,
+            formatPtr: null,
+            hasData: true
+        },
         "___special_pointer_template___": {
             size: 0,
             float: false,

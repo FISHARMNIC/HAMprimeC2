@@ -293,7 +293,7 @@ var variables = {
         //     throwE(`Variable ${vname} has not been declared neither locally nor globally`)
         // }
 
-        if (("hasData" in type)) {
+        if (("hasData" in type) || (vname == "___TEMPORARY_OWNER___")) {
             if (nextThingTakesOwnership || (vname == "___TEMPORARY_OWNER___")) {
                 outputCode.autoPush(
                     `# requesting ownership for ${vname} (set)`,

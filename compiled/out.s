@@ -28,13 +28,20 @@ __STRING0__: .asciz "Index "
 __STRING1__: .asciz " does not exist!\n"
 __ALLOCFOR___method_Linked_remove___ = 8
 __ALLOCFOR___method_Linked_replace___ = 4
+.4byte 2
+__STRING2__: .asciz "["
+.4byte 1
+__STRING3__: .asciz ""
+.4byte 3
+__STRING4__: .asciz "->"
+.4byte 2
+__STRING5__: .asciz "]"
+__ALLOCFOR___method_Linked_toString___ = 8
 __SIZEOF_Linked__ = 8
 # format "Linked" includes:
 #   - PROPERTY (u32) current
 #   - PROPERTY (p0) next
 #   - CNSTRCTR __constructor_Linked_0_ (1 parameters)
-.4byte 11
-__STRING2__: .asciz "%i %i %i\n"
 __ALLOCFOR_entry__ = 4
 ###################################
 .text
@@ -65,8 +72,12 @@ push %edx
 call __rc_allocate__
 add $8, %esp
 mov %eax, __this__
-movl __this__, %edx
-mov %edx, ___TEMPORARY_OWNER___
+# requesting ownership for ___TEMPORARY_OWNER___ (set)
+lea ___TEMPORARY_OWNER___, %eax
+push %eax
+push __this__
+call __rc_requestOwnership__
+add $8, %esp
 movl __this__, %eax
 mov 8(%ebp), %edx
 mov %edx, 0(%eax)
@@ -370,6 +381,93 @@ mov %ebp, %esp
 pop %ebp
 ret
 # reference: 4
+__method_Linked_toString_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Linked_toString___, %esp
+# Loading local variable "reference" @-4(%ebp)
+movl __this__, %edx
+mov %edx, -4(%ebp)
+pushl $__STRING3__
+pushl $__STRING2__
+pushl $2
+call strjoinmany
+add $12, %esp
+mov %eax, %ebx
+# Loading local variable "build" @-8(%ebp)
+mov %ebx, -8(%ebp)
+# requesting ownership for build (create)
+lea -8(%ebp), %eax
+push %eax
+push %ebx
+call __rc_requestOwnership__
+add $8, %esp
+__LABEL13__:
+movl -4(%ebp), %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+mov $0, %cl
+cmp $0, %ebx
+setne %cl
+cmpb $1, %cl
+jne __LABEL14__
+movl -4(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+pushl $__STRING4__
+push %ebx
+call itos
+add $4, %esp
+push %eax
+push -8(%ebp)
+pushl $3
+call strjoinmany
+add $16, %esp
+mov %eax, %ecx
+# requesting ownership for build (set)
+lea -8(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+movl -4(%ebp), %eax
+mov 4(%eax), %edx
+mov %edx, %ebx
+mov %ebx, -4(%ebp)
+jmp __LABEL13__
+__LABEL14__:
+movl -4(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %ebx
+pushl $__STRING5__
+push %ebx
+call itos
+add $4, %esp
+push %eax
+push -8(%ebp)
+pushl $3
+call strjoinmany
+add $16, %esp
+mov %eax, %ecx
+# requesting ownership for build (set)
+lea -8(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+mov -8(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# reference: 4
+# build: 8
 entry:
 push %ebp
 mov %esp, %ebp
@@ -403,45 +501,12 @@ mov %eax, %ebx
 add $4, %esp
 mov -4(%ebp), %edx
 mov %edx, __this__
-# Calling function __method_Linked_index_
-pushl $0
-call __method_Linked_index_
+# Calling function __method_Linked_toString_
+call __method_Linked_toString_
 mov %eax, %ebx
+push %ebx
+call puts
 add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ebx
-# Calling function __method_Linked_index_
-pushl $1
-call __method_Linked_index_
-mov %eax, %ecx
-add $4, %esp
-pop %ebx
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ebx
-push %ecx
-# Calling function __method_Linked_index_
-pushl $2
-call __method_Linked_index_
-mov %eax, %esi
-add $4, %esp
-pop %ecx
-pop %ebx
-push %ebx
-push %esi
-push %ecx
-# Calling function printf
-push %esi
-push %ecx
-push %ebx
-pushl $__STRING2__
-call printf
-mov %eax, %edi
-add $16, %esp
-pop %ecx
-pop %esi
-pop %ebx
 mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __method_Linked_remove_
@@ -469,45 +534,12 @@ mov %eax, %ebx
 add $8, %esp
 mov -4(%ebp), %edx
 mov %edx, __this__
-# Calling function __method_Linked_index_
-pushl $0
-call __method_Linked_index_
+# Calling function __method_Linked_toString_
+call __method_Linked_toString_
 mov %eax, %ebx
+push %ebx
+call puts
 add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ebx
-# Calling function __method_Linked_index_
-pushl $1
-call __method_Linked_index_
-mov %eax, %ecx
-add $4, %esp
-pop %ebx
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ebx
-push %ecx
-# Calling function __method_Linked_index_
-pushl $2
-call __method_Linked_index_
-mov %eax, %esi
-add $4, %esp
-pop %ecx
-pop %ebx
-push %ebx
-push %esi
-push %ecx
-# Calling function printf
-push %esi
-push %ecx
-push %ebx
-pushl $__STRING2__
-call printf
-mov %eax, %edi
-add $16, %esp
-pop %ecx
-pop %esi
-pop %ebx
 mov $0, %eax
 call __rc_quick_check__
 

@@ -1,6 +1,8 @@
 /*
 TODO:
     NEW
+    - !!!!! CRUCIAL !!!!!
+        - See IMPORTANT in rollcall.c
     - !! IMPORTANT !!
         - Make all formats dynamic by def
     - add private properties and public. Do like cpp private: and public:
@@ -213,7 +215,7 @@ if(returnHighlight)
 {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: [...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments"],
+        keywords: ["borrowed", ...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments"],
         types: Object.keys(defines.types),
         allVars: [...__anyVarEverMade,"this"]
     }

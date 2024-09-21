@@ -19,7 +19,7 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "dynamicChildren" || line[wordNum + 2] == "static")) {
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "dynamicChildren" || line[wordNum + 2] == "borrowed")) {
 
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
@@ -31,7 +31,7 @@ function evaluate(line) {
                 defines.types[`__${word}__dynamicdef__`] = cpy
                 line[wordNum] = `__${word}__dynamicdef__`
 
-            } else if(line[wordNum + 2] == "static") {
+            } else if(line[wordNum + 2] == "borrowed") {
                 delete cpy.hasData
                 defines.types[`__${word}__staticdef__`] = cpy
                 line[wordNum] = `__${word}__staticdef__`
@@ -244,7 +244,7 @@ function evaluate(line) {
 
             if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
                 if (offsetWord(2) == "constructor") {
-                    var nobj = objCopy(defines.types.___format_template___)
+                    var nobj = objCopy(defines.types.___format_template_dynamic___)
                     nobj.formatPtr = scope[scope.length - 1].data
                     nobj = helpers.types.convertTypeToHasData(nobj)
                     globalVariables.__this__ = newGlobalVar(nobj)
@@ -253,7 +253,7 @@ function evaluate(line) {
                     // HERE AUGUST 5 2024
                 } else if (offsetWord(2) == "method") {
                     // yes this is repeated.
-                    var nobj = objCopy(defines.types.___format_template___)
+                    var nobj = objCopy(defines.types.___format_template_dynamic___)
                     nobj.formatPtr = scope[scope.length - 1].data
                     nobj = helpers.types.convertTypeToHasData(nobj)
                     globalVariables.__this__ = newGlobalVar(nobj)
@@ -279,7 +279,7 @@ function evaluate(line) {
                         type: objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.u32)
                     })
 
-                    var nobj = objCopy(defines.types.___format_template___)
+                    var nobj = objCopy(defines.types.___format_template_dynamic___)
                     nobj.formatPtr = scope[scope.length - 1].data
                     //nobj.hasData = true
                     defines.types[scope[scope.length - 1].data.name] = nobj
@@ -530,7 +530,7 @@ function evaluate(line) {
                 userFormats[oldScope.data.name] = objCopy(oldScope.data)
                 userFormats[oldScope.data.name].size = helpers.formats.getFormatSize(oldScope.data.properties)
 
-                var nobj = objCopy(defines.types.___format_template___)
+                var nobj = objCopy(defines.types.___format_template_dynamic___)
                 nobj.formatPtr = userFormats[oldScope.data.name]
                 defines.types[oldScope.data.name] = nobj
 
@@ -618,6 +618,12 @@ function evaluate(line) {
                     data: d
                 }
                 userFormats[kname] = d
+
+
+                var nobj = objCopy(defines.types.___format_template_dynamic___)
+                nobj.formatPtr = d
+                defines.types[kname] = nobj
+                //throwE(defines.types)
             } else if (word == "print_" || word == "println_") {
                 //throwE("WIP")
 

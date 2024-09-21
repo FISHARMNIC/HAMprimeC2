@@ -1,5 +1,6 @@
 /*
-Example for a Java ArrayList-like class
+Testing a possible issue with garbage collector
+See rollcall.c !!!IMPORTANT
 */
 
 List format {
@@ -31,6 +32,7 @@ List format {
     .push method<u32 element> -> u32
     {
         this.length <- (this.length + 1);
+        create e <- 0;
         if(this.length == 1)
         {
             /*Not the most efficient way, but its meant to show that it can allocate and reallocate just fine*/
@@ -38,9 +40,11 @@ List format {
         }
         else 
         {
-            this.buffer <- copy(u32[this.length], this.buffer);
+            e <- u32[this.length];
+            this.buffer <- copy(e, this.buffer);
         }
         this.buffer[this.length - 1] <- element;
+        printf("-----buff: %p %p\n", this.buffer, e);
         return(this.length);
     }
 
@@ -85,17 +89,21 @@ putint function<u32 i>
 
 entry function<> -> u32
 {
+    printf("::Instance\n");
     create myList <- List();
 
+    printf("::A\n");
     myList.push(123);
+    printf("::B\n");
     myList.push(456);
-    printf("[%i,%i]\n", myList.buffer[0], myList.pop());
+    printf("::C\n");
     myList.push(321);
-    myList.every($putint);
+    
+    //myList.every($putint);
     
     create secondList <- List(3, 1, 2, 3);
-    print_(secondList);
-    printf("\n%p %p\n", myList, myList.buffer);
+    //print_(secondList);
+    //printf("\n%p %p\n", myList, myList.buffer);
     
     return 0;
 }

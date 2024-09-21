@@ -7,8 +7,7 @@ Example linked list format. In my opinion, this is a good demo on how simple HAM
 Linked format 
 {
     .current u32;
-    /* Since next is allocated dynamically, we should show that */
-    .next Linked:dynamic;
+    .next Linked;
     
     .Linked constructor<u32 value>
     {
@@ -16,7 +15,7 @@ Linked format
         this.next <- 0;
     }
     
-    .findLast method<> -> Linked
+    .findLast method<> -> Linked:borrowed
     {
         create reference <- borrow this;
         while(reference.next != 0)
@@ -27,7 +26,7 @@ Linked format
         return reference;
     }
     
-    .find method<u32 index> -> Linked
+    .find method<u32 index> -> Linked:borrowed
     {
         create reference <- borrow this;
         create i <- 0;
@@ -37,7 +36,7 @@ Linked format
             if(reference.next == 0)
             {
                 /* Return null */
-                return(Linked:(0));
+                return(Linked:borrowed:(0));
             }
             reference <- borrow reference.next;
             i <- i + 1;
@@ -53,7 +52,7 @@ Linked format
     
     .add method<u32 value> -> u32
     {
-        create end <- this.findLast();
+        create end <- borrow this.findLast();
         
         /* This is where we dynamically allocate .next */
         create newAddr <- Linked(value);
@@ -101,22 +100,38 @@ Linked format
         create reference <- this.find(index);
         reference.current <- value;
     }
+    
+    .toString method<> -> string
+    {
+        create reference <- borrow this;
+        create build <- "[" + "";
+        while(reference.next != 0)
+        {
+            // printf("::%p\n", reference);
+            build <- build + reference.current + "->";
+            reference <- borrow reference.next;
+        }
+        // printf("::%p\n", reference);
+        build <- build + reference.current + "]";
+        return build;
+    }
 }
 
 
 entry function<> -> u32
 {
     create myList <- Linked(1);
+    // printf("-----ADDING-----\n");
     myList.add(2);
     myList.add(3);
     
-    printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
-
+    print_(myList);
+ 
     myList.remove(0);
     myList.add(5);
     myList.replace(2,4);
     
-    printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
-    
+    print_(myList);
+
     return 0;
 }

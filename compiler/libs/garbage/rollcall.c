@@ -1,7 +1,7 @@
 #include "rollcall.h"
 #include "linked.h"
 
-//#include <stdio.h>
+#include <stdio.h>
 __linked_t *Roster = 0;
 static int allocated_bytes = 0;
 
@@ -39,7 +39,12 @@ void *__rc_allocate__(int size_bytes, int restricted)
 
     //printf(":::: Attempting malloc of size %i\n", size_bytes);
     //Better, only one malloc call and one free
-    roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t) + sizeof(roster_entry_t *) + size_bytes);
+
+    // !!!!!!! IMPORTANT. NOT ALLOCATING ENOUGH SPACE HERE OR OVERFLOW.
+    //          TRY ALLOC + extra 32 on issue.x
+    //          EVEN TRYING +1 WORKS!
+    //    TEMP FIX: added +1
+    roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t) + sizeof(roster_entry_t *) + size_bytes + 1);
     described_buffer_t *described_buffer = (described_buffer_t *) (((char*)roster_entry) + sizeof(roster_entry_t));
 
     assert(roster_entry != 0);
@@ -53,7 +58,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
 
     __linked_add(&Roster, roster_entry);
 
-    //printf("Allocated Roster[%i] {%i} @%p\n", __linked_getSize(Roster), size_bytes, &(described_buffer->data));
+    //printf("\t\tAllocated Roster[%i] {%i} @%p\n", __linked_getSize(Roster), size_bytes, &(described_buffer->data));
 
     return roster_entry->pointer;
 }
