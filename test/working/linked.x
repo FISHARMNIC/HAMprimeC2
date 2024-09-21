@@ -93,7 +93,7 @@ Linked format
     .toString method<> -> string
     {
         create reference <- borrow this;
-        create build <- "[" + "";
+        create build <- "[";
         while(reference.next != 0)
         {
             //printf("::%p %i %s %p\n", reference, reference.current, build, reference.next);
@@ -112,7 +112,7 @@ Linked format
 entry function<> -> u32
 {
     create myList <- Linked(1);
-    // printf("-----ADDING-----\n");
+    
     myList.add(2);
     myList.add(3);
     

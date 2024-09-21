@@ -1,10 +1,14 @@
 /*
 TODO:
+    - !! IMPORTANT !!
+        - if assigning literal to variable on creation, like: create bob <- "[" 
+            - becomes: create <- __STRING0__
+            - If that, then convert to dynamic
     - "smart" type
         - each type is assigned a number.
         - Passing as type smart passes both the number and its type ID
         - then you can do: "if(bob is u32)" or if(arr[0] is Person)
-        
+
     - maybe add cacheing "this" in register in methods because it's used a lot
     - add private properties and public. Do like cpp private: and public:
     - !! IMPORTANT !! 

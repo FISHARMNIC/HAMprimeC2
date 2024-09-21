@@ -1,5 +1,6 @@
 void *__rc_allocate__(int, int);
 int sprintf(char*, const char*, ...);
+void* memcpy(void*, void*, int);
 extern int ___TEMPORARY_OWNER___;
 
 #include <stdio.h>
@@ -81,7 +82,15 @@ char* itos(int num)
         len--;
         //printf("MOVING\n");
     }
-    __rc_requestOwnership__(o, &___TEMPORARY_OWNER___);
+    //__rc_requestOwnership__(o, &___TEMPORARY_OWNER___);
     //printf("RETURNING %s\n", o);
+    return o;
+}
+
+char* cptos(const char * str)
+{
+    int strlen = *(((int*)str) - 1); // length is stored in int right before str
+    char* o = __rc_allocate__(strlen, 0);
+    memcpy(o, (char*) str, strlen);
     return o;
 }

@@ -65,8 +65,7 @@ List format {
     
     .toString method<> -> string
     {
-        /* "[" is a static string so "" needs to be added */
-        create build <- "[" + "";
+        create build <- "[";
         create i <- 0;
         while(i <: (this.length - 1))
         {

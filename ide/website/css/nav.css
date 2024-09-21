@@ -113,7 +113,7 @@ button.fs {
 
 /* dedede */
 button.fs:hover {
-    background-color: #5a6164;
+    background-color: #5a6164 !important;
 }
 
 textarea {
@@ -195,7 +195,7 @@ button.term {
 }
 
 button.term:hover {
-    background-color: #dedede;
+    background-color: #dedede !important;
 }
 
 div.term {

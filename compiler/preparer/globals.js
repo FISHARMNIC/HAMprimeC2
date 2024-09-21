@@ -107,6 +107,14 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.string
     },
+    "cptos": {
+        name: "cptos",
+        parameters: [
+            { name: "constr", type: defines.types.conststr },
+        ],
+        variadic: false,
+        returnType: defines.types.string
+    },
     "strjoinmany" : {
         name: "strjoinmany",
         parameters: [

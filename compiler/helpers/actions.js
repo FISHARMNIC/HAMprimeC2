@@ -168,6 +168,25 @@ var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
         __addToAnyVarEverMade(vname)
 
+        if(helpers.types.isLiteral(value))
+        {
+            outputCode.autoPush(
+                `pushl \$${value}`,
+                `call cptos`,
+                `add $4, %esp`
+            )
+            value = "%eax"
+            type = objCopy(defines.types.string)
+        }
+
+        if(value == "%eax")
+        {
+            value = helpers.registers.getFreeLabelOrRegister(type)
+            outputCode.autoPush(`mov %eax, ${value}`)
+        } else if(value == "%ax" || value == "%al" || value == "%aj")
+        {
+            throwE("[INTERNAL ERROR] Cannot be taking eax. Add line here to clobber other reg and set")
+        }
 
         if (helpers.general.isReserved(vname)) {
             throwE(`Cannot create variable named "${vname}" as it is a reserved word`)

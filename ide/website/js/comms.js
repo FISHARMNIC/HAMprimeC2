@@ -49,8 +49,7 @@ var comms = {
         show("terminal")
         var out = JSON.parse(get("compile/" + currentOpenFile)).data
         console.log(out[0])
-        if(out[0][0] == "{")
-        {
+        if (out[0][0] == "{") {
             out = JSON.parse(out[0])
         }
         if ("issue" in out && out.issue == true) {
@@ -89,8 +88,7 @@ var comms = {
         var out = JSON.parse(get("run"))
         console.log(out.out.join("\n"))
         currentCompiledFile = currentOpenFile
-        if(out.out.join("\n") == "undefined")
-        {
+        if (out.out.join("\n") == "undefined") {
             getTerminal().value = "Program segfaulted. Debugging..."
             this.debug()
         } else {
@@ -101,9 +99,14 @@ var comms = {
     loadFile: function (file) {
         highlightingInfo = {}
         var out = get(`read/${file}`)
+        if (document.getElementById(`__button_${currentOpenFile}__`) != null) {
+            document.getElementById(`__button_${currentOpenFile}__`).style.backgroundColor = "#4b5052"
+        }
         currentOpenFile = file
         editor.setValue(out)
         document.getElementById("saveIcon").hidden = true
+        var clicked = document.getElementById(`__button_${file}__`)
+        clicked.style.backgroundColor = "#656C70"
     },
     saveFile: function () {
         var textContent = editor.doc.getValue()
@@ -111,7 +114,7 @@ var comms = {
         send(JSON.stringify({ textContent, currentOpenFile }))
         document.getElementById("saveIcon").hidden = true
     },
-    createFile: function(name) {
+    createFile: function (name) {
         get(`createFile/${name}`)
         renderFiles()
     },
@@ -122,42 +125,39 @@ var comms = {
         });
 
         (async () => {
-            if(this.compile())
-            {
-            await wait(100);
-             this.runCompiled();
+            if (this.compile()) {
+                await wait(100);
+                this.runCompiled();
             }
         })();
     },
     debug: function (file) {
 
-        if(currentCompiledFile != currentOpenFile)
-        {
+        if (currentCompiledFile != currentOpenFile) {
             getTerminal().value = `Open file does not match compiled file\nPlease compile first`
         } else {
-        var _out = this.getOutput()
-        assembly_viewer.setValue(_out)
+            var _out = this.getOutput()
+            assembly_viewer.setValue(_out)
 
-        getTerminal().value = "Debugging..."
-        var out = JSON.parse(get(`debug`))
-        console.log(out.data)
-        var errorData = out.data[0]
-        if (errorData != "OK") {
-            var problematicLineHAM = parseInt(errorData.slice(0, errorData.indexOf(" ")))
-            var problematicLineASM = parseInt(errorData.slice(errorData.indexOf(" ")))
-            getTerminal().value = "Segmentation Fault\n" + "Line: " + problematicLineHAM  + "\nAssembly: " + problematicLineASM + "\n"
-            if (problematicLineHAM != -1) {
-                highlightErr(highlighter, problematicLineHAM - 1, "[SEG]")
-                highlightErr(assembly_viewer, problematicLineASM - 1)
+            getTerminal().value = "Debugging..."
+            var out = JSON.parse(get(`debug`))
+            console.log(out.data)
+            var errorData = out.data[0]
+            if (errorData != "OK") {
+                var problematicLineHAM = parseInt(errorData.slice(0, errorData.indexOf(" ")))
+                var problematicLineASM = parseInt(errorData.slice(errorData.indexOf(" ")))
+                getTerminal().value = "Segmentation Fault\n" + "Line: " + problematicLineHAM + "\nAssembly: " + problematicLineASM + "\n"
+                if (problematicLineHAM != -1) {
+                    highlightErr(highlighter, problematicLineHAM - 1, "[SEG]")
+                    highlightErr(assembly_viewer, problematicLineASM - 1)
+                }
+            } else {
+                getTerminal().value = "No run-time errors\n"
             }
-        } else {
-            getTerminal().value = "No run-time errors\n"
+            getTerminal().value += out.data.join("\n")
         }
-        getTerminal().value += out.data.join("\n")
-    }
     },
-    getDebugInfo: function (line)
-    {
+    getDebugInfo: function (line) {
         return JSON.parse(get("getDebugInfo"))
     }
 }
