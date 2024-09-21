@@ -3,6 +3,7 @@ module.exports = function (arr) {
     var numStrs = 0;
     var reps = scanPos - 2;
 
+    //console.log("STRING MATH", arr)
     arr.reverse()
     //outputCode.autoPush(`pusha`)
     while (scanPos < arr.length) {
@@ -37,6 +38,7 @@ module.exports = function (arr) {
                 }
         }
         actions.assembly.pushToStack(current, defines.types.string)
+        //console.log("\t PUSHED", current, numStrs)
         numStrs++
         scanPos += 2
     }

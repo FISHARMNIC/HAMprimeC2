@@ -15,6 +15,7 @@
 __this__: .4byte 0
 __xmm_sse_temp__: .4byte 0
 ___TEMPORARY_OWNER___: .4byte 0 
+.global ___TEMPORARY_OWNER___
 .extern __disable_gc__
 ######## user data section ########
 __ALLOCFOR___constructor_Linked_0___ = 0
@@ -26,7 +27,7 @@ __ALLOCFOR___method_Linked_add___ = 8
 __STRING0__: .asciz "Index "
 .4byte 19
 __STRING1__: .asciz " does not exist!\n"
-__ALLOCFOR___method_Linked_remove___ = 8
+__ALLOCFOR___method_Linked_remove___ = 4
 __ALLOCFOR___method_Linked_replace___ = 4
 .4byte 2
 __STRING2__: .asciz "["
@@ -335,15 +336,12 @@ mov 4(%eax), %edx
 mov %edx, %ebx
 mov 4(%ebx), %edx
 mov %edx, %ecx
-# Loading local variable "skipped" @-8(%ebp)
-mov %ecx, -8(%ebp)
-mov -8(%ebp), %ebx
 movl -4(%ebp), %eax
-mov %ebx, 4(%eax)
+mov %ecx, 4(%eax)
 # requesting ownership for -4(%ebp) (property)
 lea 4(%eax), %eax
 push %eax
-push %ebx
+push %ecx
 call __rc_requestOwnership__
 add $8, %esp
 jmp __LABEL10__
@@ -532,6 +530,38 @@ pushl $2
 call __method_Linked_replace_
 mov %eax, %ebx
 add $8, %esp
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Linked_toString_
+call __method_Linked_toString_
+mov %eax, %ebx
+push %ebx
+call puts
+add $4, %esp
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Linked_remove_
+pushl $1
+call __method_Linked_remove_
+mov %eax, %ebx
+add $4, %esp
+# Loading into __this__ because function modified it 
+movl __this__, %edx
+mov %edx, -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Linked_add_
+pushl $8
+call __method_Linked_add_
+mov %eax, %ebx
+add $4, %esp
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Linked_add_
+pushl $16
+call __method_Linked_add_
+mov %eax, %ebx
+add $4, %esp
 mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __method_Linked_toString_

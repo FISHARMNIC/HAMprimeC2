@@ -150,6 +150,7 @@ function parseFinalCode() {
 __this__: .4byte 0
 __xmm_sse_temp__: .4byte 0
 ___TEMPORARY_OWNER___: .4byte 0 
+.global ___TEMPORARY_OWNER___
 .extern __disable_gc__
 ######## user data section ########
 `

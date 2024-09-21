@@ -68,6 +68,7 @@ Linked format
         else
         {
             create previous <- this.find(index - 1);
+            
             if(previous == 0) /* could not find */
             {
                 print_("Index " + index + " does not exist!\n");
@@ -79,18 +80,7 @@ Linked format
             }
             else
             {
-                /*
-                Here, you don't actually need the borrow or cast
-                However, creating skipped takes ownership, and then
-                previous.next takes that ownership right after. 
-                Since there is no need for skipped to have ownership,
-                the data can be borrowed then cast back into a dynamic
-                
-                If this is confusing, just ignore "borrow" and the 
-                "Linked:dynamic:()" cast
-                */
-                create skipped <- borrow previous.next.next;
-                previous.next <- Linked:dynamic:(skipped); 
+                previous.next <- previous.next.next;
             }
         }
     }
@@ -107,12 +97,14 @@ Linked format
         create build <- "[" + "";
         while(reference.next != 0)
         {
-            // printf("::%p\n", reference);
+            //printf("::%p %i %s %p\n", reference, reference.current, build, reference.next);
             build <- build + reference.current + "->";
+            //printf("---!!\n");
             reference <- borrow reference.next;
         }
-        // printf("::%p\n", reference);
+        //printf("DONE:: %p %s %i\n", reference, build, reference.current);
         build <- build + reference.current + "]";
+        //printf("::FINISHED::\n");
         return build;
     }
 }
@@ -132,6 +124,14 @@ entry function<> -> u32
     myList.replace(2,4);
     
     print_(myList);
-
+    
+    myList.remove(1);
+    myList.add(8);
+    myList.add(16);
+    
+    //printf("%p %i\n", myList.next.next.next.next, myList.next.next.next.current);
+    
+    print_(myList);
+   
     return 0;
 }

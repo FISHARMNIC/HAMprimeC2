@@ -56,6 +56,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     roster_entry->size = size_bytes;
     roster_entry->pointer = &(described_buffer->data);
 
+    //printf("ATTEMPTING ADD TO ROSTER\n");
     __linked_add(&Roster, roster_entry);
 
     //printf("\t\tAllocated Roster[%i] {%i} @%p\n", __linked_getSize(Roster), size_bytes, &(described_buffer->data));
@@ -87,6 +88,7 @@ void __rc_collect__()
         {
             //printf("|- Discarding Roster[%i], was %p now %p\n", index, owner_should_point_to, owner_points_to);
             list = __linked_remove(&Roster, index);
+            index++;
         }
         else
         {
