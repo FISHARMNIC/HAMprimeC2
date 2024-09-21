@@ -92,7 +92,7 @@ Example linked list format. In my opinion, this is a good demo on how simple HAM
 Linked format 
 {
     .current u32;
-    .next Linked:dynamic;
+    .next Linked;
     
     .Linked constructor<u32 value>
     {
@@ -100,7 +100,7 @@ Linked format
         this.next <- 0;
     }
     
-    .findLast method<> -> Linked
+    .findLast method<> -> Linked:borrowed
     {
         create reference <- borrow this;
         while(reference.next != 0)
@@ -111,7 +111,7 @@ Linked format
         return reference;
     }
     
-    .find method<u32 index> -> Linked
+    .find method<u32 index> -> Linked:borrowed
     {
         create reference <- borrow this;
         create i <- 0;
@@ -120,7 +120,8 @@ Linked format
         {
             if(reference.next == 0)
             {
-                return(Linked:(0));
+                /* Return null */
+                return(Linked:borrowed:(0));
             }
             reference <- borrow reference.next;
             i <- i + 1;
@@ -136,7 +137,7 @@ Linked format
     
     .add method<u32 value> -> u32
     {
-        create end <- this.findLast();
+        create end <- borrow this.findLast();
         
         create newAddr <- Linked(value);
         end.next <- newAddr;
@@ -150,11 +151,21 @@ Linked format
         }
         else
         {
-            /* Yes, I know this won't work for the end of an array. Fix coming */
             create previous <- this.find(index - 1);
-
-            create skipped <- previous.next.next;
-            previous.next <- skipped; 
+            if(previous == 0) /* could not find */
+            {
+                print_("Index " + index + " does not exist!\n");
+                return 0;
+            } 
+            elif(previous.next == 0) /* Last item */
+            {
+                previous.next <- 0;
+            }
+            else
+            {
+                create skipped <- previous.next.next;
+                previous.next <- skipped; 
+            }
         }
     }
     
@@ -163,23 +174,38 @@ Linked format
         create reference <- this.find(index);
         reference.current <- value;
     }
+    
+    .toString method<> -> string
+    {
+        create reference <- borrow this;
+        create build <- "[" + "";
+        while(reference.next != 0)
+        {
+            build <- build + reference.current + "->";
+            reference <- borrow reference.next;
+        }
+
+        build <- build + reference.current + "]";
+        return build;
+    }
 }
 
 
 entry function<> -> u32
 {
     create myList <- Linked(1);
+
     myList.add(2);
     myList.add(3);
     
-    printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
-
+    print_(myList);
+ 
     myList.remove(0);
     myList.add(5);
     myList.replace(2,4);
     
-    printf("%i %i %i\n", myList.index(0), myList.index(1), myList.index(2));
-    
+    print_(myList);
+
     return 0;
 }
 ```
@@ -193,7 +219,8 @@ User format
 
     .toString method<> -> string
     {
-        return_new(this.name + this.ID);
+        create out <- this.name + this.ID;
+        return out;
     }
 }
 
