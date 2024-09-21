@@ -7,14 +7,14 @@
 }
 .resizer[data-direction='horizontal'] {
     background-color: var(--env);
-    cursor: ew-resize;
+    /* cursor: ew-resize; */
     height: 100%;
-    width: 2px;
+    width: 5px;
 }
 .resizer[data-direction='vertical'] {
     background-color: var(--env);
-    cursor: ns-resize;
-    height: 2px;
+    /* cursor: ns-resize; */
+    height: 3px;
     width: 100%;
 }
 .container__left {

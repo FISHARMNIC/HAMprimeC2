@@ -19,25 +19,28 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "dynamicChildren")) {
-            
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "dynamicChildren" || line[wordNum + 2] == "static")) {
+
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
             if ("formatPtr" in ogtype) {
                 cpy.formatPtr = ogtype.formatPtr
             }
-            if(line[wordNum + 2] == "dynamic")
-            {
+            if (line[wordNum + 2] == "dynamic") {
                 cpy.hasData = true;
                 defines.types[`__${word}__dynamicdef__`] = cpy
                 line[wordNum] = `__${word}__dynamicdef__`
 
+            } else if(line[wordNum + 2] == "static") {
+                delete cpy.hasData
+                defines.types[`__${word}__staticdef__`] = cpy
+                line[wordNum] = `__${word}__staticdef__`
             } else {
                 cpy.elementsHaveData = true;
                 defines.types[`__${word}__dynamicChildrendef__`] = cpy
                 line[wordNum] = `__${word}__dynamicChildrendef__`
             }
-            
+
             line.splice(wordNum + 1, 2)
             /*
             should work like creates a second type called __Linked__dynamicdef__ which is a clone of the original one but has hasData enabled
@@ -134,21 +137,20 @@ function evaluate(line) {
 
                 if (offsetWord(3) == "]") {
                     var elementsHaveData = false
-                    if(defines.types[word].hasData || "formatPtr" in defines.types[word])
+                    if (defines.types[word].hasData || "formatPtr" in defines.types[word])
                         elementsHaveData = true
                     var newType = helpers.types.convertTypeToHasData(defines.types[word])
                     newType.pointer = true // if broken delete
-                    if(elementsHaveData)
-                    {
+                    if (elementsHaveData) {
                         newType.elementsHaveData = true
                     }
 
-                    var out= helpers.registers.getFreeLabelOrRegister(newType)
+                    var out = helpers.registers.getFreeLabelOrRegister(newType)
 
                     //throwE(helpers.types.guessType(out))
                     if (num == parseInt(num)) { // literal
                         num = parseInt(num)
-                        
+
                         actions.allocations.allocateMmap(bytes, `Asked for ${num} allocations of "${word}"`)
                         outputCode.autoPush(
                             `mov %eax, ${out}`
@@ -190,42 +192,44 @@ function evaluate(line) {
             var setting = false
             if (line[wordNum] == "(") {
                 derefData = offsetWord(1)
-                if(offsetWord(3) == "<-")
+                if (offsetWord(3) == "<-")
                     setting = true
                 line.splice(wordNum, 3)
             } else {
                 derefData = line[wordNum]
-                if(offsetWord(1) == "<-")
+                if (offsetWord(1) == "<-")
                     setting = true
                 line.splice(wordNum, 1)
             }
 
-            // needs to have hasData etc. Think
-            if(setting)
-                throwE("Setting pointer WIP")
-
             var baseType = helpers.types.guessType(derefData)
-            var retType = objCopy(baseType)
-            retType.pointer = false
-
-            outputCode.autoPush(
-                `# dereferencing ${derefData}`
-            )
-            if (numberOfDeref > 1) {
-                throwE("Multiple dereferences not included yet")
+            // needs to have hasData etc. Think
+            if (setting) {
+                throwE("Setting pointer WIP", baseType)
+                
             } else {
-                var reg = helpers.registers.getFreeLabelOrRegister(retType)
-                line[wordNum] = reg
-                if (helpers.types.stringIsRegister(derefData) || objectIncludes(globalVariables, derefData)) {
-                    outputCode.autoPush(
-                        `mov${helpers.types.sizeToSuffix(retType)} (${derefData}), ${reg}`
-                    )
-                }
-                else {
-                    outputCode.autoPush(
-                        `mov ${reg}, %eax`,
-                        `mov${helpers.types.sizeToSuffix(retType)} (%eax), ${reg}`
-                    )
+                var retType = objCopy(baseType)
+                retType.pointer = false
+
+                outputCode.autoPush(
+                    `# dereferencing ${derefData}`
+                )
+                if (numberOfDeref > 1) {
+                    throwE("Multiple dereferences not included yet")
+                } else {
+                    var reg = helpers.registers.getFreeLabelOrRegister(retType)
+                    line[wordNum] = reg
+                    if (helpers.types.stringIsRegister(derefData) || objectIncludes(globalVariables, derefData)) {
+                        outputCode.autoPush(
+                            `mov${helpers.types.sizeToSuffix(retType)} (${derefData}), ${reg}`
+                        )
+                    }
+                    else {
+                        outputCode.autoPush(
+                            `mov ${reg}, %eax`,
+                            `mov${helpers.types.sizeToSuffix(retType)} (%eax), ${reg}`
+                        )
+                    }
                 }
             }
         }
@@ -237,7 +241,7 @@ function evaluate(line) {
         // #region Formats and Numbers
         else if (word == ".") { // child property
             // creating a new property
-           
+
             if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
                 if (offsetWord(2) == "constructor") {
                     var nobj = objCopy(defines.types.___format_template___)
@@ -388,7 +392,7 @@ function evaluate(line) {
             } else {
                 if (vname == "__arguments") {
                     var index = index[0]
-                    
+
                     //debugPrint(line)
                     var out = actions.functions.readArgument(index)
                     line[wordNum - 1] = out
@@ -693,11 +697,10 @@ function evaluate(line) {
                 }
                 line[wordNum] = actions.assembly.copyData(offsetWord(2))
                 line.splice(wordNum + 1, 3)
-            } else if(word == "copy")
-            {
+            } else if (word == "copy") {
                 if (offsetWord(1) != "(") {
                     throwE(`Copy must be called like a function with parenthesis`)
-                }  else if (offsetWord(3) != ")") {
+                } else if (offsetWord(3) != ")") {
                     throwE(`Copy doens't have the right parameters`)
                 }
 
@@ -705,17 +708,15 @@ function evaluate(line) {
                 var src = offsetWord(2)[2]
                 var srcType = helpers.types.guessType(src)
                 var destType = helpers.types.guessType(dest)
-                
-                if(!("hasData" in srcType) || !("hasData" in destType))
-                {
+
+                if (!("hasData" in srcType) || !("hasData" in destType)) {
                     //throwE(`Cannot copy non-dynamically allocated data. Use memcpy instead`, srcType)
                 }
-                if(!helpers.types.areEqual(srcType, destType))
-                {
+                if (!helpers.types.areEqual(srcType, destType)) {
                     throwW(`Attempting to copy data type "${helpers.types.convertTypeObjToName(srcType)}" into "${helpers.types.convertTypeObjToName(destType)}"`)
                 }
 
-               // throwE(dest)
+                // throwE(dest)
 
                 outputCode.autoPush(
                     `# copying buffer`,

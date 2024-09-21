@@ -1,6 +1,9 @@
 /*
 TODO:
     NEW
+    - !! IMPORTANT !!
+        - Make all formats dynamic by def
+    - add private properties and public. Do like cpp private: and public:
     - !! IMPORTANT !! 
         - if not nextThingTakesOwnership, copy type and remove hasData
         - MAKE SURE THAT BORROW COPIES TYPE AND REMOVES HASDATA FROM TYPE
@@ -11,7 +14,7 @@ TODO:
             - normal strings have dynamic enabled
             - but what happens when you set of type string to a literal?
                 - like .bob string, then me.bob <- "hello"
-                - in theory nothing? Since setting static to dyn won't trigger ownership
+                - later on, it might try to assign ownership and segfault
     - add push and pop for array types
     - throw error if defining function or variable that is keyword
     - see plans/settingptr.x

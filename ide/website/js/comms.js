@@ -95,7 +95,7 @@ var comms = {
             this.debug()
         } else {
             console.log(out)
-            getTerminal().value = out.out.join("\n") + "\n" + "Exited with code: " + out.code
+            getTerminal().value = out.out.join("\n") + "\n\n------------------\n" + "Exited with code: " + out.code
         }
     },
     loadFile: function (file) {

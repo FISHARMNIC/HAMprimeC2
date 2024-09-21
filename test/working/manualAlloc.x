@@ -3,13 +3,12 @@ Person format
     .name string;
     .age u32;
     
-    // dev note: in future have something similar to type "array" where string by default is dyanmic
-    // need to be careful for static strings though
-    
     // todo #2, make return automatically guess if needs to do return_new
     .toString method<> -> string
     {
-        return_new("Name: " + this.name + " || Age: " + this.age);
+        // or do return_new all on one line
+        create outStr <- "Name: " + this.name + " || Age: " + this.age;
+        return outStr;
     }
 }
 

@@ -2,6 +2,7 @@ var textarea = document.getElementById("code")
 var highlight = document.getElementById("highlight")
 var assembly = document.getElementById("assembly")
 var codezone = document.getElementById("zone_code")
+var selected_info = document.getElementById("info_viewer")
 
 var editor = CodeMirror.fromTextArea(textarea, {
     lineNumbers: true,
@@ -25,6 +26,13 @@ var highlighter = CodeMirror.fromTextArea(highlight, {
 var assembly_viewer = CodeMirror.fromTextArea(assembly, {
     lineNumbers: true,
     mode: { name: 'gas', architecture: "x86" },
+    theme: 'oceanic-next',
+    readOnly: true,
+})
+
+var selected_info_viewer = CodeMirror.fromTextArea(selected_info, {
+    lineNumbers: false,
+    mode: "HAM",
     theme: 'oceanic-next',
     readOnly: true,
 })
@@ -194,6 +202,7 @@ function asmLineFromCode(line)
 function clrset()
 {
     //console.log("cc")
+    selected_info_viewer.setValue("")
     clearHighlightedAsmLine()
     clearHighlightedAsmLine(assembly_viewer)
 
@@ -215,3 +224,26 @@ function clrset()
 
 //     highlightLineFromAsm(line)
 // })
+
+document.addEventListener("selectionchange", e => {
+    var selectedText = editor.getSelection()
+
+    // make not for each
+    var n = -1
+    Object.entries(highlightingInfo).forEach(e => {
+        if(e[1].includes(selectedText))
+        {
+            n = e[0]
+        }
+    })
+    if(n != -1)
+    {
+        if(n == "allVars")
+        {
+            n = "variable"
+        } else {
+            n = n.slice(0, n.length - 1)
+        }
+    selected_info_viewer.setValue(`${selectedText} : "${n}"`)
+    }
+})

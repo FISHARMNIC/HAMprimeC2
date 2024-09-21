@@ -68,21 +68,31 @@ Linked format
         }
         else
         {
-            // note, wont work for end of arr. Fix soon
             create previous <- this.find(index - 1);
-
-            /*
-            Here, you don't actually need the borrow or cast
-            However, creating skipped takes ownership, and then
-            previous.next takes that ownership right after. 
-            Since there is no need for skipped to have ownership,
-            the data can be borrowed then cast back into a dynamic
-            
-            If this is confusing, just ignore "borrow" and the 
-            "Linked:dynamic:()" cast
-            */
-            create skipped <- borrow previous.next.next;
-            previous.next <- Linked:dynamic:(skipped); 
+            if(previous == 0) /* could not find */
+            {
+                print_("Index " + index + " does not exist!\n");
+                return 0;
+            } 
+            elif(previous.next == 0) /* Last item */
+            {
+                previous.next <- 0;
+            }
+            else
+            {
+                /*
+                Here, you don't actually need the borrow or cast
+                However, creating skipped takes ownership, and then
+                previous.next takes that ownership right after. 
+                Since there is no need for skipped to have ownership,
+                the data can be borrowed then cast back into a dynamic
+                
+                If this is confusing, just ignore "borrow" and the 
+                "Linked:dynamic:()" cast
+                */
+                create skipped <- borrow previous.next.next;
+                previous.next <- Linked:dynamic:(skipped); 
+            }
         }
     }
     
