@@ -7,6 +7,8 @@ static int allocated_bytes = 0;
 
 int __disable_gc__ = 0;
 
+const int SIZE_ROSTER_AND_ENTRY = (sizeof(roster_entry_t) + sizeof(roster_entry_t *));
+
 void __rc_quick_check__()
 {
     asm volatile("pusha");
@@ -31,7 +33,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     //     __rc_collect__();
     //     allocated_bytes = 0;
     // }
-    allocated_bytes += sizeof(roster_entry_t) + sizeof(roster_entry_t *) + size_bytes;
+    allocated_bytes += SIZE_ROSTER_AND_ENTRY + size_bytes + 1;
 
     // old
     //roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t));
@@ -44,7 +46,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     //          TRY ALLOC + extra 32 on issue.x
     //          EVEN TRYING +1 WORKS!
     //    TEMP FIX: added +1
-    roster_entry_t *roster_entry = malloc(sizeof(roster_entry_t) + sizeof(roster_entry_t *) + size_bytes + 1);
+    roster_entry_t *roster_entry = malloc(SIZE_ROSTER_AND_ENTRY + size_bytes + 1);
     described_buffer_t *described_buffer = (described_buffer_t *) (((char*)roster_entry) + sizeof(roster_entry_t));
 
     assert(roster_entry != 0);

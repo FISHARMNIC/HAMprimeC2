@@ -6,7 +6,7 @@
 #define FALSE (0)
 #define TRUE (1)
 
-#define BYTES_PER_GC 32
+#define BYTES_PER_GC 32 // For testing use like 32. Should be 128
 
 void *__rc_allocate__(int, int);
 void __rc_collect__();

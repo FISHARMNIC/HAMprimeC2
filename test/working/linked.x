@@ -129,8 +129,6 @@ entry function<> -> u32
     myList.add(8);
     myList.add(16);
     
-    //printf("%p %i\n", myList.next.next.next.next, myList.next.next.next.current);
-    
     print_(myList);
    
     return 0;
