@@ -1,10 +1,11 @@
 /*
 TODO:
-    NEW
-    - !!!!! CRUCIAL !!!!!
-        - See IMPORTANT in rollcall.c
-    - !! IMPORTANT !!
-        - Make all formats dynamic by def
+    - "smart" type
+        - each type is assigned a number.
+        - Passing as type smart passes both the number and its type ID
+        - then you can do: "if(bob is u32)" or if(arr[0] is Person)
+        
+    - maybe add cacheing "this" in register in methods because it's used a lot
     - add private properties and public. Do like cpp private: and public:
     - !! IMPORTANT !! 
         - if not nextThingTakesOwnership, copy type and remove hasData
@@ -20,7 +21,6 @@ TODO:
     - add push and pop for array types
     - throw error if defining function or variable that is keyword
     - see plans/settingptr.x
-    - In linked.x,doing ref <- ref.next removes dynamic attr as .next is not of hasData
     - Automatic return typing, see warns on linked.x
     - Multiple pointer types
         - like char ***
@@ -60,7 +60,6 @@ TODO:
     - make a raytracer now that i have floats
     - flag for defaultFloats
     - flag for __ccalled__ to be turned on automatically, and switches off caller saving regs
-    - flag "NoStringDuplicates" when TRUE: any string literals with the same value use the same reference. Default TRUE
     - "own" keyword specifies who owns data. Without it its freed 
         - uses Memory Ownership Table for automatic freeing
         - "__disable ownership" to turn this off

@@ -912,7 +912,11 @@ var functions = {
                 var givenRetType = helpers.types.guessType(rVal)
                 var scopeRetType = scope.data.returnType
                 // console.log("::", givenRetType, scopeRetType)
-                if (!helpers.types.areEqual(givenRetType, scopeRetType)) {
+                if(rVal == "null")
+                {
+                    rVal = "0"
+                }
+                else if (!helpers.types.areEqual(givenRetType, scopeRetType)) {
                     var gtname = helpers.types.convertTypeObjToName(givenRetType)
                     throwW(`Return type "${gtname}" does not match expected return type "${helpers.types.convertTypeObjToName(scopeRetType)}"\n ^^^^^^^ [FIXED BY] Retyping function to return "${gtname}"`)
                     scope.data.returnType = givenRetType

@@ -35,8 +35,7 @@ Linked format
         {
             if(reference.next == 0)
             {
-                /* Return null */
-                return(Linked:borrowed:(0));
+                return null;
             }
             reference <- borrow reference.next;
             i <- i + 1;
