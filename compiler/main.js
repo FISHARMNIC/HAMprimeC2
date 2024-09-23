@@ -1,9 +1,14 @@
 /*
 TODO:
-    - !! IMPORTANT !!
-        - if assigning literal to variable on creation, like: create bob <- "[" 
-            - becomes: create <- __STRING0__
-            - If that, then convert to dynamic
+
+    !! IMPORTANT !!
+        - look into "thiscall" calling convention, which is meant for member functions
+        - moves "this" into ecx, then other arguments on stack
+            - do this and then keep ecx reserved and use it as "this". Make sure to push and pop ecx before and after if clobbered
+
+    - make compiling less confusing
+        - forward to bashsrc
+    - make a simple UI generator like visual basic drag and drop
     - "smart" type
         - each type is assigned a number.
         - Passing as type smart passes both the number and its type ID

@@ -72,6 +72,8 @@ var types = {
         if("hasData" in type)
         {
             name += ":dynamic"
+        } else {
+            name += ":borrowed"
         }
         return name
     },
