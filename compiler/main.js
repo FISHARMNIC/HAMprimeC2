@@ -1,8 +1,5 @@
 /*
 TODO:
-
- ------ CURRENTLY IN STRCMP BRANCH ------
-
     !! IMPORTANT !!
         - look into "thiscall" calling convention, which is meant for member functions
         - moves "this" into ecx, then other arguments on stack
