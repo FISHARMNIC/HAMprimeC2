@@ -25,11 +25,16 @@
 
 
 .cm-num {
-    color: #e7c9a0;
+    color: #e78b7f;
 }
 
 .cm-brack {
     color: #e7e169;
+}
+
+.cm-ops {
+    /* color: #a0d3e7; */
+    color: #ecdcb4;
 }
 
 ul.nav {
