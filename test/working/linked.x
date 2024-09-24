@@ -129,6 +129,8 @@ entry function<> -> u32
     myList.add(16);
     
     print_(myList);
+    
+    myList.remove(10);
    
     return 0;
 }

@@ -565,6 +565,16 @@ mov %eax, %ebx
 push %ebx
 call puts
 add $4, %esp
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Linked_remove_
+pushl $10
+call __method_Linked_remove_
+mov %eax, %ebx
+add $4, %esp
+# Loading into __this__ because function modified it 
+movl __this__, %edx
+mov %edx, -4(%ebp)
 mov $0, %eax
 call __rc_quick_check__
 

@@ -4,8 +4,8 @@ create d <- u8{4,5,6};
 entry function<> -> u32
 {
     // typing variables
-    create u8 a <- 123;
-    create u16 b;
+    create a <- u8:(123);
+    create b <- u16:(0);
 
     // typing arrays, local
     create c <- u8{1,2,3};
