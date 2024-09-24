@@ -2,6 +2,8 @@
 .macro .1byte v
 .byte \v
 .endm
+.data
+__rc_triggerSegfaultOnNullOwnership__: .byte 0
 ######## Auto included libs #######
 
 .include "/Users/squijano/Documents/HAMprimeC2/compiler/libs/gcollect.s"
@@ -27,20 +29,24 @@ __ALLOCFOR___method_Linked_add___ = 8
 __STRING0__: .asciz "Index "
 .4byte 19
 __STRING1__: .asciz " does not exist!\n"
+.4byte 17
+__STRING2__: .asciz " out of range!\n"
 __ALLOCFOR___method_Linked_remove___ = 4
 __ALLOCFOR___method_Linked_replace___ = 4
 .4byte 2
-__STRING2__: .asciz "["
+__STRING3__: .asciz "["
 .4byte 3
-__STRING3__: .asciz "->"
+__STRING4__: .asciz "->"
 .4byte 2
-__STRING4__: .asciz "]"
+__STRING5__: .asciz "]"
 __ALLOCFOR___method_Linked_toString___ = 8
 __SIZEOF_Linked__ = 8
 # format "Linked" includes:
 #   - PROPERTY (u32) current
 #   - PROPERTY (p0) next
 #   - CNSTRCTR __constructor_Linked_0_ (1 parameters)
+.4byte 46
+__STRING6__: .asciz "There should be an error below this...\n---> "
 __ALLOCFOR_entry__ = 4
 ###################################
 .text
@@ -324,8 +330,19 @@ cmp $0, %ebx
 sete %cl
 cmpb $1, %cl
 jne __LABEL11__
-movl -4(%ebp), %eax
-movl $0, 4(%eax)
+pushl $__STRING2__
+push 8(%ebp)
+call itos
+add $4, %esp
+push %eax
+pushl $__STRING0__
+pushl $3
+call strjoinmany
+add $16, %esp
+mov %eax, %ebx
+push %ebx
+call puts
+add $4, %esp
 jmp __LABEL10__
 __LABEL11__:
 movl -4(%ebp), %eax
@@ -383,7 +400,7 @@ sub $__ALLOCFOR___method_Linked_toString___, %esp
 # Loading local variable "reference" @-4(%ebp)
 movl __this__, %edx
 mov %edx, -4(%ebp)
-pushl $__STRING2__
+pushl $__STRING3__
 call cptos
 add $4, %esp
 mov %eax, %ebx
@@ -407,7 +424,7 @@ jne __LABEL14__
 movl -4(%ebp), %eax
 mov 0(%eax), %edx
 mov %edx, %ebx
-pushl $__STRING3__
+pushl $__STRING4__
 push %ebx
 call itos
 add $4, %esp
@@ -432,7 +449,7 @@ __LABEL14__:
 movl -4(%ebp), %eax
 mov 0(%eax), %edx
 mov %edx, %ebx
-pushl $__STRING4__
+pushl $__STRING5__
 push %ebx
 call itos
 add $4, %esp
@@ -559,11 +576,33 @@ mov %eax, %ebx
 add $4, %esp
 mov -4(%ebp), %edx
 mov %edx, __this__
+# Calling function __method_Linked_add_
+pushl $32
+call __method_Linked_add_
+mov %eax, %ebx
+add $4, %esp
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Linked_remove_
+pushl $4
+call __method_Linked_remove_
+mov %eax, %ebx
+add $4, %esp
+# Loading into __this__ because function modified it 
+movl __this__, %edx
+mov %edx, -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
 # Calling function __method_Linked_toString_
 call __method_Linked_toString_
 mov %eax, %ebx
 push %ebx
 call puts
+add $4, %esp
+# Calling function printf
+pushl $__STRING6__
+call printf
+mov %eax, %ebx
 add $4, %esp
 mov -4(%ebp), %edx
 mov %edx, __this__

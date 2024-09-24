@@ -75,10 +75,18 @@ Linked format
             } 
             elif(previous.next == 0) /* Last item */
             {
-                previous.next <- 0;
+                print_("Index " + index + " out of range!\n");
             }
             else
             {
+                /*
+                previous.next.next may be null if removing last item.
+                
+                When assigning null to a dynamic
+                 - Ownership won't be completed
+                 - If you want an error to be thrown instead, do:
+                     "__rule segfaultOnNullOwnership true;"
+                */ 
                 previous.next <- previous.next.next;
             }
         }
@@ -108,7 +116,6 @@ Linked format
     }
 }
 
-
 entry function<> -> u32
 {
     create myList <- Linked(1);
@@ -127,9 +134,12 @@ entry function<> -> u32
     myList.remove(1);
     myList.add(8);
     myList.add(16);
+    myList.add(32);
+    myList.remove(4);
     
     print_(myList);
     
+    printf("There should be an error below this...\n---> ");
     myList.remove(10);
    
     return 0;

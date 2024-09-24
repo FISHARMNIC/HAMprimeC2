@@ -95,7 +95,6 @@ Note: This is still being worked on, and editing still has some issues. This was
 Example linked list format. In my opinion, this is a good demo on how simple HAM can be
 * Notice how seamless things like adding a new element, or removing one
 * Compare it to something like C. No mallocs, frees, pointer confusion, etc.
-* The only "hurdle" is the idea of borrowing, which can be understood quickly
 */
 
 Linked format 
@@ -160,6 +159,7 @@ Linked format
         else
         {
             create previous <- this.find(index - 1);
+            
             if(previous == 0) /* could not find */
             {
                 print_("Index " + index + " does not exist!\n");
@@ -167,12 +167,11 @@ Linked format
             } 
             elif(previous.next == 0) /* Last item */
             {
-                previous.next <- 0;
+                print_("Index " + index + " out of range!\n");
             }
             else
             {
-                create skipped <- previous.next.next;
-                previous.next <- skipped; 
+                previous.next <- previous.next.next;
             }
         }
     }
@@ -186,23 +185,21 @@ Linked format
     .toString method<> -> string
     {
         create reference <- borrow this;
-        create build <- "[" + "";
+        create build <- "[";
         while(reference.next != 0)
         {
             build <- build + reference.current + "->";
             reference <- borrow reference.next;
         }
-
         build <- build + reference.current + "]";
         return build;
     }
 }
 
-
 entry function<> -> u32
 {
     create myList <- Linked(1);
-
+    
     myList.add(2);
     myList.add(3);
     
@@ -213,7 +210,18 @@ entry function<> -> u32
     myList.replace(2,4);
     
     print_(myList);
-
+    
+    myList.remove(1);
+    myList.add(8);
+    myList.add(16);
+    myList.add(32);
+    myList.remove(4);
+    
+    print_(myList);
+    
+    printf("There should be an error below this...\n---> ");
+    myList.remove(10);
+   
     return 0;
 }
 ```

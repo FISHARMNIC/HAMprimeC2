@@ -38,7 +38,8 @@ global.macros = {
 global.allStringLiterals = {}
 global.globalVariables = {           // Object : {variable name: type}
     "__this__": newGlobalVar(defines.types.u32),
-    "___TEMPORARY_OWNER___": newGlobalVar(defines.types.u32)
+    "___TEMPORARY_OWNER___": newGlobalVar(defines.types.u32),
+    "__rc_triggerSegfaultOnNullOwnership__": newGlobalVar(defines.types.u8)
 }
 global.userFunctions = {           // Object : {function name: {func name, parameters[{param name , type},...]}, return type}
     "printf": {
@@ -188,7 +189,8 @@ global.programRules = {
     StaticArraysAllocateSize: false,
     hasUsedMmap: false,
     defaultTransience: false,
-    optimizeMemory: false
+    optimizeMemory: false,
+    segfaultOnNullOwnership: false
 }
 global.nextNumIsFloat = false;
 global.areaHasFloat = false;

@@ -140,6 +140,8 @@ function parseFinalCode() {
 .macro .1byte v
 .byte \\v
 .endm
+.data
+__rc_triggerSegfaultOnNullOwnership__: .byte ${programRules.segfaultOnNullOwnership? 1 : 0}
 ######## Auto included libs #######
 `
 + autoIncludes.map(x => `\n.include "${x}"\n`).join("\n") +
