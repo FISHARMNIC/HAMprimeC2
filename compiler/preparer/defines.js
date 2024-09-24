@@ -7,6 +7,15 @@ var conditionalMap = {
     "!=": "setne"
 }
 
+var inverseConditionalMap = {
+    "==": "setz",
+    ":>": "setl",
+    "<:": "setg",
+    ">=": "setle",
+    "<=": "setge",
+    "!=": "setne"
+}
+
 var mathEnders = [
     "]",">",")",":",",",
 ]
@@ -190,5 +199,6 @@ module.exports = {
     symbols: "!@#$%^&*()+{}|:<>?,./;[]\\-= ",
     conditionalMap,
     conditionals: Object.keys(conditionalMap),
+    inverseConditionalMap,
     mathEnders
 }

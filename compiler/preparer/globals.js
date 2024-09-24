@@ -49,6 +49,15 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: true,
         returnType: defines.types.u32
     },
+    "strcmp": {
+        name: 'strcmp',
+        parameters: [
+            { name: "strA", type: defines.types.string },
+            { name: "strB", type: defines.types.string }
+        ],
+        variadic: true,
+        returnType: defines.types.u32
+    },
     "sprintf": {
         name: 'sprintf',
         parameters: [

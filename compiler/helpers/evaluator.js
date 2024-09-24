@@ -31,7 +31,7 @@ function evaluate(line) {
                 defines.types[`__${word}__dynamicdef__`] = cpy
                 line[wordNum] = `__${word}__dynamicdef__`
 
-            } else if(line[wordNum + 2] == "borrowed") {
+            } else if (line[wordNum + 2] == "borrowed") {
                 delete cpy.hasData
                 defines.types[`__${word}__staticdef__`] = cpy
                 line[wordNum] = `__${word}__staticdef__`
@@ -206,7 +206,7 @@ function evaluate(line) {
             // needs to have hasData etc. Think
             if (setting) {
                 throwE("Setting pointer WIP", baseType)
-                
+
             } else {
                 var retType = objCopy(baseType)
                 retType.pointer = false
@@ -924,37 +924,66 @@ function evaluate(line) {
                 var regR = helpers.types.formatRegister("d", right_type)
                 var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u8)
 
+                if ("advptr" in left_type && "advptr" in right_type) // string
+                {
+                    actions.assembly.pushClobbers();
+                    actions.assembly.pushToStack(left, defines.types.string)
+                    actions.assembly.pushToStack(right, defines.types.string)
+                    
+                    outputCode.autoPush(
+                        `call strcmp`,
+                        `add $8, %esp`,
+                    )
 
-                // TODO: optimize to allow one reference like cmp (%ebp), $123
-                if (helpers.types.isConstant(left)) {
-                    left = helpers.types.formatIfConstOrLit(left)
-                } else if (!helpers.types.stringIsRegister(left)) {
-                    outputCode.autoPush(`mov ${left}, ${regL}`)
-                    left = regL
+                    actions.assembly.popClobbers();
+
+                    if(helpers.types.stringIsRegister(lbl))
+                        {
+                            var l = helpers.registers.registerStringToLetterIfIs(lbl)
+                            var fmtted = helpers.types.formatRegister(l, defines.types.u32)
+                            outputCode.autoPush(
+                                `xor ${fmtted}, ${fmtted}`
+                            )
+                        } else {
+                            throwW("[INTERNAL] unable to zero-out label. Might weird data from before later")
+                        }
+
+                    outputCode.autoPush(
+                        `cmp $0, %eax`,
+                        `${defines.inverseConditionalMap[cond]} ${lbl}`, // TODO: need to use setz for ==
+                    )
                 } else {
-                    //throwE(helpers.types.getRegisterType(left, true).size)
-                    if ((helpers.types.typeToBits(left_type) != 32) && helpers.types.getRegisterType(left, true).size == 32) {
-                        left = helpers.types.formatRegister(helpers.registers.registerStringToLetterIfIs(left), left_type)
+                    // TODO: optimize to allow one reference like cmp (%ebp), $123
+                    if (helpers.types.isConstant(left)) {
+                        left = helpers.types.formatIfConstOrLit(left)
+                    } else if (!helpers.types.stringIsRegister(left)) {
+                        outputCode.autoPush(`mov ${left}, ${regL}`)
+                        left = regL
+                    } else {
+                        //throwE(helpers.types.getRegisterType(left, true).size)
+                        if ((helpers.types.typeToBits(left_type) != 32) && helpers.types.getRegisterType(left, true).size == 32) {
+                            left = helpers.types.formatRegister(helpers.registers.registerStringToLetterIfIs(left), left_type)
+                        }
                     }
-                }
 
-                if (helpers.types.isConstant(right)) {
-                    right = helpers.types.formatIfConstOrLit(right)
-                } else if (!helpers.types.stringIsRegister(right)) {
-                    outputCode.autoPush(`mov ${right}, ${regR}`)
-                    right = regR
-                } else {
-                    if ((helpers.types.typeToBits(right_type)) != 32 && helpers.types.getRegisterType(right, true).size == 32) {
-                        right = helpers.types.formatRegister(helpers.registers.registerStringToLetterIfIs(right), right_type)
+                    if (helpers.types.isConstant(right)) {
+                        right = helpers.types.formatIfConstOrLit(right)
+                    } else if (!helpers.types.stringIsRegister(right)) {
+                        outputCode.autoPush(`mov ${right}, ${regR}`)
+                        right = regR
+                    } else {
+                        if ((helpers.types.typeToBits(right_type)) != 32 && helpers.types.getRegisterType(right, true).size == 32) {
+                            right = helpers.types.formatRegister(helpers.registers.registerStringToLetterIfIs(right), right_type)
+                        }
                     }
+
+
+                    outputCode.autoPush(
+                        `mov${helpers.types.stringIsRegister(lbl) ? "" : "b"} \$0, ${lbl}`,
+                        `cmp ${right}, ${left}`,
+                        `${defines.conditionalMap[cond]} ${lbl}`,
+                    )
                 }
-
-
-                outputCode.autoPush(
-                    `mov${helpers.types.stringIsRegister(lbl) ? "" : "b"} \$0, ${lbl}`,
-                    `cmp ${right}, ${left}`,
-                    `${defines.conditionalMap[cond]} ${lbl}`,
-                )
 
                 //throwE(line)
                 line[wordNum - 2] = lbl

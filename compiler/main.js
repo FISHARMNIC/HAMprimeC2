@@ -6,6 +6,8 @@ TODO:
         - moves "this" into ecx, then other arguments on stack
             - do this and then keep ecx reserved and use it as "this". Make sure to push and pop ecx before and after if clobbered
 
+    - new type "bool" that print_ automatically displays "true" or "false".
+    - just u32 with special property called like: "specialType: 'bool'"
     - make compiling less confusing
         - forward to bashsrc
     - make a simple UI generator like visual basic drag and drop
