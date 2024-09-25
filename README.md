@@ -35,6 +35,7 @@ All of the things below work. See examples [here](https://github.com/FISHARMNIC/
     - Calling from pointers/addresses
 - Control flow
 	- Nested If/elif/else statements
+    - Comparison: ==, !=, <:, :>, <=, >=, ||, &&
 	- While loops
 - I/O
 	- Uses C printf and scanf

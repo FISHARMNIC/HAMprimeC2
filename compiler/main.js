@@ -2,7 +2,6 @@
 TODO:
     - make an assembly simulator that is able to trace why segfaults happen and give a reason, like dereferencing null pointer
     - fix math not being in pemdas 
-    - add "or" (||) and "and" (&&)
     !! IMPORTANT !!
         - look into "thiscall" calling convention, which is meant for member functions
         - moves "this" into ecx, then other arguments on stack
