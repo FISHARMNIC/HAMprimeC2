@@ -1,5 +1,6 @@
 /*
 TODO:
+    - make an assembly simulator that is able to trace why segfaults happen and give a reason, like dereferencing null pointer
     - fix math not being in pemdas 
     - add "or" (||) and "and" (&&)
     !! IMPORTANT !!
