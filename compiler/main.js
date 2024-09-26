@@ -147,6 +147,11 @@ global.floatEngine = require("./math/floatEngine.js");
 global.prioritizeWord = require("./helpers/priority.js")
 global.preprocess = require("./preprocessor/pre.js")
 
+process.on('uncaughtException', function (err) {
+    throwE('[Node Error]:\n\t', err.toString());
+});
+
+
 global.mainDir = __dirname
 global.returnHighlight = false
 // load input file and split into lines

@@ -48,9 +48,9 @@ var comms = {
     compile: function () {
         show("terminal")
         var out = JSON.parse(get("compile/" + currentOpenFile)).data
-        console.log(out[0])
-        if (out[0][0] == "{") {
-            out = JSON.parse(out[0])
+        console.log(out[out.length - 1])
+        if (out[out.length - 1][0] == "{") {
+            out = JSON.parse(out[out.length - 1])
         }
         if ("issue" in out && out.issue == true) {
             console.log("F")
@@ -106,7 +106,8 @@ var comms = {
         editor.setValue(out)
         document.getElementById("saveIcon").hidden = true
         var clicked = document.getElementById(`__button_${file}__`)
-        clicked.style.backgroundColor = "#656C70"
+        if(clicked != undefined)
+            clicked.style.backgroundColor = "#656C70"
     },
     saveFile: function () {
         var textContent = editor.doc.getValue()

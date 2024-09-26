@@ -13,7 +13,12 @@ var editor = CodeMirror.fromTextArea(textarea, {
         "Tab": function(cm){
             cm.replaceSelection("    " , "end");
         }
-    }
+    },
+    foldOptions: {
+        rangeFinder: CodeMirror.fold.brace
+    },
+    foldGutter: true,
+    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
 })
 
 var highlighter = CodeMirror.fromTextArea(highlight, {
