@@ -1,7 +1,3 @@
-/*
-    In this example, newArr needs to return a dynamic so that bob can take ownership
-*/
-
 newArr function<> -> array
 {
     create someArr <- {1,2,3};

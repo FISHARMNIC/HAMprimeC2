@@ -110,7 +110,13 @@ editor.on('cursorActivity', clrset)
 
 
 function __removeTabs(e) {
+    try {
     return e.split("").map(x => x == "\t" ? "" : x).join("")
+    } catch(error)
+    {
+        console.log("COUND NOT PARSE", e)
+        return e
+    }
 }
 
 function __getTrueLine(execFileLikeTrue, line) {

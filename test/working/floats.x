@@ -1,5 +1,6 @@
 factorial function<u32 n> -> u32
 {
+    /* !!IMPORTANT!! Garbage collection error here: print_("Finding factorial of: " + n) */
     if(n >= 1)
     {
         return (n * factorial(n - 1));

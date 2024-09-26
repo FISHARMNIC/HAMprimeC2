@@ -1,6 +1,8 @@
 #include "rollcall.h"
 #include "linked.h"
 
+//#include <stdio.h>
+
 __linked_t *__linked_readIndex(__linked_t *list, int index)
 {
     while (index > 0)
@@ -54,12 +56,16 @@ void __linked_add(__linked_t **list_db, roster_entry_t *item)
 __linked_t *__linked_remove(__linked_t **list_db, int index)
 {
     __linked_t * list = *list_db;
+    //printf("Removing %p, %i\n", list_db, index);
     if (index != 0)
     {
         list = __linked_readIndex(list, index - 1);
+        //printf("\tIndex addr: %p, %p\n", list, list->next); // WHY NIL? 
         __linked_t *save_link = list->next->next;
+        //printf("\tSave_link: %p\n", save_link);
         // test for zeroing out garbage
         // memset(list->next->item->pointer, 0, list->next->item->size);
+        //printf("\tFreeing: %p\n", list->next);
         free(list->next);
         list->next = save_link;
         return list->next;

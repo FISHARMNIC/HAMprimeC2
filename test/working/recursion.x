@@ -1,5 +1,6 @@
 factorial function<u32 n> -> u32
 {
+    print_("Reading: " + n);
     if(n >= 1)
     {
         return (n * factorial(n - 1));
