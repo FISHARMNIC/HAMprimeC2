@@ -11,6 +11,7 @@ int main(){
     mpf_t bflt_a, bflt_b;
 
     // initiate number with base 10
+    
     mpf_init_set_str(bflt_a, "12345678987654321e-2", 10);
     mpf_init_set_str(bflt_b, "12345678987654321e-2", 10);
 

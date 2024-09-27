@@ -151,7 +151,7 @@ function evaluate(line) {
                     if (num == parseInt(num)) { // literal
                         num = parseInt(num)
 
-                        actions.allocations.allocateMmap(bytes, `Asked for ${num} allocations of "${word}"`)
+                        actions.allocations.allocateMmap(bytes * num, `Asked for ${num} allocations of "${word}"`)
                         outputCode.autoPush(
                             `mov %eax, ${out}`
                         )
@@ -635,7 +635,27 @@ function evaluate(line) {
 
                 var data = offsetWord(2)
                 var dataType = helpers.types.guessType(data)
-                if ("formatPtr" in dataType) {
+
+                //throwE(dataType)
+                if("elementsHaveData" in dataType)
+                {
+                    throwE("Printing format arrays are still WIP")
+
+                    // IMPORTANT need to save and restore "this" before and after
+                    var toStringMethod = helpers.formatters.formatMethodName(dataType.formatPtr.name, "toString")
+                    actions.assembly.optimizeMove(data, "__this__", dataType, dataType)
+                    outputCode.autoPush(
+                        `# printing format array`,
+                        `mov ${data}, %eax`,
+                        `push %eax     # load buffer`,
+                        `mov -4(%eax), %edx`,
+                        `pushl 8(%edx) # load size`,
+                        `pushl \$${toStringMethod} # load toString method`,
+                        `call print_formatArr`,
+                        `add $8, %esp`
+                    )
+                }
+                else if ("formatPtr" in dataType) {
                     var out = actions.formats.callMethod(data, "toString", "")
                     helpers.registers.deClobberRegister(helpers.registers.registerStringToLetterIfIs(out))
 
@@ -656,27 +676,43 @@ function evaluate(line) {
                 }
 
                 else if ("hasData" in dataType) {
-                    throwE("Printing buffers not finished")
+                    var arr_type = dataType.size;
+                    outputCode.autoPush(
+                        `# printing array`,
+                        `mov ${data}, %eax`,
+                        `push %eax     # load buffer`,
+                        `mov -4(%eax), %edx`,
+                        `pushl 8(%edx) # load size`,
+                        `call print_arr${arr_type}`,
+                        `add $8, %esp`
+                    )
+                    //throwE("Printing buffers not finished")
                     // todo: get length from entryReference and print all items correspondingly
                 } else {
                     if (dataType.pointer) {
-                        throwE("Print cannot display buffers yet")
-                        if (dataType.size == 8) {
 
-                        } else {
+                        if (dataType.size == 8) {
+                            throwE("Print cannot display 8bit buffers yet")
+                        } else if (dataType.size == 16) {
+                            throwE("Print cannot display 16bit buffers yet")
+                        } else if (dataType.size == 32) {
 
                         }
                     } else {
-                        throwE("The print function is still in development ")
-                        var bytes = helpers.types.typeToBytes(dataType)
+                        //throwE("The print function is still in development ")
 
-                        if (bytes == 8) {
-
-                        } else if (bytes == 16) {
-
-                        } else (bytes == 32)
-                        {
-
+                        actions.assembly.pushToStack(data, dataType)
+                        if (dataType.float) {
+                            outputCode.autoPush(
+                                `call print_float_noPromo`,
+                                `add $4, %esp`
+                            )
+                        } else {
+                            outputCode.autoPush(
+                                `pushl $__PRINT_TYPE_INT__`,
+                                `call printf`,
+                                `add $8, %esp`
+                            )
                         }
                     }
                 }
@@ -925,11 +961,11 @@ function evaluate(line) {
                 var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u8)
 
                 if (defines.conditionalCombinators.includes(cond)) {
-                   // throwE(left, right, cond)
+                    // throwE(left, right, cond)
 
                     var skipLbl = helpers.variables.newUntypedLabel();
 
-                    if(cond == "||") {
+                    if (cond == "||") {
                         outputCode.autoPush(
                             `# OR comparison`,
                             `mov${helpers.types.stringIsRegister(lbl) ? "" : "b"} \$0, ${lbl}`,
@@ -940,7 +976,7 @@ function evaluate(line) {
                             `sete ${lbl}`,
                             `${skipLbl}:`
                         )
-                    } else if(cond == "&&") {
+                    } else if (cond == "&&") {
                         outputCode.autoPush(
                             `# AND comparison`,
                             `mov${helpers.types.stringIsRegister(lbl) ? "" : "b"} \$0, ${lbl}`,
@@ -948,7 +984,7 @@ function evaluate(line) {
                             `jne ${skipLbl}`,
                             `cmpb $1, ${right}`,
                             `sete ${lbl}`
-                            `${skipLbl}:`
+                                `${skipLbl}:`
                         )
                     } else {
                         throwE(`[COMPILER-ERROR] Unknown conditional operator "${cond}"`)

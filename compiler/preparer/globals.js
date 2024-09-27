@@ -140,6 +140,14 @@ global.userFunctions = {           // Object : {function name: {func name, param
         ],
         variadic: false,
         returnType: defines.types.u32
+    },
+    "putch" : {
+        name: "putch",
+        parameters: [
+            { name: "char", type: defines.types.u8 },
+        ],
+        variadic: false,
+        returnType: defines.types.u32
     }
 }
 global.specialFunctions = {

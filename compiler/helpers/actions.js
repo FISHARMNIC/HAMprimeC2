@@ -375,6 +375,8 @@ var variables = {
 
         debugPrint(index)
 
+
+
         if (helpers.types.isLiteral(aname)) {
             baseType = objCopy(defines.types.u8)
             outputCode.autoPush(
@@ -432,6 +434,7 @@ var variables = {
             throwE("Compiler error, never set 'baseType' variable")
         }
 
+        
         var indexMultiplier;
         if ("formatPtr" in baseType) {
             indexMultiplier = 4
@@ -444,8 +447,12 @@ var variables = {
         if (!("elementsHaveData" in baseType)) {
             delete baseType.hasData
         } else {
+            delete baseType.elementsHaveData // HERE if broken September Sep 26 2024 delete
             //throwE("yay, this should have been thrown if the array type has data itself. you can delete this line")
         }
+
+        //console.log(aname, index, baseType)
+
 
         var out = helpers.registers.getFreeLabelOrRegister(baseType)
 
@@ -732,6 +739,7 @@ var allocations = {
         //debugPrint("PUSHING")
         assembly.pushClobbers()
 
+        outputCode.autoPush(`# ${note}`)
         outputCode.autoPush(`pushl \$${restricted}`)
         assembly.pushToStack(bytes, defines.types.u32)
         outputCode.autoPush(
@@ -930,7 +938,11 @@ var functions = {
                 // TODO HERE
                 var givenRetType = helpers.types.guessType(rVal)
                 var scopeRetType = scope.data.returnType
-                // console.log("::", givenRetType, scopeRetType)
+
+                if(scopeRetType == undefined)
+                {
+                    throwE(`No given return type in function "${scope.data.name}"`)
+                }
                 if(rVal == "null")
                 {
                     rVal = "0"
@@ -1022,7 +1034,7 @@ var functions = {
                     //debugPrint(x)
                     var givenType = helpers.types.guessType(x)
 
-                    //debugPrint("fwfwfwfww",givenType)
+                    //console.log("fwfwfwfww",givenType)
 
                     if (expectedType == undefined && !variadic) {
                         throwE(`Function '${fname}' given too many arguments: [${userFunctions[fname].parameters}]`)

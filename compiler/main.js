@@ -1,5 +1,19 @@
 /*
 TODO:
+    - !! IMPORTANT !! see bignum NEW "numA.add(numB).print();" not working. Maybe method chaining not implemented?
+    - !! Good idea !!
+        - make certain methods that do special things
+        - eg:
+            - something.add() allows for special instructions on how to add. 
+            - or something.set() changes how the equal sign works
+            - "jon + 123" if jon is a format of type person, jon. add can look 
+
+    - !! IMPORTANT !!
+        - if setting ownership, dont need to also copy value since ownership does that. See asm for "create arr <- {1,2,3}"";
+
+    - add polymorphism
+    - add __cstruct__(var) converts format to actual value for passing struct to C function
+        - see gmp lib
     - make an assembly simulator that is able to trace why segfaults happen and give a reason, like dereferencing null pointer
     - fix math not being in pemdas 
     !! IMPORTANT !!
@@ -7,6 +21,8 @@ TODO:
         - moves "this" into ecx, then other arguments on stack
             - do this and then keep ecx reserved and use it as "this". Make sure to push and pop ecx before and after if clobbered
 
+    - maybe class function aliases, like in bignumNEW, it would be nice to have the memberfunctions just directly reference the gmp functions
+        - something like: ".set alias<__gmpf_set_ui, this, u32 other>"
     - new type "bool" that print_ automatically displays "true" or "false".
     - just u32 with special property called like: "specialType: 'bool'"
     - make compiling less confusing
@@ -65,10 +81,7 @@ TODO:
         - this allows for you to pass a pointer to vargs and read them from another fn
         - currently its a "fake" array
     - make c#-like vectors 
-    - make certain methods that do special things
-        - eg:
-            - something.add() allows for special instructions on how to add. 
-            - "jon + 123" if jon is a format of type person, jon. add can look 
+
     - make a raytracer now that i have floats
     - flag for defaultFloats
     - flag for __ccalled__ to be turned on automatically, and switches off caller saving regs
@@ -147,11 +160,6 @@ global.floatEngine = require("./math/floatEngine.js");
 global.prioritizeWord = require("./helpers/priority.js")
 global.preprocess = require("./preprocessor/pre.js")
 
-process.on('uncaughtException', function (err) {
-    throwE('[Node Error]:\n\t', err.toString());
-});
-
-
 global.mainDir = __dirname
 global.returnHighlight = false
 // load input file and split into lines
@@ -174,6 +182,14 @@ global.previewNextLine = function()
 {
     return inputCode[globalLine + 1]
 }
+
+process.on('uncaughtException', function (err) {
+    if(returnHighlight) 
+        throwE('[Node Error]:\n\t', err.toString())
+
+    throw(err)
+});
+
 
 inputCode = inputCode.map((line,lineNo) => {
     // parse it into words

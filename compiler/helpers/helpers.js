@@ -162,6 +162,11 @@ var types = {
         if (register == 'p')
             register = 'b'
 
+        if(type == undefined)
+        {
+            throwE("[COMPILER ERROR] Got undefined type. Most likely syntax error")
+        }
+
         if (type.formatPtr != undefined) { // format register for a format / struct
             return `%e${register}${endLetter}`
         } else {
@@ -241,7 +246,7 @@ var types = {
     guessType: function (word) {
         word = String(word)
 
-        //console.log(":::", word)
+        //console.log(":::", word, variables.variableExists(word),)
         if (variables.variableExists(word)) {
             //throwE(globalVariables[word])
             return objCopy(variables.getVariableType(word))
@@ -314,10 +319,10 @@ var variables = {
             }
         })
     },
-    checkIfOnStack(vname) {
+    checkIfOnStack: function(vname) {
         return scope.length != 0 && objectIncludes(getAllStackVariables(), vname) // ) // if stack var
     },
-    getVariableType(vname) {
+    getVariableType: function(vname) {
         if(this.checkIfOnStack(vname))
         {
             return getAllStackVariables()[vname].type
@@ -327,10 +332,16 @@ var variables = {
             throwE("WIP")
             //return 
         } else {
+            //console.log("EEEEE", globalVariables)
             var r = globalVariables[vname]
             if(r == undefined)
             {
                throwE(`Variable "${vname}" does not exist`)
+            }
+            if(r.type == undefined)
+            {
+                throwW(`[INTERNAL WARN], "${vname}" seems to not have .type property. Most likely issue with __this__`)
+                return r
             }
             return r.type
         }
