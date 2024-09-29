@@ -599,7 +599,7 @@ var variables = {
             )
         } else if (helpers.types.stringIsRegister(index)) {
             finalSettingAddr = `(${address}, ${index}, ${elementBytes})`
-            console.log("~~~~~~~~~", address, index, value)
+            //console.log("~~~~~~~~~", address, index, value)
             outputCode.autoPush(
                 `mov${suffix} ${value}, (${address}, ${index}, ${elementBytes}) # bomboclat`
             )
@@ -1008,7 +1008,7 @@ var functions = {
 
         if (typeof args != "string") {
             var filtered = args.filter(x => x != ",")
-            if (filtered.length != userFunctions[fname].parameters.length) {
+            if (!userFunctions[fname].variadic && (filtered.length != userFunctions[fname].parameters.length)) {
                 throwE(`Function ${fname} expects ${userFunctions[fname].parameters.length} parameter(s), given ${filtered.length}`)
             }
         }

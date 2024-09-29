@@ -420,7 +420,7 @@ function evaluate(line) {
                         }
                     } else {
                         index = index[0]
-                        console.log(":::::", line.join(" "))
+                        //console.log(":::::", line.join(" "))
                         var out = actions.variables.readArray(vname, index)
                         line[wordNum - 1] = out
                         line.splice(wordNum, 3)

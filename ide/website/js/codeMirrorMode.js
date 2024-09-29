@@ -2,10 +2,19 @@ function matchAll(stream, words) {
   return words == undefined ? false : words.some(x => stream.match(x))
 }
 
+// function matchAll(stream, words)
+// {
+//   return words == undefined ? false : words.some(x => {
+//     var reg = new RegExp(`(?:^|[^\w_])(${x})(?=[^\w_]|$)`, 'g');
+//     return stream.match(reg)
+//   })
+// }
+
 var operators = ["!=", "<<", ">>", "<:", ":>", "==", "<=", ">=", "->", "<-", "+", "-", "*", "/", "|", "&", "%", "<", ">","(", ")", ":"]
 var brackets = ["{", "}", "[", "]"]
 
 var inComment = false
+
 CodeMirror.defineMode("HAM", function () {
   return {
     token: function (stream, state) {
@@ -50,4 +59,5 @@ CodeMirror.defineMode("HAM", function () {
       }
     }
   };
+
 });
