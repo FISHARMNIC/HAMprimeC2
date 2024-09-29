@@ -12,6 +12,7 @@ Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
     - Any numbers will be automatically converted to strings like: ("bob " + 123) becomes "bob 123"
     - Any formats will automatically has their method "toString" called
  - Big IDE update! (See below)
+ - Fixed segfault with GFX lib
 
 # What is working so far?
 All of the things below work. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).

@@ -9,12 +9,16 @@ TODO:
             - "jon + 123" if jon is a format of type person, jon. add can look 
 
     - !! IMPORTANT !!
+        - calling methods when alr in a format should save and restore __this__
+    - !! IMPORTANT !!
         - if setting ownership, dont need to also copy value since ownership does that. See asm for "create arr <- {1,2,3}"";
 
     - add polymorphism
     - add __cstruct__(var) converts format to actual value for passing struct to C function
         - see gmp lib
     - make an assembly simulator that is able to trace why segfaults happen and give a reason, like dereferencing null pointer
+        - Written in C.
+        - Allows for debugging
     - fix math not being in pemdas 
     !! IMPORTANT !!
         - look into "thiscall" calling convention, which is meant for member functions

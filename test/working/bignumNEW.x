@@ -1,6 +1,7 @@
 /*
 
 CURRENTLY WIP
+compile wit ./NEW_asmgmp.sh
 
 */
 
@@ -27,6 +28,9 @@ Bignum format
     forward __gmpf_sub          function<Bignum dest, Bignum oa, Bignum ob> -> u32;
     forward __gmpf_mul          function<Bignum dest, Bignum oa, Bignum ob> -> u32;
     forward __gmpf_div          function<Bignum dest, Bignum oa, Bignum ob> -> u32;
+
+    forward __gmpf_sqrt         function<Bignum dest> -> u32;
+    forward __gmpf_pow_ui       function<Bignum dest, Bignum src, u32 src> -> u32;
     
     .Bignum constructor<>
     {
@@ -59,6 +63,41 @@ Bignum format
         __gmpf_add(output, this, other);
         return output;
     }
+
+    .sub method<Bignum other> -> Bignum
+    {
+        create output <- Bignum();
+        __gmpf_sub(output, this, other);
+        return output;
+    }
+
+    .mul method<Bignum other> -> Bignum
+    {
+        create output <- Bignum();
+        __gmpf_mul(output, this, other);
+        return output;
+    }
+
+    .div method<Bignum other> -> Bignum
+    {
+        create output <- Bignum();
+        __gmpf_div(output, this, other);
+        return output;
+    }
+
+    .sqrt method<Bignum other> -> Bignum
+    {
+        create output <- duplicate(this);
+        __gmpf_sqrt(output);
+        return output;
+    }
+
+    .pow method<u32 exp> -> Bignum
+    {
+        create output <- Bignum();
+        __gmpf_pow_ui(output, this, exp);
+        return output;
+    }
 }
 
 entry function<> -> u32
@@ -67,9 +106,9 @@ entry function<> -> u32
     create numB <- Bignum("123");
 
     /* FIX numA.add(numB).print(); wont work */
-    create numC <- numA.add(numB); // Not calculating right
-    numC.print();
-
+    create numC <- numA.div(numB);
     numA.print();
+    numB.print();
+    numC.print();
     return 0;
 }

@@ -104,16 +104,8 @@ var assembly = {
         //                             otherwise, the size has to be given
         //                             if it's a format then just count the size
 
-        if ("formatPtr" in stype && stype.formatPtr != null) {
-            var fmtSize = helpers.formats.getFormatSize(stype.formatPtr.properties)
-            outputCode.autoPush(
-                `# copying format`,
-                `lea ${source}, %esi`,
-                `mov ${alloced}, %edi`,
-                `mov \$${fmtSize}, %ecx`,
-                `rep movsb`
-            )
-        } else if ("hasData" in stype) {
+        //throwE(stype)
+        if ("hasData" in stype) {
             outputCode.autoPush(
                 `# copying buffer`,
                 `lea ${source}, %esi`,
@@ -124,6 +116,15 @@ var assembly = {
                 `pop %ecx`,
                 `mov %eax, %edi`,
                 `rep movsb`,
+            )
+        } else if ("formatPtr" in stype && stype.formatPtr != null) {
+            var fmtSize = helpers.formats.getFormatSize(stype.formatPtr.properties)
+            outputCode.autoPush(
+                `# copying format`,
+                `lea ${source}, %esi`,
+                `mov ${alloced}, %edi`,
+                `mov \$${fmtSize}, %ecx`,
+                `rep movsb`
             )
         } else if ("advptr" in stype) {
             outputCode.autoPush(
@@ -911,7 +912,7 @@ var functions = {
             `push %ebp`,
             `mov %esp, %ebp`,
             //`pusha`,
-            //`${userFunctions[fname].saveRegs ? "pusha" : ""}`,
+            `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
             `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`,
 
         )
@@ -1362,6 +1363,16 @@ var formats = {
 
     },
     callConstructor: function (className, params) {
+
+        var lst = getLastScopeType()
+        var sr_this = false;
+
+        if(lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD)
+        {
+            sr_this = true
+            outputCode.autoPush(`pushl __this__ # poop`)
+        }
+
         if (Object.keys(userFormats[className].constructors).length == 0) {
             throwE("No constructors declared for class:", className)
         }
@@ -1393,7 +1404,13 @@ var formats = {
 
         //globalVariables.__this__ = defines.types[className]
         globalVariables.__this__ = helpers.types.convertTypeToHasData(defines.types[className])
-        return functions.callFunction(bestFit, params, true, globalVariables.__this__)
+        var rval =  functions.callFunction(bestFit, params, true, globalVariables.__this__)
+
+        if(sr_this)
+        {
+            outputCode.autoPush(`popl __this__`)
+        }
+        return rval
     },
     closeConstructor: function (scope, stack) {
         // outputCode.autoPush(

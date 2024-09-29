@@ -1,3 +1,6 @@
+/// This library is deprecated
+
+
 #include <gmp.h>
 #include <stdio.h>
 

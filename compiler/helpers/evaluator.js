@@ -744,6 +744,9 @@ function evaluate(line) {
                     throwE(`Copy must be called like a function with parenthesis`)
                 } else if (offsetWord(3) != ")") {
                     throwE(`Copy doens't have the right parameters`)
+                } else if (offsetWord(2)[1] != ",")
+                {
+                    throwE("Copy needs two arguments: copy(dest, src)")
                 }
 
                 var dest = offsetWord(2)[0]
@@ -767,6 +770,8 @@ function evaluate(line) {
 
                 actions.assembly.pushToStack(src, srcType)
                 actions.assembly.pushToStack(dest, destType)
+
+                //throwE(dest)
                 var oreg = helpers.registers.getFreeLabelOrRegister(destType)
 
                 outputCode.autoPush(
