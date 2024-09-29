@@ -613,7 +613,7 @@ var variables = {
                 `add $4, %esp`,
                 `mov${suffix} ${value}, (%eax)`
             )
-            finalSettingAddr = "eax"
+            finalSettingAddr = "%eax"
 
             /* 
             index -> eax
@@ -912,8 +912,8 @@ var functions = {
             `push %ebp`,
             `mov %esp, %ebp`,
             //`pusha`,
-            `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
             `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`,
+            `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
 
         )
 
@@ -978,6 +978,7 @@ var functions = {
         )
 
         if (!asRet) {
+            //throwE("yuh")
             outputCode.data.push(
                 `${helpers.formatters.fnAllocMacro(d.name)} = ${d.totalAlloc}`
             )
@@ -1239,6 +1240,7 @@ var formats = {
                 }
 
                 var off = 0
+                //throwE(passed)
                 userFormats[fname].properties.forEach(p => {
                     var value = passed[p.name]
                     if (value == undefined) {

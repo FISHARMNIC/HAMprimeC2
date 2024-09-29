@@ -148,6 +148,22 @@ global.userFunctions = {           // Object : {function name: {func name, param
         ],
         variadic: false,
         returnType: defines.types.u32
+    },
+    "sleep" : {
+        name: "sleep",
+        parameters: [
+            { name: "time", type: defines.types.u32 },
+        ],
+        variadic: false,
+        returnType: defines.types.u32
+    },
+    "usleep" : {
+        name: "usleep",
+        parameters: [
+            { name: "time", type: defines.types.u32 },
+        ],
+        variadic: false,
+        returnType: defines.types.u32
     }
 }
 global.specialFunctions = {

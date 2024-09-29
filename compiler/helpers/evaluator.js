@@ -19,7 +19,7 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "dynamicChildren" || line[wordNum + 2] == "borrowed")) {
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed")) {
 
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
@@ -485,11 +485,11 @@ function evaluate(line) {
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
         } else if (word[0] = "'" && word[word.length - 1] == "'") {
             line[wordNum] = String(word.charCodeAt(1));
-        } else if (objectIncludes(getAllStackVariables(), word)) // get stack var
+        } else if (objectIncludes(getAllStackVariables(), word) && offsetWord(1) != ":") // get stack var
         {
             line[wordNum] = actions.assembly.getStackVarAsEbp(word)
             typeStack.push(getAllStackVariables()[word].type)
-        } else if (helpers.variables.checkIfParameter(word)) {   // is param
+        } else if (helpers.variables.checkIfParameter(word) && offsetWord(1) != ":") {   // is param
             //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
             line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
         } else if (word == "$") {
