@@ -22,7 +22,7 @@ char gfx_keypress_key;
 
 typedef void fn_t(int);
 
-extern int* __allocate_wsize__(int bytes); // declared in assembly by HAM
+extern int *__allocate_wsize__(int bytes); // declared in assembly by HAM
 
 #define DWC _cx11_display_, _cx11_window_, _cx11_gc_
 
@@ -48,30 +48,40 @@ void gfx_draw_arc(int x, int y, int size, int a1, int a2)
     XDrawArc(DWC, x - (size / 2), y - (size / 2), size, size, a1, a2);
 }
 
-void __qcolor(XColor* true_color, char* color)
+void gfx_draw_text(int x, int y, char *str)
+{
+    XDrawString(
+        DWC,
+        x,
+        y,
+        str,
+        strlen(str));
+}
+
+void __qcolor(XColor *true_color, char *color)
 {
     XColor fake;
     XAllocNamedColor(
         _cx11_display_,
-        XDefaultColormap(_cx11_display_, _cx11_screen_),   // colormap
-        color,                              // color name
-        true_color,                             // closest color possible
-        &fake                               // exact color, but we don't care about that
+        XDefaultColormap(_cx11_display_, _cx11_screen_), // colormap
+        color,                                           // color name
+        true_color,                                      // closest color possible
+        &fake                                            // exact color, but we don't care about that
     );
 }
 
-GC* gfx_context_allocateColor(char* color)
+GC *gfx_context_allocateColor(char *color)
 {
     XColor true_color;
     __qcolor(&true_color, color);
     XGCValues gc_values = (XGCValues){.foreground = true_color.pixel};
     gc_values.fill_style = FillOpaqueStippled;
-    GC* allocated = (GC*) __allocate_wsize__(sizeof(GC));
+    GC *allocated = (GC *)__allocate_wsize__(sizeof(GC));
     *allocated = XCreateGC(_cx11_display_, _cx11_window_, GCForeground, &gc_values);
     return allocated;
 }
 
-void gfx_context_setContext(GC* ctx)
+void gfx_context_setContext(GC *ctx)
 {
     _cx11_gc_ = *ctx;
 }
@@ -92,7 +102,7 @@ int gfx_setup(int width, int height)
     _cx11_gc_ = DefaultGC(_cx11_display_, _cx11_screen_);
 }
 
-int gfx_begin(fn_t* onEvent)
+int gfx_begin(fn_t *onEvent)
 {
     while (1)
     {

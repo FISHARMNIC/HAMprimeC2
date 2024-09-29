@@ -169,8 +169,7 @@ var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
         __addToAnyVarEverMade(vname)
 
-        if(helpers.types.isLiteral(value))
-        {
+        if (helpers.types.isLiteral(value)) {
             outputCode.autoPush(
                 `pushl \$${value}`,
                 `call cptos`,
@@ -180,12 +179,10 @@ var variables = {
             type = objCopy(defines.types.string)
         }
 
-        if(value == "%eax")
-        {
+        if (value == "%eax") {
             value = helpers.registers.getFreeLabelOrRegister(type)
             outputCode.autoPush(`mov %eax, ${value}`)
-        } else if(value == "%ax" || value == "%al" || value == "%aj")
-        {
+        } else if (value == "%ax" || value == "%al" || value == "%aj") {
             throwE("[INTERNAL ERROR] Cannot be taking eax. Add line here to clobber other reg and set")
         }
 
@@ -281,26 +278,24 @@ var variables = {
         var valueType = helpers.types.guessType(value);
 
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___" && vname != "__this__") {
-            
+
             // make sure its not just that value is dynamic and variable is not
             var checkT = helpers.types.convertTypeToHasData(type)
             //var checkT = helpers.types.convertTypeToHasData(type)
             //console.log("\n-----",checkT,valueType,"------\n", ":::::", nextThingTakesOwnership, ":::::")
-            if(!((helpers.types.areEqual(checkT, valueType)) && !nextThingTakesOwnership))
-            {
-            
-            if(helpers.types.areEqual(checkT, valueType))
-            {
-                throwE(`Assigning a dynamic "${helpers.types.convertTypeObjToName(type)}" to a static.\n\t[FIX] Use "borrow"`)
+            if (!((helpers.types.areEqual(checkT, valueType)) && !nextThingTakesOwnership)) {
+
+                if (helpers.types.areEqual(checkT, valueType)) {
+                    throwE(`Assigning a dynamic "${helpers.types.convertTypeObjToName(type)}" to a static.\n\t[FIX] Use "borrow"`)
+                }
+                throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
+                if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
+                    throwW(`-- New type is smaller than original type`)
+                }
+                type = valueType
+                helpers.variables.setVariableType(vname, type)
+                //throwE(defines.types.u32)
             }
-            throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
-            if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
-                throwW(`-- New type is smaller than original type`)
-            }
-            type = valueType
-            helpers.variables.setVariableType(vname, type)
-            //throwE(defines.types.u32)
-        }
 
         }
 
@@ -435,7 +430,7 @@ var variables = {
             throwE("Compiler error, never set 'baseType' variable")
         }
 
-        
+
         var indexMultiplier;
         if ("formatPtr" in baseType) {
             indexMultiplier = 4
@@ -462,7 +457,10 @@ var variables = {
         var fullReg = helpers.types.conformRegisterIfIs(out, defines.types.u32)
 
         if (baseType.size != 32) {
-            outputCode.autoPush(`xor ${fullReg}, ${fullReg}`)
+            if (helpers.types.stringIsRegister(out))
+                outputCode.autoPush(`xor ${fullReg}, ${fullReg}`)
+            else
+                outputCode.autoPush(`movw $0, ${fullReg}`)
         }
         var ogout = out
         var edxReserved = false
@@ -483,7 +481,14 @@ var variables = {
             )
         } else if (helpers.types.stringIsEbpOffset(index)) {
             if (edxReserved) {
-                throwE("unimplemented")
+                //throwE("unimplemented", aname, index)
+                //var t = helpers.variables.newTempLabel(baseType)
+                outputCode.autoPush(
+                    `# TEST DOES THIS WORK???`,
+                    `mov ${index}, %edx`,
+                    `mov (%eax, %edx, ${indexMultiplier}), %edx`,
+                    `# END TEST`
+                )
                 // have to use normal math since edx and eax are occupied and cannot be modified
             } else {
                 actions.assembly.optimizeMove(index, "%edx", helpers.types.getVariableFromEbpOffsetString(index).type, defines.types.u32)
@@ -493,7 +498,13 @@ var variables = {
             }
         } else {
             if (edxReserved) {
-                throwE("unimplemented")
+                //throwE("unimplemented")
+                outputCode.autoPush(
+                    `# TEST DOES THIS WORK???`,
+                    `mov ${index}, %edx`,
+                    `mov (%eax, %edx, ${indexMultiplier}), %edx`,
+                    `# END TEST`
+                )
                 // have to use normal math since edx and eax are occupied and cannot be modified
             } else {
                 actions.assembly.optimizeMove(index, "%edx", helpers.variables.getVariableType(index), defines.types.u32)
@@ -588,8 +599,9 @@ var variables = {
             )
         } else if (helpers.types.stringIsRegister(index)) {
             finalSettingAddr = `(${address}, ${index}, ${elementBytes})`
+            console.log("~~~~~~~~~", address, index, value)
             outputCode.autoPush(
-                `mov${suffix} ${value}, (${address}, ${index}, ${elementBytes})`
+                `mov${suffix} ${value}, (${address}, ${index}, ${elementBytes}) # bomboclat`
             )
         } else if (objectIncludes(globalVariables, index) || helpers.types.stringIsEbpOffset(index)) { // if index is glob or index is ebp
             // FIX THIS poorly optimized
@@ -788,7 +800,7 @@ var allocations = {
     newStringLiteral: function (value) {
 
         //if string already exists
-        if(objectIncludes(allStringLiterals, value)) // "string" : "__STRING123__"
+        if (objectIncludes(allStringLiterals, value)) // "string" : "__STRING123__"
         {
             return allStringLiterals[value]
         }
@@ -940,12 +952,10 @@ var functions = {
                 var givenRetType = helpers.types.guessType(rVal)
                 var scopeRetType = scope.data.returnType
 
-                if(scopeRetType == undefined)
-                {
+                if (scopeRetType == undefined) {
                     throwE(`No given return type in function "${scope.data.name}"`)
                 }
-                if(rVal == "null")
-                {
+                if (rVal == "null") {
                     rVal = "0"
                 }
                 else if (!helpers.types.areEqual(givenRetType, scopeRetType)) {
@@ -995,6 +1005,14 @@ var functions = {
     callFunction: function (fname, args, isConstructor = false, constructorType = null, typeIfFromAddress = null) {
         var onCom = false
         var callAddress = fname
+
+        if (typeof args != "string") {
+            var filtered = args.filter(x => x != ",")
+            if (filtered.length != userFunctions[fname].parameters.length) {
+                throwE(`Function ${fname} expects ${userFunctions[fname].parameters.length} parameter(s), given ${filtered.length}`)
+            }
+        }
+
         if (typeIfFromAddress != null) {
             if ("__not_a_function__" in userFunctions) {
                 throwE("Do not declare a function named __not_a_function__")
@@ -1281,6 +1299,9 @@ var formats = {
         while (baseType.formatPtr.properties[i].name != propertyName) {
             //console.log(baseType.formatPtr.properties[i], i)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
+            if (baseType.formatPtr.properties[i + 1] == undefined) {
+                throwE(`Couldn't find property ${propertyName} in ${base}`)
+            }
             i++
         }
         var propertyType = baseType.formatPtr.properties[i].type
@@ -1369,8 +1390,7 @@ var formats = {
         var lst = getLastScopeType()
         var sr_this = false;
 
-        if(lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD)
-        {
+        if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD) {
             sr_this = true
             outputCode.autoPush(`pushl __this__ # poop`)
         }
@@ -1406,10 +1426,9 @@ var formats = {
 
         //globalVariables.__this__ = defines.types[className]
         globalVariables.__this__ = helpers.types.convertTypeToHasData(defines.types[className])
-        var rval =  functions.callFunction(bestFit, params, true, globalVariables.__this__)
+        var rval = functions.callFunction(bestFit, params, true, globalVariables.__this__)
 
-        if(sr_this)
-        {
+        if (sr_this) {
             outputCode.autoPush(`popl __this__`)
         }
         return rval
@@ -1443,6 +1462,7 @@ var formats = {
             }
         } else { // instance.method()
             parentType = helpers.types.guessType(parent)
+            //console.log(globalVariables)
             formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
             if (!objectIncludes(parentType.formatPtr.methods, formattedName)) {
                 //throwE(parentType.formatPtr.methods, method)

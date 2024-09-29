@@ -35,10 +35,16 @@ function evaluate(line) {
                 delete cpy.hasData
                 defines.types[`__${word}__staticdef__`] = cpy
                 line[wordNum] = `__${word}__staticdef__`
-            } else {
-                cpy.elementsHaveData = true;
-                defines.types[`__${word}__dynamicChildrendef__`] = cpy
-                line[wordNum] = `__${word}__dynamicChildrendef__`
+            } else if (line[wordNum + 2] == "array"){
+                if ("hasData" in cpy) {
+                    cpy.elementsHaveData = true;
+                    defines.types[`__${word}__dynamicChildrendef__`] = cpy
+                    line[wordNum] = `__${word}__dynamicChildrendef__`
+                } else {
+                    cpy.hasData = true;
+                    defines.types[`__${word}__dynamicdef__`] = cpy
+                    line[wordNum] = `__${word}__dynamicdef__`
+                }
             }
 
             line.splice(wordNum + 1, 2)
@@ -310,7 +316,7 @@ function evaluate(line) {
 
                         //throwE(base, ptype.formatPtr)
                         //console.log("SEEEEE", base, ptype, offsetWord(1), line)
-                        //console.log("EEEEE", helpers.variables.getVariableType("end"))
+                        //console.log("EEEEE", base, ptype, offsetWord(1), true)
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
 
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, helpers.types.guessType(offsetWord(3)), dest.type)
@@ -414,6 +420,7 @@ function evaluate(line) {
                         }
                     } else {
                         index = index[0]
+                        console.log(":::::", line.join(" "))
                         var out = actions.variables.readArray(vname, index)
                         line[wordNum - 1] = out
                         line.splice(wordNum, 3)
@@ -637,8 +644,7 @@ function evaluate(line) {
                 var dataType = helpers.types.guessType(data)
 
                 //throwE(dataType)
-                if("elementsHaveData" in dataType)
-                {
+                if ("elementsHaveData" in dataType) {
                     throwE("Printing format arrays are still WIP")
 
                     // IMPORTANT need to save and restore "this" before and after
@@ -744,8 +750,7 @@ function evaluate(line) {
                     throwE(`Copy must be called like a function with parenthesis`)
                 } else if (offsetWord(3) != ")") {
                     throwE(`Copy doens't have the right parameters`)
-                } else if (offsetWord(2)[1] != ",")
-                {
+                } else if (offsetWord(2)[1] != ",") {
                     throwE("Copy needs two arguments: copy(dest, src)")
                 }
 
@@ -988,8 +993,8 @@ function evaluate(line) {
                             `cmpb $1, ${left}`,
                             `jne ${skipLbl}`,
                             `cmpb $1, ${right}`,
-                            `sete ${lbl}`
-                                `${skipLbl}:`
+                            `sete ${lbl}`,
+                            `${skipLbl}:`
                         )
                     } else {
                         throwE(`[COMPILER-ERROR] Unknown conditional operator "${cond}"`)

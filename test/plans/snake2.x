@@ -1,4 +1,9 @@
-/* Assemble with scripts/lima_x11.sh */
+/* 
+
+ALTERNATIVE CODE FOR SNAKE IN TESTS
+Assemble with scripts/lima_x11.sh 
+
+*/
 
 #include sys x11
 
@@ -45,8 +50,6 @@ Snake format
     .vy u32;
 
     .length u32;
-
-    .head Position;
     .nodes Position:array;
 
     .Snake constructor<u32 startingSz> -> u32
@@ -59,12 +62,9 @@ Snake format
         this.nodes <- Position[100];
 
         create i <- 0;
-
-        this.head <- Position<x: 240, y: 180>;
-
         while(i <: startingSz)
         {
-            this.nodes[i] <- Position<x:(235 - (i * 5)), y: 180>;
+            this.nodes[i] <- Position<x:(240 - (i * 5)), y: 180>;
             i <- i + 1;
         }
     }
@@ -92,25 +92,21 @@ Snake format
 
     .checkEat method<Food cfood> -> u32
     {
-        if((this.head.x == cfood.pos.x) && (this.head.y == cfood.pos.y))
+        if((this.nodes[0].x == cfood.pos.x) && (this.nodes[0].y == cfood.pos.y))
         {
             this.grow();
             cfood.move();
         }
     }
 
+
     .moveAndRender method<> -> u32
     {
-        gfx_draw_rect(this.head.x, this.head.y, 5, 5);
-
-        this.nodes[0].x <- this.head.x;
-        this.nodes[0].y <- this.head.y;
-
         create i <- this.length - 1;
         while(i :> 0)
         {
 
-            if((this.nodes[i].x == this.head.x) && (this.nodes[i].y == this.head.y))
+            if((this.nodes[i].x == this.nodes[0].x) && (this.nodes[i].y == this.nodes[0].y))
             {
                 exit_game("Fail!", this.length);
             }
@@ -122,10 +118,10 @@ Snake format
             i <- i - 1;
         }
 
-        this.head.x <- this.head.x + this.vx;
-        this.head.y <- this.head.y + this.vy;
+        this.nodes[0].x <- this.nodes[0].x + this.vx;
+        this.nodes[0].y <- this.nodes[0].y + this.vy;
 
-        if((this.head.x <: 0) || (this.head.x :> 480) || (this.head.y <: 0) || (this.head.y :> 360)
+        if((this.nodes[0].x <: 0) || (this.nodes[0].x :> 480) || (this.nodes[0].y <: 0) || (this.nodes[0].y :> 360)
         {
             exit_game("Fail!", this.length);
         }
@@ -163,6 +159,11 @@ __ccalled__ render function<u32 event> -> u32
         elif((gfx_keypress_key == 's') && (snake.vy != -5))
         {
             snake.setVelocity(0, 5);
+        }
+        elif(gfx_keypress_key == 'g')
+        {
+            snake.grow();
+            food.move();
         }
     } 
     elif(event == Expose) 

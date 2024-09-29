@@ -164,7 +164,21 @@ global.userFunctions = {           // Object : {function name: {func name, param
         ],
         variadic: false,
         returnType: defines.types.u32
-    }
+    },
+    "rand" : {
+        name: "rand",
+        parameters: [],
+        variadic: false,
+        returnType: defines.types.u32
+    },
+    "exit" : {
+        name: "exit",
+        parameters: [
+            { name: "code", type: defines.types.u32 }
+        ],
+        variadic: false,
+        returnType: defines.types.u32
+    },
 }
 global.specialFunctions = {
     size: function (params) {
