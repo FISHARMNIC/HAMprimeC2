@@ -267,15 +267,21 @@ global.getTrueLine = function (execFileLikeTrue, line) {
     var lineRead = -1
     var lookAtFile = -1;
     //console.log(":::", execFileLikeTrue)
-    while (lineRead != line) {
+    while (lineRead != line && execFileLikeTrue[lookAtFile + 1] != undefined) {
         lookAtFile++
         lineRead++
+        //console.log(execFileLikeTrue[lookAtFile])
         execFileLikeTrue[lookAtFile] = removeTabs(execFileLikeTrue[lookAtFile])
         //console.log("::::", execFileLikeTrue[lookAtFile], lineRead, lookAtFile)
         while (execFileLikeTrue[lookAtFile].length == 0) //skip
         {
             lookAtFile++
         }
+    }
+    if(lookAtFile == -1)
+    {
+        console.log("UNABLE TO TRACK LINE")
+        process.exit(1)
     }
     return lookAtFile
 

@@ -108,11 +108,12 @@ var types = {
     },
     typeToAsm: function (x) {
         //console.log("::::", x.size)
-        if (x.float) {
+        if (x.float || "formatPtr" in x) {
             return `.4byte`
         }
         if (x.special) {
             // TODO: special asm parsing
+            // relic of the past. Delete this
             throwE("Not finished")
         } else {
             if (x.pointer) {

@@ -33,6 +33,16 @@ void gfx_draw_rect(int x, int y, int w, int h)
     XFillRectangle(DWC, x, y, w, h);
 }
 
+void gfx_draw_point(int x, int y)
+{
+    XDrawPoint(DWC, x, y);
+}
+
+void gfx_draw_line(int x1, int y1, int x2, int y2)
+{
+    XDrawLine(DWC, x1, y1, x2, y2);
+}
+
 void gfx_draw_arc(int x, int y, int size, int a1, int a2)
 {
     XDrawArc(DWC, x - (size / 2), y - (size / 2), size, size, a1, a2);

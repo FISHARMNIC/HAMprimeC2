@@ -1,5 +1,14 @@
 /*
 TODO:
+    - !! CRUCIAL !!
+        - When allocating array of formats like Person[xxx]
+        - each entry should be instead:
+            - allocating 4 bytes for pointer
+            - assigning the data of that address to a second allocation of size "Person"
+            - manualAlloc.x works because it's allocating a new one on each line
+            - But if you so "create bob <- Person[10]"
+                - you can't do "bob[0].x <- xxx" without doing "bob[0] <- Person<...>";
+    - !! IMPORTANT !! Warnings and errors dont gen correct line when using #include
     - !! IMPORTANT !! see bignum NEW "numA.add(numB).print();" not working. Maybe method chaining not implemented?
     - !! Good idea !!
         - make certain methods that do special things
