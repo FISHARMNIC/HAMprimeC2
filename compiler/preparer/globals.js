@@ -247,6 +247,7 @@ global.keywordTypes = {
     WHILE: 4,
     IF: 5,
     ARRAY: 6,
+    OPERATOR: 7
 }
 
 global.quickSplit = function (inputCode) {
@@ -349,7 +350,7 @@ global.throwE = function (x) {
     console.trace()
     console.log("\n\n================== THIS WAS THROWE ==================\n\n")
 
-    console.log("\033[31m[ERROR]\033[0m on \033[96m[line " + lineE + 1 + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
+    console.log("\033[31m[ERROR]\033[0m on \033[96m[line " + (lineE + 1) + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
     console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
     drawColLine(lineE - 1)
     drawColLine(lineE)

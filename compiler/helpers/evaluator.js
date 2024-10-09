@@ -277,6 +277,28 @@ function evaluate(line) {
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatMethodName(scope[scope.length - 1].data.name, offsetWord(1)), offsetWord(4), retType)
 
                     //throwE(line)
+                } else if (offsetWord(2) == "operator")
+                {
+                    // just make this a function...
+                    var nobj = objCopy(defines.types.___format_template_dynamic___)
+                    nobj.formatPtr = scope[scope.length - 1].data
+                    nobj = helpers.types.convertTypeToHasData(nobj)
+                    globalVariables.__this__ = newGlobalVar(nobj)
+
+                    //throwE("operator", line)
+                    if(offsetWord(3) != "(" || offsetWord(5) != ")")
+                    {
+                        throwE(`Improper operator syntax. Expects "operator(?)<?> -> ?"`)
+                    }
+
+                    var operator = offsetWord(4)
+                    var retType = objCopy(offsetWord(9) == "->" ? defines.types[offsetWord(10)] : defines.types.u32)
+                    
+                    var _scope = scope[scope.length - 1].data
+                    var formattedName = helpers.formatters.formatOperatorName(_scope.name, operator)
+                    var params = offsetWord(7)
+                    
+                    actions.formats.createOperator(_scope, formattedName, params, retType)
                 } else {
                     __addToAnyVarEverMade(offsetWord(1))
                     // IF BUG ::::: SEP 11
@@ -614,6 +636,8 @@ function evaluate(line) {
                 // throwE(oldScope)
             } else if (oldScope.type == keywordTypes.METHOD) {
                 actions.formats.closeMethod(oldScope.data, oldStack)
+            } else if (oldScope.type == keywordTypes.OPERATOR) {
+                actions.functions.closeFunction(oldScope.data, oldStack)
             }
             //console.log("IJWJWWO", scope)
         }
@@ -630,6 +654,7 @@ function evaluate(line) {
                     statics: [],
                     constructors: {},
                     methods: {},
+                    operators: {},
                     size: 0
                 }
                 requestBracket = {
@@ -965,6 +990,7 @@ function evaluate(line) {
                 var lbl = stringMath ? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
                 //throwE(outputCode.text)
                 line.splice(start, build.length + 1, lbl)
+                //throwE("spliced", line, build, build.length)
             }
             // #endregion
             // #region Conditionals
@@ -986,6 +1012,7 @@ function evaluate(line) {
                 var regL = helpers.types.formatRegister("a", left_type)
                 var regR = helpers.types.formatRegister("d", right_type)
                 var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u8)
+                //console.log("CLOBBBDED", lbl, line)
 
                 if (defines.conditionalCombinators.includes(cond)) {
                     // throwE(left, right, cond)
@@ -1037,7 +1064,10 @@ function evaluate(line) {
                                 `xor ${fmtted}, ${fmtted}`
                             )
                         } else {
-                            throwW("[INTERNAL] unable to zero-out label. Might weird data from before later")
+                            outputCode.autoPush(
+                                `movb $0, ${lbl}`
+                            )
+                            //throwW("[INTERNAL] unable to zero-out label. Might have weird data from before later")
                         }
 
                         outputCode.autoPush(

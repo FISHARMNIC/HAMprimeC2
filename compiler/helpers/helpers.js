@@ -27,14 +27,14 @@ var counters = {
 }
 
 var types = {
-    areEqual: function(a,b) {
+    areEqual: function (a, b) {
         //console.log()
         var aHas = ("formatPtr" in a)
         var bHas = ("formatPtr" in b)
         var aName = (aHas && a.formatPtr != null) ? a.formatPtr.name : null
         var bName = (bHas && b.formatPtr != null) ? b.formatPtr.name : null
         var fmteq = aName == bName
-        return(
+        return (
             a.size == b.size &&
             a.float == b.float &&
             a.pointer == b.pointer &&
@@ -46,38 +46,34 @@ var types = {
             a.elementsHaveData == b.elementsHaveData
         )
     },
-    convertTypeObjToName: function(type) {
+    convertTypeObjToName: function (type) {
         var name = null;
         Object.entries(defines.types).every(x => {
-            if(this.areEqual(type,x[1]))
-            {
+            if (this.areEqual(type, x[1])) {
                 name = x[0]
                 return false
             }
             return true
         })
-        
 
-        if(name == null)
-        {
-            if("formatPtr" in type)
-            {
+
+        if (name == null) {
+            if ("formatPtr" in type) {
                 name = type.formatPtr.name
-            } else if("advptr" in type){
-                if(type.size == 8)
+            } else if ("advptr" in type) {
+                if (type.size == 8)
                     name = "string"
             }
 
         }
-        if("hasData" in type)
-        {
+        if ("hasData" in type) {
             name += ":dynamic"
         } else {
             name += ":borrowed"
         }
         return name
     },
-    derefType: function(type) {
+    derefType: function (type) {
         var c = objCopy(type)
         c.pointer = false
         return c
@@ -119,7 +115,7 @@ var types = {
             if (x.pointer) {
                 return `.4byte`
             } else {
-                
+
                 return `.${x.size / 8 == 1 ? "" : x.size / 8}byte`
             }
         }
@@ -131,9 +127,8 @@ var types = {
     typeToBytes: function (x) {
         return this.typeToBits(x) / 8
     },
-    typeToBytesWithFmts: function(type) {
-        if("formatPtr" in type)
-        {
+    typeToBytesWithFmts: function (type) {
+        if ("formatPtr" in type) {
             return formats.getFormatSize(type.formatPtr.properties)
         } else {
             return this.typeToBytes(type)
@@ -163,8 +158,7 @@ var types = {
         if (register == 'p')
             register = 'b'
 
-        if(type == undefined)
-        {
+        if (type == undefined) {
             throwE("[COMPILER ERROR] Got undefined type. Most likely syntax error")
         }
 
@@ -176,9 +170,9 @@ var types = {
                 return `%${register}${endLetter}`
             }
             if (type.size == 8) {
-                if(register == "s" || register == "i")
+                if (register == "s" || register == "i")
                     throwE("[INTERNAL ERROR] Attempting to accept 8bit esi or edi")
- 
+
                 return low ? `%${register}l` : `%${register}h`
             }
             throwE("Unknown type [" + JSON.stringify(type) + "]")
@@ -192,7 +186,7 @@ var types = {
     },
     stringIsEbpOffset: function (str) {
         debugPrint("============", str)
-        if(String(str) == "undefined")
+        if (String(str) == "undefined")
             throwE("[INTERNAL ERROR] Got undefined")
         return str.substring(str.indexOf("(")) == "(%ebp)"
     },
@@ -238,8 +232,7 @@ var types = {
         }
         return variables.getStackVariableWithOffset(this.getOffsetFromEbpOffsetString(word))
     },
-    convertTypeToHasData: function (type)
-    {
+    convertTypeToHasData: function (type) {
         type = objCopy(type)
         type.hasData = true
         return type
@@ -258,22 +251,19 @@ var types = {
         } else if (variables.checkIfParameter(word)) {
             return functions.getParameterType(word)
         }
-        if(nextNumIsFloat) {
+        if (nextNumIsFloat) {
             nextNumIsFloat = false
             return objCopy(defines.types.f32)
         }
         return objCopy(defines.types.u32)
     },
-    extractTypeFromConstructorName: function(word)
-    {
-        if(word.includes("__constructor_") && word[word.length - 1] == "_")
-        {
+    extractTypeFromConstructorName: function (word) {
+        if (word.includes("__constructor_") && word[word.length - 1] == "_") {
             var i = 0;
             word = word.slice(14).split("").reverse()
             word = word.map(x => {
-                if(i < 2)
-                {
-                    if(x == "_")
+                if (i < 2) {
+                    if (x == "_")
                         i++
                     return ""
                 }
@@ -301,46 +291,43 @@ var formatters = {
     formatAllocMacro: function (format) {
         return `__SIZEOF_${format}__`
     },
-    formatConstructorName: function(formatName)
-    {
+    formatConstructorName: function (formatName) {
         return `__constructor_${formatName}_${counters.constructors++}_`
     },
-    formatMethodName: function(formatName, methodName)
-    {
+    formatMethodName: function (formatName, methodName) {
         return `__method_${formatName}_${methodName}_`
+    },
+    formatOperatorName: function (formatName, operator) {
+        operator = formats.checkOperatorIsAccepted(operator)
+        return `__operator_${formatName}_${operator}_`
     }
 }
 
 var variables = {
-    genTempLabels: function() {
-        Object.entries(counters.tempLabels.max).forEach((e,ind) => {
-            for(var i = 0; i < e[1]; i++)
-            {
+    genTempLabels: function () {
+        Object.entries(counters.tempLabels.max).forEach((e, ind) => {
+            for (var i = 0; i < e[1]; i++) {
                 outputCode.data.push(`__TEMP${e[0]}_${i}__: .${parseInt(e[0]) / 8}byte 0`)
             }
         })
     },
-    checkIfOnStack: function(vname) {
+    checkIfOnStack: function (vname) {
         return scope.length != 0 && objectIncludes(getAllStackVariables(), vname) // ) // if stack var
     },
-    getVariableType: function(vname) {
-        if(this.checkIfOnStack(vname))
-        {
+    getVariableType: function (vname) {
+        if (this.checkIfOnStack(vname)) {
             return getAllStackVariables()[vname].type
         }
-        else if(this.checkIfParameter(vname))
-        {
+        else if (this.checkIfParameter(vname)) {
             throwE("WIP")
             //return 
         } else {
             //console.log("EEEEE", globalVariables)
             var r = globalVariables[vname]
-            if(r == undefined)
-            {
-               throwE(`Variable "${vname}" does not exist`)
+            if (r == undefined) {
+                throwE(`Variable "${vname}" does not exist`)
             }
-            if(r.type == undefined)
-            {
+            if (r.type == undefined) {
                 throwW(`[INTERNAL WARN], "${vname}" seems to not have .type property. Most likely issue with __this__`)
                 return r
             }
@@ -349,19 +336,17 @@ var variables = {
         //return this.checkIfOnStack(vname) ? getAllStackVariables()[vname].type : globalVariables[vname].type
     },
     setVariableType(vname, newType) {
-        if(this.checkIfOnStack(vname))
-            {
-                getAllStackVariables()[vname].type = newType
-            }
-            else if(this.checkIfParameter(vname))
-            {
-                throwE("WIP")
-                //return 
-            } else {
-                return globalVariables[vname].type = newType
-            }
+        if (this.checkIfOnStack(vname)) {
+            getAllStackVariables()[vname].type = newType
+        }
+        else if (this.checkIfParameter(vname)) {
+            throwE("WIP")
+            //return 
+        } else {
+            return globalVariables[vname].type = newType
+        }
     },
-    getStackVarOffset: function(vname) {
+    getStackVarOffset: function (vname) {
         return getAllStackVariables()[vname].offset
     },
     variableExists(vname) {
@@ -375,33 +360,33 @@ var variables = {
     newUntypedLabel: function () {
         return formatters.untypedLabel(counters.untypedLabels++)
     },
-    getStackVariableNameWithOffset: function(offset) {
+    getStackVariableNameWithOffset: function (offset) {
         var gaf = getAllStackVariables()
 
         return Object.keys(gaf)[Object.values(gaf).findIndex(x => {
             return x.offset == offset
         })]
     },
-    getStackVariableWithOffset: function(offset) {
+    getStackVariableWithOffset: function (offset) {
         return getAllStackVariables()[this.getStackVariableNameWithOffset(offset)]
     },
-    
-    checkIfParameter: function(word) {
+
+    checkIfParameter: function (word) {
         return (scope.length > 0 && (general.getMostRecentFunction() != undefined) && general.getMostRecentFunction().data.parameters.findIndex(x => x.name == word) != -1)
     }
 }
 
 var registers = {
-    clobberOrder: ['b','s','c','i'],
+    clobberOrder: ['s', 'c', 'i'],
     inLineClobbers: {
-        'b': 0, // ax is reserved for function returns
+       // 'b': 0, // ax is reserved for function returns
         'c': 0, // dx is reserved for other stuff
-        's': 0,
+        's': 0, // bx is reserved for math
         'i': 0, // edi
     },
     clearClobbers: function () {
         this.inLineClobbers = {
-            'b': 0,
+           // 'b': 0,
             'c': 0,
             's': 0,
             'i': 0,
@@ -417,7 +402,7 @@ var registers = {
         's': defines.types.u32,
         'p': defines.types.u32,
     },
-    resetExtendedTypes: function() {
+    resetExtendedTypes: function () {
         this.extendedTypes = {
             'a': defines.types.u32,
             'b': defines.types.u32,
@@ -429,7 +414,7 @@ var registers = {
             'p': defines.types.u32,
         }
     },
-    setExtendedType: function(register, type) {
+    setExtendedType: function (register, type) {
         this.extendedTypes[register] = objCopy(type)
     },
     getFreeRegister: function (type, clobber = true) {
@@ -437,7 +422,7 @@ var registers = {
         var bytes = types.typeToBytes(type)
         Object.entries(this.inLineClobbers).every((x, i) => {
             //throwE("CEHCK THIS LINE IF IT RIGHT")
-            if (x[1] == 0 && (bytes != 1? true : !(x[0] == "s" || x[0] == "i"))) {
+            if (x[1] == 0 && (bytes != 1 ? true : !(x[0] == "s" || x[0] == "i"))) {
                 register = x[0]
                 if (clobber) {
                     this.inLineClobbers[register] = 1
@@ -459,10 +444,10 @@ var registers = {
     },
     clobberRegister: function (register) {
         //if(register.length == 1)
-            this.inLineClobbers[register] = 1
+        this.inLineClobbers[register] = 1
     },
     deClobberRegister: function (register) {
-        if(register.length == 1)
+        if (register.length == 1)
             this.inLineClobbers[register] = 0
     },
     registerStringToLetterIfIs(rstr) {
@@ -504,6 +489,37 @@ var formats = {
         })
         return offset / 8
     },
+    checkOperatorIsAccepted: function (operator) {
+        var accepted = ["add", "sub", "div", "mul", "mod", "set_index", "get_index"]
+        if(!accepted.includes(operator))
+        {
+            throwE("Unsupported operator " + operator)
+        }
+        return operator
+        /*
+        var nonSymbols = ["set_index", "get_index"]
+        if (operator == "+") {
+            operator = "math_add"
+        }
+        else if (operator == "-") {
+            operator = "math_sub"
+        }
+        else if (operator == "*") {
+            operator = "math_mul"
+        }
+        else if (operator == "/") {
+            operator = "math_div"
+        }
+        else if (operator == "%") {
+            operator = "math_mod"
+        }
+        
+        else if (!nonSymbols.includes(operator)) {
+            throwE("Unsupported operator " + operator)
+        }
+        return operator
+        */
+    }
 }
 
 var functions = {
@@ -541,20 +557,19 @@ var functions = {
 
 
 var general = {
-    isReserved: function(word) {
-        return (objectIncludes(defines.types,(word)) || defines.keywords.includes(word))
+    isReserved: function (word) {
+        return (objectIncludes(defines.types, (word)) || defines.keywords.includes(word))
     },
     getMostRecentFunction: function () {
-        return (scope.slice().reverse().find(x => {
+        return(scope.slice().reverse().find(x => {
             //debugPrint("3333333", x)
-            return x.type == keywordTypes.FUNCTION || x.type == keywordTypes.METHOD || x.type == keywordTypes.CONSTRUCTOR
+            return x.type == keywordTypes.FUNCTION || x.type == keywordTypes.METHOD || x.type == keywordTypes.CONSTRUCTOR || x.type == keywordTypes.OPERATOR
         }))
     },
     scopeHasIterable: function () {
         return scope.some(x => x.type == keywordTypes.WHILE)
     },
-    setModifiesThis: function()
-    {
+    setModifiesThis: function () {
         var fn = this.getMostRecentFunction()
         var fnName = fn.data.name
         var e = scope.find(e => e.data.name == fnName)

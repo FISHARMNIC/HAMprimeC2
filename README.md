@@ -56,10 +56,14 @@ All of the things below work. See examples [here](https://github.com/FISHARMNIC/
     - Built in floats
 
 Currently working on / not implemented yet:
--  private properties
+- Operator overloading (currently implemented, but math engine wont do it, see below)
+- Rewriting the math engine (which is from my old language and its pretty bad)
+    - this will fix:
+        - operators not being called
+        - Order of operations
+- private properties
 - easier built-in array features (push,pop,forEach,etc.)
 - Lamdba functions
-- special methods like .add() which are automatically called
 - inline assembly
 
 #### differences from the first compiler

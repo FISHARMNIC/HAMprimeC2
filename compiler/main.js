@@ -1,5 +1,10 @@
 /*
 TODO:
+    !! CRUCIAL !!
+        - rewrite math engine so that it supports:
+            - operators
+            - math precidence
+
     - Make some 3d thing
     - add overloading operations like bob[] if is class Jon
         - .index overload<> -> ... (for something like cpp maps)

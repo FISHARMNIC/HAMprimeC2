@@ -168,7 +168,6 @@ var assembly = {
 var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
         __addToAnyVarEverMade(vname)
-
         if (helpers.types.isLiteral(value)) {
             outputCode.autoPush(
                 `pushl \$${value}`,
@@ -725,16 +724,22 @@ var allocations = {
         } else {
             //throwE(bytes)
 
+            var mrf = helpers.general.getMostRecentFunction()
+            if(mrf == undefined)
+            {
+            throwE("Requesting operation that can only be completed inside of a function")
+            }
+
             debugPrint("ALLOCING", bytes, currentStackOffset)
             if (programRules.DynamicArraysAllocateSize && !forceNoSize) {
-                currentStackOffset = (helpers.general.getMostRecentFunction().data.totalAlloc += (bytes + 4))
+                currentStackOffset = (mrf.data.totalAlloc += (bytes + 4))
                 outputCode.autoPush(
                     `${note.length != 0 ? "#" + note + "\n" : ""}movl \$${bytes}, -${currentStackOffset}(%ebp) # Allocated in __ALLOC_FOR__, setting extra byte for size`
                 )
                 return `-${currentStackOffset - 4}(%ebp)`
             } else {
                 //console.log(helpers.general.getMostRecentFunction())
-                currentStackOffset = (helpers.general.getMostRecentFunction().data.totalAlloc += bytes)
+                currentStackOffset = (mrf.data.totalAlloc += bytes)
                 return `-${currentStackOffset}(%ebp)`
             }
         }
@@ -1408,6 +1413,32 @@ var formats = {
         }
 
     },
+    createOperator: function(_scope, fname, params, ret)
+    {
+        if (typeof (params) == "string")
+            params = [params]
+        var params_obj = actions.functions.createParams(params)
+
+        var _data = {
+            name: fname,
+            parameters: params_obj.params,
+            variadic: params_obj.didVari,
+            returnType: ret,
+            totalAlloc: 0,
+            saveRegs: false
+        }
+
+        _scope.operators[fname] = _data
+        userFormats[_scope.name] = _scope
+        userFunctions[fname] = _data
+
+        requestBracket = {
+            type: keywordTypes.OPERATOR,
+            data: _data
+        }
+
+        functions.createFunction(fname)
+    },
     callConstructor: function (className, params) {
 
         // var lst = getLastScopeType()
@@ -1486,6 +1517,10 @@ var formats = {
         } else { // instance.method()
             parentType = helpers.types.guessType(parent)
             //console.log(globalVariables)
+            if(parentType.formatPtr == undefined)
+            {
+                throwE(`"${parent}" is not a format instance or does not exist`)
+            }
             formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
             if (!objectIncludes(parentType.formatPtr.methods, formattedName)) {
                 //throwE(parentType == userFormats[parentType.formatPtr.name])

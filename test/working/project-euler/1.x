@@ -9,7 +9,6 @@ entry function<> -> u32
     {
         if(((i % 3) == 0) || ((i % 5) == 0))
         {
-            //printf("Mulitple: " + i + "\n");
             sum <- sum + i;
         }
         i <- i + 1;

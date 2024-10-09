@@ -18,9 +18,13 @@ ___TEMPORARY_OWNER___: .4byte 0
 .global __this__
 .extern __disable_gc__
 ######## user data section ########
+final: .4byte 1000
 .4byte 13
 __STRING0__: .asciz "result: %i\n"
-__ALLOCFOR_entry__ = 16
+__ALLOCFOR_entry__ = 8
+__TEMP8_0__: .1byte 0
+__TEMP8_1__: .1byte 0
+__TEMP8_2__: .1byte 0
 ###################################
 .text
 
@@ -45,104 +49,79 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-# Loading local variable "a" @-4(%ebp)
-mov $1, %edx
-mov %edx, -4(%ebp)
-# Loading local variable "b" @-8(%ebp)
-mov $2, %edx
-mov %edx, -8(%ebp)
-# Loading local variable "max" @-12(%ebp)
-mov $4000000, %edx
-mov %edx, -12(%ebp)
-# Loading local variable "sum" @-16(%ebp)
+# Loading local variable "sum" @-4(%ebp)
 mov $0, %edx
-mov %edx, -16(%ebp)
+mov %edx, -4(%ebp)
+# Loading local variable "i" @-8(%ebp)
+mov $0, %edx
+mov %edx, -8(%ebp)
 __LABEL0__:
-mov -4(%ebp), %eax
-mov -12(%ebp), %edx
-mov $0, %bl
-cmp %edx, %eax
-setl %bl
-cmpb $1, %bl
-jne __LABEL1__
-# Math begin: [-4(%ebp) % 2]
-xor %eax, %eax
-mov -4(%ebp), %eax
-mov $2, %ebx
-xor %edx, %edx
-div %ebx
-mov %edx, %eax
-mov %eax, %ebx
-# Math end. result in %ebx
-mov $0, %cl
-cmp $0, %ebx
-sete %cl
-cmpb $1, %cl
-jne __LABEL2__
-# Math begin: [-16(%ebp) + -4(%ebp)]
-xor %eax, %eax
-mov -16(%ebp), %eax
-add -4(%ebp), %eax
-mov %eax, %ebx
-# Math end. result in %ebx
-mov %ebx, -16(%ebp)
-jmp __LABEL3__
-__LABEL2__:
-__LABEL3__:
-# Math begin: [-8(%ebp) % 2]
-xor %eax, %eax
 mov -8(%ebp), %eax
-mov $2, %ebx
+mov final, %edx
+mov $0, %cl
+cmp %edx, %eax
+setl %cl
+cmpb $1, %cl
+jne __LABEL1__
+mov -8(%ebp), %eax
+mov $3, %ebx
 xor %edx, %edx
 div %ebx
 mov %edx, %eax
-mov %eax, %ebx
-# Math end. result in %ebx
-mov $0, %cl
-cmp $0, %ebx
-sete %cl
-cmpb $1, %cl
-jne __LABEL4__
-# Math begin: [-16(%ebp) + -8(%ebp)]
-xor %eax, %eax
-mov -16(%ebp), %eax
+mov %eax, %ecx
+movb $0, __TEMP8_0__
+cmp $0, %ecx
+sete __TEMP8_0__
+mov -8(%ebp), %eax
+mov $5, %ebx
+xor %edx, %edx
+div %ebx
+mov %edx, %eax
+mov %eax, %esi
+movb $0, __TEMP8_1__
+cmp $0, %esi
+sete __TEMP8_1__
+# OR comparison
+movb $0, __TEMP8_2__
+cmpb $1, __TEMP8_0__
+sete __TEMP8_2__
+je __LABEL2__
+cmpb $1, __TEMP8_1__
+sete __TEMP8_2__
+__LABEL2__:
+cmpb $1, __TEMP8_2__
+jne __LABEL3__
+mov -4(%ebp), %eax
 add -8(%ebp), %eax
-mov %eax, %ebx
-# Math end. result in %ebx
-mov %ebx, -16(%ebp)
-jmp __LABEL5__
+mov %eax, %ecx
+mov %ecx, -4(%ebp)
+jmp __LABEL4__
+__LABEL3__:
 __LABEL4__:
-__LABEL5__:
-# Math begin: [-4(%ebp) + -8(%ebp)]
-xor %eax, %eax
-mov -4(%ebp), %eax
-add -8(%ebp), %eax
-mov %eax, %ebx
-# Math end. result in %ebx
-mov %ebx, -4(%ebp)
-# Math begin: [-4(%ebp) + -8(%ebp)]
-xor %eax, %eax
-mov -4(%ebp), %eax
-add -8(%ebp), %eax
-mov %eax, %ebx
-# Math end. result in %ebx
-mov %ebx, -8(%ebp)
+mov -8(%ebp), %eax
+add $1, %eax
+mov %eax, %ecx
+mov %ecx, -8(%ebp)
 jmp __LABEL0__
 __LABEL1__:
 # Calling function printf
 # TODO optimize if variable just do movl
-mov -16(%ebp), %edx
+mov -4(%ebp), %edx
 push %edx
 pushl $__STRING0__
 call printf
-mov %eax, %ebx
+mov %eax, %ecx
 add $8, %esp
+mov $0, %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
-# a: 4
-# b: 8
-# max: 12
-# sum: 16
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# sum: 4
+# i: 8

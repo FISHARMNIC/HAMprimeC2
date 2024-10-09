@@ -4,23 +4,24 @@ List format
 {
     .buffer array;
 
-    .List operator("+")<u32 rhs> -> List
+    .List operator(+)<u32 rhs> -> List
     {
-        this.push(rhs);
-        return this;
+        create new <- duplicate(this);
+        new.push(rhs);
+        return new;
     }
 
-    .List operator("+")<List rhs> -> List
+    .List operator(+)<List rhs> -> List
     {
         /* join the two buffers */
     }
 
-    .List operator("set-index")<int index, int value> -> List
+    .List operator(set_index)<int index, int value> -> List
     {
         this.buffer[index] <- value;
     }
 
-    .List operator("get-index")<List rhs> -> List
+    .List operator(get_index)<List rhs> -> List
     {
         /* join the two buffers */
     }
