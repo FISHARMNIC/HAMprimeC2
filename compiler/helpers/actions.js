@@ -108,14 +108,9 @@ var assembly = {
         if ("hasData" in stype) {
             outputCode.autoPush(
                 `# copying buffer`,
-                `lea ${source}, %esi`,
-                `mov (%esi), %ecx`,
-                `mov -4(%ecx), %ecx`,
-                `pushl 8(%ecx)`,
-                `call __rc_allocate__`,
-                `pop %ecx`,
-                `mov %eax, %edi`,
-                `rep movsb`,
+                `pushl ${source}`,
+                `call __duplicate__`,
+                `add $4, %esp\n`,
             )
         } else if ("formatPtr" in stype && stype.formatPtr != null) {
             var fmtSize = helpers.formats.getFormatSize(stype.formatPtr.properties)
@@ -725,9 +720,8 @@ var allocations = {
             //throwE(bytes)
 
             var mrf = helpers.general.getMostRecentFunction()
-            if(mrf == undefined)
-            {
-            throwE("Requesting operation that can only be completed inside of a function")
+            if (mrf == undefined) {
+                throwE("Requesting operation that can only be completed inside of a function")
             }
 
             debugPrint("ALLOCING", bytes, currentStackOffset)
@@ -1017,15 +1011,15 @@ var functions = {
         //throwE(st)
     },
     callFunction: function (fname, args, isConstructor = false, constructorType = null, typeIfFromAddress = null) {
-        
-        var lst = getLastScopeType()
-        var sr_this = false;
 
-        if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD) {
-            sr_this = true
-            outputCode.autoPush(`pushl __this__`)
-        }
-        
+        // var lst = helpers.general.getMostRecentFunction().type
+        // var sr_this = false;
+
+        // if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD || lst == keywordTypes.OPERATOR) {
+        //     sr_this = true
+        //     outputCode.autoPush(`pushl __this__`)
+        // }
+
         var onCom = false
         var callAddress = fname
 
@@ -1177,9 +1171,9 @@ var functions = {
 
         helpers.registers.clobberRegister(helpers.registers.registerStringToLetterIfIs(out))
 
-        if (sr_this) {
-            outputCode.autoPush(`popl __this__`)
-        }
+        // if (sr_this) {
+        //     outputCode.autoPush(`popl __this__`)
+        // }
 
         return out
     },
@@ -1413,8 +1407,7 @@ var formats = {
         }
 
     },
-    createOperator: function(_scope, fname, params, ret)
-    {
+    createOperator: function (_scope, fname, params, ret) {
         if (typeof (params) == "string")
             params = [params]
         var params_obj = actions.functions.createParams(params)
@@ -1479,6 +1472,14 @@ var formats = {
         }
 
         //globalVariables.__this__ = defines.types[className]
+
+        var lst = helpers.general.getMostRecentFunction().type
+        var sr_this = false;
+        if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD || lst == keywordTypes.OPERATOR) {
+            sr_this = true
+            outputCode.autoPush(`pushl __this__`)
+        }
+
         globalVariables.__this__ = helpers.types.convertTypeToHasData(defines.types[className])
         var rval = functions.callFunction(bestFit, params, true, globalVariables.__this__)
 
@@ -1500,6 +1501,14 @@ var formats = {
     callMethod: function (parent, method, params) {
         var parentType;
         var formattedName;
+
+        var lst = helpers.general.getMostRecentFunction().type
+        var sr_this = false;
+        if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD || lst == keywordTypes.OPERATOR) {
+            sr_this = true
+            outputCode.autoPush(`pushl __this__`)
+        }
+
         if (objectIncludes(defines.types, parent)) { // formatName.method()
             if (method == "call") {
                 //throwE(parentType)
@@ -1517,8 +1526,7 @@ var formats = {
         } else { // instance.method()
             parentType = helpers.types.guessType(parent)
             //console.log(globalVariables)
-            if(parentType.formatPtr == undefined)
-            {
+            if (parentType.formatPtr == undefined) {
                 throwE(`"${parent}" is not a format instance or does not exist`)
             }
             formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
@@ -1529,6 +1537,45 @@ var formats = {
             actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
         }
 
+        var r = functions.callFunction(formattedName, params)
+
+        if (sr_this) {
+            outputCode.autoPush(`popl __this__`)
+        }
+
+
+        //console.log(formattedName)
+        if ("modifiesThis" in userFunctions[formattedName]) {
+            outputCode.autoPush("# Loading into __this__ because function modified it ")
+            actions.assembly.optimizeMove("__this__", parent, parentType, parentType)
+        }
+
+        return r;
+    },
+    callOperator: function (parent, operator, params) {
+        var parentType = helpers.types.guessType(parent)
+        if (parentType.formatPtr == undefined) {
+            throwE(`"${parent}" is not a format instance or does not exist`)
+        }
+
+        var operator = helpers.formats.convertOperatorToString(operator)
+        var formattedName = helpers.formatters.formatOperatorName(parentType.formatPtr.name, operator)
+        //throwE(parentType.formatPtr.operators)
+        if (!objectIncludes(parentType.formatPtr.operators, formattedName)) {
+            throwE(`Operator "${operator}" does not exist in format "${parentType.formatPtr.name}"`)
+        }
+
+        var sr_this = false
+        var lst = helpers.general.getMostRecentFunction().type
+        if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD || lst == keywordTypes.OPERATOR) {
+            sr_this = true
+            outputCode.autoPush(`pushl __this__`)
+        }
+
+        // ****HERE**** TODO: this is overwriting __this__ before callFunction which saves this.
+        actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
+
+        // throwE("calling", formattedName, params)
         var r = functions.callFunction(formattedName, params)
         //console.log(formattedName)
         if ("modifiesThis" in userFunctions[formattedName]) {

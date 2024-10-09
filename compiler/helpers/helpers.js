@@ -298,7 +298,7 @@ var formatters = {
         return `__method_${formatName}_${methodName}_`
     },
     formatOperatorName: function (formatName, operator) {
-        operator = formats.checkOperatorIsAccepted(operator)
+        //operator = formats.checkOperatorIsAccepted(operator)
         return `__operator_${formatName}_${operator}_`
     }
 }
@@ -527,19 +527,19 @@ var formats = {
     convertOperatorToString: function (operator) {
         var nonSymbols = ["set_index", "get_index"]
         if (operator == "+") {
-            operator = "math_add"
+            operator = "add"
         }
         else if (operator == "-") {
-            operator = "math_sub"
+            operator = "sub"
         }
         else if (operator == "*") {
-            operator = "math_mul"
+            operator = "mul"
         }
         else if (operator == "/") {
-            operator = "math_div"
+            operator = "div"
         }
         else if (operator == "%") {
-            operator = "math_mod"
+            operator = "mod"
         }
         
         else if (!nonSymbols.includes(operator)) {

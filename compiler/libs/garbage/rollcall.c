@@ -1,7 +1,7 @@
 #include "rollcall.h"
 #include "linked.h"
 
-//#include <stdio.h>
+// #include <stdio.h>
 __linked_t *Roster = 0;
 static int allocated_bytes = 0;
 
@@ -23,9 +23,11 @@ void __rc_quick_check__()
 
 void *__rc_allocate__(int size_bytes, int restricted)
 {
+    //asm volatile("pusha");
     // Note, here using malloc which also stores size.
     // In compiler use mmap2
-
+    //printf("Malloc %i\n", size_bytes);
+    
     // automatic allocation done at over BYTES_PER_GC bytes allocated
     // if(allocated_bytes > BYTES_PER_GC && __disable_gc__ == 0)
     // {
@@ -62,7 +64,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     __linked_add(&Roster, roster_entry);
 
     //printf("\t\tAllocated Roster[%i] {%i} @%p\n", __linked_getSize(Roster), size_bytes, &(described_buffer->data));
-
+    //asm volatile("popa");
     return roster_entry->pointer;
 }
 
@@ -105,9 +107,9 @@ void __rc_collect__()
 /// @brief 
 /// @param dest Memory address of destination
 /// @param src  Source pointer
-/// @param elementSize 
+// /// @param elementSize 
 /// @return destination
-int* __copydata__(int* dest, int* src, int elementSize)
+int* __copydata__(int* dest, int* src /*, int elementSize*/)
 {
     // get size of destination in bytes
     described_buffer_t* srcBuffer = (described_buffer_t*)(src - 1);
@@ -116,7 +118,20 @@ int* __copydata__(int* dest, int* src, int elementSize)
     int destSize = destBuffer->entry_reference->size;
 
     //printf("::: attempting mov %i\n", elementSize * srcSize);
-    memcpy(dest, src, elementSize * (srcSize < destSize? srcSize : destSize));
+    //memcpy(dest, src, elementSize * (srcSize < destSize? srcSize : destSize));
 
+    //printf("::: attempting mov %i\n", (srcSize < destSize? srcSize : destSize));
+    memcpy(dest, src, (srcSize < destSize? srcSize : destSize));
+
+    return dest;
+}
+
+int* __duplicate__(int* src)
+{
+    described_buffer_t* srcBuffer = (described_buffer_t*)(src - 1);
+    int srcSize = srcBuffer->entry_reference->size;
+
+    int* dest = __rc_allocate__(srcSize, 0);
+    memcpy(dest, src, srcSize);
     return dest;
 }

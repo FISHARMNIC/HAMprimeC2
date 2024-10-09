@@ -806,8 +806,8 @@ function evaluate(line) {
                 // throwE(dest)
 
                 outputCode.autoPush(
-                    `# copying buffer`,
-                    `pushl \$${helpers.types.typeToBytes(srcType)}`
+                    `# realloc buffer`,
+                    //`pushl \$${helpers.types.typeToBytes(srcType)}`
                 )
 
                 actions.assembly.pushToStack(src, srcType)
@@ -818,7 +818,7 @@ function evaluate(line) {
 
                 outputCode.autoPush(
                     "call __copydata__",
-                    "add $12, %esp",
+                    "add $8, %esp", // 12
                     `mov %eax, ${oreg}`
                 )
 

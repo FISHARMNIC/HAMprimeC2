@@ -44,8 +44,6 @@ __SIZEOF_List__ = 8
 .4byte 15
 __STRING3__: .asciz "Printing: %i\n"
 __ALLOCFOR_putint__ = 0
-.4byte 10
-__STRING4__: .asciz "[%i,%i]\n"
 __ALLOCFOR_entry__ = 8
 __TEMP8_0__: .1byte 0
 __TEMP32_0__: .4byte 0
@@ -231,12 +229,11 @@ mov %eax, %esi
 movl __this__, %eax
 mov 0(%eax), %edx
 mov %edx, %edi
-# copying buffer
-pushl $4
+# realloc buffer
 push %edi
 push %esi
 call __copydata__
-add $12, %esp
+add $8, %esp
 mov %eax, __TEMP32_0__
 movl __this__, %eax
 movl __TEMP32_0__, %edx
@@ -315,12 +312,11 @@ mov %eax, %esi
 movl __this__, %eax
 mov 0(%eax), %edx
 mov %edx, %edi
-# copying buffer
-pushl $4
+# realloc buffer
 push %edi
 push %esi
 call __copydata__
-add $12, %esp
+add $8, %esp
 mov %eax, __TEMP32_0__
 movl __this__, %eax
 movl __TEMP32_0__, %edx
@@ -493,14 +489,10 @@ mov %esp, %ebp
 sub $__ALLOCFOR___operator_List_add___, %esp
 
 # copying buffer
-lea __this__, %esi
-mov (%esi), %ecx
-mov -4(%ecx), %ecx
-pushl 8(%ecx)
-call __rc_allocate__
-pop %ecx
-mov %eax, %edi
-rep movsb
+pushl __this__
+call __duplicate__
+add $4, %esp
+
 mov %eax, %ecx
 # Loading local variable "dupe" @-4(%ebp)
 mov %ecx, -4(%ebp)
@@ -510,6 +502,7 @@ push %eax
 push %ecx
 call __rc_requestOwnership__
 add $8, %esp
+pushl __this__
 mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __method_List_push_
@@ -519,6 +512,7 @@ push %edx
 call __method_List_push_
 mov %eax, %ecx
 add $4, %esp
+popl __this__
 mov -4(%ebp), %eax
 call __rc_quick_check__
 
@@ -554,75 +548,6 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-# Calling function __constructor_List_0_
-call __constructor_List_0_
-mov %eax, %ecx
-# Loading local variable "myList" @-4(%ebp)
-mov %ecx, -4(%ebp)
-# requesting ownership for myList (create)
-lea -4(%ebp), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_List_push_
-pushl $123
-call __method_List_push_
-mov %eax, %ecx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_List_push_
-pushl $456
-call __method_List_push_
-mov %eax, %ecx
-add $4, %esp
-movl -4(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %ecx
-mov %ecx, %eax
-mov 0(%eax), %esi
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %esi
-push %ecx
-# Calling function __method_List_pop_
-call __method_List_pop_
-mov %eax, %edi
-pop %ecx
-pop %esi
-push %esi
-push %ecx
-push %edi
-# Calling function printf
-push %edi
-push %esi
-pushl $__STRING4__
-call printf
-mov %eax, __TEMP32_0__
-add $12, %esp
-pop %edi
-pop %ecx
-pop %esi
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_List_push_
-pushl $321
-call __method_List_push_
-mov %eax, %ecx
-add $4, %esp
-lea putint, %ecx
-mov -4(%ebp), %edx
-mov %edx, __this__
-push %ecx
-# Calling function __method_List_every_
-push %ecx
-call __method_List_every_
-mov %eax, %esi
-add $4, %esp
-pop %ecx
 # Calling function __constructor_List_1_
 pushl $3
 pushl $2
@@ -631,12 +556,35 @@ pushl $3
 call __constructor_List_1_
 mov %eax, %ecx
 add $16, %esp
-# Loading local variable "secondList" @-8(%ebp)
-mov %ecx, -8(%ebp)
+# Loading local variable "secondList" @-4(%ebp)
+mov %ecx, -4(%ebp)
 # requesting ownership for secondList (create)
-lea -8(%ebp), %eax
+lea -4(%ebp), %eax
 push %eax
 push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __operator_List_add_
+pushl $4
+call __operator_List_add_
+mov %eax, %ecx
+add $4, %esp
+mov %ecx, __this__
+push %ecx
+# Calling function __operator_List_add_
+pushl $5
+call __operator_List_add_
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+# Loading local variable "thirdList" @-8(%ebp)
+mov %esi, -8(%ebp)
+# requesting ownership for thirdList (create)
+lea -8(%ebp), %eax
+push %eax
+push %esi
 call __rc_requestOwnership__
 add $8, %esp
 mov -8(%ebp), %edx
@@ -658,5 +606,5 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# myList: 4
-# secondList: 8
+# secondList: 4
+# thirdList: 8

@@ -1,9 +1,9 @@
 /*
 TODO:
-    !! CRUCIAL !!
-        - rewrite math engine so that it supports:
-            - operators
-            - math precidence
+
+    !! IMPORTANT !!
+        - add operator overload with different params
+        - currently only have one possilbe overload, but what if you want to add with int vs format etc?
 
     - Make some 3d thing
     - add overloading operations like bob[] if is class Jon

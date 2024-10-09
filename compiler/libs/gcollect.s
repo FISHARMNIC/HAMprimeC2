@@ -1,6 +1,6 @@
 .data
 
-__rc_transfer_error__: .asciz "** [Roll-Call Error] Could not transfer reference %p\n"
+__rc_transfer_error__: .asciz "** [Roll-Call Error] Could not transfer locked reference %p\n"
 __rc_transfer_nullOwnership__: .asciz "** [Roll-Call Warning] Attempting to own null pointer\n   ** Most likely attempting to set a dynamic to value 0\n"
 
 //_e_: .asciz "Setting ownership @%p: %i\n"
