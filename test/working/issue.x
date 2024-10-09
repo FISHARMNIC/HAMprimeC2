@@ -1,21 +1,13 @@
-Person format
-{
-    .name string;
+/*
+BROKEN! See comment below
 
-    .add method<u32 age> -> Person
-    {
-        this.name <- this.name + age;
-        return(this);
-    }
-
-    .print method<> -> u32
-    {
-        print_(this.name);
-    }
-}
+*/
 
 entry function<> -> u32
 {
-    create me <- Person<name:"Nico">;
-    me.add(123).print();
+    create i <- 4;
+    if(((i % 3) == 0) || ((i % 5) == 0))
+    {
+            printf("YES");
+    }
 }

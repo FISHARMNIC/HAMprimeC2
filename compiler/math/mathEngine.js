@@ -5,6 +5,7 @@ todo. Only push non clobbered. use eax, esi, and edi since they are least likely
 
 module.exports = function (arr) {
     //debugPrint("MATH ON", arr, helpers.registers.inLineClobbers)
+    outputCode.autoPush(`# Math begin: [${arr.join(" ")}]`)
     var scanPos = 0;
     var current = arr[scanPos]
     var mathType = defines.types.u32
@@ -75,10 +76,11 @@ module.exports = function (arr) {
     var lbl = helpers.registers.getFreeLabelOrRegister(mathType)
     //debugPrint("MATH GOT LBL", lbl)
     outputCode.autoPush(`mov %eax, ${lbl}`)
-    pushed.forEach(x => {
+    pushed.reverse().forEach(x => {
         outputCode.autoPush(`pop ${x}`)
     })
 
+    outputCode.autoPush(`# Math end. result in ${lbl}`)
     //typeStack.push(defines.types.u32)
     return lbl
 }
