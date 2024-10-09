@@ -103,10 +103,20 @@ var tevDELETE = 0
 
 function runDeepestFirst(line) {
     var nestedEnd = line.at(-1)
-    if (nestedEnd != 0 && line.length != 0) {
+    //console.log(":::", `~~~~~ end->${nestedEnd} (type:${typeof(line)})`, line)
+    if(typeof(line) == "string" && nestedEnd != 0)
+    {
+        // 123, nested end is 3, should be 0, so its reading "123"[0] -> 1
+        console.log("\n\n========== ISSUE ==========", line, "\n\n")
+        return ""
+        //line = [line, 0]
+        //nestedEnd = 0
+        //process.exit(1)
+    }
+    if (/*typeof(line) == "object" && */nestedEnd != 0 && line.length != 0) {
         var oArr = []
         for (var i = 0; i < nestedEnd; i++) {
-            //debugPrint("NEEEEESTING",line, i)
+            //console.log(`\t nesting becuase ${i} is less than ${nestedEnd} in "${line}" (type: ${typeof(line)})`)
             var outT = runDeepestFirst(line.slice(0, nestedEnd)[i])
 
             line = line.map(x => { // if accessing a number that needs to be replaced, replace it
@@ -118,7 +128,7 @@ function runDeepestFirst(line) {
             //debugPrint("OUUUTUTTTTTT", line)
         }
         var newA = [...line.slice(nestedEnd, line.length - 1), 0]
-        //console.log("weeee", newA)
+        //console.log("\t END nesting", newA)
         return runDeepestFirst(newA)
     }
     else {
@@ -126,12 +136,12 @@ function runDeepestFirst(line) {
         // here is where stuff should be evaluated. Using aline
 
         // it then needs to be replaced with a label
-        //debugPrint("COMPILING",aline)
+        //console.log("COMPILING",aline)
         var output = evaluator(aline)
         if(output.length ==1)
             output = output[0]
-        //debugPrint("++=====COMPILED", aline)
-        //console.log("=====OUT", output)
+        /////////////////// console.log("++=====COMPILED", aline)
+        /////////////////// console.log("=====OUT", output)
         return output
         // console.log(`EV${tevDELETE} = EVALUATE: ${aline.join(" ")}`)
         // return (`EV${tevDELETE++}`)

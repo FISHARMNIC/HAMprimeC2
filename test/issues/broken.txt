@@ -1,0 +1,82 @@
+|| using me.add(123).print() ||
+::: [ 'Person', 'format', 0 ] ~~~~~ 0 object
+::: [ '{', 0 ] ~~~~~ 0 object
+::: [ '.', 'name', 'string', 0 ] ~~~~~ 0 object
+::: [
+  [ 'u32', 'age', 0 ],
+  '.',
+  'add',
+  'method',
+  '<',
+  0,
+  '>',
+  '->',
+  'Person',
+  ':',
+  'borrowed',
+  1
+] ~~~~~ 1 object
+::: [ 'u32', 'age', 0 ] ~~~~~ 0 object
+::: [
+  '.',      'add',
+  'method', '<',
+  'age',    '>',
+  '->',     'Person',
+  ':',      'borrowed',
+  0
+] ~~~~~ 0 object
+::: [ '{', 0 ] ~~~~~ 0 object
+::: [ 0 ] ~~~~~ 0 object
+::: [ 0 ] ~~~~~ 0 object
+::: [ '}', 0 ] ~~~~~ 0 object
+::: [
+  [ 0 ],   '.',
+  'print', 'method',
+  '<',     0,
+  '>',     '->',
+  'u32',   1
+] ~~~~~ 1 object
+::: [ 0 ] ~~~~~ 0 object
+::: [
+  '.',      'print',
+  'method', '<',
+  [],       '>',
+  '->',     'u32',
+  0
+] ~~~~~ 0 object
+::: [ '{', 0 ] ~~~~~ 0 object
+::: [ 0 ] ~~~~~ 0 object
+::: [ '}', 0 ] ~~~~~ 0 object
+::: [ '}', 0 ] ~~~~~ 0 object
+::: [ [ 0 ], 'entry', 'function', '<', 0, '>', '->', 'u32', 1 ] ~~~~~ 1 object
+::: [ 0 ] ~~~~~ 0 object
+::: [ 'entry', 'function', '<', [], '>', '->', 'u32', 0 ] ~~~~~ 0 object
+::: [ '{', 0 ] ~~~~~ 0 object
+::: [
+  [ [ 'name', ':', '"Nico"', 0 ], 'Person', '<', 0, '>', 1 ],
+  'create',
+  'me',
+  '<-',
+  0,
+  1
+] ~~~~~ 1 object
+::: [ [ 'name', ':', '"Nico"', 0 ], 'Person', '<', 0, '>', 1 ] ~~~~~ 1 object
+::: [ 'name', ':', '"Nico"', 0 ] ~~~~~ 0 object
+::: [ 'Person', '<', [ 'name', ':', '__STRING0__' ], '>', 0 ] ~~~~~ 0 object
+::: [ 'create', 'me', '<-', '%ebx', 0 ] ~~~~~ 0 object
+::: [ 0 ] ~~~~~ 0 object
+::: [
+  [ '123', 0 ], [ 0 ],
+  'me',         '.',
+  'add',        '(',
+  0,            ')',
+  '.',          'print',
+  '(',          1,
+  ')',          2
+] ~~~~~ 2 object
+::: [ '123', 0 ] ~~~~~ 0 object
+::: 123 ~~~~~ 3 string
+::: 1 ~~~~~ 1 string
+::: 1 ~~~~~ 1 string
+::: 1 ~~~~~ 1 string
+::: 1 ~~~~~ 1 string

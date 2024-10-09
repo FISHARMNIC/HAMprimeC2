@@ -125,7 +125,7 @@ Snake format
         this.head.x <- this.head.x + this.vx;
         this.head.y <- this.head.y + this.vy;
 
-        if((this.head.x <: 0) || (this.head.x :> 480) || (this.head.y <: 0) || (this.head.y :> 360)
+        if((this.head.x <: 0) || (this.head.x :> 480) || (this.head.y <: 0) || (this.head.y :> 360))
         {
             exit_game("Fail!", this.length);
         }

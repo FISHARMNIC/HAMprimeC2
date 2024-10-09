@@ -5,7 +5,14 @@
 // }
 
 global.objCopy = function(x) {
-    return structuredClone(x)
+    var new_ = structuredClone(x)
+
+    if("formatPtr" in x)
+    {
+        new_.formatPtr = x.formatPtr
+    }
+    
+    return new_
 }
 
 global.newGlobalVar = function (type, info = {}) {

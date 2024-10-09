@@ -157,6 +157,14 @@ module.exports = {
             dblRef: false,
             advptr: true
         },
+        "auto": {
+            size: 32,
+            float: false,
+            pointer: false,
+            special: false,
+            dblRef: false,
+            unknown: true
+        },
         "char": {
             size: 8,
             float: false,

@@ -1,7 +1,7 @@
 /*
 
 CURRENTLY WIP
-compile wit ./NEW_asmgmp.sh
+compile with ./NEW_asmgmp.sh
 
 */
 

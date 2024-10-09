@@ -1,5 +1,6 @@
 function evaluate(line) {
-    debugPrint(line)
+    if(typeof line == "object")
+        line = line.filter(x=>x)
     // line = line.map((x) => { // bad code yes
 
     //     if (objectIncludes(defines.types, x) && !objectIncludes(userFormats, x)) {
@@ -122,9 +123,14 @@ function evaluate(line) {
                 if (offsetWord(2) != "(") {
                     throwE("Must cast with parenthesis after colon. Like 'type:(data)'")
                 }
+                if(word == "auto")
+                {
+                    throwE("autocast not implemented")
+                } else {
                 var type = defines.types[word]
                 line[wordNum] = actions.assembly.allocateAndSet(offsetWord(3), type)
                 line.splice(wordNum + 1, 4)
+                }
             } else if (offsetWord(1) == "{") {
                 arrayClamp = defines.types[word]
                 line.splice(wordNum, 1)
@@ -247,7 +253,7 @@ function evaluate(line) {
         // #region Formats and Numbers
         else if (word == ".") { // child property
             // creating a new property
-
+            //console.log("Prop", line)
             if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
                 if (offsetWord(2) == "constructor") {
                     var nobj = objCopy(defines.types.___format_template_dynamic___)
@@ -298,9 +304,15 @@ function evaluate(line) {
             }
             else {
                 if (offsetWord(2) == "(") {
-                    //throwE(line)
-                    line[wordNum - 1] = actions.formats.callMethod(offsetWord(-1), offsetWord(1), offsetWord(3))
+                    var args = offsetWord(3)
+                    if(args  == ")")
+                    {
+                        args = []
+                    }
+                    //console.log("Going to call", offsetWord(-1), offsetWord(1), args)
+                    line[wordNum - 1] = actions.formats.callMethod(offsetWord(-1), offsetWord(1), args)
                     line.splice(wordNum, 5)
+                    wordNum--;
                 }
                 else {
                     // free old clobbers in a property chain
@@ -900,7 +912,12 @@ function evaluate(line) {
             var fname = word
             var args = offsetWord(2)
             if (typeof (args) == "string")
-                args = [args]
+            {
+                if(args == ")")
+                    args = []
+                else
+                    args = [args]
+            }
             //debugPrint(line)
             if (objectIncludes(specialFunctions, word)) {
                 line[wordNum] = specialFunctions[fname](args)

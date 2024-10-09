@@ -6,6 +6,10 @@ module.exports = function (code) {
         if (x[0] == "#") {
             var out = treat(x.substring(1).split(" "))
             code.splice(i, 1, ...out)
+        } else
+        {
+            //console.log(parser.split(x))
+            //process.exit(0)
         }
     }
     //console.log(code)

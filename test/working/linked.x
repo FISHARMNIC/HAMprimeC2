@@ -53,7 +53,6 @@ Linked format
     {
         create end <- borrow this.findLast();
         
-        /* This is where we dynamically allocate .next */
         create newAddr <- Linked(value);
         end.next <- newAddr;
     }

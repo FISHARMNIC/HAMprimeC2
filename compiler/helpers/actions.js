@@ -321,6 +321,15 @@ var variables = {
             } else {
                 type = objCopy(type)
                 delete type.hasData
+
+                if (isStack) {
+                    assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
+                } else if (objectIncludes(globalVariables, vname)) {       // if glob var
+                    assembly.optimizeMove(value, vname, type, type)
+                    //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
+                } else {
+                    throwE(`Variable ${vname} has not been declared neither locally nor globally`)
+                }
                 //throwE(type)
             }
         } else {
@@ -1003,6 +1012,15 @@ var functions = {
         //throwE(st)
     },
     callFunction: function (fname, args, isConstructor = false, constructorType = null, typeIfFromAddress = null) {
+        
+        var lst = getLastScopeType()
+        var sr_this = false;
+
+        if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD) {
+            sr_this = true
+            outputCode.autoPush(`pushl __this__`)
+        }
+        
         var onCom = false
         var callAddress = fname
 
@@ -1050,6 +1068,7 @@ var functions = {
                         throwE("Expected comma")
                 } else {
                     //debugPrint(fname, userFunctions[fname].parameters)
+                    //console.log(args)
                     var expectedType = userFunctions[fname].parameters[ind]?.type
                     //debugPrint(x)
                     var givenType = helpers.types.guessType(x)
@@ -1152,6 +1171,10 @@ var functions = {
         assembly.popClobbers()
 
         helpers.registers.clobberRegister(helpers.registers.registerStringToLetterIfIs(out))
+
+        if (sr_this) {
+            outputCode.autoPush(`popl __this__`)
+        }
 
         return out
     },
@@ -1387,13 +1410,13 @@ var formats = {
     },
     callConstructor: function (className, params) {
 
-        var lst = getLastScopeType()
-        var sr_this = false;
+        // var lst = getLastScopeType()
+        // var sr_this = false;
 
-        if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD) {
-            sr_this = true
-            outputCode.autoPush(`pushl __this__ # poop`)
-        }
+        // if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD) {
+        //     sr_this = true
+        //     outputCode.autoPush(`pushl __this__ # poop`)
+        // }
 
         if (Object.keys(userFormats[className].constructors).length == 0) {
             throwE("No constructors declared for class:", className)
@@ -1428,9 +1451,9 @@ var formats = {
         globalVariables.__this__ = helpers.types.convertTypeToHasData(defines.types[className])
         var rval = functions.callFunction(bestFit, params, true, globalVariables.__this__)
 
-        if (sr_this) {
-            outputCode.autoPush(`popl __this__`)
-        }
+        // if (sr_this) {
+        //     outputCode.autoPush(`popl __this__`)
+        // }
         return rval
     },
     closeConstructor: function (scope, stack) {
@@ -1465,8 +1488,8 @@ var formats = {
             //console.log(globalVariables)
             formattedName = helpers.formatters.formatMethodName(parentType.formatPtr.name, method)
             if (!objectIncludes(parentType.formatPtr.methods, formattedName)) {
-                //throwE(parentType.formatPtr.methods, method)
-                throwE(`Method "${method}" does not include in format "${parentType.formatPtr.name}"`)
+                //throwE(parentType == userFormats[parentType.formatPtr.name])
+                throwE(`Method "${method}" does not exist in format "${parentType.formatPtr.name}"`)
             }
             actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
         }
