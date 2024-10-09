@@ -80,10 +80,8 @@ List format {
 
     .List operator(add)<u32 rhs> -> List
     {
-        /* Todo, garbage collection? I think the math should be casted to List so it should be fine */
         /* Todo, operator support for float math too */
-        /* Todo, this doesn't work yet due to the outdated math engine */
-       
+
         create dupe <- duplicate(this);
         dupe.push(rhs);
         return dupe;
@@ -97,7 +95,6 @@ putint function<u32 i>
 
 entry function<> -> u32
 {
-    /*
     create myList <- List();
 
     myList.push(123);
@@ -105,7 +102,7 @@ entry function<> -> u32
     printf("[%i,%i]\n", myList.buffer[0], myList.pop());
     myList.push(321);
     myList.every($putint);
-    */
+    
     create secondList <- List(3, 1, 2, 3);
     //print_(secondList);
 
