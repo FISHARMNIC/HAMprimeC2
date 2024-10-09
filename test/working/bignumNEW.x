@@ -105,10 +105,8 @@ entry function<> -> u32
     create numA <- Bignum("386415896392e-9");
     create numB <- Bignum("123");
 
-    /* FIX numA.add(numB).print(); wont work */
-    create numC <- numA.div(numB);
+    numA.div(numB).print();
     numA.print();
     numB.print();
-    numC.print();
     return 0;
 }
