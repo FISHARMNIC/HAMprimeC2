@@ -1,4 +1,5 @@
 
+.section .note.GNU-stack,"",@progbits
 .macro .1byte v
 .byte \v
 .endm
