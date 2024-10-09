@@ -105,7 +105,7 @@ entry function<> -> u32
     create secondList <- List(3, 1, 2, 3);
     print_(secondList);
 
-    /* working on it. create thirdList <- (secondList + 4); */
+    /* create thirdList <- (secondList + 4); */
     //printf("\n%p %p\n", myList, myList.buffer);
     
     return 0;

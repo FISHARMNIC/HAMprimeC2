@@ -495,6 +495,10 @@ var formats = {
         {
             throwE("Unsupported operator " + operator)
         }
+        if(operator == "set_index" || operator == "get_index")
+        {
+            throwE("Indexing operator not implemented")
+        }
         return operator
         /*
         var nonSymbols = ["set_index", "get_index"]
@@ -519,6 +523,30 @@ var formats = {
         }
         return operator
         */
+    },
+    convertOperatorToString: function (operator) {
+        var nonSymbols = ["set_index", "get_index"]
+        if (operator == "+") {
+            operator = "math_add"
+        }
+        else if (operator == "-") {
+            operator = "math_sub"
+        }
+        else if (operator == "*") {
+            operator = "math_mul"
+        }
+        else if (operator == "/") {
+            operator = "math_div"
+        }
+        else if (operator == "%") {
+            operator = "math_mod"
+        }
+        
+        else if (!nonSymbols.includes(operator)) {
+            throwE("Unsupported operator " + operator)
+        }
+
+        return operator
     }
 }
 

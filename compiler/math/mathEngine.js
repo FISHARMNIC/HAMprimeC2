@@ -38,7 +38,7 @@ function _restoreRegs(pushed) {
 function _doOp(operator, value, valueType) {
     //outputCode.autoPush("# begin")
     if ("formatPtr" in valueType) {
-        throwE("TODO this is where special operators")
+        throwE("TODO operator overloads")
     }
     else {
         regA = helpers.types.formatRegister('a', valueType)
@@ -86,10 +86,18 @@ function _doOp(operator, value, valueType) {
 }
 
 function _treatLine(arr) {
-    var regA = helpers.types.formatRegister('a', helpers.types.guessType(arr[0]))
+    var leftType = helpers.types.guessType(arr[0])
+    var regA = helpers.types.formatRegister('a', leftType)
     if (regA != "%eax")
         outputCode.autoPush("xor %eax, %eax")
-    outputCode.autoPush(`mov ${helpers.types.formatIfConstant(arr[0])}, ${regA}`)
+    if("formatPtr" in leftType)
+    {
+        throwE("TODO operator overloads")
+    }
+    else
+    {
+        outputCode.autoPush(`mov ${helpers.types.formatIfConstant(arr[0])}, ${regA}`)
+    }
 
     for (var i = 1; i < arr.length; i += 2) {
         var right = arr[i + 1]
@@ -126,12 +134,12 @@ function evalMath3(arr) {
         old = JSON.stringify(arr)
         if (arr.find(x => typeof (x) == "object") == undefined) { // only when the line has nothing left to nest is it evaluated
             if (arr.length == 1) {
-                console.log("SKIPPING single ", arr, " -> ", arr[0])
+                //console.log("SKIPPING single ", arr, " -> ", arr[0])
                 return arr[0]
             }
             else {
                 var out = _treatLine(arr)
-                console.log("evaluated", arr, "->", out)
+               // console.log("evaluated", arr, "->", out)
                 return out
             }
         }
@@ -239,7 +247,7 @@ module.exports = function (arr) {
     while (JSON.stringify(looper) != JSON.stringify(formatMath(looper))) {
         looper = formatMath(looper)
     }
-    console.log(looper)
+    //console.log(looper)
     var o = evalMath3(looper)
     _deClob()
     return o
