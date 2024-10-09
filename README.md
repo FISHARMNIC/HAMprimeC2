@@ -5,14 +5,18 @@ HAM' (HAM prime) is a fully compiled programming language that runs on Linux. HA
 Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
 
 ## Massive Update!
- - Automatic garbage collection is here! After some tweaks from my [original design](https://github.com/FISHARMNIC/RollCall/tree/main) the garbage collection system is now fully working (and rather fast)! All data is now allocated globally unless specified (see the documentation).
- - ftos and itos
-    - convert floats and integers to strings
- - Multiple strings can now be added together using "+"
-    - Any numbers will be automatically converted to strings like: ("bob " + 123) becomes "bob 123"
-    - Any formats will automatically has their method "toString" called
- - Big IDE update! (See below)
- - Fixed segfault with GFX lib
+- Math is now evaluated in the proper order!
+    - Currenty, this is only for integer math
+    - Adding this for floats very soon
+- old big update stuff:
+    - Automatic garbage collection is here! After some tweaks from my [original design](https://github.com/FISHARMNIC/RollCall/tree/main) the garbage collection system is now fully working (and rather fast)! All data is now allocated globally unless specified (see the documentation).
+    - ftos and itos
+        - convert floats and integers to strings
+    - Multiple strings can now be added together using "+"
+        - Any numbers will be automatically converted to strings like: ("bob " + 123) becomes "bob 123"
+        - Any formats will automatically has their method "toString" called
+    - Big IDE update! (See below)
+    - Fixed segfault with GFX lib
 
 # What is working so far?
 All of the things below work. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
