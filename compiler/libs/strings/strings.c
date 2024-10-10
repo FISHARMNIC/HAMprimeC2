@@ -62,6 +62,7 @@ char *strjoinmany(int numberOfStrings, ...)
 
 char *ftos(float num)
 {
+    asm volatile("pusha");
     static char obuff[35];
     int len = sprintf(obuff, "%f", num) + 1;
     char *o = __rc_allocate__(len, 0);
@@ -70,6 +71,7 @@ char *ftos(float num)
         o[len] = obuff[len];
         len--;
     }
+    asm volatile("popa");
     return o;
 }
 
@@ -77,6 +79,7 @@ void __rc_requestOwnership__(void *, void *);
 
 char *itos(int num)
 {
+    asm volatile("pusha");
     static char obuff[11];
     int len = sprintf(obuff, "%i", num) + 1;
     // printf("SPRINTED %s\n", obuff);
@@ -90,14 +93,17 @@ char *itos(int num)
     }
     //__rc_requestOwnership__(o, &___TEMPORARY_OWNER___);
     // printf("RETURNING %s\n", o);
+    asm volatile("popa");
     return o;
 }
 
 char *cptos(const char *str)
 {
+    asm volatile("pusha");
     int strlen = *(((int *)str) - 1); // length is stored in int right before str
     char *o = __rc_allocate__(strlen, 0);
     memcpy(o, (char *)str, strlen);
+    asm volatile("popa");
     return o;
 }
 
