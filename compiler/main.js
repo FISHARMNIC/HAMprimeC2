@@ -1,7 +1,7 @@
 /*
 TODO:
     !! CRUCIAL !!
-        - assigning conststr like '"bob"' to string:array doesn't work
+        - assigning conststr like '"bob"' to string:array doesn't work (segfault)
 
     !! IMPORTANT !!
         - add operator overload with different params

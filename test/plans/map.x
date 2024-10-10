@@ -1,5 +1,3 @@
-Map #T(keys);
-
 Map format
 {
     .allocatedSize u32;
@@ -24,21 +22,23 @@ Map format
         if(occupiedSize == this.allocatedSize)
         {
             this.allocatedSize <- this.allocatedSize * 2;
+
+            this.keys <- copy(conststr[this.allocatedSize], this.keys);
+            this.values <- copy(u32[this.allocatedSize], this.values);
         }
-        printf("creating %s with value %i at index %i\n", newKey, newValue, occupiedSize);
-        
+
         this.keys[occupiedSize] <- newKey;
-        /* this.values[occupiedSize] <- newValue; */
+        this.values[occupiedSize] <- newValue;
         
         this.occupiedSize <- occupiedSize + 1;
     }
 
-    .Map operator(index_get)<string index> -> any
+    .Map operator(index_get)<conststr index> -> any
     {
         create i <- 0;
         while(i <: this.occupiedSize)
         {
-            printf("checking %s\n", this.keys[i]);
+            //printf("checking %s\n", this.keys[i]);
             if(this.keys[i] == index)
             {
                 return(this.values[i]);
@@ -53,15 +53,18 @@ entry function<> -> u32
 {
     create map <- Map();
     
-    map["Nico"] <- 123;
+    map["Nico" + "ABC"] <- 123;
     map["Dad"]  <- 456;
     map["Rio"]  <- 789;
 
+    printf("%i %i %i\n", map["Rio"], map["Dad"], map["NicoABC"]);
+
+    /*
     create i <- 0;
     while(i <: map.allocatedSize)
     {
-        printf("%i:%i\n", map.keys[i], map.values[i]);
+        printf("%s:%i\n", map.keys[i], map.values[i]);
         i <- i + 1;
     }
-    //printf("%i\n", map["Nico"]);
+    */
 }
