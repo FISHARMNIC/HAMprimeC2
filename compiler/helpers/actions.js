@@ -257,6 +257,7 @@ var variables = {
 
         }
 
+        //throwW("@@@", vname, type)
         return vname
     },
     set: function (vname, value) {
@@ -267,8 +268,7 @@ var variables = {
         var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
         var type = helpers.variables.getVariableType(vname)
 
-        //throwE(helpers.types.guessType(value))
-
+        // throwW("::", vname, getAllStackVariables())
         var valueType = helpers.types.guessType(value);
 
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___" && vname != "__this__") {
@@ -283,8 +283,12 @@ var variables = {
                     throwE(`Assigning a dynamic "${helpers.types.convertTypeObjToName(type)}" to a static.\n\t[FIX] Use "borrow"`)
                 }
                 throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
-                if (helpers.types.typeToBytes(valueType) < helpers.types.typeToBytes(type)) {
-                    throwW(`-- New type is smaller than original type`)
+                throwW(type.pointer, valueType.pointer)
+                var bn = helpers.types.typeToBytes(valueType)
+                var bo = helpers.types.typeToBytes(type)
+                if (bn < bo) {
+                    //throwE(valueType, type)
+                    throwW(`-- New type is smaller than original type: ${bn}-byte < ${bo}-byte`)
                 }
                 type = valueType
                 helpers.variables.setVariableType(vname, type)
@@ -525,11 +529,10 @@ var variables = {
             }
         }
 
-        var nopointer = objCopy(baseType)
-        nopointer.pointer = false
+        var itemType = helpers.types.derefType(baseType)
 
         // type = deref
-        helpers.registers.extendedTypes[helpers.registers.registerStringToLetterIfIs(out)] = nopointer
+        helpers.registers.extendedTypes[helpers.registers.registerStringToLetterIfIs(out)] = itemType
 
         if (edxReserved) {
             outputCode.autoPush(

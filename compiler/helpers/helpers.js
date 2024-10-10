@@ -79,7 +79,17 @@ var types = {
         if(!("advptr" in type))
             delete c.pointer
         if("hasData" in type)
-            delete c.hasData
+        {
+            if("elementsHaveData" in type)
+            {
+                delete c.elementsHaveData
+            }
+            else
+            {
+                delete c.hasData
+            }
+        }
+        //console.log("-> into", c)
         return c
     },
     isLiteral: function (x) {
@@ -98,7 +108,7 @@ var types = {
         return x
     },
     isStringOrConststrType: function(x) {
-        return "advptr" in x && x.size == 8 && x.pointer == true
+        return "advptr" in x && x.size == 8 && x.pointer
     },
     isConstOrLit: function (x) {
         return (x.substring(0, 8) == "__STRING" || this.isConstant(x) || objectIncludes(userFunctions, x))

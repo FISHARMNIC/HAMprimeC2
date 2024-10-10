@@ -456,6 +456,7 @@ function evaluate(line) {
                         index = index[0]
                         //console.log(":::::", line.join(" "))
                         var out = actions.variables.readArray(vname, index)
+                        //throwW("$$$", out)
                         line[wordNum - 1] = out
                         line.splice(wordNum, 3)
                         wordNum--
@@ -498,6 +499,7 @@ function evaluate(line) {
             } else {
                 vtype = defines.types.u32
             }
+            //throwW("%%%%", vtype)
 
             if (offsetWord(2) == '<-') {
                 return actions.variables.create(offsetWord(1), vtype, offsetWord(3))
