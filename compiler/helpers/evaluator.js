@@ -860,6 +860,7 @@ function evaluate(line) {
                 }
             } else if (word == "while") {
                 outputCode.autoPush(
+                    `# comparison for WHILE loop`,
                     `cmpb $1, ${offsetWord(2)}`,
                     `jne ${requestBracket.data.exit}` // jump out if not equal
                 )

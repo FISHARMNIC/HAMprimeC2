@@ -1,5 +1,7 @@
 /*
 TODO:
+    !! CRUCIAL !!
+        - assigning conststr like '"bob"' to string:array doesn't work
 
     !! IMPORTANT !!
         - add operator overload with different params
@@ -217,6 +219,7 @@ process.on('uncaughtException', function (err) {
 inputCode = inputCode.map((line,lineNo) => {
     // parse it into words
     globalLine = lineNo
+    globalLineConts = line
 
     var lsplit = parser.split(line);
     var io = lsplit.indexOf("//")

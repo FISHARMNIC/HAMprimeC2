@@ -74,8 +74,12 @@ var types = {
         return name
     },
     derefType: function (type) {
+        //console.log("deref", type)
         var c = objCopy(type)
-        c.pointer = false
+        if(!("advptr" in type))
+            delete c.pointer
+        if("hasData" in type)
+            delete c.hasData
         return c
     },
     isLiteral: function (x) {
@@ -490,18 +494,18 @@ var formats = {
         return offset / 8
     },
     checkOperatorIsAccepted: function (operator) {
-        var accepted = ["add", "sub", "div", "mul", "mod", "set_index", "get_index"]
+        var accepted = ["add", "sub", "div", "mul", "mod", "index_set", "index_get"]
         if(!accepted.includes(operator))
         {
             throwE("Unsupported operator " + operator)
         }
-        if(operator == "set_index" || operator == "get_index")
+        if(operator == "index_set" || operator == "index_get")
         {
             throwE("Indexing operator not implemented")
         }
         return operator
         /*
-        var nonSymbols = ["set_index", "get_index"]
+        var nonSymbols = ["index_set", "index_get"]
         if (operator == "+") {
             operator = "math_add"
         }
@@ -525,7 +529,7 @@ var formats = {
         */
     },
     convertOperatorToString: function (operator) {
-        var nonSymbols = ["set_index", "get_index"]
+        var nonSymbols = ["index_set", "index_get"]
         if (operator == "+") {
             operator = "add"
         }
@@ -547,6 +551,11 @@ var formats = {
         }
 
         return operator
+    },
+    seeIfIncludesOperator: function (fmt, operator)
+    {
+        var formattedName = formatters.formatOperatorName(fmt.formatPtr.name, operator)
+        return Object.keys(fmt.formatPtr.operators).includes(formattedName)
     }
 }
 

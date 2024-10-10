@@ -150,12 +150,12 @@ function evalMath3(arr) {
         old = JSON.stringify(arr)
         if (arr.find(x => typeof (x) == "object") == undefined) { // only when the line has nothing left to nest is it evaluated
             if (arr.length == 1) {
-                console.log("SKIPPING single ", arr, " -> ", arr[0])
+                //console.log("SKIPPING single ", arr, " -> ", arr[0])
                 return arr[0]
             }
             else {
                 var out = _treatLine(arr)
-                console.log("evaluated", arr, "->", out)
+                //console.log("evaluated", arr, "->", out)
                 return out
             }
         }

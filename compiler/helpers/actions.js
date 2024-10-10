@@ -366,6 +366,11 @@ var variables = {
     },
     readArray: function (aname, index, forceSize = false) {
 
+        var aType = helpers.types.guessType(aname)
+        if("formatPtr" in aType && helpers.formats.seeIfIncludesOperator(aType, "index_get"))
+        {
+            return formats.callOperator(aname, "index_get", index)
+        }
 
         var baseRegister = "%eax"
         var baseType = -1;
@@ -374,7 +379,7 @@ var variables = {
 
         debugPrint(index)
 
-
+        outputCode.autoPush(`#indexing array`)
 
         if (helpers.types.isLiteral(aname)) {
             baseType = objCopy(defines.types.u8)
@@ -384,7 +389,7 @@ var variables = {
         }
         else if (helpers.variables.variableExists(aname)) {
             baseType = objCopy(helpers.variables.getVariableType(aname))
-            baseType.pointer = false
+            //baseType.pointer = false
 
             baseRegister = helpers.types.formatRegister("a", baseType)
             debugPrint("EXISTSSS", aname, baseType)
@@ -406,7 +411,7 @@ var variables = {
             throwE("shouldn't get here....")
         } else if (helpers.types.stringIsEbpOffset(aname)) {
             baseType = objCopy(helpers.types.getVariableFromEbpOffsetString(aname).type)
-            baseType.pointer = false
+            //baseType.pointer = false
 
             baseRegister = helpers.types.formatRegister("a", baseType)
             outputCode.autoPush(
@@ -419,7 +424,7 @@ var variables = {
         }
         else if (helpers.types.stringIsRegister(aname)) {
             baseType = objCopy(helpers.types.getRegisterType(aname))
-            baseType.pointer = false
+            //baseType.pointer = false
 
             baseRegister = helpers.types.formatRegister("a", baseType)
             outputCode.autoPush(
@@ -438,7 +443,7 @@ var variables = {
         if ("formatPtr" in baseType) {
             indexMultiplier = 4
         } else if (forceSize === false) {
-            indexMultiplier = baseType.size / 8
+            indexMultiplier = helpers.types.typeToBytes(baseType)
         } else {
             indexMultiplier = forceSize
         }
@@ -486,8 +491,9 @@ var variables = {
             if (edxReserved) {
                 //throwE("unimplemented", aname, index)
                 //var t = helpers.variables.newTempLabel(baseType)
+                //throwE(index, indexMultiplier, baseType, aname, helpers.types.guessType(aname))
                 outputCode.autoPush(
-                    `# TEST DOES THIS WORK???`,
+                    `# TEST DOES THIS WORK??? (1)`,
                     `mov ${index}, %edx`,
                     `mov (%eax, %edx, ${indexMultiplier}), %edx`,
                     `# END TEST`
@@ -498,12 +504,13 @@ var variables = {
                 outputCode.autoPush(
                     `mov (%eax, %edx, ${indexMultiplier}), ${out}`
                 )
+                //throwE(baseType)
             }
         } else {
             if (edxReserved) {
                 //throwE("unimplemented")
                 outputCode.autoPush(
-                    `# TEST DOES THIS WORK???`,
+                    `# TEST DOES THIS WORK??? (2)`,
                     `mov ${index}, %edx`,
                     `mov (%eax, %edx, ${indexMultiplier}), %edx`,
                     `# END TEST`
@@ -514,6 +521,7 @@ var variables = {
                 outputCode.autoPush(
                     `mov (%eax, %edx, ${indexMultiplier}), ${out}`
                 )
+                //throwE(baseType)
             }
         }
 
@@ -560,6 +568,7 @@ var variables = {
         // actions.assembly.setRegister(index, "d", helpers.types.guessType(index))
         // }
 
+
         //for now
         var index = index[0]
 
@@ -568,6 +577,14 @@ var variables = {
         var elementBytes = helpers.types.typeToBytes(elementType)
         var indexType = helpers.types.guessType(index)
         var valueType = helpers.types.guessType(value)
+
+        //console.log(arrType.formatPtr?.operators)
+        if("formatPtr" in arrType && helpers.formats.seeIfIncludesOperator(arrType, "index_set"))
+        {
+            //throwE(address, index, value, globalLineConts)
+            return actions.formats.callOperator(address, "index_set", [index, ",", value])
+            //throwE(arrType.formatPtr.operators)
+        }
 
         var indexIsVar = objectIncludes(globalVariables, index)
 
@@ -604,12 +621,12 @@ var variables = {
             finalSettingAddr = `(${address}, ${index}, ${elementBytes})`
             //console.log("~~~~~~~~~", address, index, value)
             outputCode.autoPush(
-                `mov${suffix} ${value}, (${address}, ${index}, ${elementBytes}) # bomboclat`
+                `mov${suffix} ${value}, (${address}, ${index}, ${elementBytes}) # mhm`
             )
         } else if (objectIncludes(globalVariables, index) || helpers.types.stringIsEbpOffset(index)) { // if index is glob or index is ebp
             // FIX THIS poorly optimized
             // throwE("Not sure. fix the code below this")
-            if (helpers.types.guessType(index).size != 32) {
+            if (helpers.types.typeToBits(helpers.types.guessType(index)) != 32) {
                 // just use size to suffix. FIX later
                 throwE("Attempting to index array with non-32bit variable")
             }
@@ -1312,6 +1329,7 @@ var formats = {
     },
     readProperty: function (base, baseType, propertyName, readAddress = false) {
         //throwE(baseType.formatPtr.properties[1])
+        outputCode.autoPush(`# Reading property "${propertyName}" in "${base}"`)
         var offset = 0
         var i = 0
 
