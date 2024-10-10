@@ -1,6 +1,8 @@
 /*
 TODO:
     !! CRUCIAL !!
+        - typing.x is broken
+    !! CRUCIAL !!
         - assigning conststr like '"bob"' to string:array doesn't work (segfault)
 
     !! IMPORTANT !!
@@ -8,8 +10,6 @@ TODO:
         - currently only have one possilbe overload, but what if you want to add with int vs format etc?
 
     - Make some 3d thing
-    - add overloading operations like bob[] if is class Jon
-        - .index overload<> -> ... (for something like cpp maps)
 
     - !! CRUCIAL !!
         - When allocating array of formats like Person[xxx]
@@ -273,7 +273,7 @@ if(returnHighlight)
 {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: ["borrowed", ...defines.keywords, "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments"],
+        keywords: ["borrowed", ...defines.keywords, "index_get", "index_set", "add", "sub", "mul", "div", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments"],
         types: Object.keys(defines.types),
         allVars: [...__anyVarEverMade,"this"]
     }

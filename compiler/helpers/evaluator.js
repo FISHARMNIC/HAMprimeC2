@@ -800,6 +800,7 @@ function evaluate(line) {
                     //throwE(`Cannot copy non-dynamically allocated data. Use memcpy instead`, srcType)
                 }
                 if (!helpers.types.areEqual(srcType, destType)) {
+                    //throwE(srcType,destType)
                     throwW(`Attempting to copy data type "${helpers.types.convertTypeObjToName(srcType)}" into "${helpers.types.convertTypeObjToName(destType)}"`)
                 }
 

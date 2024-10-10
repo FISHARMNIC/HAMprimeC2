@@ -98,14 +98,14 @@ function _treatLine(arr) {
             var first = arr[2]
             var operator = arr[1]
             var ret = actions.formats.callOperator(arr[0], operator, first)
-            console.log("GOT:", ret)
+            //console.log("GOT:", ret)
 
             arr[0] = ret
             arr.splice(1, 2)
 
-            console.log("IS", arr, "LEN", arr.length)
+            //console.log("IS", arr, "LEN", arr.length)
             if (arr.length == 1) {
-                console.log("Single", arr[0])
+                //console.log("Single", arr[0])
                 return arr[0]
             }
 
@@ -170,40 +170,6 @@ function evalMath3(arr) {
 
 }
 
-/*
-function evalMath2(arr) {
-    var first = arr[0]
-
-    if (typeof (first) == "object") {
-
-        arr[0] = evalMath2(first)
-        first = arr[0]
-    }
-    console.log(`${first} -> accum`)
-
-    var right = arr[2]
-    var operator = arr[1]
-
-    var out = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
-
-    for (var i = 1; i < arr.length; i += 2) {
-        var right = arr[i + 1]
-        var operator = arr[i]
-
-        if (typeof (right) == "object") {
-            right = evalMath2(right)
-            arr[i + 1] = right
-        }
-
-        console.log(`accum ${operator} ${right} -> accum`)
-
-    }
-    console.log(`accum -> ${out}`)
-    return out
-}
-*/
-
-// this function is wrong. Just do proper nesting maybe using splitter
 function formatMath(oldArr) {
     // todo, add shift, bitwise OR and AND, and rotate
     var trumpOps = ["*", "/", "%"]
@@ -267,92 +233,4 @@ module.exports = function (arr) {
     var o = evalMath3(looper)
     _deClob()
     return o
-
-
-    // old stuff below
-
-    /*
-
-    //process.exit(0)
-    //return formatMath(arr)
-    //debugPrint("MATH ON", arr, helpers.registers.inLineClobbers)
-    outputCode.autoPush(`# Math begin: [${arr.join(" ")}]`)
-    var scanPos = 0;
-    var current = arr[scanPos]
-    var mathType = defines.types.u32
-    var pushed = [];
-    Object.entries(helpers.registers.inLineClobbers).forEach(pair => {
-        if (pair[1] == 1) {
-            var type = helpers.types.formatRegister(pair[0], defines.types.u32)
-            pushed.push(type)
-            outputCode.autoPush(`push ${type}`)
-        }
-    })
-
-    debugPrint("CCCCCCCC", arr)
-    outputCode.autoPush(`xor %eax, %eax`, `mov ${helpers.types.formatIfConstant(current)}, ${helpers.types.formatRegister('a', helpers.types.guessType(current))}`) // load first value into register a
-
-    scanPos += 1
-    var reps = scanPos - 2;
-    while (scanPos < arr.length - 1) {
-
-        current = helpers.types.formatIfConstant(arr[scanPos]);
-
-        var regA = helpers.types.formatRegister('a', defines.operators.includes(current) ? mathType : helpers.types.guessType(arr[scanPos]))
-        var regB = helpers.types.formatRegister('b', mathType)
-        var regC = helpers.types.formatRegister('c', mathType)
-        var regD = helpers.types.formatRegister('d', mathType)
-
-        var item = {
-            current,
-            next: helpers.types.formatIfConstant(arr[scanPos + 1]),
-        }
-
-        if (helpers.variables.variableExists(arr[scanPos + 1])) {
-            regB = helpers.types.formatRegister('b', helpers.variables.getVariableType(arr[scanPos + 1]))
-        }
-
-        outputCode.autoPush(...((inD) => {
-            switch (inD.current) {
-                case "+":
-                    //console.log(inD)
-                    return [`add ${inD.next}, ${regA}`]
-                case "-":
-                    return [`sub ${inD.next}, ${regA}`]
-                case "*":
-                    return [
-                        `mov ${inD.next}, ${regB}`,
-                        `mul ${regB}`,
-                    ]
-                case "/":
-                    return [
-                        `mov ${inD.next}, ${regB}`,
-                        `xor %edx, %edx`,
-                        `div ${regB}`,
-                    ]
-                case "%":
-                    return [
-                        `mov ${inD.next}, ${regB}`,
-                        `xor %edx, %edx`,
-                        `div ${regB}`,
-                        `mov ${regD}, ${regA}`,
-                    ]
-                default:
-                    return ""
-            }
-        })(item))
-        scanPos += 1;
-    }
-    var lbl = helpers.registers.getFreeLabelOrRegister(mathType)
-    //debugPrint("MATH GOT LBL", lbl)
-    outputCode.autoPush(`mov %eax, ${lbl}`)
-    pushed.reverse().forEach(x => {
-        outputCode.autoPush(`pop ${x}`)
-    })
-
-    outputCode.autoPush(`# Math end. result in ${lbl}`)
-    //typeStack.push(defines.types.u32)
-    return lbl
-
-    */
 }

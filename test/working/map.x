@@ -4,7 +4,7 @@ Map format
     .occupiedSize u32;
 
     .keys conststr:array;
-    .values u32:array;
+    .values array;
 
     .Map constructor<> -> u32
     {
@@ -53,18 +53,11 @@ entry function<> -> u32
 {
     create map <- Map();
     
-    map["Nico" + "ABC"] <- 123;
+    map["Nico" + "ABC"] <- 123; /* Self note, might cause GC issues */
     map["Dad"]  <- 456;
     map["Rio"]  <- 789;
 
     printf("%i %i %i\n", map["Rio"], map["Dad"], map["NicoABC"]);
 
-    /*
-    create i <- 0;
-    while(i <: map.allocatedSize)
-    {
-        printf("%s:%i\n", map.keys[i], map.values[i]);
-        i <- i + 1;
-    }
-    */
+    return 0;
 }

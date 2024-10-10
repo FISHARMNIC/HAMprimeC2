@@ -586,6 +586,29 @@ var variables = {
             //throwE(arrType.formatPtr.operators)
         }
 
+        if (("hasData" in valueType || "elementsHaveData" in arrType) && nextThingTakesOwnership) {
+            if (!("elementsHaveData" in arrType)) {
+                throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(valueType)}"`)
+            } else if (!("hasData" in valueType)) {
+                if(helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr
+                {
+                    throwW(`Autocasting conststr "${value}" to string`)
+                    var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
+                    outputCode.autoPush(
+                        `# converting conststr to string`,
+                        `pushl ${helpers.types.formatIfConstOrLit(value)}`,
+                        `call cptos`,
+                        `mov %eax, ${lbl}`,
+                        `add $4, %esp`
+                    )
+                    value = lbl
+                    valueType = objCopy(defines.types.string)
+                } else {
+                    throwE(`Assigning static "${helpers.types.convertTypeObjToName(valueType)}" to array expecting a "${helpers.types.convertTypeObjToName(arrType)}"`)
+                }
+            }
+        }
+
         var indexIsVar = objectIncludes(globalVariables, index)
 
         var suffix = "";
@@ -667,11 +690,23 @@ var variables = {
 
         // console.log(helpers.types.guessType(type.address))
         if (("hasData" in valueType || "elementsHaveData" in arrType) && nextThingTakesOwnership) {
-            if (!("elementsHaveData" in arrType)) {
-                throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(valueType)}"`)
-            } else if (!("hasData" in valueType)) {
-                throwE(`Assigning static "${helpers.types.convertTypeObjToName(valueType)}" to array expecting a "${helpers.types.convertTypeObjToName(arrType)}"`)
-            }
+            // if (!("elementsHaveData" in arrType)) {
+            //     throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(valueType)}"`)
+            // } else if (!("hasData" in valueType)) {
+            //     if(helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr
+            //     {
+            //         outputCode.autoPush(
+            //             `# converting conststr to string`,
+            //             `pushl ${helpers.types.formatIfConstOrLit(value)}`,
+            //             `call cptos`,
+            //             `add $4, %esp`
+            //         )
+            //         value = "%eax"
+            //         valueType = objCopy(defines.types.string)
+            //     } else {
+            //         throwE(`Assigning static "${helpers.types.convertTypeObjToName(valueType)}" to array expecting a "${helpers.types.convertTypeObjToName(arrType)}"`)
+            //     }
+            // }
 
             if (finalSettingAddr == null) {
                 throwE("Error, no setting address for ownership. Shouldn't get here...")

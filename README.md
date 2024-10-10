@@ -64,11 +64,7 @@ All of the things below work. See examples [here](https://github.com/FISHARMNIC/
     - Built in floats
 
 Currently working on / not implemented yet:
-- Operator overloading (currently implemented, but math engine wont do it, see below)
-- Rewriting the math engine (which is from my old language and its pretty bad)
-    - this will fix:
-        - operators not being called
-        - Order of operations
+- operator overloading with different types of input
 - private properties
 - easier built-in array features (push,pop,forEach,etc.)
 - Lamdba functions
@@ -419,6 +415,8 @@ entry function<> -> u32
     map["Rio"]  <- 789;
 
     printf("%i %i %i\n", map["Rio"], map["Dad"], map["NicoABC"]);
+
+    return 0;
 }
 ```
 ### Strings

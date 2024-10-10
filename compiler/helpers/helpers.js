@@ -97,6 +97,9 @@ var types = {
         }
         return x
     },
+    isStringOrConststrType: function(x) {
+        return "advptr" in x && x.size == 8 && x.pointer == true
+    },
     isConstOrLit: function (x) {
         return (x.substring(0, 8) == "__STRING" || this.isConstant(x) || objectIncludes(userFunctions, x))
     },

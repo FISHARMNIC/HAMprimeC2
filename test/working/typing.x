@@ -1,3 +1,7 @@
+/*
+CURRENTLY BROKEN
+*/
+
 // typing arrays, global
 create d <- u8{4,5,6};
 
