@@ -1,16 +1,29 @@
+Map format
+{
+    .allocatedSize u32;
+    .occupiedSize u32;
+
+    .keys string:array;
+    .values array;
+
+    .Map constructor<> -> u32
+    {
+        this.occupiedSize <- 0;
+        this.keys <- string[10];
+    }
+
+    .Map operator(index_set)<string newKey, u32 newValue>
+    {
+        /* issue is: reading 8(%ebp) as newKey, but it's supposed to be 12(%ebp) */
+        print_(newKey);
+        //this.keys[this.occupiedSize] <- newKey;
+    }
+}
+
 entry function<> -> u32
 {
-    /* below, maybe issue that compiler thinks that indexing string arr returns char?? */
-    create buff <- string[10];
-    buff[0] <- "hi";
-    buff[1] <- ("john" + "bob");
-    print_(buff[0]);
-    print_(buff[1]);
+    create map <- Map();
+    map["Dad"]  <- 456;
 
-    /* TODO add autocast here form conststr to str */
-    create str <- buff[1];
-    str <- "hi";
-    /* Also, before fixing that, why is this throwing 1byte < 4byte warn */
-    /* Uh oh, somewhere something is modifying the .pointer to false on the original type */
-    str <- buff[1];
+    return 0;
 }

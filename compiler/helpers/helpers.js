@@ -77,7 +77,7 @@ var types = {
         //console.log("deref", type)
         var c = objCopy(type)
         if(!("advptr" in type))
-            delete c.pointer
+            c.pointer = false
         if("hasData" in type)
         {
             if("elementsHaveData" in type)

@@ -371,8 +371,7 @@ var variables = {
     readArray: function (aname, index, forceSize = false) {
 
         var aType = helpers.types.guessType(aname)
-        if("formatPtr" in aType && helpers.formats.seeIfIncludesOperator(aType, "index_get"))
-        {
+        if ("formatPtr" in aType && helpers.formats.seeIfIncludesOperator(aType, "index_get")) {
             return formats.callOperator(aname, "index_get", index)
         }
 
@@ -582,8 +581,7 @@ var variables = {
         var valueType = helpers.types.guessType(value)
 
         //console.log(arrType.formatPtr?.operators)
-        if("formatPtr" in arrType && helpers.formats.seeIfIncludesOperator(arrType, "index_set"))
-        {
+        if ("formatPtr" in arrType && helpers.formats.seeIfIncludesOperator(arrType, "index_set")) {
             //throwE(address, index, value, globalLineConts)
             return actions.formats.callOperator(address, "index_set", [index, ",", value])
             //throwE(arrType.formatPtr.operators)
@@ -593,7 +591,7 @@ var variables = {
             if (!("elementsHaveData" in arrType)) {
                 throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(valueType)}"`)
             } else if (!("hasData" in valueType)) {
-                if(helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr
+                if (helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr
                 {
                     throwW(`Autocasting conststr "${value}" to string`)
                     var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
@@ -626,7 +624,7 @@ var variables = {
 
         // two step
 
-        //console.log(address)
+        console.log(address, index, value)
         var finalSettingAddr = null
 
         if (!(helpers.types.isConstant(value) || helpers.types.stringIsRegister(value))) {
@@ -672,47 +670,13 @@ var variables = {
                 `mov${suffix} ${value}, (%eax)`
             )
             finalSettingAddr = "%eax"
-
-            /* 
-            index -> eax
-            mutliply eax by "bytes"
-            add value in base pointer to eax
-            mov value to address
-
-            */
-            // outputCode.autoPush(
-            //     `push %eax`,
-            //     `mov ${index}, %eax`,
-            //     `${(elementBytes != 1) ? `shl \$${helpers.types.typeToBytes(elementType) / 2}, %eax` : ""}`,
-            //     `add (%esp), %eax`,
-            //     `add $1, %esp`,
-            //     `mov${suffix} ${value}, (%eax)`
-            // )
-
         }
 
         // console.log(helpers.types.guessType(type.address))
         if (("hasData" in valueType || "elementsHaveData" in arrType) && nextThingTakesOwnership) {
-            // if (!("elementsHaveData" in arrType)) {
-            //     throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(valueType)}"`)
-            // } else if (!("hasData" in valueType)) {
-            //     if(helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr
-            //     {
-            //         outputCode.autoPush(
-            //             `# converting conststr to string`,
-            //             `pushl ${helpers.types.formatIfConstOrLit(value)}`,
-            //             `call cptos`,
-            //             `add $4, %esp`
-            //         )
-            //         value = "%eax"
-            //         valueType = objCopy(defines.types.string)
-            //     } else {
-            //         throwE(`Assigning static "${helpers.types.convertTypeObjToName(valueType)}" to array expecting a "${helpers.types.convertTypeObjToName(arrType)}"`)
-            //     }
-            // }
 
             if (finalSettingAddr == null) {
-                throwE("Error, no setting address for ownership. Shouldn't get here...")
+                throwE(`Undecipherable index "${index}". Is it defined?`)
             }
 
             outputCode.autoPush("# requesting ownership for array index")
@@ -971,6 +935,7 @@ var functions = {
             } else {
                 var type = popTypeStack(true)
                 __addToAnyVarEverMade(x)
+                console.log(x)
                 robj.push({ name: x, type })
                 oBytes += helpers.types.typeToBytes(type)
             }
@@ -1023,6 +988,7 @@ var functions = {
                 }
                 else if (!helpers.types.areEqual(givenRetType, scopeRetType)) {
                     var gtname = helpers.types.convertTypeObjToName(givenRetType)
+                    console.log(givenRetType)
                     throwW(`Return type "${gtname}" does not match expected return type "${helpers.types.convertTypeObjToName(scopeRetType)}"\n ^^^^^^^ [FIXED BY] Retyping function to return "${gtname}"`)
                     scope.data.returnType = givenRetType
                 }
@@ -1121,6 +1087,7 @@ var functions = {
                     if (x != ',')
                         throwE("Expected comma")
                 } else {
+                    var skip = false
                     //debugPrint(fname, userFunctions[fname].parameters)
                     //console.log(args)
                     var expectedType = userFunctions[fname].parameters[ind]?.type
@@ -1136,63 +1103,77 @@ var functions = {
                     var et_s = expectedType == undefined ? "" : helpers.types.convertTypeObjToName(expectedType)
                     var gt_s = helpers.types.convertTypeObjToName(givenType)
 
-                    if (!(expectedType == undefined ? false : "acceptsAny" in expectedType) && !helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s))))
-                        throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}"`)
-
-                    if (helpers.types.isConstOrLit(x)) {
-
-                        if (givenType.float && fname == "printf") {
-                            throwE("No printf float literal for now... Needs optimization")
+                    if (!(expectedType == undefined ? false : "acceptsAny" in expectedType) && !helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s)))) {
+                        if ("hasData" in expectedType && helpers.types.isStringOrConststrType(expectedType) && helpers.types.isStringOrConststrType(givenType)) {
                             tbuff.push([
-                                "",
-                                "cvtss2sd %xmm0, %xmm2",
-                                "sub $8, %esp",
-                                "movq %xmm2, (%esp)"
+                                `# converting conststr to string (function call)`,
+                                `pushl ${helpers.types.formatIfConstOrLit(x)}`,
+                                `call cptos`,
+                                `mov %eax, (%esp) # str is alr in stack just overwrite`,
                             ])
-                            bytes += 4
-                        } else {
-                            tbuff.push(`pushl \$${x}`)
+                            skip = true
                         }
-                    } else if (helpers.types.stringIsRegister(x)) {
-                        if (givenType.float && fname == "printf") {
-                            tbuff.push([
-                                "# awful optimization. do later. sorry",
-                                `mov ${x}, __xmm_sse_temp__`,
-                                `movss __xmm_sse_temp__, %xmm0`,
-                                "cvtss2sd %xmm0, %xmm2",
-                                "sub $8, %esp",
-                                "movq %xmm2, (%esp)"
-                            ])
-                            bytes += 4
-                        } else {
-                            tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
+                        else {
+                            throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}"`)
                         }
                     }
-                    else {
-                        if (givenType.float && fname == "printf") {
-                            tbuff.push([
-                                `movss ${x}, %xmm0`,
-                                "cvtss2sd %xmm0, %xmm2",
-                                "sub $8, %esp",
-                                "movq %xmm2, (%esp)"
-                            ])
-                            bytes += 4
-                        } else {
-                            var r = helpers.types.formatRegister('d', givenType)
-                            var bbuff = []
-                            if (r != "%edx")
-                                bbuff.push("xor %edx, %edx")
 
-                            // if(helpers.types.stringIsRegister(x))
-                            // {
-                            //     throwE(x, r, fname, args, givenType)
-                            // }
-                            bbuff.push(
-                                `# TODO optimize if variable just do movl`,
-                                `mov ${x}, ${r}`,
-                                `push %edx`
-                            )
-                            tbuff.push(bbuff)
+                    if (!skip) {
+                        if (helpers.types.isConstOrLit(x)) {
+
+                            if (givenType.float && fname == "printf") {
+                                throwE("No printf float literal for now... Needs optimization")
+                                tbuff.push([
+                                    "",
+                                    "cvtss2sd %xmm0, %xmm2",
+                                    "sub $8, %esp",
+                                    "movq %xmm2, (%esp)"
+                                ])
+                                bytes += 4
+                            } else {
+                                tbuff.push(`pushl \$${x}`)
+                            }
+                        } else if (helpers.types.stringIsRegister(x)) {
+                            if (givenType.float && fname == "printf") {
+                                tbuff.push([
+                                    "# awful optimization. do later. sorry",
+                                    `mov ${x}, __xmm_sse_temp__`,
+                                    `movss __xmm_sse_temp__, %xmm0`,
+                                    "cvtss2sd %xmm0, %xmm2",
+                                    "sub $8, %esp",
+                                    "movq %xmm2, (%esp)"
+                                ])
+                                bytes += 4
+                            } else {
+                                tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
+                            }
+                        }
+                        else {
+                            if (givenType.float && fname == "printf") {
+                                tbuff.push([
+                                    `movss ${x}, %xmm0`,
+                                    "cvtss2sd %xmm0, %xmm2",
+                                    "sub $8, %esp",
+                                    "movq %xmm2, (%esp)"
+                                ])
+                                bytes += 4
+                            } else {
+                                var r = helpers.types.formatRegister('d', givenType)
+                                var bbuff = []
+                                if (r != "%edx")
+                                    bbuff.push("xor %edx, %edx")
+
+                                // if(helpers.types.stringIsRegister(x))
+                                // {
+                                //     throwE(x, r, fname, args, givenType)
+                                // }
+                                bbuff.push(
+                                    `# TODO optimize if variable just do movl`,
+                                    `mov ${x}, ${r}`,
+                                    `push %edx`
+                                )
+                                tbuff.push(bbuff)
+                            }
                         }
                     }
                     bytes += 4
@@ -1467,7 +1448,7 @@ var formats = {
         if (typeof (params) == "string")
             params = [params]
         var params_obj = actions.functions.createParams(params)
-
+        console.log(params_obj)
         var _data = {
             name: fname,
             parameters: params_obj.params,
