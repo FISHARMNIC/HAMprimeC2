@@ -37,6 +37,7 @@ All of the things below work. See examples [here](https://github.com/FISHARMNIC/
 	- Creating instances
 	- Property reading and setting
     - Methods and Constructors
+    - Operator overloading
 - Functions
 	- Variadic functions
 	- Forward declarations
