@@ -624,7 +624,7 @@ var variables = {
 
         // two step
 
-        console.log(address, index, value)
+        //console.log(address, index, value)
         var finalSettingAddr = null
 
         if (!(helpers.types.isConstant(value) || helpers.types.stringIsRegister(value))) {
@@ -935,7 +935,7 @@ var functions = {
             } else {
                 var type = popTypeStack(true)
                 __addToAnyVarEverMade(x)
-                console.log(x)
+                //console.log(x)
                 robj.push({ name: x, type })
                 oBytes += helpers.types.typeToBytes(type)
             }
@@ -1448,7 +1448,7 @@ var formats = {
         if (typeof (params) == "string")
             params = [params]
         var params_obj = actions.functions.createParams(params)
-        console.log(params_obj)
+        //console.log(params_obj)
         var _data = {
             name: fname,
             parameters: params_obj.params,

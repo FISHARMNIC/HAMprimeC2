@@ -374,7 +374,7 @@ global.throwW = function (x) {
     var lineE = getTrueLine(inputCodeLikeTrue, globalLine)
     console.log("\033[93m[WARNING]\033[0m on \033[96m[line " + (lineE + 1) + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
     //console.log(inputCodeLikeTrue[lineE], inputCodeLikeTrue[lineE].trim())
-    console.log("\033[96m--->\033[0m", removeTabs(inputCodeLikeTrue[lineE]).trim(), "\n")
+    console.log("\033[96m--->\033[0m", removeTabs(globalLineConts).trim(), "\n")
 }
 
 //taken from: https://stackoverflow.com/questions/65538406/convert-javascript-number-to-float-single-precision-ieee-754-and-receive-integ

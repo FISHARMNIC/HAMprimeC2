@@ -1,7 +1,7 @@
 #include "rollcall.h"
 #include "linked.h"
 
-// #include <stdio.h>
+//#include <stdio.h>
 __linked_t *Roster = 0;
 static int allocated_bytes = 0;
 
@@ -90,7 +90,7 @@ void __rc_collect__()
         //printf("Checking [@%p]: %p vs %p\n", roster_entry, owner_points_to, owner_should_point_to);
         if (owner_points_to != owner_should_point_to)
         {
-           //printf("|- Discarding Roster[%i], was %p now %p\n", index, owner_should_point_to, owner_points_to);
+            //printf("|- Discarding Roster[%i], was %p now %p\n", index, owner_should_point_to, owner_points_to);
             list = __linked_remove(&Roster, index);
             //index++; <--- Not sure why I added this?????? Triggered segfault
         }

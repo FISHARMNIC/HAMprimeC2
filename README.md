@@ -361,19 +361,19 @@ Map format
     .allocatedSize u32;
     .occupiedSize u32;
 
-    .keys conststr:array;
-    .values u32:array;
+    .keys string:array;
+    .values array;
 
     .Map constructor<> -> u32
     {
         this.allocatedSize <- 10;
         this.occupiedSize <- 0;
 
-        this.keys <- conststr[10];
+        this.keys <- string[10];
         this.values <- u32[10];
     }
 
-    .Map operator(index_set)<conststr newKey, u32 newValue>
+    .Map operator(index_set)<string newKey, u32 newValue>
     {
         create occupiedSize <- this.occupiedSize;
 
@@ -381,7 +381,7 @@ Map format
         {
             this.allocatedSize <- this.allocatedSize * 2;
 
-            this.keys <- copy(conststr[this.allocatedSize], this.keys);
+            this.keys <- copy(string[this.allocatedSize], this.keys);
             this.values <- copy(u32[this.allocatedSize], this.values);
         }
 
@@ -391,7 +391,7 @@ Map format
         this.occupiedSize <- occupiedSize + 1;
     }
 
-    .Map operator(index_get)<conststr index> -> any
+    .Map operator(index_get)<string index> -> any
     {
         create i <- 0;
         while(i <: this.occupiedSize)
