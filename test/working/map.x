@@ -38,7 +38,6 @@ Map format
         create i <- 0;
         while(i <: this.occupiedSize)
         {
-            //printf("checking %s\n", this.keys[i]);
             if(this.keys[i] == index)
             {
                 return(this.values[i]);
