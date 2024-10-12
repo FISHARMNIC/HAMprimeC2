@@ -1362,6 +1362,7 @@ var formats = {
             //console.log(baseType.formatPtr.properties[i], i)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
             if (baseType.formatPtr.properties[i + 1] == undefined) {
+                //throwE(globalVariables.__this__)
                 throwE(`Couldn't find property ${propertyName} in ${base}`)
             }
             i++
@@ -1477,6 +1478,8 @@ var formats = {
         // var lst = getLastScopeType()
         // var sr_this = false;
 
+        thisStack.save();
+
         // if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD) {
         //     sr_this = true
         //     outputCode.autoPush(`pushl __this__ # poop`)
@@ -1526,6 +1529,9 @@ var formats = {
         // if (sr_this) {
         //     outputCode.autoPush(`popl __this__`)
         // }
+
+        thisStack.restore();
+
         return rval
     },
     closeConstructor: function (scope, stack) {
@@ -1539,6 +1545,9 @@ var formats = {
         functions.closeFunction(scope, stack)
     },
     callMethod: function (parent, method, params) {
+
+        thisStack.save();
+
         var parentType;
         var formattedName;
 
@@ -1590,9 +1599,14 @@ var formats = {
             actions.assembly.optimizeMove("__this__", parent, parentType, parentType)
         }
 
+        thisStack.restore();
+
         return r;
     },
     callOperator: function (parent, operator, params) {
+
+        thisStack.save();
+
         var parentType = helpers.types.guessType(parent)
         if (parentType.formatPtr == undefined) {
             throwE(`"${parent}" is not a format instance or does not exist`)
@@ -1622,6 +1636,8 @@ var formats = {
             outputCode.autoPush("# Loading into __this__ because function modified it ")
             actions.assembly.optimizeMove("__this__", parent, parentType, parentType)
         }
+
+        thisStack.restore();
 
         return r;
     }

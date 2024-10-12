@@ -30,6 +30,17 @@ global.__addToAnyVarEverMade = function(x)
         __anyVarEverMade.push(x)
 }
 
+global.thisStack = []
+
+thisStack.save = function()
+{
+    thisStack.push(objCopy(globalVariables.__this__))
+}
+
+thisStack.restore = function()
+{
+    globalVariables.__this__ = thisStack.pop()
+}
 
 global.MODE_DEBUG = false;
 global.scope = [];

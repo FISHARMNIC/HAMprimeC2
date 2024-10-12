@@ -2,8 +2,6 @@
 TODO:
     !! CRUCIAL !!
         - typing.x is broken
-    !! CRUCIAL !!
-        - assigning conststr like '"bob"' to string:array doesn't work (segfault)
 
     - add ownership locking.
         - just do type annex like Person:locked
@@ -28,13 +26,6 @@ TODO:
             - But if you so "create bob <- Person[10]"
                 - you can't do "bob[0].x <- xxx" without doing "bob[0] <- Person<...>";
     - !! IMPORTANT !! Warnings and errors dont gen correct line when using #include
-    - !! IMPORTANT !! see bignum NEW "numA.add(numB).print();" not working. Maybe method chaining not implemented?
-    - !! Good idea !!
-        - make certain methods that do special things
-        - eg:
-            - something.add() allows for special instructions on how to add. 
-            - or something.set() changes how the load sign works (<-)
-            - "jon + 123" if jon is a format of type person, jon. add can look 
 
     Todo, only pushl __this__ when that function does anything with classes
         - Special flag that is only enabled when that function does anything with classes
@@ -48,14 +39,15 @@ TODO:
         - Written in C.
         - Allows for debugging
         - .Rio framework
-    - fix math not being in pemdas 
+ 
     !! IMPORTANT !!
         - look into "thiscall" calling convention, which is meant for member functions
         - moves "this" into ecx, then other arguments on stack
             - do this and then keep ecx reserved and use it as "this". Make sure to push and pop ecx before and after if clobbered
 
     - maybe class function aliases, like in bignumNEW, it would be nice to have the memberfunctions just directly reference the gmp functions
-        - something like: ".set alias<__gmpf_set_ui, this, u32 other>"
+        - something like: ".set alias(__gmpf_set_ui)<self, u32 other> -> Bignum"
+
     - new type "bool" that print_ automatically displays "true" or "false".
     - just u32 with special property called like: "specialType: 'bool'"
     - make compiling less confusing
@@ -65,6 +57,7 @@ TODO:
         - each type is assigned a number.
         - Passing as type smart passes both the number and its type ID
         - then you can do: "if(bob is u32)" or if(arr[0] is Person)
+     - or maybe just type called "TYPE" which is just the typeID
 
     - maybe add cacheing "this" in register in methods because it's used a lot
     - add private properties and public. Do like cpp private: and public:
@@ -74,11 +67,7 @@ TODO:
         - This is partly done for setting and creating variables
     - !! IMPORTANT !! just make global arrays allocated dynamically
         - removes confusion between p8 and array8 
-        - Make string literals of type conststr which has dynamic set to off
-            - normal strings have dynamic enabled
-            - but what happens when you set of type string to a literal?
-                - like .bob string, then me.bob <- "hello"
-                - later on, it might try to assign ownership and segfault
+
     - add push and pop for array types
     - throw error if defining function or variable that is keyword
     - see plans/settingptr.x

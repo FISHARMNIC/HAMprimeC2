@@ -15,6 +15,7 @@ Map format
         this.values <- u32[10];
     }
 
+    /* rework using linked lists */
     .Map operator(index_set)<string newKey, u32 newValue>
     {
         create occupiedSize <- this.occupiedSize;

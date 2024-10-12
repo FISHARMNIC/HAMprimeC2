@@ -373,6 +373,7 @@ Map format
         this.values <- u32[10];
     }
 
+    /* Yes, this won't work for modifying an exisiting item im writing a new example for this */
     .Map operator(index_set)<string newKey, u32 newValue>
     {
         create occupiedSize <- this.occupiedSize;
