@@ -17,7 +17,7 @@ entry_reference struct
 }
 */
 
-
+// I forgot why I wrote this in assembly
 __rc_requestOwnership__:
     push %ebp
     mov %esp, %ebp

@@ -6,9 +6,8 @@ Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
 
 ## Massive Update!
 - Operator overloads addded!
-    - Currently only support the four main math functions (+-/*)
-        - Next steps are to add array set/get, and comparison
-    - See [example](#Class-Example-2) below
+    - Currently only support the four main math functions (+-/*) and array set and get
+    - See [math overload example](#Class-Example-2) or [array overload example](#Operator-Overloads) below
 - Math is now evaluated in the proper order!
     - Currenty, this is only for integer math
     - Adding this for floats very soon
@@ -420,6 +419,7 @@ entry function<> -> u32
     return 0;
 }
 ```
+
 ### Strings
 ```C
 User format
@@ -589,6 +589,7 @@ entry function<> -> u32
     printf("%f", sum);
 }
 ```
+
 # How To
 
 ## Dependencies

@@ -5,6 +5,14 @@ TODO:
     !! CRUCIAL !!
         - assigning conststr like '"bob"' to string:array doesn't work (segfault)
 
+    - add ownership locking.
+        - just do type annex like Person:locked
+        - Special property in type that specifies to pass 1 or 0 to __rc_allocate__
+    - add "none" type
+        - special property "".noData"
+
+    !! WEIRD !!
+        - why does having "const char *__PRINT_TYPE_INT__ = "%i\n";" in strings.c place the string in the wrong section w/o any actual data?
     !! IMPORTANT !!
         - add operator overload with different params
         - currently only have one possilbe overload, but what if you want to add with int vs format etc?

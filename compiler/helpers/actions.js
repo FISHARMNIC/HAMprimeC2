@@ -947,6 +947,9 @@ var functions = {
         if (helpers.general.isReserved(fname)) {
             throwE(`Cannot create function "${fname}" as it is a reserved word`)
         }
+        outputCode.data.push(
+            `.type	${fname}, @function`
+        )
         outputCode.text.push(
             fname + ":",
             `push %ebp`,

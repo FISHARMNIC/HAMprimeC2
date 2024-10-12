@@ -7,7 +7,8 @@ extern int *__this__;
 
 typedef char* fn_toString_t(void);
 
-char *__PRINT_TYPE_INT__ = "%i\n";
+//const char *__PRINT_TYPE_INT__ = "%i\n";
+
 
 // #include <stdio.h>
 

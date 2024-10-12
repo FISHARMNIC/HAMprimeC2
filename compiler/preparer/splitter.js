@@ -143,6 +143,7 @@ function parseFinalCode() {
 .endm
 .data
 __rc_triggerSegfaultOnNullOwnership__: .byte ${programRules.segfaultOnNullOwnership? 1 : 0}
+__PRINT_TYPE_INT__: .asciz "%i\\n"
 ######## Auto included libs #######
 `
 + autoIncludes.map(x => `\n.include "${x}"\n`).join("\n") +
