@@ -123,6 +123,23 @@ void __rc_free_all__()
     }
 }
 
+void __rc_free_allTEST__()
+{
+    __linked_t * list = Roster->next;
+    if(Roster == (void*)0)
+        return;
+    free(Roster->item);
+    free(Roster);
+
+    while(list != (void*) 0)
+    {
+        __linked_t * nextPtr = list->next;
+        free(list->item);
+        free(list);
+        list = nextPtr;
+    }
+}
+
 /// @brief 
 /// @param dest Memory address of destination
 /// @param src  Source pointer

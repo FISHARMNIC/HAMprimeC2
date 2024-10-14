@@ -5,6 +5,7 @@
 exit_game function<conststr message, u32 score> -> u32
 {
     print_(message + " Your final score was " + score);
+    gfx_end();
     quit(0);
 }
 
@@ -179,4 +180,6 @@ entry function<> -> u32
 
     gfx_setup(480, 360);
     gfx_begin($render);
+
+    gfx_end();
 }
