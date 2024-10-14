@@ -436,7 +436,7 @@ Map format
             }
         }
 
-        reference.next <- reference.next.next; // TODO: make sure that this sets Ownership
+        reference.next <- reference.next.next;
     }
 
     .set method<string k, u32 val> -> u32
