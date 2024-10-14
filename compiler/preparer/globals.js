@@ -209,6 +209,14 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
+    "quit" : {
+        name: "quit",
+        parameters: [
+            { name: "code", type: defines.types.u32 }
+        ],
+        variadic: false,
+        returnType: defines.types.u32
+    }
 }
 global.specialFunctions = {
     size: function (params) {
@@ -373,6 +381,7 @@ global.throwE = function (x) {
     console.trace()
     console.log("\n\n================== THIS WAS THROWE ==================\n\n")
 
+    console.log("\033[96m" + INPUTFILE + ":" + (lineE + 1))
     console.log("\033[31m[ERROR]\033[0m on \033[96m[line " + (lineE + 1) + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
     console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
     drawColLine(lineE - 1)
@@ -388,8 +397,9 @@ global.throwE = function (x) {
     //console.log(lineE)
 }
 global.throwW = function (x) {
-    var lineE = getTrueLine(inputCodeLikeTrue, globalLine)
-    console.log("\033[93m[WARNING]\033[0m on \033[96m[line " + (lineE + 1) + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
+    var lineE = getTrueLine(inputCodeLikeTrue, globalLine) + 1
+    console.log("\033[96m" + INPUTFILE + ":" + lineE)
+    console.log("\033[93m[WARNING]\033[0m on \033[96m[line " + lineE + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
     //console.log(inputCodeLikeTrue[lineE], inputCodeLikeTrue[lineE].trim())
     console.log("\033[96m--->\033[0m", removeTabs(globalLineConts).trim(), "\n")
 }

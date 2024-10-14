@@ -154,3 +154,9 @@ int* __duplicate__(int* src)
     memcpy(dest, src, srcSize);
     return dest;
 }
+
+void quit(int code)
+{
+    __rc_free_all__();
+    exit(code);
+}

@@ -5,7 +5,7 @@
 exit_game function<conststr message, u32 score> -> u32
 {
     print_(message + " Your final score was " + score);
-    exit(0);
+    quit(0);
 }
 
 Position format

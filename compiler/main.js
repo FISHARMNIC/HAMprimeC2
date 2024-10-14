@@ -205,7 +205,7 @@ if(process.argv[2] == "__FLAG_HIGHLIGHT__")
     returnHighlight = true
     process.argv.splice(2,1)
 }
-var INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
+global.INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
 
 global.inputCode = String(fs.readFileSync(INPUTFILE))
 global.inputCodeLikeTrue = inputCode.split("\n")

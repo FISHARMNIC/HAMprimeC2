@@ -1060,6 +1060,11 @@ var functions = {
         //     outputCode.autoPush(`pushl __this__`)
         // }
 
+        if(fname == "exit")
+        {
+            throwW("\"exit(status)\" may cause leaks. Use \"quit(status)\" instead.")
+        } 
+
         var onCom = false
         var callAddress = fname
 

@@ -48,7 +48,7 @@ char *strjoinmany(int numberOfStrings, ...)
     for (i = 0; i < numberOfStrings; i++)
     {
         char *wp = stringsbase[i];
-        printf("adding: %s\n", stringsbase[i]);
+        //printf("adding: %s\n", stringsbase[i]);
         while (*wp != 0)
         {
             *allocatedBuffer = *wp;

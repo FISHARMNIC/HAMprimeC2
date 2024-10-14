@@ -27,9 +27,8 @@ Map format
 
     .kneErr method<string k> -> u32
     {
-        print_("Key<" + k + "> does not exist");
-        __rc_free_all__();
-        exit(0);
+        print_("Error:: key<" + k + "> does not exist. Exiting program");
+        quit(0);
     }
     
     .find method<string k> -> MapEntry:borrowed
@@ -131,17 +130,19 @@ entry function<> -> u32
     create map <- Map();
 
     map["bob"] <- 123;
-    print_(map["bob"]);
-
     map["bob"] <- 456;
-    print_(map["bob"]);
 
     map["jon"] <- 789;
-    print_(map["jon"]);
 
     map["mike"] <- 321;
-    print_(map["mike"]);
 
     map["joe"] <- 654;
+
+    map.remove("bob");
+
+    //print_(map["bob"]);
+    print_(map["jon"]);
+    print_(map["mike"]);
     print_(map["joe"]);
+
 }
