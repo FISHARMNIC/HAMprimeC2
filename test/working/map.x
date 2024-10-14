@@ -27,7 +27,7 @@ Map format
 
     .kneErr method<string k> -> u32
     {
-        print_("Error:: key<" + k + "> does not exist. Exiting program");
+        print_("Error:: key<" + k + "> does not exist. Exiting program.");
         quit(0);
     }
     
