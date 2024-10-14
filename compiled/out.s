@@ -797,9 +797,8 @@ push %ecx
 pushl $__PRINT_TYPE_INT__
 call printf
 add $8, %esp
-push %eax
 call __rc_free_all__
-pop %eax
+mov  $0, %eax
 
 mov %ebp, %esp
 pop %ebp

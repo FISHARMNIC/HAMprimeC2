@@ -999,12 +999,21 @@ var functions = {
             assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
-        if(scope.data?.name == "entry") {
-            outputCode.text.push(
-            `push %eax`,
-            `call __rc_free_all__`,
-            `pop %eax`
-            )
+        if (scope.data?.name == "entry") {
+            if (!asRet) // just fn exit, not explicit return
+            {
+                outputCode.text.push(
+                    `call __rc_free_all__`,
+                    `mov  $0, %eax`
+                )
+            }
+            else {
+                outputCode.text.push(
+                    `push %eax`,
+                    `call __rc_free_all__`,
+                    `pop %eax`
+                )
+            }
         }
         else if (programRules.optimizeMemory) {
             outputCode.text.push(
