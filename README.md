@@ -26,6 +26,7 @@ All of the things below work. See examples [here](https://github.com/FISHARMNIC/
 - Variables
 	- Implicit and forced typing
     - Garbage collection
+        - note: the GC is currently set to trigger rather often as a form of debugging possible issues. this can be changed by modifying `BYTES_PER_GC` in `compiler/libs/garbage/rollcall.h`
 	- Stack and global scope
 	- Pointers and addressing
 	- External variables
