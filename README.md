@@ -385,9 +385,8 @@ Map format
 
     .kneErr method<string k> -> u32
     {
-        print_("Key<" + k + "> does not exist");
-        __rc_free_all__();
-        exit(0);
+        print_("Error:: key<" + k + "> does not exist. Exiting program");
+        quit(0);
     }
     
     .find method<string k> -> MapEntry:borrowed
