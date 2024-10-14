@@ -46,8 +46,6 @@ __ALLOCFOR___method_Map_find___ = 4
 .type	__method_Map_remove_, @function
 __ALLOCFOR___method_Map_remove___ = 4
 .type	__method_Map_set_, @function
-.4byte 9
-__STRING3__: .asciz "__path_a"
 __ALLOCFOR___method_Map_set___ = 4
 .type	__method_Map_get_, @function
 __ALLOCFOR___method_Map_get___ = 4
@@ -62,13 +60,13 @@ __SIZEOF_Map__ = 8
 #   - CNSTRCTR __constructor_Map_1_ (0 parameters)
 .type	entry, @function
 .4byte 4
-__STRING4__: .asciz "bob"
+__STRING3__: .asciz "bob"
 .4byte 4
-__STRING5__: .asciz "jon"
+__STRING4__: .asciz "jon"
 .4byte 5
-__STRING6__: .asciz "mike"
+__STRING5__: .asciz "mike"
 .4byte 4
-__STRING7__: .asciz "joe"
+__STRING6__: .asciz "joe"
 __ALLOCFOR_entry__ = 4
 __TEMP8_0__: .1byte 0
 ###################################
@@ -448,9 +446,6 @@ cmp $0, %ecx
 sete __TEMP8_0__
 cmpb $1, __TEMP8_0__
 jne __LABEL14__
-pushl $__STRING3__
-call puts
-add $4, %esp
 pushl __this__
 # Calling function __constructor_MapEntry_0_
 # TODO optimize if variable just do movl
@@ -682,7 +677,7 @@ mov %edx, __this__
 # Calling function __operator_Map_index_set_
 pushl $123
 # converting conststr to string (function call)
-pushl $__STRING4__
+pushl $__STRING3__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_set_
@@ -692,7 +687,7 @@ mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __operator_Map_index_get_
 # converting conststr to string (function call)
-pushl $__STRING4__
+pushl $__STRING3__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_get_
@@ -707,7 +702,7 @@ mov %edx, __this__
 # Calling function __operator_Map_index_set_
 pushl $456
 # converting conststr to string (function call)
-pushl $__STRING4__
+pushl $__STRING3__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_set_
@@ -717,7 +712,7 @@ mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __operator_Map_index_get_
 # converting conststr to string (function call)
-pushl $__STRING4__
+pushl $__STRING3__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_get_
@@ -732,7 +727,7 @@ mov %edx, __this__
 # Calling function __operator_Map_index_set_
 pushl $789
 # converting conststr to string (function call)
-pushl $__STRING5__
+pushl $__STRING4__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_set_
@@ -742,7 +737,7 @@ mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __operator_Map_index_get_
 # converting conststr to string (function call)
-pushl $__STRING5__
+pushl $__STRING4__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_get_
@@ -757,7 +752,7 @@ mov %edx, __this__
 # Calling function __operator_Map_index_set_
 pushl $321
 # converting conststr to string (function call)
-pushl $__STRING6__
+pushl $__STRING5__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_set_
@@ -767,7 +762,7 @@ mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __operator_Map_index_get_
 # converting conststr to string (function call)
-pushl $__STRING6__
+pushl $__STRING5__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_get_
@@ -782,7 +777,7 @@ mov %edx, __this__
 # Calling function __operator_Map_index_set_
 pushl $654
 # converting conststr to string (function call)
-pushl $__STRING7__
+pushl $__STRING6__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_set_
@@ -792,7 +787,7 @@ mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __operator_Map_index_get_
 # converting conststr to string (function call)
-pushl $__STRING7__
+pushl $__STRING6__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_Map_index_get_

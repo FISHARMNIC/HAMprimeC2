@@ -98,7 +98,7 @@ void __rc_collect__()
         if (owner_points_to != owner_should_point_to)
         {
             //printf("\t ^- Discarding item was %s now %p\n", owner_should_point_to, owner_points_to);
-            list = __linked_remove2(&Roster, list);
+            list = __linked_remove(&Roster, list);
         }
         else
         {
@@ -119,7 +119,7 @@ void __rc_free_all__()
         roster_entry_t *roster_entry = list->item;
         assert(roster_entry != 0);
         //printf("|- Discarding item %p\n", roster_entry->pointer);
-        list = __linked_remove2(&Roster, list);
+        list = __linked_remove(&Roster, list);
     }
 }
 
