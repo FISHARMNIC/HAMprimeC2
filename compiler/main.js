@@ -1,5 +1,20 @@
 /*
 TODO:
+
+    WHY NOT JUST HAVE ALL ALLOCATIONS SAVED IN TEMPOWNER????
+        - removes need for return_new
+
+
+    TEMPOWNER REWORK:::::
+        - WAIT IS THIS NEEDEDDDDD???????
+            - temp owner is reset every time somebody asks for it
+            - so when cleanup is called, if tempowner was changed, the old alloc is now destroyed
+        - For each function, allocate it's own tempowner variable (on the stack)
+        - When the function closes and calls collector, that shouldn't be overwritten yet
+        - However, later on that will get deleted and that data should then be cleaned up if it still belongs to tempowner
+
+
+
     !! CRUCIAL !!
         - typing.x is broken
 

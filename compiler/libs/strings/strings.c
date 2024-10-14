@@ -1,4 +1,6 @@
 void *__rc_allocate__(int, int);
+void *__rc_allocate_with_tempowner__(int, int);
+
 int sprintf(char *, const char *, ...);
 int printf(const char *, ...);
 void *memcpy(void *, void *, int);
@@ -10,7 +12,7 @@ typedef char* fn_toString_t(void);
 //const char *__PRINT_TYPE_INT__ = "%i\n";
 
 
-// #include <stdio.h>
+#include <stdio.h>
 
 // BSD strlen implementation
 int strlen(char *str)
@@ -46,7 +48,7 @@ char *strjoinmany(int numberOfStrings, ...)
     for (i = 0; i < numberOfStrings; i++)
     {
         char *wp = stringsbase[i];
-        // printf("adding: %s\n", stringsbase[i]);
+        printf("adding: %s\n", stringsbase[i]);
         while (*wp != 0)
         {
             *allocatedBuffer = *wp;
@@ -102,7 +104,7 @@ char *cptos(const char *str)
 {
     asm volatile("pusha");
     int strlen = *(((int *)str) - 1); // length is stored in int right before str
-    char *o = __rc_allocate__(strlen, 0);
+    char *o = __rc_allocate_with_tempowner__(strlen, 0);
     memcpy(o, (char *)str, strlen);
     asm volatile("popa");
     return o;

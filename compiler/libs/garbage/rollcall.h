@@ -12,7 +12,9 @@ void *__rc_allocate__(int, int);
 void __rc_collect__();
 void __rc_requestOwnership__(void*, void*);
 void* memcpy(void*, void*, int);
-//void *memset(void *, int, size_t);
+void *memset(void *, int, int);
+
+extern int ___TEMPORARY_OWNER___;
 
 typedef struct roster_entry_t
 {

@@ -3,9 +3,9 @@ module.exports = function (arr) {
     var numStrs = 0;
     var reps = scanPos - 2;
 
-    //console.log("STRING MATH", arr)
     arr.reverse()
     //outputCode.autoPush(`pusha`)
+    outputCode.autoPush("pushw __disable_gc__; movw $1, __disable_gc__")
     while (scanPos < arr.length) {
         var current = arr[scanPos]
         var ctype = helpers.types.guessType(current)
@@ -49,7 +49,7 @@ module.exports = function (arr) {
         `add \$${numStrs * 4 + 4}, %esp`,
         `mov %eax, ${retLbl}`
     )
-
+    outputCode.autoPush("popw __disable_gc__")
     // outputCode.autoPush(`popa`)
 
     return retLbl

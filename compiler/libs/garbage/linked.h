@@ -17,6 +17,8 @@ __linked_t* __linked_getLast(__linked_t* list);
 void __linked_add(__linked_t** list, roster_entry_t* item);
 int __linked_getSize(__linked_t* list);
 __linked_t* __linked_remove(__linked_t** list, int index);
+__linked_t *__linked_remove2(__linked_t **list_db, __linked_t *item);
+
 int __linked_itemExists(__linked_t* list, roster_entry_t* _item);
 
 

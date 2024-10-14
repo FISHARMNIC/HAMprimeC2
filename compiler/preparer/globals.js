@@ -108,6 +108,12 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
+    "__rc_free_all__": {
+        name: "__rc_free_all__",
+        parameters: [],
+        variadic: false,
+        returnType: defines.types.u32
+    },
     "malloc": {
         name: "malloc",
         parameters: [

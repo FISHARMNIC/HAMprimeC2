@@ -1526,9 +1526,9 @@ var formats = {
         globalVariables.__this__ = helpers.types.convertTypeToHasData(defines.types[className])
         var rval = functions.callFunction(bestFit, params, true, globalVariables.__this__)
 
-        // if (sr_this) {
-        //     outputCode.autoPush(`popl __this__`)
-        // }
+        if (sr_this) {
+            outputCode.autoPush(`popl __this__`)
+        }
 
         thisStack.restore();
 

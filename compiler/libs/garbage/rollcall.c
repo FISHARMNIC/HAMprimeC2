@@ -1,7 +1,7 @@
 #include "rollcall.h"
 #include "linked.h"
 
-//#include <stdio.h>
+#include <stdio.h>
 __linked_t *Roster = 0;
 static int allocated_bytes = 0;
 
@@ -68,12 +68,19 @@ void *__rc_allocate__(int size_bytes, int restricted)
     return roster_entry->pointer;
 }
 
+
+void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
+{
+    void* allocation = __rc_allocate__(size_bytes, restricted);
+    __rc_requestOwnership__(allocation, &___TEMPORARY_OWNER___);
+    return allocation;
+}
+
 void __rc_collect__()
 {
-    //printf("/------Collecting-----\\\n");
+    //printf("------Collecting-----\n");
     __linked_t *list = Roster;
 
-    int index = 0;
     while (list != 0)
     {
         roster_entry_t *roster_entry = list->item;
@@ -87,21 +94,33 @@ void __rc_collect__()
         }
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
-        //printf("Checking [@%p]: %p vs %p\n", roster_entry, owner_points_to, owner_should_point_to);
+        //printf("|- Checking %p vs %p\n", owner_should_point_to, owner_points_to);
         if (owner_points_to != owner_should_point_to)
         {
-            //printf("|- Discarding Roster[%i], was %p now %p\n", index, owner_should_point_to, owner_points_to);
-            list = __linked_remove(&Roster, index);
-            //index++; <--- Not sure why I added this?????? Triggered segfault
+            //printf("\t ^- Discarding item was %s now %p\n", owner_should_point_to, owner_points_to);
+            list = __linked_remove2(&Roster, list);
         }
         else
         {
             list = list->next;
-            index++;
         }
     }
 
     //printf("\\---------------------/\n");
+}
+
+void __rc_free_all__()
+{
+    __linked_t *list = Roster;
+
+    int index = 0;
+    while (list != 0)
+    {
+        roster_entry_t *roster_entry = list->item;
+        assert(roster_entry != 0);
+        //printf("|- Discarding item %p\n", roster_entry->pointer);
+        list = __linked_remove2(&Roster, list);
+    }
 }
 
 /// @brief 

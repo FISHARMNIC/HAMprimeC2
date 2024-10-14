@@ -1,63 +1,147 @@
-Map format
+MapEntry format
 {
-    .allocatedSize u32;
-    .occupiedSize u32;
+    .key string;
+    .value u32;
+    
+    .next MapEntry;
 
-    .keys string:array;
-    .values array;
-
-    .Map constructor<> -> u32
+    .MapEntry constructor<string k, u32 v>
     {
-        this.allocatedSize <- 10;
-        this.occupiedSize <- 0;
+        this.key <- k;
+        this.value <- v;
 
-        this.keys <- string[10];
-        this.values <- u32[10];
+        this.next <- 0;
+    }
+}
+
+Map format 
+{   
+    .head MapEntry;
+
+    .rlast MapEntry;
+    
+    .Map constructor<>
+    {
+        this.head <- 0;
     }
 
-    /* rework using linked lists */
-    .Map operator(index_set)<string newKey, u32 newValue>
+    .kneErr method<string k> -> u32
     {
-        create occupiedSize <- this.occupiedSize;
-
-        if(occupiedSize == this.allocatedSize)
+        print_("Key<" + k + "> does not exist");
+        __rc_free_all__();
+        exit(0);
+    }
+    
+    .find method<string k> -> MapEntry:borrowed
+    {
+        if(this.head == 0)
         {
-            this.allocatedSize <- this.allocatedSize * 2;
-
-            this.keys <- copy(string[this.allocatedSize], this.keys);
-            this.values <- copy(u32[this.allocatedSize], this.values);
+            print_("Map empty");
+            return null;
         }
 
-        this.keys[occupiedSize] <- newKey;
-        this.values[occupiedSize] <- newValue;
-        
-        this.occupiedSize <- occupiedSize + 1;
-    }
+        create reference <- borrow this.head;
 
-    .Map operator(index_get)<string index> -> any
-    {
-        create i <- 0;
-        while(i <: this.occupiedSize)
+        while(reference.key != k)
         {
-            if(this.keys[i] == index)
+            if(reference.next == 0)
             {
-                return(this.values[i]);
+                this.rlast <- borrow reference; // todo, make sure NOT taking ownership if i remove borrow
+                return null;
             }
-            i <- i + 1;
+            reference <- borrow reference.next;
+        }
+        return reference;
+    }
+    
+    .remove method<string k> -> u32
+    {
+        if(this.head.key == k)
+        {
+            this.head <- this.head.next;
+            return 0;
+        }
+
+        if(this.head.next == 0)
+        {
+            this.kneErr(k);
+        }
+
+        create reference <- borrow this.head;
+
+        while(reference.next.key != k)
+        {
+            reference <- borrow reference.next;
+            if(reference.next == 0)
+            {
+                this.kneErr(k);
+            }
+        }
+
+        reference.next <- reference.next.next; // TODO: make sure that this sets Ownership
+    }
+
+    .set method<string k, u32 val> -> u32
+    {
+        if(this.head == 0)
+        {
+            this.head <- MapEntry(k,val);
+            return 0;
+        }
+        else
+        {
+            create reference <- this.find(k);
+
+            if(reference == 0)
+            {
+                this.rlast.next <- MapEntry(k,val);
+            }
+            else
+            {
+                reference.value <- val;
+            }
         }
     }
 
+    .get method<string k> -> u32
+    {
+        create found <- this.find(k);
+        if(found == 0)
+        {
+            this.kneErr(k);
+            return 0;
+        }
+            
+        return(this.find(k).value);
+    }
+
+    .Map operator(index_set)<string k, u32 v>
+    {
+        this.set(k,v);
+    }
+
+    .Map operator(index_get)<string k> -> any
+    {
+        return(this.get(k));
+    }
 }
 
 entry function<> -> u32
 {
     create map <- Map();
-    
-    map["Nico" + "ABC"] <- 123;
-    map["Dad"]  <- 456;
-    map["Rio"]  <- 789;
 
-    printf("%i %i %i\n", map["Rio"], map["Dad"], map["NicoABC"]);
+    map["bob"] <- 123;
+    print_(map["bob"]);
 
-    return 0;
+    map["bob"] <- 456;
+    print_(map["bob"]);
+
+    map["jon"] <- 789;
+    print_(map["jon"]);
+
+    map["mike"] <- 321;
+    print_(map["mike"]);
+
+    map["joe"] <- 654;
+    print_(map["joe"]);
 }
