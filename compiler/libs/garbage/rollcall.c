@@ -109,7 +109,8 @@ void __rc_collect__()
     //printf("\\---------------------/\n");
 }
 
-void __rc_free_all__()
+/*
+void __rc_free_allOLD__()
 {
     __linked_t *list = Roster;
 
@@ -122,12 +123,14 @@ void __rc_free_all__()
         list = __linked_remove(&Roster, list);
     }
 }
+*/
 
-void __rc_free_allTEST__()
+void __rc_free_all__()
 {
     __linked_t * list = Roster->next;
     if(Roster == (void*)0)
         return;
+
     free(Roster->item);
     free(Roster);
 

@@ -5,14 +5,18 @@ TODO:
 
 
     TEMPOWNER REWORK:::::
-        - WAIT IS THIS NEEDEDDDDD???????
+        - WAIT IS THIS NEEDEDDDDD??????? YESSSSS
             - temp owner is reset every time somebody asks for it
             - so when cleanup is called, if tempowner was changed, the old alloc is now destroyed
         - For each function, allocate it's own tempowner variable (on the stack)
         - When the function closes and calls collector, that shouldn't be overwritten yet
         - However, later on that will get deleted and that data should then be cleaned up if it still belongs to tempowner
-
-
+        *** ISSUE IS ***
+            - autocast function call, cptos takes tempowner, other fn in that function uses cptos and upon exit destroys ref
+        *** SOLUTION ***
+            - __TEMPOWNER__ becomes a pointer to the allocation on the stack for the local tempowner
+                - must be pushed at the beginning of a function, and popped at the end
+            - note, some code will have to be changed since __TEMPOWNER__ is now a pointer
 
     !! CRUCIAL !!
         - typing.x is broken
