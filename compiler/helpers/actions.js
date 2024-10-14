@@ -999,7 +999,14 @@ var functions = {
             assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
-        if (programRules.optimizeMemory) {
+        if(scope.data?.name == "entry") {
+            outputCode.text.push(
+            `push %eax`,
+            `call __rc_free_all__`,
+            `pop %eax`
+            )
+        }
+        else if (programRules.optimizeMemory) {
             outputCode.text.push(
                 `pusha # C trashes registers. Make this move optimized later by using push clobbers`,
                 `call __rc_collect__`,
