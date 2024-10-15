@@ -286,7 +286,7 @@ if(returnHighlight)
 {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: ["borrowed", ...defines.keywords, "index_get", "index_set", "add", "sub", "mul", "div", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments"],
+        keywords: ["borrowed", ...defines.keywords, "index_get", "index_set", "add", "sub", "mul", "div", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments", "locked"],
         types: Object.keys(defines.types),
         ppdirs: ["include", "sys"],
         allVars: [...__anyVarEverMade,"this"]

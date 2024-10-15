@@ -1,6 +1,6 @@
 function evaluate(line) {
-    if(typeof line == "object")
-        line = line.filter(x=>x)
+    if (typeof line == "object")
+        line = line.filter(x => x)
     // line = line.map((x) => { // bad code yes
 
     //     if (objectIncludes(defines.types, x) && !objectIncludes(userFormats, x)) {
@@ -20,7 +20,7 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed")) {
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed" || line[wordNum + 2] == "locked")) {
 
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
@@ -36,7 +36,7 @@ function evaluate(line) {
                 delete cpy.hasData
                 defines.types[`__${word}__staticdef__`] = cpy
                 line[wordNum] = `__${word}__staticdef__`
-            } else if (line[wordNum + 2] == "array"){
+            } else if (line[wordNum + 2] == "array") {
                 if ("hasData" in cpy) {
                     cpy.elementsHaveData = true;
                     defines.types[`__${word}__dynamicChildrendef__`] = cpy
@@ -46,6 +46,15 @@ function evaluate(line) {
                     defines.types[`__${word}__dynamicdef__`] = cpy
                     line[wordNum] = `__${word}__dynamicdef__`
                 }
+            } else if (line[wordNum + 2] == "locked") {
+                throwE("Locked pointers are still in development")
+
+                if (!("formatPtr" in cpy)) {
+                    throwE("Cannot create locked variant of static type")
+                }
+                cpy.locked = true
+                defines.types[`__${word}__lockdef__`] = cpy
+                line[wordNum] = `__${word}__staticdef__`
             }
 
             line.splice(wordNum + 1, 2)
@@ -123,13 +132,12 @@ function evaluate(line) {
                 if (offsetWord(2) != "(") {
                     throwE("Must cast with parenthesis after colon. Like 'type:(data)'")
                 }
-                if(word == "auto")
-                {
+                if (word == "auto") {
                     throwE("autocast not implemented")
                 } else {
-                var type = defines.types[word]
-                line[wordNum] = actions.assembly.allocateAndSet(offsetWord(3), type)
-                line.splice(wordNum + 1, 4)
+                    var type = defines.types[word]
+                    line[wordNum] = actions.assembly.allocateAndSet(offsetWord(3), type)
+                    line.splice(wordNum + 1, 4)
                 }
             } else if (offsetWord(1) == "{") {
                 arrayClamp = defines.types[word]
@@ -277,8 +285,7 @@ function evaluate(line) {
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatMethodName(scope[scope.length - 1].data.name, offsetWord(1)), offsetWord(4), retType)
 
                     //throwE(line)
-                } else if (offsetWord(2) == "operator")
-                {
+                } else if (offsetWord(2) == "operator") {
                     // just make this a function...
                     var nobj = objCopy(defines.types.___format_template_dynamic___)
                     nobj.formatPtr = scope[scope.length - 1].data
@@ -286,18 +293,17 @@ function evaluate(line) {
                     globalVariables.__this__ = newGlobalVar(nobj)
 
                     //throwE("operator", line)
-                    if(offsetWord(3) != "(" || offsetWord(5) != ")")
-                    {
+                    if (offsetWord(3) != "(" || offsetWord(5) != ")") {
                         throwE(`Improper operator syntax. Expects "operator(?)<?> -> ?"`)
                     }
 
                     var operator = offsetWord(4)
                     var retType = objCopy(offsetWord(9) == "->" ? defines.types[offsetWord(10)] : defines.types.u32)
-                    
+
                     var _scope = scope[scope.length - 1].data
                     var formattedName = helpers.formatters.formatOperatorName(_scope.name, operator)
                     var params = offsetWord(7)
-                    
+
                     actions.formats.createOperator(_scope, formattedName, params, retType)
                 } else {
                     __addToAnyVarEverMade(offsetWord(1))
@@ -327,8 +333,7 @@ function evaluate(line) {
             else {
                 if (offsetWord(2) == "(") {
                     var args = offsetWord(3)
-                    if(args  == ")")
-                    {
+                    if (args == ")") {
                         args = []
                     }
                     //console.log("Going to call", offsetWord(-1), offsetWord(1), args)
@@ -874,9 +879,14 @@ function evaluate(line) {
                 if (offsetWord(1) == "(") {
                     wrd = offsetWord(2)
                 } else {
-                    wrd = evaluate([wrd])[0]
-                    if (line.length != 2) {
-                        throwE(`Place parenthesis around return statement [${line.join(" ")}]. like: return(stuff)`)
+                    if (wrd == undefined) {
+                        wrd = null
+                    }
+                    else {
+                        wrd = evaluate([wrd])[0]
+                        if (line.length != 2) {
+                            throwE(`Place parenthesis around return statement [${line.join(" ")}]. like: return(stuff)`)
+                        }
                     }
                 }
 
@@ -940,9 +950,8 @@ function evaluate(line) {
         {
             var fname = word
             var args = offsetWord(2)
-            if (typeof (args) == "string")
-            {
-                if(args == ")")
+            if (typeof (args) == "string") {
+                if (args == ")")
                     args = []
                 else
                     args = [args]

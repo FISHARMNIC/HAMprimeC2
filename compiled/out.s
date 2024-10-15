@@ -20,14 +20,8 @@ ___TEMPORARY_OWNER___: .4byte 0
 .global __this__
 .extern __disable_gc__
 ######## user data section ########
-.type	factorial, @function
-__ALLOCFOR_factorial__ = 0
 .type	entry, @function
-.4byte 5
-__STRING0__: .asciz "%f\n"
-__ALLOCFOR_entry__ = 12
-__TEMP32_0__: .4byte 0
-__TEMP32_1__: .4byte 0
+__ALLOCFOR_entry__ = 0
 ###################################
 .text
 
@@ -47,110 +41,11 @@ main:
     ret
 
 ###################################
-factorial:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR_factorial__, %esp
-
-mov 8(%ebp), %eax
-mov $0, %cl
-cmp $1, %eax
-setge %cl
-cmpb $1, %cl
-jne __LABEL0__
-mov 8(%ebp), %eax
-sub $1, %eax
-mov %eax, %ecx
-push %ecx
-# Calling function factorial
-push %ecx
-call factorial
-mov %eax, %esi
-add $4, %esp
-pop %ecx
-mov 8(%ebp), %eax
-mov %esi, %ebx
-mul %ebx
-mov %eax, %edi
-mov %edi, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-jmp __LABEL1__
-__LABEL0__:
-__LABEL1__:
-mov $1, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-# Loading local variable "sum_index" @-4(%ebp)
-mov $0, %edx
-mov %edx, -4(%ebp)
-# Loading local variable "sum_end" @-8(%ebp)
-mov $10, %edx
-mov %edx, -8(%ebp)
-mov $0, %ecx
-# Loading local variable "sum" @-12(%ebp)
-mov %ecx, -12(%ebp)
-__LABEL2__:
-mov -4(%ebp), %eax
-mov -8(%ebp), %edx
-mov $0, %cl
-cmp %edx, %eax
-setl %cl
-# comparison for WHILE loop
-cmpb $1, %cl
-jne __LABEL3__
-# Calling function factorial
-# TODO optimize if variable just do movl
-mov -4(%ebp), %edx
-push %edx
-call factorial
-mov %eax, %ecx
-add $4, %esp
-mov $1065353216, %esi
-movl %esi, __xmm_sse_temp__
-movss __xmm_sse_temp__, %xmm0
-movl %ecx, __xmm_sse_temp__
-cvtsi2ss __xmm_sse_temp__, %xmm1
-divss %xmm1, %xmm0
-movss %xmm0, __TEMP32_0__
-movss -12(%ebp), %xmm0
-movss __TEMP32_0__, %xmm1
-addss %xmm1, %xmm0
-movss %xmm0, __TEMP32_1__
-movl __TEMP32_1__, %edx
-mov %edx, -12(%ebp)
-mov -4(%ebp), %eax
-add $1, %eax
-mov %eax, %ecx
-mov %ecx, -4(%ebp)
-jmp __LABEL2__
-__LABEL3__:
-# Calling function printf
-movss -12(%ebp), %xmm0
-cvtss2sd %xmm0, %xmm2
-sub $8, %esp
-movq %xmm2, (%esp)
-pushl $__STRING0__
-call printf
-mov %eax, %ecx
-add $12, %esp
-mov $0, %eax
 push %eax
 call __rc_free_all__
 pop %eax
@@ -164,6 +59,3 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# sum_index: 4
-# sum_end: 8
-# sum: 12
