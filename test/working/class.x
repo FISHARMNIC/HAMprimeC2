@@ -18,7 +18,6 @@ List format {
     {
         this.buffer <- u32[size];
         this.length <- size;
-        
         create i <- 0;
         while(i <: size)
         {

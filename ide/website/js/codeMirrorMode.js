@@ -1,14 +1,14 @@
 function matchAll(stream, words) {
-  return words == undefined ? false : words.some(x => stream.match(x))
+  return words == undefined ? false : words.some(x => {
+    if(/^[a-zA-Z]+$/.test(x)) // only letters
+    {
+      //console.log(`\\b${x}\\b`)
+      return stream.match(new RegExp(`\\b${x}\\b`))
+    }
+    return stream.match(x)
+    
+  })
 }
-
-// function matchAll(stream, words)
-// {
-//   return words == undefined ? false : words.some(x => {
-//     var reg = new RegExp(`(?:^|[^\w_])(${x})(?=[^\w_]|$)`, 'g');
-//     return stream.match(reg)
-//   })
-// }
 
 var operators = ["!=", "<<", ">>", "<:", ":>", "==", "<=", ">=", "->", "<-", "+", "-", "*", "/", "|", "&", "%", "<", ">","(", ")", ":"]
 var brackets = ["{", "}", "[", "]"]
@@ -47,6 +47,10 @@ CodeMirror.defineMode("HAM", function () {
       }
       else if (matchAll(stream, highlightingInfo.functions)) {
         return "num"
+      }
+      else if (stream.match("#")) {
+        stream.skipToEnd();
+        return "keyword";
       }
       else if (matchAll(stream, operators)) // ops
       {

@@ -119,7 +119,7 @@ function __removeTabs(e) {
     return e.split("").map(x => x == "\t" ? "" : x).join("")
     } catch(error)
     {
-        console.log("COUND NOT PARSE", e)
+        console.log("COUND NOT PARSE", error)
         return e
     }
 }
@@ -133,6 +133,8 @@ function __getTrueLine(execFileLikeTrue, line) {
     while (lineRead != line && lookAtFile < execFileLikeTrue.length) {
         lookAtFile++
         lineRead++
+        if(execFileLikeTrue[lookAtFile] == undefined)
+            return -1
         execFileLikeTrue[lookAtFile] = __removeTabs(execFileLikeTrue[lookAtFile])
         while (lookAtFile < execFileLikeTrue.length && execFileLikeTrue[lookAtFile].length == 0) //skip
         {
@@ -166,6 +168,10 @@ function getLineFromAsm(asmLine){
         //console.log(execFileLikeTrue)
         var info = data[offset]
         var tline = __getTrueLine(execFileLikeTrue, info[0].line)
+        if(tline == -1)
+        {
+            getTerminal().value += "\n[IDE ERROR] Unable to track assembly"
+        }
         return tline
     }
 }

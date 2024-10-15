@@ -127,9 +127,12 @@ void __rc_free_allOLD__()
 
 void __rc_free_all__()
 {
-    __linked_t * list = Roster->next;
+    __linked_t * list;
+    
     if(Roster == (void*)0)
         return;
+    
+    list = Roster->next;
 
     free(Roster->item);
     free(Roster);

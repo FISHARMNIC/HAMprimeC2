@@ -290,6 +290,7 @@ if(returnHighlight)
         functions: Object.keys(userFunctions),
         keywords: ["borrowed", ...defines.keywords, "index_get", "index_set", "add", "sub", "mul", "div", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments"],
         types: Object.keys(defines.types),
+        ppdirs: ["include", "sys"],
         allVars: [...__anyVarEverMade,"this"]
     }
     fs.writeFileSync(__dirname + "/../compiled/highlightInfo.json", JSON.stringify(rinfo))

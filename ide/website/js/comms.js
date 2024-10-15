@@ -52,6 +52,7 @@ var comms = {
         if (out[out.length - 1][0] == "{") {
             out = JSON.parse(out[out.length - 1])
         }
+        console.log(out)
         if ("issue" in out && out.issue == true) {
             console.log("F")
             //document.getElementById("zone_terminal_ta").value = out.join("\n")
