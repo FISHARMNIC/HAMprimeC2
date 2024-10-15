@@ -107,7 +107,7 @@ function runDeepestFirst(line) {
     if(typeof(line) == "string" && nestedEnd != 0)
     {
         // 123, nested end is 3, should be 0, so its reading "123"[0] -> 1
-        console.log("\n\n========== ISSUE ==========", line, "\n\n")
+        //console.log("\n\n========== ISSUE ==========", line, "\n\n")
         return ""
         //line = [line, 0]
         //nestedEnd = 0

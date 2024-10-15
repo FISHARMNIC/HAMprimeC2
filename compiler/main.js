@@ -18,6 +18,7 @@ TODO:
                 - must be pushed at the beginning of a function, and popped at the end
             - note, some code will have to be changed since __TEMPOWNER__ is now a pointer
 
+    Add overloading to operator overloads (like how its done on constructors)
     !! CRUCIAL !!
         - typing.x is broken
 
@@ -97,16 +98,14 @@ TODO:
     - !! IMPORTANT !!
         - optimize __rc_quick_check__
         - change it so by default, all functions save registers automatically
-        - be careful when calling from c functions. Maybe add like __c_fn__to specify that caller has to save regs
-    - make structs not packed
+    - make structs not packed (4 byte alignment)
+        - add packed flag in type to make it optional
     - add auto return guesstype of statement on return
     - "own" doens't force ownership unless the data has hasData. Make it force calling the function regardless
     - add setting pointer like @bob <- 123;
     - add char to string
     - !! IMPORTANT !! garbage collector should only be triggered at the end of functions
         - in case inline-data causes trigger, which makes them lose the data
-    - IDE gets all functions from globals.js and uses it that you can do like a function lookup and see how it works.
-        - server converts to JSON, sends to client, client parses back to JS obj
     - add type chains that give pointers multiple types as they are dereferenced
         - p8~p32~p16 bob
     - fix "__rule defaultTransience true", currently breaks compiler
@@ -159,7 +158,6 @@ TODO:
     - GET RID OF TYPESTACK COMLPETELY SOME THINGS STILL USE IT
     - "} elif {"" won't work for some reason, needs new line, maybe because it thinks array?
     _ __define only works for single words
-    - FORMAT PROPERTYS CANNOT BE SET
     - Unclosed quotes like "don't" won't work in comments
     - IDE editing: \n becomes \\n. tab = \t. Stuff like that
     - (??? FIXED ???) fix most register formater functions to acknowledge ebp as register 'p'
@@ -170,7 +168,7 @@ TODO:
     - redo splitter to join lines when a parenthesis has been opened
 */
 
-/* FIXED
+/* FIXED - this list has not been updated in very long
 - Array allocate +4 in order to store length of array too
 - FIXED only use esp in loop if allocating format otherwise it can be overwritten like normal var
     - FIXED Stallocs need to return ESP since ebp offsets cannot be preserved if in a loop
