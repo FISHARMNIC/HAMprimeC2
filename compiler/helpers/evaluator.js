@@ -314,9 +314,15 @@ function evaluate(line) {
                         type: objectIncludes(defines.types, offsetWord(2)) ? objCopy(defines.types[offsetWord(2)]) : objCopy(defines.types.u32)
                     })
                     */
+                    var type = objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.u32)
+                    if("voided" in type)
+                    {
+                        throwE("Cannot create void property")
+                    }
+
                     scope[scope.length - 1].data.properties.push({
                         name: offsetWord(1),
-                        type: objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.u32)
+                        type
                     })
 
                     var nobj = objCopy(defines.types.___format_template_dynamic___)

@@ -162,6 +162,10 @@ var assembly = {
 
 var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
+        if ("voided" in type) {
+            throwE(`Cannot create void variable`)
+        }
+
         __addToAnyVarEverMade(vname)
         if (helpers.types.isLiteral(value)) {
             outputCode.autoPush(
@@ -986,6 +990,11 @@ var functions = {
                 if (scopeRetType == undefined) {
                     throwE(`No given return type in function "${scope.data.name}"`)
                 }
+
+                if ("voided" in scopeRetType) {
+                    throwE(`Cannot return data in function that returns nothing`)
+                }
+
                 if (rVal == "null") {
                     rVal = "0"
                 }
