@@ -157,6 +157,96 @@ var assembly = {
 
 
         throwE(stype)
+    },
+    setMemAddr: function (address, addressTypeNoDeref, data) {
+        var dataType = helpers.types.guessType(data)
+        var addressType = helpers.types.derefType(addressTypeNoDeref)
+        var suffix = ""
+        var noPar = false
+
+        outputCode.autoPush(`# Setting pointer ${data} -> ${address}`)
+
+        if (helpers.types.typeToBytes(addressType) != 4) {
+            throwE("Setting address is not 32bits")
+        }
+
+        if (helpers.types.stringIsRegister(address)) { // reg
+           // address = address;
+        }
+        else if (helpers.types.isConstant(address)) { // const
+
+            throwW("Setting constant memory address")
+            outputCode.autoPush(
+                `mov ${helpers.types.formatIfConstant(address)}, %eax`
+            )
+            address = "%eax"
+        }
+        else {                                          // anything else (ebp/esp offsets)
+            // issue, if array, its just modifying the pointer instead of first addr ahhh
+
+           // throwE(addressTypeNoDeref, addressType)
+            if(!addressTypeNoDeref.pointer)
+            {
+                outputCode.autoPush(
+                    `lea ${address}, %eax`
+                )
+            }
+            else
+            {
+                outputCode.autoPush(
+                    `mov ${address}, %eax`
+                )
+            }
+                            address = "%eax"
+        }
+
+
+        if ("hasData" in dataType) {
+            if (!("hasData" in addressType)) {
+                helpers.types.throwDynToStaticErr(dataType, addressType)
+            }
+
+            if(!(helpers.types.stringIsRegister(data)))
+                {
+                    outputCode.autoPush(
+                        `mov ${helpers.types.formatIfConstOrLit(data)}, %edx`
+                    )
+                    data = "%edx"
+                }
+
+            outputCode.autoPush(
+                `# requesting ownership for ${address} (setting address as pointer)`,
+                `push ${address}`,
+                `push ${data}`,
+                `call __rc_requestOwnership__`,
+                `add $8, %esp`
+            )
+
+        }
+        else if ("hasData" in addressType) {
+            helpers.types.throwStaticToDynErr(dataType, addressType)
+        }
+        else 
+        {
+            // TODO depending on datatype, movb, movw, movl
+            if(helpers.types.stringIsMemoryReference(data))
+            {
+                var dreg = helpers.types.formatRegister('d', dataType)
+                outputCode.autoPush(`mov ${helpers.types.formatIfConstOrLit(data)}, ${dreg}`)
+                data = dreg
+            }
+            
+            var suffix = helpers.types.sizeToSuffix(dataType)
+
+                outputCode.autoPush(
+                    `mov${suffix} ${helpers.types.formatIfConstOrLit(data)}, (${address})`
+                )
+            
+        }
+
+        outputCode.autoPush("\n")
+
+
     }
 }
 
@@ -593,7 +683,7 @@ var variables = {
 
         if (("hasData" in valueType || "elementsHaveData" in arrType) && nextThingTakesOwnership) {
             if (!("elementsHaveData" in arrType)) {
-                throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(valueType)}"`)
+                throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(arrType)}"`)
             } else if (!("hasData" in valueType)) {
                 if (helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr
                 {
@@ -1069,10 +1159,9 @@ var functions = {
         //     outputCode.autoPush(`pushl __this__`)
         // }
 
-        if(fname == "exit")
-        {
+        if (fname == "exit") {
             throwW("\"exit(status)\" may cause leaks. Use \"quit(status)\" instead.")
-        } 
+        }
 
         var onCom = false
         var callAddress = fname

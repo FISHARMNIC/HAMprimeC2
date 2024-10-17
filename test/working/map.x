@@ -45,7 +45,7 @@ Map format
         {
             if(reference.next == 0)
             {
-                this.rlast <- borrow reference; // todo, make sure NOT taking ownership if i remove borrow
+                this.rlast <- reference; // won't take ownership since reference is borrowed
                 return null;
             }
             reference <- borrow reference.next;
@@ -77,7 +77,7 @@ Map format
             }
         }
 
-        reference.next <- reference.next.next; // TODO: make sure that this sets Ownership
+        reference.next <- reference.next.next;
     }
 
     .set method<string k, u32 val> -> u32

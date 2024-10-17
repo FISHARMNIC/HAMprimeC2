@@ -223,13 +223,11 @@ function evaluate(line) {
             }
 
             var baseType = helpers.types.guessType(derefData)
+            var retType = helpers.types.derefType(baseType)
             // needs to have hasData etc. Think
             if (setting) {
-                throwE("Setting pointer WIP", baseType)
-
+                actions.assembly.setMemAddr(derefData, baseType, offsetWord(1))
             } else {
-                var retType = objCopy(baseType)
-                retType.pointer = false
 
                 outputCode.autoPush(
                     `# dereferencing ${derefData}`

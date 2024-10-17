@@ -1,5 +1,9 @@
 /*
 TODO:
+
+    Do the thing that brackets can open onto new line
+        - will completely break line tracking (maybe?)
+
     WHY NOT JUST HAVE ALL ALLOCATIONS SAVED IN TEMPOWNER????
         - removes need for return_new
 
@@ -25,8 +29,6 @@ TODO:
     - add ownership locking.
         - just do type annex like Person:locked
         - Special property in type that specifies to pass 1 or 0 to __rc_allocate__
-    - add "none" type
-        - special property "".noData"
 
     !! WEIRD !!
         - why does having "const char *__PRINT_TYPE_INT__ = "%i\n";" in strings.c place the string in the wrong section w/o any actual data?

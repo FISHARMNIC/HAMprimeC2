@@ -27,6 +27,14 @@ var counters = {
 }
 
 var types = {
+    throwDynToStaticErr: function(vt, dt)
+    {
+        throwE(`Assigning "${helpers.types.convertTypeObjToName(vt)}" to an value expecting a static "${helpers.types.convertTypeObjToName(dt)}"`)
+    },
+    throwStaticToDynErr: function(vt, dt)
+    {
+        throwE(`Assigning "${helpers.types.convertTypeObjToName(vt)}" to an value expecting a dynamic "${helpers.types.convertTypeObjToName(dt)}"`)
+    },
     areEqual: function (a, b) {
         //console.log()
         var aHas = ("formatPtr" in a)
@@ -94,6 +102,10 @@ var types = {
     },
     isLiteral: function (x) {
         return x.substring(0, 8) == "__STRING"
+    },
+    isDynamic: function(t)
+    {
+        return("hasData" in t)
     },
     isConstant: function (x) {
         return parseFloat(x) == x
@@ -206,6 +218,10 @@ var types = {
         if (String(str) == "undefined")
             throwE("[INTERNAL ERROR] Got undefined")
         return str.substring(str.indexOf("(")) == "(%ebp)"
+    },
+    stringIsMemoryReference: function(str)
+    {
+        return(this.stringIsEbpOffset(str) || objectIncludes(globalVariables,str) || this.isConstOrLit(str))
     },
     getOffsetFromEbpOffsetString: function (str) {
         return str.substring(str[0] == "-" ? 1 : 0, str.indexOf("("))
