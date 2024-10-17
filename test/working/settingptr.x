@@ -1,9 +1,9 @@
 /* 
+    This is still WIP, and many features do not work yet / are untested
     TODOS:
     Check for:
         - @(number)
-        - @(some dynamic address)
-        - @(string literal)
+        - @(array with dynamic children)
         - @(string variable)
         - @(conststr variable (do those even exist still? I forgot, maybe global?)
 
@@ -23,5 +23,14 @@ entry function<> -> u32
         printf("%i\n", @(arr + (i * 4)));
         i <- i + 1;
     }
+
+    /*
+    Neither of these work properly:
+        create jon <- "jon";
+        @(jon) <- 'b'; 
+        @(jon + 1) <- 'b';
+    print_(jon);
+    */
+
     return 0;
 }

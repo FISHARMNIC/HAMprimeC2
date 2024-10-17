@@ -4,7 +4,8 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Li
 
 Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
 
-## Massive Update!
+## Big Update Log
+- Added writing into memory address specified by pointer (still WIP, many cases don't work)
 - Operator overloads addded!
     - Currently only support the four main math functions (+-/*) and array set and get
     - See [math overload example](#Class-Example-2) or [array overload example](#Operator-Overloads) below

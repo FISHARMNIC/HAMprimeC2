@@ -1,6 +1,7 @@
 /*
 TODO:
 
+    How does duplicate work for items with dynamic children?
     Do the thing that brackets can open onto new line
         - will completely break line tracking (maybe?)
 
