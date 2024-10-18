@@ -907,7 +907,7 @@ function evaluate(line) {
                         `# forEach loop`,
                         `mov ${array}, %eax # load arr`,
                         `mov -4(%eax), %edx # get entry reference`,
-                        `mov 8(%eax),  %edx # get size`
+                        `mov 8(%edx),  %edx # get size`
                     )
                 }
                 else
@@ -916,7 +916,12 @@ function evaluate(line) {
                 }
 
                 var regA = helpers.types.formatRegister('a', elementType)
+                var b = helpers.types.typeToBytes(elementType)
 
+                if(b != 1)
+                {
+                    outputCode.autoPush(`shr \$${b / 2}, %edx # divide by ${b} (bytes to u32 or u16)`)
+                }
                 outputCode.autoPush(
                     `mov %edx, ${requestBracket.data.arrLength} # size to arr len holder`,
                     `mov (%eax), ${regA} # load first element into A`
@@ -929,8 +934,8 @@ function evaluate(line) {
                     `${requestBracket.data.name}:`,
                     `# comparison for forEach loop`,
                     `mov ${requestBracket.data.indexer}, %eax `,
-                    `cmp %eax, ${requestBracket.data.arrLength}`,
-                    `jle ${requestBracket.data.exit}`, // jump out if not equal
+                    `cmp ${requestBracket.data.arrLength}, %eax`,
+                    `jge ${requestBracket.data.exit} # exit if finished`,
                 )
 
                 var out = actions.variables.readArray(array, requestBracket.data.indexer)
