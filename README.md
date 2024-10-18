@@ -659,21 +659,17 @@ entry function<> -> u32
     create sum_index <- 0;
     create sum_end <- 10;
 
-    /* 
-    Decimal number forces a float
-    These also work:
-        explicit type: create f32 sum <- 0;
-        explicit cast: create sum <- f32:(0);
-    */
-    create sum <- 0.0; 
+    create sum <- 0.0;
 
     while(sum_index <: sum_end)
     {
-        sum <- (sum + (1.0 / (factorial(sum_index))));
-        sum_index <- (sum_index + 1);
+        sum <- sum + 1.0 / factorial(sum_index);
+        sum_index <- sum_index + 1;
     }
 
-    printf("%f", sum);
+    print_(sum);
+
+    return 0;
 }
 ```
 
