@@ -288,7 +288,8 @@ global.keywordTypes = {
     WHILE: 4,
     IF: 5,
     ARRAY: 6,
-    OPERATOR: 7
+    OPERATOR: 7,
+    FOREACH: 8
 }
 
 global.quickSplit = function (inputCode) {

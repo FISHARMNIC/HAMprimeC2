@@ -619,10 +619,14 @@ function evaluate(line) {
                 //actions.allocations.deallocStack()
             } else if (oldScope.type == keywordTypes.FUNCTION) {
                 actions.functions.closeFunction(oldScope, oldStack)
-            } else if (oldScope.type == keywordTypes.WHILE) {
-                outputCode.autoPush(
+            } else if (oldScope.type == keywordTypes.WHILE || oldScope.type == keywordTypes.FOREACH) {
+                if(oldScope.type == keywordTypes.FOREACH)
+                {
+                    outputCode.autoPush(`incw ${oldScope.data.indexer}`)
+                }
+                outputCode.autoPush(      
                     `jmp ${oldScope.data.name}`,
-                    `${oldScope.data.exit}:` // exit loop
+                    `${oldScope.data.exit}: # LLLLLLL` // exit loop
                 )
             } else if (oldScope.type == keywordTypes.IF) {
                 outputCode.text.push(
@@ -890,7 +894,50 @@ function evaluate(line) {
                     `cmpb $1, ${offsetWord(2)}`,
                     `jne ${requestBracket.data.exit}` // jump out if not equal
                 )
-            } else if (word == "return") {
+            } else if (word == "forEach") {
+                var element = offsetWord(2)[0]
+                var array = offsetWord(2)[2]
+
+                var arrayType = helpers.types.guessType(array)
+                var elementType = helpers.types.derefType(arrayType)
+
+                if("hasData" in arrayType)
+                {
+                    outputCode.autoPush(
+                        `# forEach loop`,
+                        `mov ${array}, %eax # load arr`,
+                        `mov -4(%eax), %edx # get entry reference`,
+                        `mov 8(%eax),  %edx # get size`
+                    )
+                }
+                else
+                {
+                    throwE("forEach not implemented on static arrays yet")
+                }
+
+                var regA = helpers.types.formatRegister('a', elementType)
+
+                outputCode.autoPush(
+                    `mov %edx, ${requestBracket.data.arrLength} # size to arr len holder`,
+                    `mov (%eax), ${regA} # load first element into A`
+                )
+
+                //throwE(elementType)
+                var elementVariable = actions.variables.create(element, elementType, regA)
+
+                outputCode.autoPush( // todo, need to get len and see when done
+                    `${requestBracket.data.name}:`,
+                    `# comparison for forEach loop`,
+                    `mov ${requestBracket.data.indexer}, %eax `,
+                    `cmp %eax, ${requestBracket.data.arrLength}`,
+                    `jle ${requestBracket.data.exit}`, // jump out if not equal
+                )
+
+                var out = actions.variables.readArray(array, requestBracket.data.indexer)
+                outputCode.autoPush(
+                    `mov ${out}, ${actions.assembly.getStackVarAsEbp(elementVariable)}`
+                )
+            }else if (word == "return") {
                 debugPrint("closer", line, scope)
 
                 var wrd = offsetWord(1)

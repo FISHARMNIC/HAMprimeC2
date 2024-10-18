@@ -84,7 +84,7 @@ var types = {
     derefType: function (type) {
         //console.log("deref", type)
         var c = objCopy(type)
-        if(!("advptr" in type))
+        //if(!("advptr" in type)) // IF BROKEN UNCOMMENT HERE OCT 18 2024
             c.pointer = false
         if("hasData" in type)
         {
@@ -633,7 +633,7 @@ var general = {
         }))
     },
     scopeHasIterable: function () {
-        return scope.some(x => x.type == keywordTypes.WHILE)
+        return scope.some(x => x.type == keywordTypes.WHILE || x.type == keywordTypes.FOREACH)
     },
     setModifiesThis: function () {
         var fn = this.getMostRecentFunction()

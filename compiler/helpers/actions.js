@@ -272,7 +272,10 @@ var variables = {
             value = helpers.registers.getFreeLabelOrRegister(type)
             outputCode.autoPush(`mov %eax, ${value}`)
         } else if (value == "%ax" || value == "%al" || value == "%ah") {
-            throwE("[INTERNAL ERROR] Cannot be taking eax. Add line here to clobber other reg and set")
+            var ov = value
+            value = helpers.registers.getFreeLabelOrRegister(type)
+            outputCode.autoPush(`mov ${ov}, ${value}`)
+            //throwE("[INTERNAL ERROR] Cannot be taking eax. Add line here to clobber other reg and set")
         }
 
         if (helpers.general.isReserved(vname)) {

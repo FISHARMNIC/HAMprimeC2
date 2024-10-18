@@ -1,6 +1,13 @@
 /*
 TODO:
 
+    FOREACH notes:
+        note, "load first element into eax", shouldn't always be eax, depends on element type
+        note, item is declared outside of the forEach stack
+        note, force esp allocation inside for each
+        DO ESP ALLOCATION DELETE AFTER CLOSING WHILE/FEACH LOOP???
+    
+
     !! CRUCIAL !!
         - for some reason you cant have fn name like "substring" bc splitter turns into ["sub","string"]
 
