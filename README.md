@@ -9,9 +9,7 @@ Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
 - Operator overloads addded!
     - Currently only support the four main math functions (+-/*) and array set and get
     - See [math overload example](#Class-Example-2) or [array overload example](#Operator-Overloads) below
-- Math is now evaluated in the proper order!
-    - Currenty, this is only for integer math
-    - Adding this for floats very soon
+- Math is now evaluated in the proper order! (now for floats too)
 - old big update stuff:
     - Automatic garbage collection is here! After some tweaks from my [original design](https://github.com/FISHARMNIC/RollCall/tree/main) the garbage collection system is now fully working (and rather fast)! All data is now allocated globally unless specified (see the documentation).
     - ftos and itos

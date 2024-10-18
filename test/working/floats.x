@@ -1,6 +1,5 @@
 factorial function<u32 n> -> u32
 {
-    /* !!IMPORTANT!! Garbage collection error here: print_("Finding factorial of: " + n) */
     if(n >= 1)
     {
         return (n * factorial(n - 1));
@@ -17,11 +16,11 @@ entry function<> -> u32
 
     while(sum_index <: sum_end)
     {
-        sum <- (sum + (1.0 / (factorial(sum_index))));
-        sum_index <- (sum_index + 1);
+        sum <- sum + 1.0 / factorial(sum_index);
+        sum_index <- sum_index + 1;
     }
 
-    printf("%f\n", sum);
+    print_(sum);
 
     return 0;
 }

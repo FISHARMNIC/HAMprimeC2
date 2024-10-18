@@ -301,6 +301,125 @@ global.getLastScopeType = function () {
     return scope[scope.length - 1].type
 }
 
+global._saveRegs = function() {
+    var pushed = []
+    Object.entries(helpers.registers.inLineClobbers).forEach(pair => {
+        if (pair[1] == 1) {
+            var type = helpers.types.formatRegister(pair[0], defines.types.u32)
+            pushed.push(type)
+            outputCode.autoPush(`push ${type}`)
+        }
+    })
+    return pushed
+}
+
+global._restoreRegs = function(pushed) {
+    if (pushed == undefined) {
+        throwE("[INTERNAL] Didn't push")
+    }
+
+    pushed.reverse().forEach(x => {
+        outputCode.autoPush(`pop ${x}`)
+    })
+}
+
+global.evalMath = function(arr, treater) {
+    var old;
+
+    do { // just keep nesting
+        old = JSON.stringify(arr)
+        if (arr.find(x => typeof (x) == "object") == undefined) { // only when the line has nothing left to nest is it evaluated
+            if (arr.length == 1) {
+                //console.log("SKIPPING single ", arr, " -> ", arr[0])
+                return arr[0]
+            }
+            else {
+                var out = treater(arr)
+                //console.log("evaluated", arr, "->", out)
+                return out
+            }
+        }
+        else {
+            for (var i = 0; i < arr.length; i++) {
+                if (typeof (arr[i]) == "object") {
+                    arr[i] = evalMath(arr[i], treater)
+                }
+            }
+        }
+    } while (old != JSON.stringify(arr))
+
+}
+
+
+global._deClob = function(tempClobs) {
+    tempClobs.pop() // last one is the one to keep
+    tempClobs.forEach(x => {
+        if (helpers.types.stringIsRegister(x)) {
+            var rLetter = helpers.registers.registerStringToLetterIfIs(x)
+            //console.log("freeing", rLetter)
+            helpers.registers.deClobberRegister(rLetter)
+        }
+    })
+}
+
+global.formatMath_helper = function(oldArr) {
+    // todo, add shift, bitwise OR and AND, and rotate
+    var trumpOps = ["*", "/", "%"]
+    var lowerOps = ["+", "-"]
+    var allOps = [...trumpOps, ...lowerOps]
+
+    var onOperator = false;
+
+    var arr = objCopy(oldArr)
+
+    var last = arr[arr.length - 1]
+    if (allOps.includes(last)) {
+        throwE(`Math statement ends on operator "${last}"`)
+    }
+
+    var i = 0
+    for (; i < arr.length; i++) {
+        var e = arr[i]
+        if (onOperator) {
+            var previous = arr[i - 1]
+            var next = arr[i + 1]
+            if (!(allOps.includes(e))) {
+                throwE(`Expected an operator, but got "${e}"`)
+            }
+
+            if (trumpOps.includes(e)) {
+                var subArr = [previous, e, next]
+                arr.splice(i - 1, 3, subArr)
+            }
+        }
+        else {
+            if (allOps.includes(e)) {
+                throwE(`Did not expect an operator, but got "${e}"`)
+            }
+        }
+        onOperator = !onOperator;
+    }
+
+    // throwE(arr)
+
+    //console.log("TREATING", arr)
+    return arr
+    //var o = evalMath(arr, true)
+    //console.log("ret", o)
+    //return o
+
+}
+
+global.formatMath = function(arr)
+{
+    var looper = formatMath_helper(arr)
+    while (JSON.stringify(looper) != JSON.stringify(formatMath_helper(looper))) {
+        looper = formatMath_helper(looper)
+    }
+    return looper
+}
+
+
 global.newScope = function (rb) {
     if (rb.stackVariables == undefined) {
         rb.stackVariables = {}

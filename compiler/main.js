@@ -204,7 +204,7 @@ global.helpers = require('./helpers/helpers.js')
 global.evaluator = require('./helpers/evaluator.js')
 global.mathEngine = require("./math/mathEngine.js");
 global.stringAdder = require("./math/stringAdder.js");
-global.floatEngine = require("./math/floatEngine.js");
+global.floatEngine = require("./math/floatEngineNEW.js");
 global.prioritizeWord = require("./helpers/priority.js")
 global.preprocess = require("./preprocessor/pre.js")
 

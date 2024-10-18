@@ -5,50 +5,45 @@ todo. Only push non clobbered. use eax, esi, and edi since they are least likely
 
 var tempClobs = []
 
+function useAppropriateLoad(value, dest, type) {
+    if (type.float) {
+        outputCode.autoPush(`movss ${value}, ${dest}`)
+    } else {
+        outputCode.autoPush(`cvtsi2ss ${value}, ${dest}`);
+    }
+
+}
+
 function _doOp(operator, value, valueType) {
     //outputCode.autoPush("# begin")
     if ("formatPtr" in valueType) {
         throwE("Overloads are only supported when the left hand side is the format. Use parenthesis")
     }
     else {
-        var regA = helpers.types.formatRegister('a', valueType)
-        var regB = helpers.types.formatRegister('b', valueType)
-        var regD = helpers.types.formatRegister('d', valueType)
 
-        var suffix = ""
-        if (helpers.variables.variableExists(value)) {
-            suffix = helpers.types.sizeToSuffix(helpers.variables.getVariableType(value))
-        } else {
-            value = helpers.types.formatIfConstant(value)
+        if (helpers.types.isConstant(value) || helpers.types.stringIsRegister(value)) // must be in addr first. movss and cvtsi2ss can only take source from memory or xmm
+        {
+            outputCode.autoPush(`movl ${(helpers.types.formatIfConstant(value))}, __xmm_sse_temp__`)
+            value = "__xmm_sse_temp__"
         }
+
+        useAppropriateLoad(value, "%xmm1", valueType)
 
         switch (operator) {
             case "+":
-                outputCode.autoPush(`add${suffix} ${value}, ${regA}`)
+                outputCode.autoPush(`addss %xmm1, %xmm0`)
                 break;
             case "-":
-                outputCode.autoPush(`sub${suffix} ${value}, ${regA}`)
+                outputCode.autoPush(`subss %xmm1, %xmm0`)
                 break;
             case "*":
-                outputCode.autoPush(
-                    `mov${suffix} ${value}, ${regB}`,
-                    `mul ${regB}`,
-                )
+                outputCode.autoPush(`mulss %xmm1, %xmm0`)
                 break;
             case "/":
-                outputCode.autoPush(
-                    `mov${suffix} ${value}, ${regB}`,
-                    `xor %edx, %edx`,
-                    `div ${regB}`,
-                )
+                outputCode.autoPush(`divss %xmm1, %xmm0`)
                 break;
             case "%":
-                outputCode.autoPush(
-                    `mov${suffix} ${value}, ${regB}`,
-                    `xor %edx, %edx`,
-                    `div ${regB}`,
-                    `mov ${regD}, ${regA}`,
-                )
+                throwE("Mod not done yet")
                 break;
         }
     }
@@ -58,12 +53,11 @@ function _doOp(operator, value, valueType) {
 function _treatLine(arr) {
     var old;
     var regA;
-    do { // while loop is in for chaining operators like: "list + 5 + 4"
-        var leftType = helpers.types.guessType(arr[0])
-        regA = helpers.types.formatRegister('a', leftType)
+    do {
+        var left = arr[0]
+        var leftType = helpers.types.guessType(left)
         old = JSON.stringify(arr)
-        if (regA != "%eax")
-            outputCode.autoPush("xor %eax, %eax")
+
         if ("formatPtr" in leftType) {
             //throwE("TODO operator overloads")
             var first = arr[2]
@@ -83,7 +77,14 @@ function _treatLine(arr) {
         }
     } while (JSON.stringify(arr) != old)
 
-    outputCode.autoPush(`mov ${helpers.types.formatIfConstant(arr[0])}, ${regA}`)
+    var left = arr[0]
+    if (helpers.types.isConstant(left) || helpers.types.stringIsRegister(left)) // must be in addr first. movss and cvtsi2ss can only take source from memory or xmm
+    {
+        outputCode.autoPush(`movl ${helpers.types.formatIfConstant(left)}, __xmm_sse_temp__`)
+        left = "__xmm_sse_temp__"
+    }
+
+    useAppropriateLoad(left, "%xmm0", leftType)
 
     for (var i = 1; i < arr.length; i += 2) {
         var right = arr[i + 1]
@@ -95,12 +96,11 @@ function _treatLine(arr) {
     }
 
     //console.log(helpers.registers.inLineClobbers)
-    var out = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
-    tempClobs.push(out)
-    outputCode.autoPush(`mov %eax, ${out}`)
-    return out
 
-
+    var lbl = helpers.variables.newTempLabel(defines.types.f32)
+    tempClobs.push(lbl)
+    outputCode.autoPush(`movss %xmm0, ${lbl}`)
+    return lbl
 }
 
 module.exports = function (arr) {
