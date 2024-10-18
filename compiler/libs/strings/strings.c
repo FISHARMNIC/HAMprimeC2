@@ -1,27 +1,4 @@
-void *__rc_allocate__(int, int);
-void *__rc_allocate_with_tempowner__(int, int);
-
-int sprintf(char *, const char *, ...);
-int printf(const char *, ...);
-void *memcpy(void *, void *, int);
-extern int ___TEMPORARY_OWNER___;
-extern int *__this__;
-
-typedef char* fn_toString_t(void);
-
-//const char *__PRINT_TYPE_INT__ = "%i\n";
-
-
-#include <stdio.h>
-
-// BSD strlen implementation
-int strlen(char *str)
-{
-    char *s;
-    for (s = str; *s; ++s)
-        ;
-    return (s - str);
-}
+#include "sinc.h"
 
 char *strjoinmany(int numberOfStrings, ...)
 {
@@ -48,7 +25,7 @@ char *strjoinmany(int numberOfStrings, ...)
     for (i = 0; i < numberOfStrings; i++)
     {
         char *wp = stringsbase[i];
-        //printf("adding: %s\n", stringsbase[i]);
+        // printf("adding: %s\n", stringsbase[i]);
         while (*wp != 0)
         {
             *allocatedBuffer = *wp;
@@ -62,6 +39,10 @@ char *strjoinmany(int numberOfStrings, ...)
     asm volatile("popa");
     return allocatedBufferOrigin;
 }
+
+#include "sinc.h"
+
+// #region conversion functions
 
 char *ftos(float num)
 {
@@ -77,8 +58,6 @@ char *ftos(float num)
     asm volatile("popa");
     return o;
 }
-
-void __rc_requestOwnership__(void *, void *);
 
 char *itos(int num)
 {
@@ -109,6 +88,51 @@ char *cptos(const char *str)
     asm volatile("popa");
     return o;
 }
+
+// #endregion
+
+// #region util functions
+
+char *substr(char *src, int start, int end)
+{
+    asm volatile("pusha");
+
+    int len = strlen(src);
+
+    if (end <= start)
+    {
+        if (end == -1)
+        {
+            end = len;
+        }
+        else
+        {
+            printf("[sslice]: %i (end) is less than or equal to %i (start)\n", end, start);
+            exit(0);
+        }
+    }
+
+    char *buffer = __rc_allocate__(end - start + 1, 0);
+
+    int index = start;
+    int writeIndex = 0;
+    while (index < end)
+    {
+        buffer[writeIndex] = src[index];
+        writeIndex++;
+        index++;
+    }
+
+    buffer[writeIndex] = 0;
+
+    asm volatile("popa");
+
+    return buffer;
+}
+
+// #endregion
+
+// #region print functions
 
 void print_arr32(int size, int *arr)
 {
@@ -163,7 +187,7 @@ void print_float_noPromo(float f)
     printf("%f\n", f);
 }
 
-void print_formatArr(fn_toString_t * toStringFn, int size, int **arr)
+void print_formatArr(fn_toString_t *toStringFn, int size, int **arr)
 {
     size /= 4;
 
@@ -188,3 +212,5 @@ void print_formatArr(fn_toString_t * toStringFn, int size, int **arr)
     // }
     // printf("%i]\n", arr[i]);
 }
+
+// #endregion

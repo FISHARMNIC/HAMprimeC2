@@ -171,7 +171,7 @@ var assembly = {
         }
 
         if (helpers.types.stringIsRegister(address)) { // reg
-           // address = address;
+            // address = address;
         }
         else if (helpers.types.isConstant(address)) { // const
 
@@ -184,20 +184,18 @@ var assembly = {
         else {                                          // anything else (ebp/esp offsets)
             // issue, if array, its just modifying the pointer instead of first addr ahhh
 
-           // throwE(addressTypeNoDeref, addressType)
-            if(!addressTypeNoDeref.pointer)
-            {
+            // throwE(addressTypeNoDeref, addressType)
+            if (!addressTypeNoDeref.pointer) {
                 outputCode.autoPush(
                     `lea ${address}, %eax`
                 )
             }
-            else
-            {
+            else {
                 outputCode.autoPush(
                     `mov ${address}, %eax`
                 )
             }
-                            address = "%eax"
+            address = "%eax"
         }
 
 
@@ -206,13 +204,12 @@ var assembly = {
                 helpers.types.throwDynToStaticErr(dataType, addressType)
             }
 
-            if(!(helpers.types.stringIsRegister(data)))
-                {
-                    outputCode.autoPush(
-                        `mov ${helpers.types.formatIfConstOrLit(data)}, %edx`
-                    )
-                    data = "%edx"
-                }
+            if (!(helpers.types.stringIsRegister(data))) {
+                outputCode.autoPush(
+                    `mov ${helpers.types.formatIfConstOrLit(data)}, %edx`
+                )
+                data = "%edx"
+            }
 
             outputCode.autoPush(
                 `# requesting ownership for ${address} (setting address as pointer)`,
@@ -226,22 +223,20 @@ var assembly = {
         else if ("hasData" in addressType) {
             helpers.types.throwStaticToDynErr(dataType, addressType)
         }
-        else 
-        {
+        else {
             // TODO depending on datatype, movb, movw, movl
-            if(helpers.types.stringIsMemoryReference(data))
-            {
+            if (helpers.types.stringIsMemoryReference(data)) {
                 var dreg = helpers.types.formatRegister('d', dataType)
                 outputCode.autoPush(`mov ${helpers.types.formatIfConstOrLit(data)}, ${dreg}`)
                 data = dreg
             }
-            
+
             var suffix = helpers.types.sizeToSuffix(dataType)
 
-                outputCode.autoPush(
-                    `mov${suffix} ${helpers.types.formatIfConstOrLit(data)}, (${address})`
-                )
-            
+            outputCode.autoPush(
+                `mov${suffix} ${helpers.types.formatIfConstOrLit(data)}, (${address})`
+            )
+
         }
 
         outputCode.autoPush("\n")
@@ -373,20 +368,37 @@ var variables = {
             //console.log("\n-----",checkT,valueType,"------\n", ":::::", nextThingTakesOwnership, ":::::")
             if (!((helpers.types.areEqual(checkT, valueType)) && !nextThingTakesOwnership)) {
 
-                if (helpers.types.areEqual(checkT, valueType)) {
-                    throwE(`Assigning a dynamic "${helpers.types.convertTypeObjToName(type)}" to a static.\n\t[FIX] Use "borrow"`)
+                if (helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(type)) // if conststr
+                {
+                    var lbl = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
+                    outputCode.autoPush(
+                        `# converting conststr to string (variable assignation)`,
+                        `pushl ${helpers.types.formatIfConstOrLit(value)}`,
+                        `call cptos`,
+                        `mov %eax, ${lbl}`,
+                        `add $4, %esp`
+                    )
+                    value = lbl
+                    valueType = objCopy(defines.types.string)
                 }
-                throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
-                throwW(type.pointer, valueType.pointer)
-                var bn = helpers.types.typeToBytes(valueType)
-                var bo = helpers.types.typeToBytes(type)
-                if (bn < bo) {
-                    //throwE(valueType, type)
-                    throwW(`-- New type is smaller than original type: ${bn}-byte < ${bo}-byte`)
+                else {
+
+                    if (helpers.types.areEqual(checkT, valueType)) {
+                        throwE(`Assigning a dynamic "${helpers.types.convertTypeObjToName(type)}" to a static.\n\t[FIX] Use "borrow"`)
+                    }
+
+                    throwW(`Retyping variable ${vname} from "${helpers.types.convertTypeObjToName(type)}" to "${helpers.types.convertTypeObjToName(valueType)}"`)
+                    //throwW(type.pointer, valueType.pointer)
+                    var bn = helpers.types.typeToBytes(valueType)
+                    var bo = helpers.types.typeToBytes(type)
+                    if (bn < bo) {
+                        //throwE(valueType, type)
+                        throwW(`-- New type is smaller than original type: ${bn}-byte < ${bo}-byte`)
+                    }
+                    type = valueType
+                    helpers.variables.setVariableType(vname, type)
+                    //throwE(defines.types.u32)
                 }
-                type = valueType
-                helpers.variables.setVariableType(vname, type)
-                //throwE(defines.types.u32)
             }
 
         }

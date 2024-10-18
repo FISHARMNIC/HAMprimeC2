@@ -1,6 +1,13 @@
 /*
 TODO:
 
+    !! CRUCIAL !!
+        - for some reason you cant have fn name like "substring" bc splitter turns into ["sub","string"]
+
+    Add destructors for things like GMP
+        - for compatibility with C
+
+
     How does duplicate work for items with dynamic children?
     Do the thing that brackets can open onto new line
         - will completely break line tracking (maybe?)

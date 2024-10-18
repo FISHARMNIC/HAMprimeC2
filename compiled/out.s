@@ -23,43 +23,60 @@ ___TEMPORARY_OWNER___: .4byte 0
 .global __this__
 .extern __disable_gc__
 ######## user data section ########
-.type	__constructor_Linked_0_, @function
-__ALLOCFOR___constructor_Linked_0___ = 0
-.type	__method_Linked_findLast_, @function
-__ALLOCFOR___method_Linked_findLast___ = 4
-.type	__method_Linked_find_, @function
-__ALLOCFOR___method_Linked_find___ = 8
-.type	__method_Linked_index_, @function
-__ALLOCFOR___method_Linked_index___ = 4
-.type	__method_Linked_add_, @function
-__ALLOCFOR___method_Linked_add___ = 8
-.type	__method_Linked_remove_, @function
-.4byte 7
-__STRING0__: .asciz "Index "
-.4byte 19
-__STRING1__: .asciz " does not exist!\n"
-.4byte 17
-__STRING2__: .asciz " out of range!\n"
-__ALLOCFOR___method_Linked_remove___ = 4
-.type	__method_Linked_replace_, @function
-__ALLOCFOR___method_Linked_replace___ = 4
-.type	__method_Linked_toString_, @function
+.type	__constructor_Bignum_0_, @function
+__ALLOCFOR___constructor_Bignum_0___ = 0
+.type	__constructor_Bignum_1_, @function
+__ALLOCFOR___constructor_Bignum_1___ = 0
+.type	__method_Bignum_destroy_, @function
+__ALLOCFOR___method_Bignum_destroy___ = 0
+.type	__method_Bignum_print_, @function
+.4byte 6
+__STRING0__: .asciz "%Ff\n"
+__ALLOCFOR___method_Bignum_print___ = 0
+.type	__method_Bignum_set_, @function
+__ALLOCFOR___method_Bignum_set___ = 0
+.type	__method_Bignum_set_int_, @function
+__ALLOCFOR___method_Bignum_set_int___ = 0
+.type	__method_Bignum_add_, @function
+__ALLOCFOR___method_Bignum_add___ = 4
+.type	__method_Bignum_sub_, @function
+__ALLOCFOR___method_Bignum_sub___ = 4
+.type	__method_Bignum_mul_, @function
+__ALLOCFOR___method_Bignum_mul___ = 4
+.type	__method_Bignum_div_, @function
+__ALLOCFOR___method_Bignum_div___ = 4
+.type	__method_Bignum_sqrt_, @function
+__ALLOCFOR___method_Bignum_sqrt___ = 4
+.type	__method_Bignum_pow_, @function
+__ALLOCFOR___method_Bignum_pow___ = 4
+.type	__operator_Bignum_add_, @function
+__ALLOCFOR___operator_Bignum_add___ = 0
+.type	__operator_Bignum_sub_, @function
+__ALLOCFOR___operator_Bignum_sub___ = 0
+.type	__operator_Bignum_mul_, @function
+__ALLOCFOR___operator_Bignum_mul___ = 0
+.type	__operator_Bignum_div_, @function
+__ALLOCFOR___operator_Bignum_div___ = 0
+.type	__method_Bignum_toString_, @function
 .4byte 2
-__STRING3__: .asciz "["
-.4byte 3
-__STRING4__: .asciz "->"
+__STRING1__: .asciz "0"
 .4byte 2
-__STRING5__: .asciz "]"
-__ALLOCFOR___method_Linked_toString___ = 8
-__SIZEOF_Linked__ = 8
-# format "Linked" includes:
-#   - PROPERTY (u32) current
-#   - PROPERTY (p0) next
-#   - CNSTRCTR __constructor_Linked_0_ (1 parameters)
+__STRING2__: .asciz "."
+__ALLOCFOR___method_Bignum_toString___ = 16
+__SIZEOF_Bignum__ = 16
+# format "Bignum" includes:
+#   - PROPERTY (u32) mpprec
+#   - PROPERTY (u32) mpsize
+#   - PROPERTY (u32) mpexp
+#   - PROPERTY (p32) mplimb
+#   - CNSTRCTR __constructor_Bignum_0_ (0 parameters)
+#   - CNSTRCTR __constructor_Bignum_1_ (1 parameters)
 .type	entry, @function
-.4byte 46
-__STRING6__: .asciz "There should be an error below this...\n---> "
-__ALLOCFOR_entry__ = 4
+.4byte 16
+__STRING3__: .asciz "386415896392e-9"
+.4byte 4
+__STRING4__: .asciz "123"
+__ALLOCFOR_entry__ = 12
 __TEMP8_0__: .1byte 0
 ###################################
 .text
@@ -80,14 +97,14 @@ main:
     ret
 
 ###################################
-__constructor_Linked_0_:
+__constructor_Bignum_0_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___constructor_Linked_0___, %esp
+sub $__ALLOCFOR___constructor_Bignum_0___, %esp
 
 # Allocate for THIS
 pushl $0
-mov $__SIZEOF_Linked__, %edx
+mov $__SIZEOF_Bignum__, %edx
 push %edx
 call __rc_allocate__
 add $8, %esp
@@ -98,106 +115,160 @@ push %eax
 push __this__
 call __rc_requestOwnership__
 add $8, %esp
-# Reading property "current" in "__this__"
-movl __this__, %eax
-mov 8(%ebp), %edx
-mov %edx, 0(%eax)
-# Reading property "next" in "__this__"
-movl __this__, %eax
-movl $0, 4(%eax)
-movl __this__, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Linked_findLast_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_findLast___, %esp
-
-# Loading local variable "reference" @-4(%ebp)
-movl __this__, %edx
-mov %edx, -4(%ebp)
-__LABEL0__:
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-movb $0, __TEMP8_0__
-cmp $0, %ecx
-setne __TEMP8_0__
-# comparison for WHILE loop
-cmpb $1, __TEMP8_0__
-jne __LABEL1__
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-mov %ecx, -4(%ebp)
-jmp __LABEL0__
-__LABEL1__:
-mov -4(%ebp), %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# reference: 4
-__method_Linked_find_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_find___, %esp
-
-# Loading local variable "reference" @-4(%ebp)
-movl __this__, %edx
-mov %edx, -4(%ebp)
-# Loading local variable "i" @-8(%ebp)
-mov $0, %edx
-mov %edx, -8(%ebp)
-__LABEL2__:
-mov -8(%ebp), %eax
-mov 8(%ebp), %edx
-mov $0, %cl
-cmp %edx, %eax
-setl %cl
-# comparison for WHILE loop
-cmpb $1, %cl
-jne __LABEL3__
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-movb $0, __TEMP8_0__
-cmp $0, %ecx
-sete __TEMP8_0__
-cmpb $1, __TEMP8_0__
-jne __LABEL4__
-mov $0, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-jmp __LABEL5__
-__LABEL4__:
-__LABEL5__:
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-mov %ecx, -4(%ebp)
-mov -8(%ebp), %eax
-add $1, %eax
+# Calling function __gmpf_init
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+call __gmpf_init
 mov %eax, %ecx
-mov %ecx, -8(%ebp)
-jmp __LABEL2__
-__LABEL3__:
+add $4, %esp
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__constructor_Bignum_1_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___constructor_Bignum_1___, %esp
+
+# Allocate for THIS
+pushl $0
+mov $__SIZEOF_Bignum__, %edx
+push %edx
+call __rc_allocate__
+add $8, %esp
+mov %eax, __this__
+# requesting ownership for ___TEMPORARY_OWNER___ (set)
+lea ___TEMPORARY_OWNER___, %eax
+push %eax
+push __this__
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function __gmpf_init_set_str
+pushl $10
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+call __gmpf_init_set_str
+mov %eax, %ecx
+add $12, %esp
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Bignum_destroy_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_destroy___, %esp
+
+# Calling function __gmpf_clear
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+call __gmpf_clear
+mov %eax, %ecx
+add $4, %esp
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Bignum_print_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_print___, %esp
+
+# Calling function __gmp_printf
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+pushl $__STRING0__
+call __gmp_printf
+mov %eax, %ecx
+add $8, %esp
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Bignum_set_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_set___, %esp
+
+# Calling function __gmpf_set
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+call __gmpf_set
+mov %eax, %ecx
+add $8, %esp
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Bignum_set_int_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_set_int___, %esp
+
+# Calling function __gmpf_set_si
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+call __gmpf_set_si
+mov %eax, %ecx
+add $8, %esp
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Bignum_add_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_add___, %esp
+
+pushl __this__
+# Calling function __constructor_Bignum_0_
+call __constructor_Bignum_0_
+mov %eax, %ecx
+popl __this__
+# Loading local variable "output" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for output (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function __gmpf_add
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call __gmpf_add
+mov %eax, %ecx
+add $12, %esp
 mov -4(%ebp), %eax
 call __rc_quick_check__
 
@@ -209,30 +280,233 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# reference: 4
-# i: 8
-__method_Linked_index_:
+# output: 4
+__method_Bignum_sub_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_index___, %esp
+sub $__ALLOCFOR___method_Bignum_sub___, %esp
+
+pushl __this__
+# Calling function __constructor_Bignum_0_
+call __constructor_Bignum_0_
+mov %eax, %ecx
+popl __this__
+# Loading local variable "output" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for output (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function __gmpf_sub
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call __gmpf_sub
+mov %eax, %ecx
+add $12, %esp
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# output: 4
+__method_Bignum_mul_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_mul___, %esp
+
+pushl __this__
+# Calling function __constructor_Bignum_0_
+call __constructor_Bignum_0_
+mov %eax, %ecx
+popl __this__
+# Loading local variable "output" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for output (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function __gmpf_mul
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call __gmpf_mul
+mov %eax, %ecx
+add $12, %esp
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# output: 4
+__method_Bignum_div_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_div___, %esp
+
+pushl __this__
+# Calling function __constructor_Bignum_0_
+call __constructor_Bignum_0_
+mov %eax, %ecx
+popl __this__
+# Loading local variable "output" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for output (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function __gmpf_div
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call __gmpf_div
+mov %eax, %ecx
+add $12, %esp
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# output: 4
+__method_Bignum_sqrt_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_sqrt___, %esp
+
+# copying buffer
+pushl __this__
+call __duplicate__
+add $4, %esp
+
+mov %eax, %ecx
+# Loading local variable "output" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for output (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function __gmpf_sqrt
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call __gmpf_sqrt
+mov %eax, %ecx
+add $4, %esp
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# output: 4
+__method_Bignum_pow_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_pow___, %esp
+
+pushl __this__
+# Calling function __constructor_Bignum_0_
+call __constructor_Bignum_0_
+mov %eax, %ecx
+popl __this__
+# Loading local variable "output" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for output (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function __gmpf_pow_ui
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call __gmpf_pow_ui
+mov %eax, %ecx
+add $12, %esp
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# output: 4
+__operator_Bignum_add_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_Bignum_add___, %esp
 
 pushl __this__
 movl __this__, %edx
 mov %edx, __this__
-# Calling function __method_Linked_find_
+# Calling function __method_Bignum_add_
 # TODO optimize if variable just do movl
 mov 8(%ebp), %edx
 push %edx
-call __method_Linked_find_
+call __method_Bignum_add_
 mov %eax, %ecx
 add $4, %esp
 popl __this__
-# Loading local variable "ref" @-4(%ebp)
-mov %ecx, -4(%ebp)
-# Reading property "current" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %ecx
 mov %ecx, %eax
 call __rc_quick_check__
 
@@ -244,287 +518,202 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# ref: 4
-__method_Linked_add_:
+__operator_Bignum_sub_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_add___, %esp
+sub $__ALLOCFOR___operator_Bignum_sub___, %esp
 
 pushl __this__
 movl __this__, %edx
 mov %edx, __this__
-# Calling function __method_Linked_findLast_
-call __method_Linked_findLast_
-mov %eax, %ecx
-popl __this__
-# Loading local variable "end" @-4(%ebp)
-mov %ecx, -4(%ebp)
-pushl __this__
-# Calling function __constructor_Linked_0_
+# Calling function __method_Bignum_sub_
 # TODO optimize if variable just do movl
 mov 8(%ebp), %edx
 push %edx
-call __constructor_Linked_0_
+call __method_Bignum_sub_
 mov %eax, %ecx
 add $4, %esp
 popl __this__
-# Loading local variable "newAddr" @-8(%ebp)
-mov %ecx, -8(%ebp)
-# requesting ownership for newAddr (create)
-lea -8(%ebp), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov -8(%ebp), %edx
-mov %edx, 4(%eax)
-# requesting ownership for -4(%ebp) (property)
-lea 4(%eax), %eax
-push %eax
-push -8(%ebp)
-call __rc_requestOwnership__
-add $8, %esp
+mov %ecx, %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
-# end: 4
-# newAddr: 8
-__method_Linked_remove_:
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__operator_Bignum_mul_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_remove___, %esp
+sub $__ALLOCFOR___operator_Bignum_mul___, %esp
 
-mov 8(%ebp), %eax
-mov $0, %cl
-cmp $1, %eax
-setl %cl
-cmpb $1, %cl
-jne __LABEL6__
-# Reading property "next" in "__this__"
-movl __this__, %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-# requesting ownership for __this__ (set)
-lea __this__, %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-jmp __LABEL7__
-__LABEL6__:
-mov 8(%ebp), %eax
-sub $1, %eax
-mov %eax, %ecx
 pushl __this__
 movl __this__, %edx
 mov %edx, __this__
-push %ecx
-# Calling function __method_Linked_find_
-push %ecx
-call __method_Linked_find_
-mov %eax, %esi
-add $4, %esp
-pop %ecx
-popl __this__
-# Loading local variable "previous" @-4(%ebp)
-mov %esi, -4(%ebp)
-mov -4(%ebp), %eax
-mov $0, %cl
-cmp $0, %eax
-sete %cl
-cmpb $1, %cl
-jne __LABEL9__
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING1__
-push 8(%ebp)
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING0__
-pushl $3
-call strjoinmany
-add $16, %esp
+# Calling function __method_Bignum_mul_
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+call __method_Bignum_mul_
 mov %eax, %ecx
-popw __disable_gc__
-push %ecx
-call puts
 add $4, %esp
-mov $0, %eax
+popl __this__
+mov %ecx, %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
-jmp __LABEL10__
-__LABEL9__:
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__operator_Bignum_div_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_Bignum_div___, %esp
+
+pushl __this__
+movl __this__, %edx
+mov %edx, __this__
+# Calling function __method_Bignum_div_
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+call __method_Bignum_div_
+mov %eax, %ecx
+add $4, %esp
+popl __this__
+mov %ecx, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Bignum_toString_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Bignum_toString___, %esp
+
+push %ecx
+# Asked for 16 allocations of "u8"
+pushl $0
+pushl $16
+call __rc_allocate__
+add $8, %esp
+pop %ecx
+mov %eax, %ecx
+mov %ecx, %esi
+# Loading local variable "allocated" @-4(%ebp)
+mov %esi, -4(%ebp)
+# requesting ownership for allocated (create)
+lea -4(%ebp), %eax
+push %eax
+push %esi
+call __rc_requestOwnership__
+add $8, %esp
+# Loading local variable "expptr" @-8(%ebp)
+mov $0, %edx
+mov %edx, -8(%ebp)
+lea -8(%ebp), %ecx
+push %ecx
+# Calling function __gmpf_get_str
+# TODO optimize if variable just do movl
+mov __this__, %edx
+push %edx
+pushl $14
+pushl $10
+push %ecx
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call __gmpf_get_str
+mov %eax, %esi
+add $20, %esp
+pop %ecx
+# Calling function substr
+pushl $-1
+# TODO optimize if variable just do movl
+mov -8(%ebp), %edx
+push %edx
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call substr
+mov %eax, %ecx
+add $12, %esp
+# Loading local variable "end" @-12(%ebp)
+mov %ecx, -12(%ebp)
+# requesting ownership for end (create)
+lea -12(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function strlen
+# TODO optimize if variable just do movl
+mov -12(%ebp), %edx
+push %edx
+call strlen
+mov %eax, %ecx
+add $4, %esp
 movb $0, __TEMP8_0__
 cmp $0, %ecx
 sete __TEMP8_0__
 cmpb $1, __TEMP8_0__
-jne __LABEL11__
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING2__
-push 8(%ebp)
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING0__
-pushl $3
-call strjoinmany
-add $16, %esp
-mov %eax, %ecx
-popw __disable_gc__
-push %ecx
-call puts
-add $4, %esp
-jmp __LABEL10__
-__LABEL11__:
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-# Reading property "next" in "%ecx"
-mov 4(%ecx), %edx
-mov %edx, %esi
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov %esi, 4(%eax)
-# requesting ownership for -4(%ebp) (property)
-lea 4(%eax), %eax
-push %eax
-push %esi
-call __rc_requestOwnership__
-add $8, %esp
-jmp __LABEL10__
-__LABEL12__:
-__LABEL10__:
-jmp __LABEL7__
-__LABEL8__:
-__LABEL7__:
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Linked_replace_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_replace___, %esp
-
-pushl __this__
-movl __this__, %edx
-mov %edx, __this__
-# Calling function __method_Linked_find_
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
-call __method_Linked_find_
-mov %eax, %ecx
-add $4, %esp
-popl __this__
-# Loading local variable "reference" @-4(%ebp)
-mov %ecx, -4(%ebp)
-# Reading property "current" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 12(%ebp), %edx
-mov %edx, 0(%eax)
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# reference: 4
-__method_Linked_toString_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_toString___, %esp
-
-# Loading local variable "reference" @-4(%ebp)
-movl __this__, %edx
-mov %edx, -4(%ebp)
-pushl $__STRING3__
+jne __LABEL0__
+# converting conststr to string (variable assignation)
+pushl $__STRING1__
 call cptos
-add $4, %esp
 mov %eax, %ecx
-# Loading local variable "build" @-8(%ebp)
-mov %ecx, -8(%ebp)
-# requesting ownership for build (create)
-lea -8(%ebp), %eax
+add $4, %esp
+# requesting ownership for end (set)
+lea -12(%ebp), %eax
 push %eax
 push %ecx
 call __rc_requestOwnership__
 add $8, %esp
-__LABEL13__:
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-movb $0, __TEMP8_0__
-cmp $0, %ecx
-setne __TEMP8_0__
-# comparison for WHILE loop
-cmpb $1, __TEMP8_0__
-jne __LABEL14__
-# Reading property "current" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %ecx
+jmp __LABEL1__
+__LABEL0__:
+__LABEL1__:
+# Calling function substr
+# TODO optimize if variable just do movl
+mov -8(%ebp), %edx
+push %edx
+pushl $0
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call substr
+mov %eax, %ecx
+add $12, %esp
 pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING4__
+push -12(%ebp)
+pushl $__STRING2__
 push %ecx
-call itos
-add $4, %esp
-push %eax
-push -8(%ebp)
 pushl $3
 call strjoinmany
 add $16, %esp
 mov %eax, %esi
 popw __disable_gc__
-# requesting ownership for build (set)
-lea -8(%ebp), %eax
+# Loading local variable "ssub" @-16(%ebp)
+mov %esi, -16(%ebp)
+# requesting ownership for ssub (create)
+lea -16(%ebp), %eax
 push %eax
 push %esi
 call __rc_requestOwnership__
 add $8, %esp
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 4(%eax), %edx
-mov %edx, %ecx
-mov %ecx, -4(%ebp)
-jmp __LABEL13__
-__LABEL14__:
-# Reading property "current" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %ecx
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING5__
-push %ecx
-call itos
-add $4, %esp
-push %eax
-push -8(%ebp)
-pushl $3
-call strjoinmany
-add $16, %esp
-mov %eax, %esi
-popw __disable_gc__
-# requesting ownership for build (set)
-lea -8(%ebp), %eax
-push %eax
-push %esi
-call __rc_requestOwnership__
-add $8, %esp
-mov -8(%ebp), %eax
+mov -16(%ebp), %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
@@ -535,145 +724,97 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# reference: 4
-# build: 8
+# allocated: 4
+# expptr: 8
+# end: 12
+# ssub: 16
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-# Calling function __constructor_Linked_0_
-pushl $1
-call __constructor_Linked_0_
+# Calling function __constructor_Bignum_1_
+pushl $__STRING3__
+call __constructor_Bignum_1_
 mov %eax, %ecx
 add $4, %esp
-# Loading local variable "myList" @-4(%ebp)
+# Loading local variable "numA" @-4(%ebp)
 mov %ecx, -4(%ebp)
-# requesting ownership for myList (create)
+# requesting ownership for numA (create)
 lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function __constructor_Bignum_1_
+pushl $__STRING4__
+call __constructor_Bignum_1_
+mov %eax, %ecx
+add $4, %esp
+# Loading local variable "numB" @-8(%ebp)
+mov %ecx, -8(%ebp)
+# requesting ownership for numB (create)
+lea -8(%ebp), %eax
 push %eax
 push %ecx
 call __rc_requestOwnership__
 add $8, %esp
 mov -4(%ebp), %edx
 mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $2
-call __method_Linked_add_
+# Calling function __operator_Bignum_div_
+# TODO optimize if variable just do movl
+mov -8(%ebp), %edx
+push %edx
+call __operator_Bignum_div_
 mov %eax, %ecx
 add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $3
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_toString_
-call __method_Linked_toString_
-mov %eax, %ecx
+# Loading local variable "numC" @-12(%ebp)
+mov %ecx, -12(%ebp)
+# requesting ownership for numC (create)
+lea -12(%ebp), %eax
+push %eax
 push %ecx
-call puts
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_remove_
-pushl $0
-call __method_Linked_remove_
-mov %eax, %ecx
-add $4, %esp
-# Loading into __this__ because function modified it 
-movl __this__, %edx
-mov %edx, -4(%ebp)
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $5
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_replace_
-pushl $4
-pushl $2
-call __method_Linked_replace_
-mov %eax, %ecx
+call __rc_requestOwnership__
 add $8, %esp
-mov -4(%ebp), %edx
+mov -12(%ebp), %edx
 mov %edx, __this__
-# Calling function __method_Linked_toString_
-call __method_Linked_toString_
+# Calling function __method_Bignum_toString_
+call __method_Bignum_toString_
 mov %eax, %ecx
 push %ecx
 call puts
 add $4, %esp
 mov -4(%ebp), %edx
 mov %edx, __this__
-# Calling function __method_Linked_remove_
-pushl $1
-call __method_Linked_remove_
-mov %eax, %ecx
-add $4, %esp
-# Loading into __this__ because function modified it 
-movl __this__, %edx
-mov %edx, -4(%ebp)
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $8
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $16
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_add_
-pushl $32
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_remove_
-pushl $4
-call __method_Linked_remove_
-mov %eax, %ecx
-add $4, %esp
-# Loading into __this__ because function modified it 
-movl __this__, %edx
-mov %edx, -4(%ebp)
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Linked_toString_
-call __method_Linked_toString_
+# Calling function __method_Bignum_toString_
+call __method_Bignum_toString_
 mov %eax, %ecx
 push %ecx
 call puts
 add $4, %esp
-# Calling function printf
-pushl $__STRING6__
-call printf
+mov -8(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Bignum_toString_
+call __method_Bignum_toString_
 mov %eax, %ecx
+push %ecx
+call puts
 add $4, %esp
 mov -4(%ebp), %edx
 mov %edx, __this__
-# Calling function __method_Linked_remove_
-pushl $10
-call __method_Linked_remove_
+# Calling function __method_Bignum_destroy_
+call __method_Bignum_destroy_
 mov %eax, %ecx
-add $4, %esp
-# Loading into __this__ because function modified it 
-movl __this__, %edx
-mov %edx, -4(%ebp)
+mov -8(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Bignum_destroy_
+call __method_Bignum_destroy_
+mov %eax, %ecx
+mov -12(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Bignum_destroy_
+call __method_Bignum_destroy_
+mov %eax, %ecx
 mov $0, %eax
 push %eax
 call __rc_free_all__
@@ -688,4 +829,6 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# myList: 4
+# numA: 4
+# numB: 8
+# numC: 12

@@ -216,6 +216,16 @@ global.userFunctions = {           // Object : {function name: {func name, param
         ],
         variadic: false,
         returnType: defines.types.u32
+    },
+    "substr" : {
+        name: "substr",
+        parameters: [
+            {name: "src", type: defines.types.string},
+            {name: "start", type: defines.types.u32},
+            {name: "end", type: defines.types.u32}
+        ],
+        variadic: false,
+        returnType: defines.types.string
     }
 }
 global.specialFunctions = {

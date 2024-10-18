@@ -545,8 +545,21 @@ function evaluate(line) {
             //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
             line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
         } else if (word == "$") {
-            line[wordNum] = actions.variables.readAddress(offsetWord(1))
+            if(offsetWord(1) == "(")
+            {
+                if(offsetWord(3) != ")")
+                {
+                    throwE("\"address of\" operator missing close bracket")
+                }
+                line[wordNum] = actions.variables.readAddress(offsetWord(2))
+                line.splice(wordNum + 1, 3)
+            }
+            else
+            {
+                line[wordNum] = actions.variables.readAddress(offsetWord(1))
             line.splice(wordNum + 1, 1)
+            }
+            
         }
         // #endregion
         // #region Brackets
