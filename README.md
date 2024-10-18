@@ -23,7 +23,7 @@ Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
     - Fixed segfault with GFX lib
 
 # What is working so far?
-All of the things below work. See examples [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
+All of the things below work. Scroll down for examples or click [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 - Variables
 	- Implicit and forced typing
     - Garbage collection

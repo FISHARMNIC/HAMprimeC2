@@ -211,7 +211,7 @@ module.exports = {
         "null", "duplicate", "copy", "print_", "println_", "method","function","format","initializer", "persistent", "transient", "while", "return_new", "return", "if", "elif", "else", "__rule", "__define", "own", "borrow"
     ],
     priorityWords: [
-        "while"
+        "while", "forEach"
     ],
     operators: ["+","-","*","/","<<",">>","|","&","%"],
     symbols: "!@#$%^&*()+{}|:<>?,./;[]\\-= ",

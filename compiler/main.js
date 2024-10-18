@@ -246,7 +246,7 @@ inputCode = inputCode.map((line,lineNo) => {
 
     if(defines.priorityWords.includes(lsplit[0]) && !inComment)
     {
-        prioritizeWord(lsplit[0])
+        prioritizeWord(lsplit[0], lsplit.slice(1))
     }
 
     arrayClamp = defines.types.u32

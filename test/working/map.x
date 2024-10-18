@@ -45,7 +45,7 @@ Map format
         {
             if(reference.next == 0)
             {
-                this.rlast <- reference; // won't take ownership since reference is borrowed
+                this.rlast <- reference; /* won't take ownership since reference is borrowed */
                 return null;
             }
             reference <- borrow reference.next;
