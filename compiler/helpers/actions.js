@@ -250,7 +250,12 @@ var variables = {
         if ("voided" in type) {
             throwE(`Cannot create void variable`)
         }
-        value = String(value)
+        var doNotInit = false
+        if(value == null)
+        {
+            doNotInit = true
+            value = "0"
+        }
 
         __addToAnyVarEverMade(vname)
         if (helpers.types.isLiteral(value)) {
@@ -266,7 +271,7 @@ var variables = {
         if (value == "%eax") {
             value = helpers.registers.getFreeLabelOrRegister(type)
             outputCode.autoPush(`mov %eax, ${value}`)
-        } else if (value == "%ax" || value == "%al" || value == "%aj") {
+        } else if (value == "%ax" || value == "%al" || value == "%ah") {
             throwE("[INTERNAL ERROR] Cannot be taking eax. Add line here to clobber other reg and set")
         }
 
@@ -287,8 +292,8 @@ var variables = {
             //console.log(value,defines.types)
             assembly.optimizeMove(value, off, type, type)
 
-            //throwE(type)
-            if ("hasData" in type) {
+            //console.log("::", doNotInit)
+            if ("hasData" in type && !doNotInit) {
 
                 if (nextThingTakesOwnership) {
                     outputCode.autoPush(
@@ -333,7 +338,7 @@ var variables = {
 
             }
 
-            if ("hasData" in type && nextThingTakesOwnership) {
+            if ("hasData" in type && nextThingTakesOwnership && !doNotInit) {
                 outputCode.autoPush(
                     `# requesting ownership for ${vname} (create)`,
                     `push \$${vname}`,
@@ -548,15 +553,18 @@ var variables = {
             throwE("Compiler error, never set 'baseType' variable")
         }
 
+        var itemType = helpers.types.derefType(baseType)
 
         var indexMultiplier;
-        if ("formatPtr" in baseType) {
+        if ("formatPtr" in itemType) {
             indexMultiplier = 4
         } else if (forceSize === false) {
-            indexMultiplier = helpers.types.typeToBytes(baseType)
+            indexMultiplier = helpers.types.typeToBytes(itemType)
         } else {
             indexMultiplier = forceSize
         }
+
+        //throwE("formatPtr" in itemType)
 
         if (!("elementsHaveData" in baseType)) {
             delete baseType.hasData
@@ -568,7 +576,7 @@ var variables = {
         //console.log(aname, index, baseType)
 
 
-        var out = helpers.registers.getFreeLabelOrRegister(baseType)
+        var out = helpers.registers.getFreeLabelOrRegister(itemType)
 
         //throwE(helpers.types.guessType(out))
 
@@ -584,7 +592,7 @@ var variables = {
         var edxReserved = false
         if (!helpers.types.stringIsRegister(out)) {
             var edxReserved = true
-            out = helpers.types.formatRegister('d', baseType)
+            out = helpers.types.formatRegister('d', itemType)
         }
 
         debugPrint("$$$", index)
@@ -634,8 +642,6 @@ var variables = {
                 //throwE(baseType)
             }
         }
-
-        var itemType = helpers.types.derefType(baseType)
 
         // type = deref
         helpers.registers.extendedTypes[helpers.registers.registerStringToLetterIfIs(out)] = itemType

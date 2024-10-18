@@ -508,11 +508,13 @@ function evaluate(line) {
             } else {
                 vtype = defines.types.u32
             }
+            //console.log(line)
             //throwW("%%%%", vtype)
             if (offsetWord(2) == '<-') {
                 return actions.variables.create(offsetWord(1), vtype, offsetWord(3))
             } else {
-                return actions.variables.create(offsetWord(1), vtype, "0")
+                //console.log("yuh")
+                return actions.variables.create(offsetWord(1), vtype, null)
             }
         } else if (word == "import") {
             //throwE(line, offsetWord(1))

@@ -133,8 +133,8 @@ Snake format
     }
 }
 
-create snake <- Snake:(0);
-create food  <- Food:(0);
+create Snake snake;
+create Food food;
 
 __ccalled__ render function<u32 event> -> u32
 {
