@@ -250,6 +250,7 @@ var variables = {
         if ("voided" in type) {
             throwE(`Cannot create void variable`)
         }
+        value = String(value)
 
         __addToAnyVarEverMade(vname)
         if (helpers.types.isLiteral(value)) {

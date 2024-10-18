@@ -101,9 +101,9 @@ mov %edx, -4(%ebp)
 # Loading local variable "sum_end" @-8(%ebp)
 mov $10, %edx
 mov %edx, -8(%ebp)
-mov $0, %ecx
 # Loading local variable "sum" @-12(%ebp)
-mov %ecx, -12(%ebp)
+mov $0, %edx
+mov %edx, -12(%ebp)
 __LABEL2__:
 mov -4(%ebp), %eax
 mov -8(%ebp), %edx
