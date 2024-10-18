@@ -4,7 +4,7 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Li
 
 Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
 
-## Big Update Log
+## Recent Update Log
 - Added writing into memory address specified by pointer (still WIP, many cases don't work)
 - Operator overloads addded!
     - Currently only support the four main math functions (+-/*) and array set and get
@@ -18,7 +18,7 @@ Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
         - convert floats and integers to strings
     - Multiple strings can now be added together using "+"
         - Any numbers will be automatically converted to strings like: ("bob " + 123) becomes "bob 123"
-        - Any formats will automatically has their method "toString" called
+        - Any formats will automatically have their method "toString" called
     - Big IDE update! (See below)
     - Fixed segfault with GFX lib
 
@@ -31,13 +31,14 @@ All of the things below work. Scroll down for examples or click [here](https://g
 	- Stack and global scope
 	- Pointers and addressing
 	- External variables
-	- Arrays and strings
+	- Arrays, strings, formats, floats, etc.
     - Casting
 - Formats
 	- Nested formats
 	- Creating instances
 	- Property reading and setting
-    - Methods and Constructors
+    - Methods
+    - Constructors
     - Operator overloading
 - Functions
 	- Variadic functions
@@ -49,8 +50,10 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Comparison: ==, !=, <:, :>, <=, >=, ||, &&
 	- While loops
 - I/O
-	- Uses C printf and scanf
-	- WIP easy `print_` function
+	- C printf and scanf
+	- Easy `print_` function
+        - Automatically prints arrays, formats, floats, ints, strings
+        - *Currently doesn't work for format arrays*
 - Debugger
 	- Traces back to faulty line in source file
 	- Works best on IDE (see below)
@@ -62,11 +65,11 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Automatic conversion from formats and numbers
     - Easy comparison using normal comparison signs
 - Math
-    - GMP for bignums
-    - Built in floats
+    - Floats and ints 
+    - Support for GMP (look at `bignums` in `test/working`)
 
-Currently working on / not implemented yet:
-- operator overloading with different types of input
+Currently working on / roadmap:
+- operator overloading with different types of parameters
 - private properties
 - easier built-in array features (push,pop,forEach,etc.)
 - Lamdba functions
@@ -81,10 +84,10 @@ Currently working on / not implemented yet:
 * Parenthesis math 
 * Seamless C inclusion
 * Automatic memory management
-* And much, much more!
+* And much more!
 
 # Features a new IDE
-The updated IDE now shows you what each line compiles into assembly. Simply click on the line and the window on the right will jump to its portion of code. After compiling, you can click the bug icon to check if there are any segmentation issues, and the IDE will display both the problematic line and assembly instruction. The smart highlighting system will not working until after you have compiled a program, which can be done with either the checkmark button (just compile), or the arrow (compile and run).
+The updated IDE now shows you what each line compiles into assembly. Simply click on the line and the window on the right will jump to its portion of code. After compiling, you can click the bug icon to check if there are any segmentation issues, and the IDE will display both the problematic line and assembly instruction. The highlighting system will not work until after you have compiled a program, which can be done with either the checkmark button (just compile), or the arrow (compile and run).
 
 <p align="center">
 <img width="500" alt="ide_1" src="https://github.com/user-attachments/assets/ad9c5a09-92ae-46dd-967e-efdbef06e778">
