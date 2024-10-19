@@ -2,8 +2,6 @@
 # About Ham
 HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Linux. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
-Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
-
 ## Recent Update Log
 - Added `forEach` (See `feach.x`. Basic support, more coming soon) 
 - Added writing into memory address specified by pointer (still WIP, many cases don't work)
@@ -23,6 +21,8 @@ Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)
 
 # What is working so far?
 All of the things below work. Scroll down for examples or click [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
+**Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)**
+
 - Variables
 	- Implicit and forced typing
     - Garbage collection
