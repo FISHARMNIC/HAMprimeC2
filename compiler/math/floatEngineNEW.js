@@ -3,6 +3,8 @@ todo. Only push non clobbered. use eax, esi, and edi since they are least likely
 (eax will never be clobbered)
 */
 
+// more instructions: https://www.songho.ca/misc/sse/sse.html
+
 var tempClobs = []
 
 function useAppropriateLoad(value, dest, type) {
@@ -43,7 +45,7 @@ function _doOp(operator, value, valueType) {
                 outputCode.autoPush(`divss %xmm1, %xmm0`)
                 break;
             case "%":
-                throwE("Mod not done yet")
+                throwE("Modulo not working yet for float math")
                 break;
         }
     }

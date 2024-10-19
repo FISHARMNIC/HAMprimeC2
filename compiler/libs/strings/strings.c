@@ -130,6 +130,19 @@ char *substr(char *src, int start, int end)
     return buffer;
 }
 
+char* strapp(char** src, char letter)
+{
+    asm volatile("pusha");
+
+    int len = strlen(*src);
+    char* dest = __rc_allocate__(len + 2, 0);
+    memcpy(dest, *src, len);
+    *(short*)(*src + len) = ((short) letter) << 1 | 0;
+    __rc_requestOwnership__(dest, src);
+
+    return *src;
+    asm volatile("popa");
+}
 // #endregion
 
 // #region print functions

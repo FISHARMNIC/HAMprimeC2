@@ -1,6 +1,6 @@
 Person format {    
-    age <- u8;
-    name <- p8;
+    .age u8;
+    .name p8;
 }
 
 mf function<u32 a, u32 b, u32 c> -> u32
