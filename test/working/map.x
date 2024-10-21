@@ -16,19 +16,22 @@ MapEntry format
 
 Map format 
 {   
-    .head MapEntry;
+    privates;
 
+    .head MapEntry;
     .rlast MapEntry;
-    
-    .Map constructor<>
-    {
-        this.head <- 0;
-    }
 
     .kneErr method<string k> -> u32
     {
         print_("Error:: key<" + k + "> does not exist. Exiting program.");
         quit(0);
+    }
+
+    publics;
+    
+    .Map constructor<>
+    {
+        this.head <- 0;
     }
     
     .find method<string k> -> MapEntry:borrowed
