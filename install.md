@@ -48,3 +48,4 @@
 * Compiling and running can be done with `ham file`
 * Binary and assembly will be in `./compiled/out.s`
 * *No support for graphics/gmp libraries yet*
+* *You can still use method-1 for compiling and running if you installed using method-2* 
