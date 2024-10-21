@@ -1499,6 +1499,7 @@ var formats = {
         //throwE(helpers.general.getMostRecentFunction().data.parameters)
 
         // should NOT be a normal type!!! TODO HERE SEP 11
+        var baseTypeName = helpers.types.convertTypeObjToName(baseType)
         while (baseType.formatPtr.properties[i].name != propertyName) {
             //console.log(baseType.formatPtr.properties[i], i)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
@@ -1509,6 +1510,10 @@ var formats = {
             i++
         }
         var propertyType = baseType.formatPtr.properties[i].type
+        if(!baseType.formatPtr.properties[i].isPublic && !helpers.general.scopeHasFormat())
+        {
+            throwE(`"${propertyName}" is a private property in ${baseTypeName}`)
+        }
         //throwE(propertyType, offset)
 
         var out = helpers.registers.getFreeLabelOrRegister(propertyType)
@@ -1537,7 +1542,8 @@ var formats = {
                 parameters: params_obj.params,
                 variadic: params_obj.didVari,
                 totalAlloc: 0,
-                saveRegs: false
+                saveRegs: false,
+                isPublic: inPublicMode
             }
 
             //throwE(_scope)
@@ -1565,7 +1571,8 @@ var formats = {
                 variadic: params_obj.didVari,
                 returnType: ret,
                 totalAlloc: 0,
-                saveRegs: false
+                saveRegs: false,
+                isPublic: inPublicMode
             }
 
             //throwE("not done", _data)
@@ -1600,7 +1607,8 @@ var formats = {
             variadic: params_obj.didVari,
             returnType: ret,
             totalAlloc: 0,
-            saveRegs: false
+            saveRegs: false,
+            isPublic: inPublicMode
         }
 
         _scope.operators[fname] = _data
@@ -1724,6 +1732,11 @@ var formats = {
                 //throwE(parentType == userFormats[parentType.formatPtr.name])
                 throwE(`Method "${method}" does not exist in format "${parentType.formatPtr.name}"`)
             }
+            if(!parentType.formatPtr.methods[formattedName].isPublic && !helpers.general.scopeHasFormat())
+            {
+                throwE(`Method "${method}" is private in format "${parentType.formatPtr.name}"`)
+            }
+
             actions.assembly.optimizeMove(parent, "__this__", parentType, parentType)
         }
 

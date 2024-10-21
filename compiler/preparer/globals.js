@@ -240,7 +240,7 @@ global.nextAllocIsTransient = false
 global.nextAllocIsPersistent = false
 global.defaultAutomaticOwnership = true
 global.nextThingTakesOwnership = defaultAutomaticOwnership
-
+global.inPublicMode = true
 global.autoIncludes = []
 global.outputCode = { // object with out data
     data: [],

@@ -635,6 +635,9 @@ var general = {
     scopeHasIterable: function () {
         return scope.some(x => x.type == keywordTypes.WHILE || x.type == keywordTypes.FOREACH)
     },
+    scopeHasFormat: function () {
+        return scope.some(x => x.type == keywordTypes.FORMAT)
+    },
     setModifiesThis: function () {
         var fn = this.getMostRecentFunction()
         var fnName = fn.data.name

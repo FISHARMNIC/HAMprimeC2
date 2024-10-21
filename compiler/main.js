@@ -69,7 +69,7 @@ TODO:
     - !! IMPORTANT !!
         - if setting ownership, dont need to also copy value since ownership does that. See asm for "create arr <- {1,2,3}"";
 
-    - add polymorphism
+    - add class inheritance
     - add __cstruct__(var) converts format to actual value for passing struct to C function
     - make an assembly simulator that is able to trace why segfaults happen and give a reason, like dereferencing null pointer
         - Written in C.

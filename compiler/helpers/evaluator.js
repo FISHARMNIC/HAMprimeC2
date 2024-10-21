@@ -320,7 +320,8 @@ function evaluate(line) {
 
                     scope[scope.length - 1].data.properties.push({
                         name: offsetWord(1),
-                        type
+                        type,
+                        isPublic: inPublicMode
                     })
 
                     var nobj = objCopy(defines.types.___format_template_dynamic___)
@@ -691,6 +692,7 @@ function evaluate(line) {
                     data: d
                 }
                 userFormats[kname] = d
+                inPublicMode = true;
 
 
                 var nobj = objCopy(defines.types.___format_template_dynamic___)
@@ -1012,7 +1014,13 @@ function evaluate(line) {
             } else if (word == "__define") {
                 macros[offsetWord(1)] = offsetWord(2)
                 wordNum += 2
-            }
+            } 
+            else if (word == "publics") {
+                inPublicMode = true;
+            } 
+            else if (word == "privates") {
+                inPublicMode = false;
+            } 
         }
         // #endregion
         // #region Functions
