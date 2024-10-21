@@ -39,6 +39,7 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Methods
     - Constructors
     - Operator overloading
+    - Privates and publics
 - Functions
 	- Variadic functions
 	- Forward declarations
@@ -69,7 +70,6 @@ All of the things below work. Scroll down for examples or click [here](https://g
 
 Currently working on / roadmap:
 - operator overloading with different types of parameters
-- private properties
 - easier built-in array features (push,pop,forEach,etc.)
 - Lamdba functions
 - inline assembly
