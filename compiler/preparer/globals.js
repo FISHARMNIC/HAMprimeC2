@@ -233,6 +233,7 @@ global.specialFunctions = {
         throwE("todo")
     }
 }
+global.includeFileOff = 0
 global.lineOwners = {}
 global.userFormats = {}
 global.stackVariables = [{}]
@@ -497,7 +498,8 @@ function drawColLine(l, isError = false) {
 }
 
 global.throwE = function (x) {
-    var lineE = getTrueLine(inputCodeLikeTrue, globalLine)
+    var lineE = getTrueLine(inputCodeLikeTrue, globalLine) - includeFileOff - 1
+    //console.log(lineE, includeFileOff, lineE - includeFileOff)
     if(returnHighlight)
     {
         console.log(JSON.stringify(
@@ -520,14 +522,13 @@ global.throwE = function (x) {
     console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
     console.log("\033[96m" + INPUTFILE + ":" + (lineE + 1) + "\033[0m")
 
-
     }
 
     process.exit(126)
     //console.log(lineE)
 }
 global.throwW = function (x) {
-    var lineE = getTrueLine(inputCodeLikeTrue, globalLine) + 1
+    var lineE = getTrueLine(inputCodeLikeTrue, globalLine) + 1 - includeFileOff
     console.log("\033[93m[WARNING]\033[0m on \033[96m[line " + lineE + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
     //console.log(inputCodeLikeTrue[lineE], inputCodeLikeTrue[lineE].trim())
     console.log("\033[96m--->\033[0m", removeTabs(globalLineConts).trim(), "\n")
