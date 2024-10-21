@@ -1510,7 +1510,7 @@ var formats = {
             i++
         }
         var propertyType = baseType.formatPtr.properties[i].type
-        if(!baseType.formatPtr.properties[i].isPublic && !helpers.general.scopeHasFormat())
+        if(helpers.formats.cannotUsePrivate(baseType.formatPtr.properties[i]))
         {
             throwE(`"${propertyName}" is a private property in ${baseTypeName}`)
         }
@@ -1663,6 +1663,11 @@ var formats = {
             bestFit = variadicConstructor
         }
 
+        if(helpers.formats.cannotUsePrivate(userFormats[className].constructors[bestFit]))
+        {
+            throwE(`The corresponding constructor for "${className}" is private`)
+        }
+
         //globalVariables.__this__ = defines.types[className]
 
         var lst = helpers.general.getMostRecentFunction().type
@@ -1732,7 +1737,7 @@ var formats = {
                 //throwE(parentType == userFormats[parentType.formatPtr.name])
                 throwE(`Method "${method}" does not exist in format "${parentType.formatPtr.name}"`)
             }
-            if(!parentType.formatPtr.methods[formattedName].isPublic && !helpers.general.scopeHasFormat())
+            if(helpers.formats.cannotUsePrivate(parentType.formatPtr.methods[formattedName]))
             {
                 throwE(`Method "${method}" is private in format "${parentType.formatPtr.name}"`)
             }
@@ -1771,6 +1776,11 @@ var formats = {
         //throwE(parentType.formatPtr.operators)
         if (!objectIncludes(parentType.formatPtr.operators, formattedName)) {
             throwE(`Operator "${operator}" does not exist in format "${parentType.formatPtr.name}"`)
+        }
+
+        if(helpers.formats.cannotUsePrivate(parentType.formatPtr.operators[formattedName]))
+        {
+            throwE(`The "${operator}" operator overload for ${helpers.types.convertTypeObjToName(parentType)} is private`)
         }
 
         var sr_this = false

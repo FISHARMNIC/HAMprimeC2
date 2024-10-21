@@ -503,6 +503,10 @@ var registers = {
 }
 
 var formats = {
+    cannotUsePrivate: function(item)
+    {
+        return(!item.isPublic && !general.scopeHasFormat())
+    },
     propertyOffset: function (fname, pname) {
         var offset = 0
         userFormats[fname].properties.findIndex(e => {
