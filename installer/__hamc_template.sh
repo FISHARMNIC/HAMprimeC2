@@ -7,7 +7,7 @@ fi
 
 if [[ $# -eq 0 ]]; then
     echo "No arguments provided"
-    echo "Usage: ham file"
+    echo "Usage: hamc file"
     exit 1
 fi
 
