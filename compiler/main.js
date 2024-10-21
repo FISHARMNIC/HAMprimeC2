@@ -220,13 +220,22 @@ global.preprocess = require("./preprocessor/pre.js")
 
 global.mainDir = __dirname
 global.returnHighlight = false
+global.noPrintIfNotNec = false
+
 // load input file and split into lines
-if(process.argv[2] == "__FLAG_HIGHLIGHT__")
-{
+if (process.argv[2] == "__FLAG_HIGHLIGHT__") {
     returnHighlight = true
-    process.argv.splice(2,1)
+    process.argv.splice(2, 1)
 }
-global.INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
+
+if (process.argv[2] == "__ROOTADDR__" || process.argv[2] == "__RANOPRINT__" ) {
+    noPrintIfNotNec = process.argv[2] == "__RANOPRINT__"
+    process.argv.splice(2, 1)
+    global.INPUTFILE = process.argv[2]
+}
+else {
+    global.INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
+}
 
 global.inputCode = String(fs.readFileSync(INPUTFILE))
 global.inputCodeLikeTrue = inputCode.split("\n")
@@ -236,33 +245,30 @@ preprocess(inputCode)
 //console.log(inputCode)
 //console.log(helpers.registers)
 
-global.previewNextLine = function()
-{
+global.previewNextLine = function () {
     return inputCode[globalLine + 1]
 }
 
 process.on('uncaughtException', function (err) {
-    if(returnHighlight) 
+    if (returnHighlight)
         throwE('[Node Error]:\n\t', err.toString())
 
-    throw(err)
+    throw (err)
 });
 
 
-inputCode = inputCode.map((line,lineNo) => {
+inputCode = inputCode.map((line, lineNo) => {
     // parse it into words
     globalLine = lineNo
     globalLineConts = line
 
     var lsplit = parser.split(line);
     var io = lsplit.indexOf("//")
-    if(io != -1)
-    {
-        lsplit = lsplit.slice(0,lsplit.indexOf("//"))
+    if (io != -1) {
+        lsplit = lsplit.slice(0, lsplit.indexOf("//"))
     }
 
-    if(defines.priorityWords.includes(lsplit[0]) && !inComment)
-    {
+    if (defines.priorityWords.includes(lsplit[0]) && !inComment) {
         prioritizeWord(lsplit[0], lsplit.slice(1))
     }
 
@@ -284,8 +290,7 @@ inputCode = inputCode.map((line,lineNo) => {
 helpers.variables.genTempLabels();
 
 autoIncludes.push(mainDir + "/libs/gcollect.s")
-if (programRules.hasUsedMmap)
-{
+if (programRules.hasUsedMmap) {
     autoIncludes.push(mainDir + "/libs/alloc.s")
 }
 
@@ -294,31 +299,30 @@ var out = parser.parseFinalCode()
 lineOwners["offset"] = out.index; // text section offset (must add to each key)
 lineOwners["file"] = INPUTFILE;
 
-if(!MODE_DEBUG)
-{
+if (!MODE_DEBUG && !noPrintIfNotNec) {
     console.log("\n----- Note: debug mode is off -----\n")
 }
 
 fs.writeFileSync(__dirname + "/../compiled/out.s", out.out)
 fs.writeFileSync(__dirname + "/../compiled/debugInfo.json", JSON.stringify(lineOwners))
 
-if(returnHighlight)
-{
+if (returnHighlight) {
     var rinfo = {
         functions: Object.keys(userFunctions),
         keywords: ["borrowed", ...defines.keywords, "index_get", "index_set", "add", "sub", "mul", "div", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments", "locked"],
         types: Object.keys(defines.types),
         ppdirs: ["include", "sys"],
-        allVars: [...__anyVarEverMade,"this"]
+        allVars: [...__anyVarEverMade, "this"]
     }
     fs.writeFileSync(__dirname + "/../compiled/highlightInfo.json", JSON.stringify(rinfo))
 }
 
-console.log("\033[93m======== Program Compiled Successfully ======\033[0m")
-console.log("|| Output in  : \033[96m" + __dirname + "/../compiled/out.s" + "\033[0m")
-console.log("|| Debug info : \033[96m" + __dirname + "/../compiled/debugInfo.json" + "\033[0m")
-console.log("\033[93m=============================================\033[0m")
-
+if (!noPrintIfNotNec) {
+    console.log("\033[93m======== Program Compiled Successfully ======\033[0m")
+    console.log("|| Output in  : \033[96m" + __dirname + "/../compiled/out.s" + "\033[0m")
+    console.log("|| Debug info : \033[96m" + __dirname + "/../compiled/debugInfo.json" + "\033[0m")
+    console.log("\033[93m=============================================\033[0m")
+}
 // the compiler goes LEFT TO RIGHT NOW
 
 // actions.variables.create("bob",defines.types.u32,123);
