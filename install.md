@@ -44,7 +44,7 @@
 * run `./install.sh` (runs BUILD.sh, moves compiler to path, and lets you use any file)
 
 ## Compiling and Running
-* Compiling can be done with `hamc <out> -o <out> -l <link>`
+* Compiling can be done with `ham <out> -o <out> -l <link>`
     * Example 1: `ham file.x -o a`
     * Example 2: `ham file2.x -o bob -l gmp` (links with gmp. Can do pthread, x11, etc)
 * The binary can then be run normally (via Lima if on Mac)
