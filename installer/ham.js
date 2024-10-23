@@ -3,6 +3,10 @@
 const { execSync } = require('child_process');
 const  os = require('os');
 
+var compatibilityLayers = {
+    "X11" : `${__dirname}/../../compiler/libs/gfx/bin/gfx.o`
+}
+
 var assemblerArgs = {
     outFile: `${__dirname}/../../compiled/out`,
     inFile: "",
@@ -38,7 +42,14 @@ function parseCLA() {
         process.exit(1)
     }
 
-    assemblerArgs.linkExternals = (options.link || assemblerArgs.linkExternals).map(x => "-l" + x)
+    var usesX11 = false
+
+    assemblerArgs.linkExternals = (options.link || assemblerArgs.linkExternals).map(x => {
+        if(compatibilityLayers[x] != undefined)
+            assemblerArgs.linkLocals.push(compatibilityLayers[x])
+        return("-l" + x)
+    })
+
     assemblerArgs.outFile = options.ofile || assemblerArgs.outFile
     assemblerArgs.inFiles  = options.ifiles
 }
@@ -64,7 +75,9 @@ function assemble() {
     
     var asmPrefix = os.type() == "Darwin" ? "limactl shell debian" : ""
     try{
-        var out = String(execSync(`${asmPrefix} gcc ${__dirname}/../../compiled/out.s ${assemblerArgs.linkLocals.join(" ")} -o ${assemblerArgs.outFile} -g -no-pie -m32 -fno-asynchronous-unwind-tables ${assemblerArgs.linkExternals.join(" ")}`)).trim()
+        var str = `${asmPrefix} gcc ${__dirname}/../../compiled/out.s ${assemblerArgs.linkLocals.join(" ")} -o ${assemblerArgs.outFile} -g -no-pie -m32 -fno-asynchronous-unwind-tables ${assemblerArgs.linkExternals.join(" ")}`
+        //console.log("COMPILING\n\n", str, "\n\n")
+        var out = String(execSync(str)).trim()
         if(out.length != 0)
             console.log(out)
     }

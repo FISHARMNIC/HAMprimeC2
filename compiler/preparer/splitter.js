@@ -176,10 +176,7 @@ __init__:
 ret
 ###################################
 
-main:
-    call __init__
-    call entry
-    ret
+${hasEntryFunction? "main:\ncall __init__\ncall entry\nret" : "# No main function"}
 
 ###################################
 `

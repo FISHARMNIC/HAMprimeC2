@@ -1121,6 +1121,7 @@ var functions = {
         }
 
         if (scope.data?.name == "entry") {
+            hasEntryFunction = true
             if (!asRet) // just fn exit, not explicit return
             {
                 outputCode.text.push(

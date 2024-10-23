@@ -1,5 +1,11 @@
 /*
 TODO:
+    WORKING ON BEING ABLE TO COMPILE AND LINK MULTIPLE HAM FILES
+        - issues:
+            __init__ needs to be reworked to be able to have different names
+                * maybe pass file number as argument, which then does __init1__, etc.
+                * then in the one with main, call all inits
+            needs to generate multiple asm files and then call gcc on all of them
 
     IMPORTANT   
         Splitter for some reason just removes single quote when doing like "'s"
@@ -25,6 +31,9 @@ TODO:
     WHY NOT JUST HAVE ALL ALLOCATIONS SAVED IN TEMPOWNER????
         - removes need for return_new
 
+
+    add js template strings like `hello ${myName}`. Must be able to support nesting
+        - uses backtick which doesnt evaluate string until later
 
     TEMPOWNER REWORK:::::
         - WAIT IS THIS NEEDEDDDDD??????? YESSSSS
@@ -214,7 +223,7 @@ global.helpers = require('./helpers/helpers.js')
 global.evaluator = require('./helpers/evaluator.js')
 global.mathEngine = require("./math/mathEngine.js");
 global.stringAdder = require("./math/stringAdder.js");
-global.floatEngine = require("./math/floatEngineNEW.js");
+global.floatEngine = require("./math/floatEngine.js");
 global.prioritizeWord = require("./helpers/priority.js")
 global.preprocess = require("./preprocessor/pre.js")
 
@@ -237,7 +246,14 @@ else {
     global.INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
 }
 
+try{
 global.inputCode = String(fs.readFileSync(INPUTFILE))
+}
+catch(e)
+{
+    console.log(`Unable to open file "${INPUTFILE}"`)
+    process.exit(1)
+}
 global.inputCodeLikeTrue = inputCode.split("\n")
 inputCode = quickSplit(inputCode)
 

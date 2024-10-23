@@ -269,7 +269,7 @@ global.outputCode = { // object with out data
 global.typeStack = [] // depricated
 global.mostRecentIfStatement = []
 global.arrayClamp = defines.types.u32
-global.globalLine;
+global.globalLine = 0;
 global.inComment = false;
 global.programRules = {
     DynamicArraysAllocateSize: true,
@@ -578,6 +578,7 @@ global.objectCompare = function (a, b) {
 
 console.logArr = (x) => { console.dir(x, { depth: null, colors: true, maxArrayLength: null }) }
 
+global.hasEntryFunction = false
 //global.setStackVariable = function(vname)
 // {
 //     for(var i = stackVariables.length; i >= 0; i--)

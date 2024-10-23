@@ -2,7 +2,7 @@
 * **Must be installed before continuing**
 * NodeJS
 * If on MacOS
-    * LimaVM
+    * LimaVM (must install `debian`)
     * XQuartz (only if you are planning to use the graphics library)
 * gcc multilib (`sudo apt-get install gcc-multilib`)
 * gmp (needed if using bignums) (`sudo apt-get install libgmp3-dev`)
