@@ -105,8 +105,10 @@ Note: This is still being worked on, and editing still has some issues. This was
 * [Graphics](#Graphics)
 * [Floats](#Floats)
 
+(excuse the poor highlighting)
+
 ### Formats as classes
-```C
+```Dart
 /*
 Example linked list format. In my opinion, this is a good demo on how simple HAM can be
 * Notice how seamless things like adding a new element, or removing one
@@ -243,7 +245,7 @@ entry function<> -> u32
 ```
 
 ### Class Example 2
-```C
+```Dart
 /*
 Example for something simialar to Java ArrayList/C++ vector class
 */
@@ -359,7 +361,7 @@ entry function<> -> u32
 ```
 
 ### Operator Overloads
-```C
+```Dart
 MapEntry format
 {
     .key string;
@@ -512,7 +514,7 @@ entry function<> -> u32
 ```
 
 ### Strings
-```C
+```Dart
 User format
 {
     .name string;
@@ -544,7 +546,7 @@ entry function<> -> u32
 ```
 
 ### Variadics
-```C
+```Dart
 myVariadic function<u32 numberOfArgs, ...> -> u32
 {
     create i <- 1;
@@ -563,7 +565,7 @@ entry function<> -> u32
 ```
 
 **Formats**
-```C
+```Dart
 Person format
 {
     .age u32;
@@ -584,7 +586,7 @@ entry function<> -> u32
 ```
 
 ### C inclusion
-```C
+```Dart
 // make sure to assemble with -lpthread
 forward pthread_create function<u32 a, u32 b, u32 c, u32 d>;
 forward pthread_exit function<u32 a>;
@@ -622,7 +624,7 @@ entry function<> -> u32
 ```
 
 ### Graphics
-```C
+```Dart
 /* Assemble with scripts/lima_x11.sh */
 
 #include sys x11;
@@ -648,7 +650,7 @@ entry function<> -> u32
 
 ### Floats
 
-```C
+```Dart
 factorial function<u32 n> -> u32
 {
     if(n >= 1)
