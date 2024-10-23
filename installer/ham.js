@@ -2,6 +2,7 @@
 
 const { execSync } = require('child_process');
 const  os = require('os');
+const CLA = require('command-line-args')
 
 var compatibilityLayers = {
     "X11" : `${__dirname}/../../compiler/libs/gfx/bin/gfx.o`
@@ -27,15 +28,25 @@ console.log("└──────SUCCESSFUL──────·")
 
 function parseCLA() {
     var defs = [
-        { name: 'ofile', alias: 'o', type: String },
-        { name: 'link',  alias: 'l', type: String, multiple: true },
-        { name: 'ifiles', alias: 'i', type: String, multiple: true, defaultOption: true},
+        { name: 'ofile', alias: 'o', type: String, description: "Output file directory"},
+        { name: 'link',  alias: 'l', type: String, multiple: true, description: "Link with system libs (gmp, m, X11, etc)"},
+        { name: 'ifiles', alias: 'i', type: String, multiple: true, defaultOption: true, description: "Input files"},
+        { name: 'help', alias: 'h', type: String, description: "Print this menu"}
         // { name: 'asm', alias: 's', type: Boolean, defaultValue: false}
     ]
     
-    var CLA = require('command-line-args')
     var options = CLA(defs)
 
+    if("help" in options)
+    {
+        var maxLen = Math.max(...defs.map(x => x.name.length))
+        var pad2 = Math.max(...defs.map(x => `<${typeof(x.type())}${x.multiple? ", ..." : ""}>`.length))
+        
+        defs.forEach(def => {
+            console.log("-" + def.name.padEnd(maxLen) + ` --${def.alias} : ` + `<${typeof(def.type())}${def.multiple? ", ..." : ""}>`.padEnd(pad2) + ` : ${def.description}`)
+        })
+        process.exit(0)
+    }
     if(!("ifiles" in options))
     {
         console.log("Error: no input file")
