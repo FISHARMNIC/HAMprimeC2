@@ -245,7 +245,7 @@ entry function<> -> u32
 ### Class Example 2
 ```C
 /*
-Example for something simialar to Java ArrayList/ C++ vector, class
+Example for something simialar to Java ArrayList/C++ vector class
 */
 
 List format {
@@ -350,7 +350,7 @@ entry function<> -> u32
     /* constructor overloading */
     create secondList <- List(3, 1, 2, 3);
 
-    /* operator overloading, see .operator(add) */
+    /* operator overloading, see ".List operator(add)" */
     create thirdList <- (secondList + 4 + 5);
     print_(thirdList);
     
