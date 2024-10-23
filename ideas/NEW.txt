@@ -9,6 +9,9 @@ Current issue is that arrays can't properly handle ownership like "{{1,2,3},4}"
 Arrays are clueless about types of multi-dimensional arrays
     * Like in "{{{1,2,3}}}", what is the type of [0][0][0]?
 
+    * MAIN IDEA
+        * Might just have to do strictly typed arrays (only if their being nested)
+
     * CURRENT SOLUTION IN PLACE
         * Arrays do not accept mulitple types (throws err)
         * Arrays assume the type of the first element
