@@ -41,10 +41,11 @@ function parseCLA() {
     {
         var maxLen = Math.max(...defs.map(x => x.name.length))
         var pad2 = Math.max(...defs.map(x => `<${typeof(x.type())}${x.multiple? ", ..." : ""}>`.length))
-        
+
         defs.forEach(def => {
-            console.log("-" + def.name.padEnd(maxLen) + ` --${def.alias} : ` + `<${typeof(def.type())}${def.multiple? ", ..." : ""}>`.padEnd(pad2) + ` : ${def.description}`)
+            console.log("--" + def.name.padEnd(maxLen) + ` -${def.alias} : ` + `<${typeof(def.type())}${def.multiple? ", ..." : ""}>`.padEnd(pad2) + ` : ${def.description}`)
         })
+        console.log("Examples\n", "\tham arrays.x -o out -l gmp\n", "\tham map.x")
         process.exit(0)
     }
     if(!("ifiles" in options))

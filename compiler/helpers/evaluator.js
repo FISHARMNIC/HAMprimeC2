@@ -712,7 +712,7 @@ function evaluate(line) {
                 var dataType = helpers.types.guessType(data)
 
                 //throwE(dataType)
-                if ("elementsHaveData" in dataType) {
+                if (helpers.types.checkIfElementsHaveData(dataType)) {
                     throwE("Printing format arrays are still WIP")
 
                     // IMPORTANT need to save and restore "this" before and after

@@ -1,0 +1,33 @@
+Plans on upgrading ownership
+Current issue is that arrays can't properly handle ownership like "{{1,2,3},4}"
+    * Array[0] is a dynamic, where array[1] is static
+    * print_ is now also clueless about any of the elements in the array
+    * Solution is new flag (default off) that enables mixed type arrays. Flag does the following:
+        * on setting ANY MEMORY ADDRESS OR VARIABLE it needs to be able to 
+
+
+Arrays are clueless about types of multi-dimensional arrays
+    * Like in "{{{1,2,3}}}", what is the type of [0][0][0]?
+
+    * CURRENT SOLUTION IN PLACE
+        * Arrays do not accept mulitple types (throws err)
+        * Arrays assume the type of the first element
+        * The element type is stored in the "arrayElements" property
+        * "elementsHaveData" is still being used, but i'm trying to get rid of it
+        * Issues:
+            * Passing arrays to functions, that no longer knows that the array has dynamics
+            * Don't have type for nested arrays
+                * Maybe change how `type:array` works, sets arrayElements instead of the whole "elementsHaveData" mess
+
+    * Solution (#1) is to have arrays have sub-types
+        * All elements in an array have to be the same type now
+        * Type information includes those sub-properties
+        * Cons: pain in the butt for passing arrays to functions
+    * Solution (#2) finally actually implement type passing for data
+        * If the type has a flag called STORES_TYPE
+            * Then it stores 2 values, (effectivley now a 64bit arr)
+            * Each entry is now the typeID (32bit) followed by the value (32bit)
+        * BIG ISSUE: typeID can't be updated dynamically
+            * I mean it can, but it would make it super slow
+    * Soltion (#3) Roster entry also stores type info
+        * Uses typeID, on allocation it stores typeID in roster entry

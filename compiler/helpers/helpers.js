@@ -84,6 +84,13 @@ var types = {
     derefType: function (type) {
         //console.log("deref", type)
         var c = objCopy(type)
+
+        if("arrayElements" in type)
+        {
+            c = type.arrayElements
+            //throwW("deref array experimental", c)
+            return c
+        }
         //if(!("advptr" in type)) // IF BROKEN UNCOMMENT HERE OCT 18 2024
             c.pointer = false
         if("hasData" in type)
@@ -161,6 +168,18 @@ var types = {
             return formats.getFormatSize(type.formatPtr.properties)
         } else {
             return this.typeToBytes(type)
+        }
+    },
+    checkIfElementsHaveData: function(type)
+    {
+        if("arrayElements" in type)
+        {
+            return("hasData" in (type.arrayElements))
+        }
+        else
+        {
+            //throwW("[INTERNAL] elementsHaveData is being deprecated")
+            return("elementsHaveData" in type)
         }
     },
     sizeToSuffix: function (x) {

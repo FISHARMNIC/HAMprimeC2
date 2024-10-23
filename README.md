@@ -69,6 +69,7 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Support for GMP (look at `bignums` in `test/working`)
 
 Currently working on / roadmap:
+- Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon
 - operator overloading with different types of parameters
 - easier built-in array features (push,pop,forEach,etc.)
 - Lamdba functions

@@ -12,6 +12,7 @@ TODO:
     IMPORTANT   
         Splitter for some reason just removes single quote when doing like "'s"
 
+
     FOREACH notes:
         note, "load first element into eax", shouldn't always be eax, depends on element type
         note, item is declared outside of the forEach stack

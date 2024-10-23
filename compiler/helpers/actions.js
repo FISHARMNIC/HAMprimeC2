@@ -251,8 +251,7 @@ var variables = {
             throwE(`Cannot create void variable`)
         }
         var doNotInit = false
-        if(value == null)
-        {
+        if (value == null) {
             doNotInit = true
             value = "0"
         }
@@ -569,12 +568,15 @@ var variables = {
 
         //throwE("formatPtr" in itemType)
 
-        if (!("elementsHaveData" in baseType)) {
-            delete baseType.hasData
-        } else {
-            delete baseType.elementsHaveData // HERE if broken September Sep 26 2024 delete
-            //throwE("yay, this should have been thrown if the array type has data itself. you can delete this line")
-        }
+        // TODO SHOULDNT THIS BE REMOVED???? - idk just leave it
+        // if (!(helpers.types.checkIfElementsHaveData(baseType))) {
+        //     throwE("rbus")
+        //     delete baseType.hasData
+        // } else {
+        //     throwE("bru", baseType)
+        //     delete baseType.elementsHaveData // HERE if broken September Sep 26 2024 delete
+        //     //throwE("yay, this should have been thrown if the array type has data itself. you can delete this line")
+        // }
 
         //console.log(aname, index, baseType)
 
@@ -703,8 +705,9 @@ var variables = {
             //throwE(arrType.formatPtr.operators)
         }
 
-        if (("hasData" in valueType || "elementsHaveData" in arrType) && nextThingTakesOwnership) {
-            if (!("elementsHaveData" in arrType)) {
+        if (("hasData" in valueType || helpers.types.checkIfElementsHaveData(arrType)) && nextThingTakesOwnership) {
+            if (!helpers.types.checkIfElementsHaveData(arrType)) {
+                throwE(arrType)
                 throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(arrType)}"`)
             } else if (!("hasData" in valueType)) {
                 if (helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr
@@ -789,7 +792,7 @@ var variables = {
         }
 
         // console.log(helpers.types.guessType(type.address))
-        if (("hasData" in valueType || "elementsHaveData" in arrType) && nextThingTakesOwnership) {
+        if (("hasData" in valueType || helpers.types.checkIfElementsHaveData(arrType)) && nextThingTakesOwnership) {
 
             if (finalSettingAddr == null) {
                 throwE(`Undecipherable index "${index}". Is it defined?`)
@@ -986,29 +989,65 @@ var allocations = {
         var onComma = false
         var index = 0
 
+        var allElementTypes = []
         arr.forEach((x) => {
             if (onComma) {
                 if (x != ",") {
                     throwE(`Expected comma in array allocation: [${arr.join(",")}]`)
                 }
             } else {
+                var elementType = helpers.types.guessType(x)
+                allElementTypes.push(elementType)
+
+                //console.log(x, " :: ", helpers.types.convertTypeObjToName(elementType))
                 //debugPrint("reregwegereerwrege", elementSize, index)
                 if (x == ",") {
                     throwE(`Did not expect comma in array allocation: [${arr.join(",")}]`)
                 }
-                if (globalAlloc) {
-                    assembly.optimizeMove(x, `${index * elementSize}(${allocLbl})`, helpers.types.guessType(x), arrayClamp)
-                } else {
 
-                    assembly.optimizeMove(x, `-${ebpOff - (index * elementSize)}(%ebp)`, helpers.types.guessType(x), arrayClamp)
+                var dest;
+
+                if (globalAlloc) {
+                    dest = `${index * elementSize}(${allocLbl})`
+                } else {
+                    dest = `-${ebpOff - (index * elementSize)}(%ebp)`
+                }
+
+                if ("hasData" in elementType && nextThingTakesOwnership) {
+                    outputCode.autoPush(
+                        `# requesting ownership (setting array index on init)`,
+                        `lea ${dest}, %edx`,
+                        `push %edx`,
+                        `pushl ${x}`,
+                        `call __rc_requestOwnership__`,
+                        `add $8, %esp`)
+                }
+                else {
+                    assembly.optimizeMove(x, dest, elementType, arrayClamp)
                 }
                 index++
             }
             onComma = !onComma
         })
 
+        var allSame = true
+        //console.log(allElementTypes.map(x => "#### " + helpers.types.convertTypeObjToName(x)))
+        allElementTypes.forEach((x,i) => {
+            var next = allElementTypes[i+1]
+            if(next == undefined || !allSame)
+                return
+            if(!(helpers.types.areEqual(x,next)))
+            {
+
+                throwW(`Multiple types in an array is undefined behavior (for now).\nExpected "${helpers.types.convertTypeObjToName(x)}" but got "${helpers.types.convertTypeObjToName(next)}" when creating {${arr.join("")}}`)
+                allSame = false
+            }
+        })
+
+
         var ref = objCopy(arrayClamp)
         ref.pointer = true;
+        ref.arrayElements = allElementTypes[0]
 
         var out = helpers.registers.getFreeLabelOrRegister(ref)
         if (globalAlloc) {
@@ -1025,6 +1064,8 @@ var allocations = {
             //     `mov %eax, ${out}`
             // )
         }
+
+        //console.log(ref)
         return { out, len: arr.length, arrayType: ref }
     }
     // deallocStack: function () {
@@ -1511,8 +1552,7 @@ var formats = {
             i++
         }
         var propertyType = baseType.formatPtr.properties[i].type
-        if(helpers.formats.cannotUsePrivate(baseType.formatPtr.properties[i]))
-        {
+        if (helpers.formats.cannotUsePrivate(baseType.formatPtr.properties[i])) {
             throwE(`"${propertyName}" is a private property in ${baseTypeName}`)
         }
         //throwE(propertyType, offset)
@@ -1664,8 +1704,7 @@ var formats = {
             bestFit = variadicConstructor
         }
 
-        if(helpers.formats.cannotUsePrivate(userFormats[className].constructors[bestFit]))
-        {
+        if (helpers.formats.cannotUsePrivate(userFormats[className].constructors[bestFit])) {
             throwE(`The corresponding constructor for "${className}" is private`)
         }
 
@@ -1738,8 +1777,7 @@ var formats = {
                 //throwE(parentType == userFormats[parentType.formatPtr.name])
                 throwE(`Method "${method}" does not exist in format "${parentType.formatPtr.name}"`)
             }
-            if(helpers.formats.cannotUsePrivate(parentType.formatPtr.methods[formattedName]))
-            {
+            if (helpers.formats.cannotUsePrivate(parentType.formatPtr.methods[formattedName])) {
                 throwE(`Method "${method}" is private in format "${parentType.formatPtr.name}"`)
             }
 
@@ -1779,8 +1817,7 @@ var formats = {
             throwE(`Operator "${operator}" does not exist in format "${parentType.formatPtr.name}"`)
         }
 
-        if(helpers.formats.cannotUsePrivate(parentType.formatPtr.operators[formattedName]))
-        {
+        if (helpers.formats.cannotUsePrivate(parentType.formatPtr.operators[formattedName])) {
             throwE(`The "${operator}" operator overload for ${helpers.types.convertTypeObjToName(parentType)} is private`)
         }
 
