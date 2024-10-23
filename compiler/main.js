@@ -7,6 +7,8 @@ TODO:
                 * then in the one with main, call all inits
             needs to generate multiple asm files and then call gcc on all of them
 
+    add test case thing that just runs all in working automatically and checks for correct output
+
     IMPORTANT   
         Splitter for some reason just removes single quote when doing like "'s"
 

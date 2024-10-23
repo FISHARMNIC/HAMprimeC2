@@ -1,3 +1,7 @@
+/*
+Deprecated, removing soon
+*/
+
 .text
 
 .globl __allocate_wsize__

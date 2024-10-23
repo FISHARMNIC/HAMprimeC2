@@ -627,7 +627,7 @@ function evaluate(line) {
                 }
                 outputCode.autoPush(      
                     `jmp ${oldScope.data.name}`,
-                    `${oldScope.data.exit}: # LLLLLLL` // exit loop
+                    `${oldScope.data.exit}:` // exit loop
                 )
             } else if (oldScope.type == keywordTypes.IF) {
                 outputCode.text.push(

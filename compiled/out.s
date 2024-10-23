@@ -1,4 +1,10 @@
 
+/*
+********HAM PRIME**********
+Compiled with love on Tue Oct 22 2024 23:45:41 GMT-0600 (Mountain Daylight Time)
+**************************
+*/
+
 .section .note.GNU-stack,"",@progbits
 .macro .1byte v
 .byte \v
@@ -140,7 +146,7 @@ add $1, %eax
 mov %eax, %ecx
 mov %ecx, -4(%ebp)
 jmp __LABEL2__
-__LABEL3__: # LLLLLLL
+__LABEL3__:
 push -12(%ebp)
 call print_float_noPromo
 add $4, %esp

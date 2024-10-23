@@ -137,6 +137,12 @@ function parseFinalCode() {
     //console.log(outputCode)
     var out =
         `
+/*
+********HAM PRIME**********
+Compiled with love on ${String(new Date())}
+**************************
+*/
+
 .section .note.GNU-stack,"",@progbits
 .macro .1byte v
 .byte \\v
