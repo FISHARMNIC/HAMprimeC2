@@ -54,7 +54,11 @@ var assembly = {
     },
     pushToStack: function (value, type) {
         debugPrint(value, helpers.types.conformRegisterIfIs(value, defines.types.u32))
-        if (helpers.types.isConstant(value) || objectIncludes(globalVariables, value)) {
+        if(type == undefined)
+        {
+            throwE("Unknown type of", value)
+        }
+        if (helpers.types.isConstant(value) || (objectIncludes(globalVariables, value) && type.pointer)) {
             outputCode.autoPush(`pushl \$${value}`)
         } else if (helpers.types.stringIsRegister(value) || helpers.types.stringIsEbpOffset(value)) {
             outputCode.autoPush(`push ${helpers.types.conformRegisterIfIs(value, defines.types.u32)}`)
@@ -1868,11 +1872,11 @@ var strings = {
                     //console.log(letterNum + index)
                     index++
                 }
-                while (letterNum + index < str.length && (
+                while (letterNum + index <= str.length && (
                     splitted.filter(x => x == "}").length != splitted.filter(x => x == "{").length
                 ))
 
-                if (letterNum + index >= str.length) {
+                if (letterNum + index > str.length) {
                     throwE("Unclosed bracket in template literal")
                 }
 

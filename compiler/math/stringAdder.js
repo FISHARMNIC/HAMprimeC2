@@ -23,14 +23,14 @@ module.exports = function (arr) {
                     {
                         throwE("Adding chars not done yet")
                     }
-                    actions.assembly.pushToStack(current)
+                    actions.assembly.pushToStack(current, ctype)
                     outputCode.autoPush(
                         `call itos`,
                         `add $4, %esp`
                     )
                     current = "%eax"
                 } else { // float 
-                    actions.assembly.pushToStack(current)
+                    actions.assembly.pushToStack(current, ctype)
                     outputCode.autoPush(
                         `call ftos`,
                         `add $4, %esp`

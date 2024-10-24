@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Thu Oct 24 2024 11:47:27 GMT-0600 (Mountain Daylight Time)
+Compiled with love on Thu Oct 24 2024 13:14:20 GMT-0600 (Mountain Daylight Time)
 **************************
 */
 
@@ -52,10 +52,13 @@ __STRING5__: .asciz " and "
 __STRING6__: .asciz "! I am "
 .4byte 11
 __STRING7__: .asciz " years old"
+.4byte 24
+__STRING8__: .asciz "! And in I year I will "
 .4byte 27
-__STRING8__: .asciz "Hey! My name is also Nico!"
+__STRING9__: .asciz "Hey! My name is also Nico!"
 __ALLOCFOR_entry__ = 12
 __TEMP8_0__: .1byte 0
+__TEMP32_0__: .4byte 0
 ###################################
 .text
 
@@ -182,13 +185,19 @@ popw __disable_gc__
 push %ecx
 call puts
 add $4, %esp
+movss -12(%ebp), %xmm0
+movl $1, __xmm_sse_temp__
+cvtsi2ss __xmm_sse_temp__, %xmm1
+addss %xmm1, %xmm0
+movss %xmm0, __TEMP32_0__
 pushw __disable_gc__; movw $1, __disable_gc__
 pushl $__STRING7__
-push -12(%ebp)
+movl __TEMP32_0__, %edx
+push %edx
 call ftos
 add $4, %esp
 push %eax
-pushl $__STRING6__
+pushl $__STRING8__
 push -8(%ebp)
 pushl $__STRING5__
 mov -4(%ebp), %edx
@@ -221,7 +230,7 @@ cmp $0, %eax
 setz __TEMP8_0__
 cmpb $1, __TEMP8_0__
 jne __LABEL0__
-pushl $__STRING8__
+pushl $__STRING9__
 call puts
 add $4, %esp
 jmp __LABEL1__
