@@ -3,6 +3,7 @@
 HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Linux. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
+- Added string interpolation! See strings example below for `stringInterpolation.x`
 - Added `forEach` (See `feach.x`. Basic support, more coming soon) 
 - Added writing into memory address specified by pointer (still WIP, many cases don't work)
 - Operator overloads addded!
@@ -536,6 +537,9 @@ entry function<> -> u32
     create age <- 123.456;
 
     print_("Hello " + me + " and " + awesomePerson + "! I am " + age + " years old");
+    
+    /* HAM also supports string interpolation */
+    print_(`Hello ${me} and ${awesomePerson}! I am ${age} years old`);
 
     if(me.name == "Nico")
     {

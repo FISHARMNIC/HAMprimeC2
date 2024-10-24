@@ -3,6 +3,7 @@ module.exports = function (arr) {
     var numStrs = 0;
     var reps = scanPos - 2;
 
+    //console.log("ADDING", arr,)
     arr.reverse()
     //outputCode.autoPush(`pusha`)
     outputCode.autoPush("pushw __disable_gc__; movw $1, __disable_gc__")

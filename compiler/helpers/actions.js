@@ -1032,12 +1032,11 @@ var allocations = {
 
         var allSame = true
         //console.log(allElementTypes.map(x => "#### " + helpers.types.convertTypeObjToName(x)))
-        allElementTypes.forEach((x,i) => {
-            var next = allElementTypes[i+1]
-            if(next == undefined || !allSame)
+        allElementTypes.forEach((x, i) => {
+            var next = allElementTypes[i + 1]
+            if (next == undefined || !allSame)
                 return
-            if(!(helpers.types.areEqual(x,next)))
-            {
+            if (!(helpers.types.areEqual(x, next))) {
 
                 throwW(`Multiple types in an array is undefined behavior (for now).\nExpected "${helpers.types.convertTypeObjToName(x)}" but got "${helpers.types.convertTypeObjToName(next)}" when creating {${arr.join("")}}`)
                 allSame = false
@@ -1845,10 +1844,91 @@ var formats = {
     }
 }
 
+var strings = {
+    createTemplateString: function (str) {
+        var finalArr = []
+        var stringBuild = ""
+        var override = false
+        for (var letterNum = 0; letterNum < str.length; letterNum++) {
+            var letter = str[letterNum]
+            if (letter == "\\") {
+                var override = true
+            }
+            else if (!override && letter == "$") {
+                if (str[letterNum + 1] != "{") {
+                    throwE("Expected open bracket in template literal")
+                }
+
+                var innerStartString = str.slice(letterNum + 1)
+
+                var index = 1;
+                var splitted;
+                do {
+                    splitted = parser.split(innerStartString.slice(0, index))
+                    //console.log(letterNum + index)
+                    index++
+                }
+                while (letterNum + index < str.length && (
+                    splitted.filter(x => x == "}").length != splitted.filter(x => x == "{").length
+                ))
+
+                if (letterNum + index >= str.length) {
+                    throwE("Unclosed bracket in template literal")
+                }
+
+                var splittedLen = index
+                splitted = splitted.slice(1, splitted.length - 1)
+
+                finalArr.push(stringBuild)
+                finalArr.push(evaluator(splitted))
+                stringBuild = ""
+
+                letterNum += splittedLen - 1
+
+            }
+            else {
+                stringBuild += letter
+                override = false
+            }
+        }
+        finalArr.push(stringBuild)
+        finalArr = finalArr.map(x => {
+            if (typeof (x) == "string") {
+                //console.log("EVALING", `"${x}"`)
+                var evaled = evaluator([`"${x}"`])
+                if (evaled.length != 1) {
+                    throwE(`[INTERNAL] ${evaled} should only be of length 1 (template strings, inner eval)`)
+                }
+                else {
+                    return evaled[0]
+                }
+            }
+            else {
+                if (x.length != 1) {
+                    throwE(`[INTERNAL] ${x} should only be of length 1 (template strings)`)
+                }
+                else {
+                    return x[0]
+                }
+            }
+        })
+        
+        finalArr = finalArr.map(x => x = [x, "+"]).flat()
+        finalArr = finalArr.slice(0,finalArr.length - 1)
+
+        var evaluatedOut = stringAdder(finalArr)
+
+        //throwE("template str WIP", finalArr, evaluatedOut)
+
+        return evaluatedOut
+    }
+}
+
 module.exports = {
     assembly,
     variables,
     allocations,
     functions,
     formats,
+    strings,
 }

@@ -1,5 +1,7 @@
 /*
 TODO:
+    MOVE createTemplateString TO SPLITTER INSTEAD
+
     WORKING ON BEING ABLE TO COMPILE AND LINK MULTIPLE HAM FILES
         - issues:
             __init__ needs to be reworked to be able to have different names
@@ -9,9 +11,13 @@ TODO:
 
     add test case thing that just runs all in working automatically and checks for correct output
 
+    make new parser to allow for open brackets across lines
+        - only cares about semi colon, not newline
+
     IMPORTANT   
         Splitter for some reason just removes single quote when doing like "'s"
 
+    add forward decs for formats, their properties, methods, cons, operators
 
     FOREACH notes:
         note, "load first element into eax", shouldn't always be eax, depends on element type

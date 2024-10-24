@@ -18,6 +18,9 @@ entry function<> -> u32
     create age <- 123.456;
 
     print_("Hello " + me + " and " + awesomePerson + "! I am " + age + " years old");
+    
+    /* HAM also supports string interpolation */
+    print_(`Hello ${me} and ${awesomePerson}! I am ${age} years old`);
 
     if(me.name == "Nico")
     {

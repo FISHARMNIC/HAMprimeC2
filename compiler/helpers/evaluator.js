@@ -537,8 +537,11 @@ function evaluate(line) {
             }
         } else if (word[0] == '"' && word[word.length - 1] == '"') { // string literal
             line[wordNum] = actions.allocations.newStringLiteral(word.substring(1, word.length - 1))
+            //throwE("u", line[wordNum])
         } else if (word[0] = "'" && word[word.length - 1] == "'") {
             line[wordNum] = String(word.charCodeAt(1));
+        } else if (word[0] == "`" && word[word.length - 1] == "`") {
+            line[wordNum] = actions.strings.createTemplateString(word.slice(1, word.length - 1))
         } else if (objectIncludes(getAllStackVariables(), word) && offsetWord(1) != ":") // get stack var
         {
             line[wordNum] = actions.assembly.getStackVarAsEbp(word)

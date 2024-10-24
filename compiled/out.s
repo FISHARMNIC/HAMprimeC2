@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Wed Oct 23 2024 16:52:03 GMT-0600 (Mountain Daylight Time)
+Compiled with love on Thu Oct 24 2024 11:47:27 GMT-0600 (Mountain Daylight Time)
 **************************
 */
 
@@ -29,11 +29,33 @@ ___TEMPORARY_OWNER___: .4byte 0
 .global __this__
 .extern __disable_gc__
 ######## user data section ########
-.type	modify, @function
-__ALLOCFOR_modify__ = 0
+.type	__method_User_toString_, @function
+.4byte 7
+__STRING0__: .asciz " (age "
+.4byte 2
+__STRING1__: .asciz ")"
+__ALLOCFOR___method_User_toString___ = 4
+__SIZEOF_User__ = 8
+# format "User" includes:
+#   - PROPERTY (p8) name
+#   - PROPERTY (u32) age
 .type	entry, @function
-__ALLOCFOR_entry__ = 16
-__TEMP32_0__: .4byte 0
+.4byte 5
+__STRING2__: .asciz "Nico"
+.4byte 5
+__STRING3__: .asciz "Nina"
+.4byte 7
+__STRING4__: .asciz "Hello "
+.4byte 6
+__STRING5__: .asciz " and "
+.4byte 8
+__STRING6__: .asciz "! I am "
+.4byte 11
+__STRING7__: .asciz " years old"
+.4byte 27
+__STRING8__: .asciz "Hey! My name is also Nico!"
+__ALLOCFOR_entry__ = 12
+__TEMP8_0__: .1byte 0
 ###################################
 .text
 
@@ -53,199 +75,172 @@ call entry
 ret
 
 ###################################
-modify:
+__method_User_toString_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_modify__, %esp
+sub $__ALLOCFOR___method_User_toString___, %esp
 
-#indexing array
-mov 8(%ebp), %eax
-mov 12(%ebp), %edx
-mov %edx, %edx
-mov (%eax, %edx, 4), %ecx
-#Array set begin
-mov 20(%ebp), %edx
-# array load trash awful. Fix this bad optimize
-push %ecx
-mov 16(%ebp), %eax
-shl $2, %eax
-add (%esp), %eax
+# Reading property "name" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+# Reading property "age" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %esi
+pushw __disable_gc__; movw $1, __disable_gc__
+pushl $__STRING1__
+push %esi
+call itos
 add $4, %esp
-mov %edx, (%eax)
-#Set end
+push %eax
+pushl $__STRING0__
+push %ecx
+pushl $4
+call strjoinmany
+add $20, %esp
+mov %eax, %edi
+popw __disable_gc__
+# Loading local variable "out" @-4(%ebp)
+mov %edi, -4(%ebp)
+# requesting ownership for out (create)
+lea -4(%ebp), %eax
+push %eax
+push %edi
+call __rc_requestOwnership__
+add $8, %esp
+mov -4(%ebp), %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# out: 4
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-# Allocation for array
+# 
 pushl $0
-pushl $12
+pushl $8
 call __rc_allocate__
 add $8, %esp
-movl $1, 0(%eax)
-movl $2, 4(%eax)
-movl $3, 8(%eax)
-mov %eax, %ecx
-push %ecx
-# Allocation for array
-pushl $0
-pushl $12
-call __rc_allocate__
-add $8, %esp
-pop %ecx
-movl $4, 0(%eax)
-movl $5, 4(%eax)
-movl $6, 8(%eax)
-mov %eax, %esi
-push %esi
-push %ecx
-# Allocation for array
-pushl $0
-pushl $12
-call __rc_allocate__
-add $8, %esp
-pop %ecx
-pop %esi
-movl $7, 0(%eax)
-movl $8, 4(%eax)
-movl $9, 8(%eax)
-mov %eax, %edi
-push %esi
-push %ecx
-push %edi
-# Allocation for array
-pushl $0
-pushl $12
-call __rc_allocate__
-add $8, %esp
-pop %edi
-pop %ecx
-pop %esi
-# requesting ownership (setting array index on init)
-lea 0(%eax), %edx
-push %edx
-pushl %ecx
-call __rc_requestOwnership__
-add $8, %esp
-# requesting ownership (setting array index on init)
-lea 4(%eax), %edx
-push %edx
-pushl %esi
-call __rc_requestOwnership__
-add $8, %esp
-# requesting ownership (setting array index on init)
-lea 8(%eax), %edx
-push %edx
-pushl %edi
-call __rc_requestOwnership__
-add $8, %esp
-mov %eax, __TEMP32_0__
-# Loading local variable "arr" @-4(%ebp)
-movl __TEMP32_0__, %edx
-mov %edx, -4(%ebp)
-# requesting ownership for arr (create)
+mov %eax, %ecx # Local allocation address for User
+mov $__STRING2__, %edx
+mov %edx, 0(%eax)
+movl $18, 4(%eax)
+# Loading local variable "me" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for me (create)
 lea -4(%ebp), %eax
 push %eax
-push __TEMP32_0__
+push %ecx
 call __rc_requestOwnership__
 add $8, %esp
-# Allocation for array
-pushl $0
-pushl $12
-call __rc_allocate__
-add $8, %esp
-movl $3, 0(%eax)
-movl $2, 4(%eax)
-movl $1, 8(%eax)
+pushl $__STRING3__
+call cptos
+add $4, %esp
 mov %eax, %ecx
-#Array set begin
-mov -4(%ebp), %eax
-mov %ecx, 8(%eax)
-# requesting ownership for array index
-lea 8(%eax), %eax
+# Loading local variable "awesomePerson" @-8(%ebp)
+mov %ecx, -8(%ebp)
+# requesting ownership for awesomePerson (create)
+lea -8(%ebp), %eax
 push %eax
 push %ecx
 call __rc_requestOwnership__
 add $8, %esp
-#Set end
-#indexing array
-mov -4(%ebp), %eax
-mov 0(%eax), %ecx
-#Array set begin
-movl $7, 8(%ecx)
-#Set end
-#indexing array
-mov -4(%ebp), %eax
-mov 4(%eax), %ecx
-#Array set begin
-movl $7, 4(%ecx)
-#Set end
-# Calling function modify
-pushl $7
-pushl $1
-pushl $2
-# TODO optimize if variable just do movl
+mov $1123477881, %ecx
+# Loading local variable "age" @-12(%ebp)
+mov %ecx, -12(%ebp)
+pushw __disable_gc__; movw $1, __disable_gc__
+pushl $__STRING7__
+push -12(%ebp)
+call ftos
+add $4, %esp
+push %eax
+pushl $__STRING6__
+push -8(%ebp)
+pushl $__STRING5__
 mov -4(%ebp), %edx
-push %edx
-call modify
+mov %edx, __this__
+# Calling function __method_User_toString_
+call __method_User_toString_
 mov %eax, %ecx
-add $16, %esp
-# Loading local variable "__LABEL2__" @-8(%ebp)
-mov $0, %edx
-mov %edx, -8(%ebp)
-# Loading local variable "__LABEL3__" @-12(%ebp)
-mov $0, %edx
-mov %edx, -12(%ebp)
-# forEach loop
-mov -4(%ebp), %eax # load arr
-mov -4(%eax), %edx # get entry reference
-mov 8(%edx),  %edx # get size
-shr $2, %edx # divide by 4 (bytes to u32 or u16)
-mov %edx, -12(%ebp) # size to arr len holder
-mov (%eax), %eax # load first element into A
-mov %eax, %ecx
-# Loading local variable "sub" @-16(%ebp)
-mov %ecx, -16(%ebp)
-# requesting ownership for sub (create)
-lea -16(%ebp), %eax
 push %eax
+pushl $__STRING4__
+pushl $7
+call strjoinmany
+add $32, %esp
+mov %eax, %ecx
+popw __disable_gc__
 push %ecx
-call __rc_requestOwnership__
+call puts
+add $4, %esp
+pushw __disable_gc__; movw $1, __disable_gc__
+pushl $__STRING7__
+push -12(%ebp)
+call ftos
+add $4, %esp
+push %eax
+pushl $__STRING6__
+push -8(%ebp)
+pushl $__STRING5__
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_User_toString_
+call __method_User_toString_
+mov %eax, %ecx
+push %eax
+pushl $__STRING4__
+pushl $7
+call strjoinmany
+add $32, %esp
+mov %eax, %ecx
+popw __disable_gc__
+push %ecx
+call puts
+add $4, %esp
+# Reading property "name" in "-4(%ebp)"
+movl -4(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+push %ecx
+push %ecx
+pushl $__STRING2__
+call strcmp
 add $8, %esp
+pop %ecx
+movb $0, __TEMP8_0__
+cmp $0, %eax
+setz __TEMP8_0__
+cmpb $1, __TEMP8_0__
+jne __LABEL0__
+pushl $__STRING8__
+call puts
+add $4, %esp
+jmp __LABEL1__
 __LABEL0__:
-# comparison for forEach loop
-mov -8(%ebp), %eax 
-cmp -12(%ebp), %eax
-jge __LABEL1__ # exit if finished
-#indexing array
-mov -4(%ebp), %eax
-mov -8(%ebp), %edx
-mov %edx, %edx
-mov (%eax, %edx, 4), %esi
-mov %esi, -16(%ebp)
-# printing array
-mov -16(%ebp), %eax
-push %eax     # load buffer
-mov -4(%eax), %edx
-pushl 8(%edx) # load size
-call print_arr32
-add $8, %esp
-incw -8(%ebp)
-jmp __LABEL0__
 __LABEL1__:
+mov $0, %eax
+push %eax
+call __rc_free_all__
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
 call __rc_free_all__
 mov  $0, %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
-# arr: 4
-# __LABEL2__: 8
-# __LABEL3__: 12
-# sub: 16
+# me: 4
+# awesomePerson: 8
+# age: 12
