@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Thu Oct 24 2024 13:14:20 GMT-0600 (Mountain Daylight Time)
+Compiled with love on Fri Oct 25 2024 10:29:58 GMT-0600 (Mountain Daylight Time)
 **************************
 */
 
@@ -53,7 +53,7 @@ __STRING6__: .asciz "! I am "
 .4byte 11
 __STRING7__: .asciz " years old"
 .4byte 24
-__STRING8__: .asciz "! And in I year I will "
+__STRING8__: .asciz "! And in 1 year I will "
 .4byte 27
 __STRING9__: .asciz "Hey! My name is also Nico!"
 __ALLOCFOR_entry__ = 12
