@@ -1,4 +1,18 @@
 var assembly = {
+    disableGC: function() {
+        if(GCisEnabled)
+        {
+            outputCode.autoPush("pushw __disable_gc__; movw $1, __disable_gc__")
+            GCisEnabled = false
+        }
+    },
+    restoreGCActive: function() {
+        if(!GCisEnabled)
+        {
+            GCisEnabled = true
+            outputCode.autoPush("popw __disable_gc__")
+        }
+    },
     setRegister: function (value, register, type, low = true) {
         debugPrint("setting", register, value, type)
         var r = helpers.types.formatRegister(register, type, low)
@@ -1853,6 +1867,7 @@ var strings = {
         var finalArr = []
         var stringBuild = ""
         var override = false
+        assembly.disableGC()
         for (var letterNum = 0; letterNum < str.length; letterNum++) {
             var letter = str[letterNum]
             if (letter == "\\") {
@@ -1923,6 +1938,8 @@ var strings = {
         var evaluatedOut = stringAdder(finalArr)
 
         //throwE("template str WIP", finalArr, evaluatedOut)
+
+        assembly.restoreGCActive()
 
         return evaluatedOut
     }

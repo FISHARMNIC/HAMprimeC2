@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Fri Oct 25 2024 10:29:58 GMT-0600 (Mountain Daylight Time)
+Compiled with love on Fri Oct 25 2024 10:49:55 GMT-0600 (Mountain Daylight Time)
 **************************
 */
 
@@ -52,8 +52,8 @@ __STRING5__: .asciz " and "
 __STRING6__: .asciz "! I am "
 .4byte 11
 __STRING7__: .asciz " years old"
-.4byte 24
-__STRING8__: .asciz "! And in 1 year I will "
+.4byte 27
+__STRING8__: .asciz "! And in 1 year I will be "
 .4byte 27
 __STRING9__: .asciz "Hey! My name is also Nico!"
 __ALLOCFOR_entry__ = 12
@@ -185,12 +185,12 @@ popw __disable_gc__
 push %ecx
 call puts
 add $4, %esp
+pushw __disable_gc__; movw $1, __disable_gc__
 movss -12(%ebp), %xmm0
 movl $1, __xmm_sse_temp__
 cvtsi2ss __xmm_sse_temp__, %xmm1
 addss %xmm1, %xmm0
 movss %xmm0, __TEMP32_0__
-pushw __disable_gc__; movw $1, __disable_gc__
 pushl $__STRING7__
 movl __TEMP32_0__, %edx
 push %edx

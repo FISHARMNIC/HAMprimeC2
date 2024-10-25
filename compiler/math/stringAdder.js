@@ -6,7 +6,8 @@ module.exports = function (arr) {
     //console.log("ADDING", arr,)
     arr.reverse()
     //outputCode.autoPush(`pusha`)
-    outputCode.autoPush("pushw __disable_gc__; movw $1, __disable_gc__")
+    actions.assembly.disableGC()
+    
     while (scanPos < arr.length) {
         var current = arr[scanPos]
         var ctype = helpers.types.guessType(current)
@@ -50,7 +51,7 @@ module.exports = function (arr) {
         `add \$${numStrs * 4 + 4}, %esp`,
         `mov %eax, ${retLbl}`
     )
-    outputCode.autoPush("popw __disable_gc__")
+    actions.assembly.restoreGCActive()
     // outputCode.autoPush(`popa`)
 
     return retLbl

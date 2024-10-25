@@ -266,6 +266,7 @@ global.outputCode = { // object with out data
         this.autoPush("# " + [...arguments].join(" "))
     }
 }
+global.GCisEnabled = true
 global.typeStack = [] // depricated
 global.mostRecentIfStatement = []
 global.arrayClamp = defines.types.u32
