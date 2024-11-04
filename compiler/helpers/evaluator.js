@@ -299,10 +299,9 @@ function evaluate(line) {
                     var retType = objCopy(offsetWord(9) == "->" ? defines.types[offsetWord(10)] : defines.types.u32)
 
                     var _scope = scope[scope.length - 1].data
-                    var formattedName = helpers.formatters.formatOperatorName(_scope.name, operator)
                     var params = offsetWord(7)
 
-                    actions.formats.createOperator(_scope, formattedName, params, retType)
+                    actions.formats.createOperator(_scope, operator, params, retType)
                 } else {
                     __addToAnyVarEverMade(offsetWord(1))
                     // IF BUG ::::: SEP 11

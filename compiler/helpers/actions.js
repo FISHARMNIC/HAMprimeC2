@@ -1658,11 +1658,13 @@ var formats = {
         }
 
     },
-    createOperator: function (_scope, fname, params, ret) {
+    createOperator: function (_scope, operator, params, ret) {
         if (typeof (params) == "string")
             params = [params]
         var params_obj = actions.functions.createParams(params)
         //console.log(params_obj)
+        var fname = helpers.formatters.formatNewOperatorName(_scope.name, operator)
+
         var _data = {
             name: fname,
             parameters: params_obj.params,
@@ -1673,7 +1675,11 @@ var formats = {
             isPublic: inPublicMode
         }
 
-        _scope.operators[fname] = _data
+        if(_scope.operators[operator] == undefined)
+            _scope.operators[operator] = [_data]
+        else
+            _scope.operators[operator].push(_data)
+
         userFormats[_scope.name] = _scope
         userFunctions[fname] = _data
 
@@ -1683,6 +1689,7 @@ var formats = {
         }
 
         functions.createFunction(fname)
+        //throwE("created " + fname)
     },
     callConstructor: function (className, params) {
 
@@ -1823,15 +1830,19 @@ var formats = {
         return r;
     },
     callOperator: function (parent, operator, params) {
-
         thisStack.save();
 
         var parentType = helpers.types.guessType(parent)
+
         if (parentType.formatPtr == undefined) {
             throwE(`"${parent}" is not a format instance or does not exist`)
         }
 
         var operator = helpers.formats.convertOperatorToString(operator)
+
+        // here, basically all code below is old and useless now
+        throwE(parentType.formatPtr.operators[operator])
+
         var formattedName = helpers.formatters.formatOperatorName(parentType.formatPtr.name, operator)
         //throwE(parentType.formatPtr.operators)
         if (!objectIncludes(parentType.formatPtr.operators, formattedName)) {
