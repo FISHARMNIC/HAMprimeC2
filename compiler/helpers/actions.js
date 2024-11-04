@@ -82,10 +82,13 @@ var assembly = {
         }
     },
     getStackOffset: function (variable) {
-        return getAllStackVariables()[variable].offset
+
+        if(helpers.variables.checkIfOnStack(variable)) 
+            return getAllStackVariables()[variable].offset
+        return helpers.functions.getParameterOffset(variable)
     },
     getStackVarAsEbp(vname) {
-        //throwE("READING", vname, assembly.getStackOffset(vname), currentStackOffset)
+        //console.log("READING", vname, currentStackOffset)
         return `-${assembly.getStackOffset(vname)}(%ebp)`
     },
     pushClobbers: function () {
@@ -380,7 +383,7 @@ var variables = {
         if (vname == "__this__") {
             helpers.general.setModifiesThis()
         }
-        var isStack = helpers.variables.checkIfOnStack(vname) // ) // if stack var
+        var isStack = helpers.variables.checkIfOnStack(vname) || helpers.variables.checkIfParameter(vname) // ) // if stack var
         var type = helpers.variables.getVariableType(vname)
 
         // throwW("::", vname, getAllStackVariables())
@@ -442,7 +445,7 @@ var variables = {
             if (nextThingTakesOwnership || (vname == "___TEMPORARY_OWNER___")) {
                 outputCode.autoPush(
                     `# requesting ownership for ${vname} (set)`,
-                    `lea ${isStack ? assembly.getStackVarAsEbp(vname) : vname}, %eax`,
+                    `lea ${isStack ? assembly.getStackVarAsEbp(vname) : (vname)}, %eax`,
                     `push %eax`,
                     `push ${value}`,
                     `call __rc_requestOwnership__`,

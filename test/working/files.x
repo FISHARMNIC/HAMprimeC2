@@ -1,3 +1,10 @@
+/* 
+NOTE: MUST BE RUN USING HAM FROM COMMANDLINE, NOT USING NODE
+
+like: ham files.x -o files
+NOT : node main files.x
+*/
+
 forward fopen  function<string name, conststr perms> -> p32;
 forward fclose function<p32 fp> -> none;
 forward fwrite function<string buffer, u32 size, u32 count, p32 fp> -> u32;
@@ -18,12 +25,12 @@ iofile format
 
     .iofile constructor<conststr name>
     {
-        this.fptr <- fopen(name, "r+");
+        this.fptr <- fopen(name, "w+");
     }
 
     .open method<conststr name>
     {
-        this.fptr <- fopen(name, "r+");
+        this.fptr <- fopen(name, "w+");
     }
 
     .openMode method<conststr name, conststr mode>

@@ -375,7 +375,8 @@ var variables = {
             return getAllStackVariables()[vname].type
         }
         else if (this.checkIfParameter(vname)) {
-            throwE("WIP")
+            return(general.getMostRecentFunction().data.parameters.find(x => x.name == vname).type)
+            //throwE("WIP")
             //return 
         } else {
             //console.log("EEEEE", globalVariables)

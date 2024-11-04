@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Sun Nov 03 2024 23:30:02 GMT-0700 (Mountain Standard Time)
+Compiled with love on Mon Nov 04 2024 00:27:10 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -33,7 +33,7 @@ ___TEMPORARY_OWNER___: .4byte 0
 __ALLOCFOR___constructor_iofile_0___ = 0
 .type	__constructor_iofile_1_, @function
 .4byte 3
-__STRING0__: .asciz "r+"
+__STRING0__: .asciz "w+"
 __ALLOCFOR___constructor_iofile_1___ = 0
 .type	__method_iofile_open_, @function
 __ALLOCFOR___method_iofile_open___ = 0
@@ -478,6 +478,25 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___operator_iofile_shr___, %esp
 
+pushl __this__
+movl __this__, %edx
+mov %edx, __this__
+# Calling function __method_iofile_getLine_
+call __method_iofile_getLine_
+mov %eax, %ecx
+popl __this__
+# requesting ownership for buffer (set)
+lea -0(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
 call __rc_quick_check__
 
 mov %ebp, %esp
