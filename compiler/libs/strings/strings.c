@@ -59,6 +59,15 @@ char *ftos(float num)
     return o;
 }
 
+char *ctos(char ch)
+{
+    asm volatile("pusha");
+    char *o = __rc_allocate__(1, 0);
+    o[0] = ch;
+    asm volatile("popa");
+    return o;
+}
+
 char *itos(int num)
 {
     asm volatile("pusha");

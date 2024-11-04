@@ -12,7 +12,7 @@ var noExes = [
     "#f",
     "..."
 ];
-noExes.push(...Object.keys(defines.types), ...defines.conditionals) // laod all types into exceptions
+noExes.push(...Object.keys(defines.types), ...defines.conditionals, "<<", ">>") // laod all types into exceptions
 
 var quoteMarks = [
     `"`,

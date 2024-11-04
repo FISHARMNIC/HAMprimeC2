@@ -1,6 +1,7 @@
 var counters = {
     stringLiterals: 0,
     untypedLabels: 0,
+    anonLabels: 0,
     tempLabels: {
         max: {
             "8": 0,
@@ -331,6 +332,9 @@ var formatters = {
     stringLiteral: function (number) {
         return `__STRING${number}__`
     },
+    anonymousFunction: function(number) {
+        return `__anonymous_${number}__`
+    },
     tempLabel: function (type, number) {
         return `__TEMP${types.typeToBits(type)}_${number}__`
     },
@@ -546,7 +550,7 @@ var formats = {
         return offset / 8
     },
     checkOperatorIsAccepted: function (operator) {
-        var accepted = ["add", "sub", "div", "mul", "mod", "index_set", "index_get"]
+        var accepted = ["add", "sub", "div", "mul", "mod", "shl", "shr", "index_set", "index_get"]
         if(!accepted.includes(operator))
         {
             throwE("Unsupported operator " + operator)
@@ -597,6 +601,12 @@ var formats = {
         else if (operator == "%") {
             operator = "mod"
         }
+        else if (operator == "<<") {
+            operator = "shl"
+        }
+        else if (operator == ">>") {
+            operator = "shr"
+        }
         
         else if (!nonSymbols.includes(operator)) {
             throwE("Unsupported operator " + operator)
@@ -612,6 +622,10 @@ var formats = {
 }
 
 var functions = {
+    newAnonFunctionLabel: function()
+    {
+        return formatters.anonymousFunction(counters.anonLabels++)
+    },
     getParameterOffset: function (param) {
         var offset = 0
         debugPrint("-----------", param)

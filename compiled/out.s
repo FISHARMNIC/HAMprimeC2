@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Fri Oct 25 2024 10:49:55 GMT-0600 (Mountain Daylight Time)
+Compiled with love on Sun Nov 03 2024 23:30:02 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -29,36 +29,50 @@ ___TEMPORARY_OWNER___: .4byte 0
 .global __this__
 .extern __disable_gc__
 ######## user data section ########
-.type	__method_User_toString_, @function
-.4byte 7
-__STRING0__: .asciz " (age "
-.4byte 2
-__STRING1__: .asciz ")"
-__ALLOCFOR___method_User_toString___ = 4
-__SIZEOF_User__ = 8
-# format "User" includes:
-#   - PROPERTY (p8) name
-#   - PROPERTY (u32) age
+.type	__constructor_iofile_0_, @function
+__ALLOCFOR___constructor_iofile_0___ = 0
+.type	__constructor_iofile_1_, @function
+.4byte 3
+__STRING0__: .asciz "r+"
+__ALLOCFOR___constructor_iofile_1___ = 0
+.type	__method_iofile_open_, @function
+__ALLOCFOR___method_iofile_open___ = 0
+.type	__method_iofile_openMode_, @function
+__ALLOCFOR___method_iofile_openMode___ = 0
+.type	__method_iofile_isOpen_, @function
+__ALLOCFOR___method_iofile_isOpen___ = 0
+.type	__method_iofile_close_, @function
+__ALLOCFOR___method_iofile_close___ = 0
+.type	__method_iofile_rewind_, @function
+__ALLOCFOR___method_iofile_rewind___ = 0
+.type	__method_iofile_seekg_, @function
+__ALLOCFOR___method_iofile_seekg___ = 0
+.type	__method_iofile_write_, @function
+__ALLOCFOR___method_iofile_write___ = 0
+.type	__operator_iofile_shl_, @function
+__ALLOCFOR___operator_iofile_shl___ = 0
+.type	__method_iofile_getTo_, @function
+.4byte 1
+__STRING1__: .asciz ""
+__ALLOCFOR___method_iofile_getTo___ = 5
+.type	__method_iofile_getLine_, @function
+__ALLOCFOR___method_iofile_getLine___ = 0
+.type	__operator_iofile_shr_, @function
+__ALLOCFOR___operator_iofile_shr___ = 0
+__SIZEOF_iofile__ = 4
+# format "iofile" includes:
+#   - PROPERTY (p32) fptr
+#   - CNSTRCTR __constructor_iofile_0_ (0 parameters)
+#   - CNSTRCTR __constructor_iofile_1_ (1 parameters)
 .type	entry, @function
-.4byte 5
-__STRING2__: .asciz "Nico"
-.4byte 5
-__STRING3__: .asciz "Nina"
-.4byte 7
-__STRING4__: .asciz "Hello "
-.4byte 6
-__STRING5__: .asciz " and "
-.4byte 8
-__STRING6__: .asciz "! I am "
-.4byte 11
-__STRING7__: .asciz " years old"
-.4byte 27
-__STRING8__: .asciz "! And in 1 year I will be "
-.4byte 27
-__STRING9__: .asciz "Hey! My name is also Nico!"
-__ALLOCFOR_entry__ = 12
+.4byte 9
+__STRING2__: .asciz "test.txt"
+.4byte 17
+__STRING3__: .asciz "Hello, World! \n"
+.4byte 20
+__STRING4__: .asciz "Rio is the best dog"
+__ALLOCFOR_entry__ = 8
 __TEMP8_0__: .1byte 0
-__TEMP32_0__: .4byte 0
 ###################################
 .text
 
@@ -78,40 +92,349 @@ call entry
 ret
 
 ###################################
-__method_User_toString_:
+__constructor_iofile_0_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_User_toString___, %esp
+sub $__ALLOCFOR___constructor_iofile_0___, %esp
 
-# Reading property "name" in "__this__"
+# Allocate for THIS
+pushl $0
+mov $__SIZEOF_iofile__, %edx
+push %edx
+call __rc_allocate__
+add $8, %esp
+mov %eax, __this__
+# requesting ownership for ___TEMPORARY_OWNER___ (set)
+lea ___TEMPORARY_OWNER___, %eax
+push %eax
+push __this__
+call __rc_requestOwnership__
+add $8, %esp
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+movl $0, 0(%eax)
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__constructor_iofile_1_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___constructor_iofile_1___, %esp
+
+# Allocate for THIS
+pushl $0
+mov $__SIZEOF_iofile__, %edx
+push %edx
+call __rc_allocate__
+add $8, %esp
+mov %eax, __this__
+# requesting ownership for ___TEMPORARY_OWNER___ (set)
+lea ___TEMPORARY_OWNER___, %eax
+push %eax
+push __this__
+call __rc_requestOwnership__
+add $8, %esp
+# Calling function fopen
+pushl $__STRING0__
+# converting conststr to string (function call)
+pushl 8(%ebp)
+call cptos
+mov %eax, (%esp) # str is alr in stack just overwrite
+call fopen
+mov %eax, %ecx
+add $8, %esp
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+mov %ecx, 0(%eax)
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_iofile_open_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_open___, %esp
+
+# Calling function fopen
+pushl $__STRING0__
+# converting conststr to string (function call)
+pushl 8(%ebp)
+call cptos
+mov %eax, (%esp) # str is alr in stack just overwrite
+call fopen
+mov %eax, %ecx
+add $8, %esp
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+mov %ecx, 0(%eax)
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_iofile_openMode_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_openMode___, %esp
+
+# Calling function fopen
+# TODO optimize if variable just do movl
+mov 12(%ebp), %edx
+push %edx
+# converting conststr to string (function call)
+pushl 8(%ebp)
+call cptos
+mov %eax, (%esp) # str is alr in stack just overwrite
+call fopen
+mov %eax, %ecx
+add $8, %esp
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+mov %ecx, 0(%eax)
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_iofile_isOpen_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_isOpen___, %esp
+
+# Reading property "fptr" in "__this__"
 movl __this__, %eax
 mov 0(%eax), %edx
 mov %edx, %ecx
-# Reading property "age" in "__this__"
+movb $0, __TEMP8_0__
+cmp $0, %ecx
+setne __TEMP8_0__
+movl __TEMP8_0__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_iofile_close_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_close___, %esp
+
+# Reading property "fptr" in "__this__"
 movl __this__, %eax
-mov 4(%eax), %edx
-mov %edx, %esi
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING1__
-push %esi
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING0__
+mov 0(%eax), %edx
+mov %edx, %ecx
 push %ecx
-pushl $4
-call strjoinmany
-add $20, %esp
+# Calling function fclose
+push %ecx
+call fclose
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_iofile_rewind_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_rewind___, %esp
+
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+push %ecx
+# Calling function rewind
+push %ecx
+call rewind
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_iofile_seekg_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_seekg___, %esp
+
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+push %ecx
+# Calling function fseek
+pushl $0
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+push %ecx
+call fseek
+mov %eax, %esi
+add $12, %esp
+pop %ecx
+mov %esi, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_iofile_write_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_write___, %esp
+
+# Calling function strlen
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+call strlen
+mov %eax, %ecx
+add $4, %esp
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %esi
+push %esi
+push %ecx
+# Calling function fwrite
+push %esi
+push %ecx
+pushl $1
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+call fwrite
 mov %eax, %edi
-popw __disable_gc__
-# Loading local variable "out" @-4(%ebp)
-mov %edi, -4(%ebp)
-# requesting ownership for out (create)
+add $16, %esp
+pop %ecx
+pop %esi
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__operator_iofile_shl_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_iofile_shl___, %esp
+
+pushl __this__
+movl __this__, %edx
+mov %edx, __this__
+# Calling function __method_iofile_write_
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+call __method_iofile_write_
+mov %eax, %ecx
+add $4, %esp
+popl __this__
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_iofile_getTo_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_getTo___, %esp
+
+pushl $__STRING1__
+call cptos
+add $4, %esp
+mov %eax, %ecx
+# Loading local variable "outString" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for outString (create)
 lea -4(%ebp), %eax
 push %eax
-push %edi
+push %ecx
 call __rc_requestOwnership__
 add $8, %esp
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+push %ecx
+# Calling function fgetc
+push %ecx
+call fgetc
+mov %al, __TEMP8_0__
+add $4, %esp
+pop %ecx
+# Loading local variable "curChar" @-5(%ebp)
+xor %edx, %edx
+xor %edx, %edx
+movb __TEMP8_0__, %dl
+mov %dl, -5(%ebp)
+__LABEL0__:
+mov -5(%ebp), %al
+mov 8(%ebp), %dl
+mov $0, %cl
+cmp %dl, %al
+setne %cl
+# comparison for WHILE loop
+cmpb $1, %cl
+jne __LABEL1__
+pushw __disable_gc__; movw $1, __disable_gc__
+push -5(%ebp)
+call ctos
+add $4, %esp
+push %eax
+push -4(%ebp)
+pushl $2
+call strjoinmany
+add $12, %esp
+mov %eax, %ecx
+popw __disable_gc__
+# requesting ownership for outString (set)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Reading property "fptr" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+push %ecx
+# Calling function fgetc
+push %ecx
+call fgetc
+mov %al, __TEMP8_0__
+add $4, %esp
+pop %ecx
+xor %edx, %edx
+xor %edx, %edx
+movb __TEMP8_0__, %dl
+mov %dl, -5(%ebp)
+jmp __LABEL0__
+__LABEL1__:
 mov -4(%ebp), %eax
 call __rc_quick_check__
 
@@ -123,133 +446,107 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-# out: 4
+# outString: 4
+# curChar: 5
+__method_iofile_getLine_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_iofile_getLine___, %esp
+
+pushl __this__
+movl __this__, %edx
+mov %edx, __this__
+# Calling function __method_iofile_getTo_
+pushl $10
+call __method_iofile_getTo_
+mov %eax, %ecx
+add $4, %esp
+popl __this__
+mov %ecx, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__operator_iofile_shr_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_iofile_shr___, %esp
+
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ecx # Local allocation address for User
-mov $__STRING2__, %edx
-mov %edx, 0(%eax)
-movl $18, 4(%eax)
-# Loading local variable "me" @-4(%ebp)
+# Calling function __constructor_iofile_1_
+pushl $__STRING2__
+call __constructor_iofile_1_
+mov %eax, %ecx
+add $4, %esp
+# Loading local variable "myFile" @-4(%ebp)
 mov %ecx, -4(%ebp)
-# requesting ownership for me (create)
+# requesting ownership for myFile (create)
 lea -4(%ebp), %eax
 push %eax
 push %ecx
 call __rc_requestOwnership__
 add $8, %esp
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __operator_iofile_shl_
+# converting conststr to string (function call)
 pushl $__STRING3__
 call cptos
-add $4, %esp
+mov %eax, (%esp) # str is alr in stack just overwrite
+call __operator_iofile_shl_
 mov %eax, %ecx
-# Loading local variable "awesomePerson" @-8(%ebp)
-mov %ecx, -8(%ebp)
-# requesting ownership for awesomePerson (create)
-lea -8(%ebp), %eax
-push %eax
+add $4, %esp
+mov %ecx, __this__
 push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-mov $1123477881, %ecx
-# Loading local variable "age" @-12(%ebp)
-mov %ecx, -12(%ebp)
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING7__
-push -12(%ebp)
-call ftos
-add $4, %esp
-push %eax
-pushl $__STRING6__
-push -8(%ebp)
-pushl $__STRING5__
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_User_toString_
-call __method_User_toString_
-mov %eax, %ecx
-push %eax
+# Calling function __operator_iofile_shl_
+# converting conststr to string (function call)
 pushl $__STRING4__
-pushl $7
-call strjoinmany
-add $32, %esp
-mov %eax, %ecx
-popw __disable_gc__
-push %ecx
-call puts
+call cptos
+mov %eax, (%esp) # str is alr in stack just overwrite
+call __operator_iofile_shl_
+mov %eax, %esi
 add $4, %esp
-pushw __disable_gc__; movw $1, __disable_gc__
-movss -12(%ebp), %xmm0
-movl $1, __xmm_sse_temp__
-cvtsi2ss __xmm_sse_temp__, %xmm1
-addss %xmm1, %xmm0
-movss %xmm0, __TEMP32_0__
-pushl $__STRING7__
-movl __TEMP32_0__, %edx
-push %edx
-call ftos
-add $4, %esp
-push %eax
-pushl $__STRING8__
-push -8(%ebp)
-pushl $__STRING5__
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_User_toString_
-call __method_User_toString_
-mov %eax, %ecx
-push %eax
-pushl $__STRING4__
-pushl $7
-call strjoinmany
-add $32, %esp
-mov %eax, %ecx
-popw __disable_gc__
-push %ecx
-call puts
-add $4, %esp
-# Reading property "name" in "-4(%ebp)"
-movl -4(%ebp), %eax
-mov 0(%eax), %edx
-mov %edx, %ecx
-push %ecx
-push %ecx
-pushl $__STRING2__
-call strcmp
-add $8, %esp
 pop %ecx
-movb $0, __TEMP8_0__
-cmp $0, %eax
-setz __TEMP8_0__
-cmpb $1, __TEMP8_0__
-jne __LABEL0__
-pushl $__STRING9__
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_iofile_rewind_
+call __method_iofile_rewind_
+mov %eax, %ecx
+# Loading local variable "output" @-8(%ebp)
+mov $0, %edx
+mov %edx, -8(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __operator_iofile_shr_
+# TODO optimize if variable just do movl
+mov -8(%ebp), %edx
+push %edx
+call __operator_iofile_shr_
+mov %eax, %ecx
+add $4, %esp
+push -8(%ebp)
 call puts
 add $4, %esp
-jmp __LABEL1__
-__LABEL0__:
-__LABEL1__:
-mov $0, %eax
-push %eax
-call __rc_free_all__
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
 call __rc_free_all__
 mov  $0, %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
-# me: 4
-# awesomePerson: 8
-# age: 12
+# myFile: 4
+# output: 8

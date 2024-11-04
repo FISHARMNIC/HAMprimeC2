@@ -1247,9 +1247,10 @@ var functions = {
         var onCom = false
         var callAddress = fname
 
+        //console.log(`Calling ${fname} with ${args.join(" ")}, ${typeIfFromAddress}`)
         if (typeof args != "string") {
             var filtered = args.filter(x => x != ",")
-            if (!userFunctions[fname].variadic && (filtered.length != userFunctions[fname].parameters.length)) {
+            if (typeIfFromAddress == null && !userFunctions[fname].variadic && (filtered.length != userFunctions[fname].parameters.length)) {
                 throwE(`Function ${fname} expects ${userFunctions[fname].parameters.length} parameter(s), given ${filtered.length}`)
             }
         }

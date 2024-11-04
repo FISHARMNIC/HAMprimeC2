@@ -6,8 +6,7 @@ doOperation function<u32 a, u32b, any operation> -> u32
 entry function<> -> u32
 {
     printf("%i\n", doOperation(4,5,
-        lambda<u32 pa, u32 pb> -> u32 
-        {
+        lambda<u32 pa, u32 pb> -> u32 {
             return (pa * pb + pa);
         }
     ));

@@ -517,10 +517,17 @@ function evaluate(line) {
                 //console.log("yuh")
                 return actions.variables.create(offsetWord(1), vtype, null)
             }
-        } else if (word == "import") {
+        } else if (word == "import" || word == "importTLS") {
             //throwE(line, offsetWord(1))
             globalVariables[offsetWord(2)] = newGlobalVar(defines.types[offsetWord(1)])
+            if(word == "importTLS")
+            {
+                outputCode.data.push(".section .tbss;\n.extern " + offsetWord(2) + ";\n.data")
+            }
+            else
+            {
             outputCode.data.push(".extern " + offsetWord(2))
+            }
             wordNum += 2
         }
 
@@ -860,8 +867,8 @@ function evaluate(line) {
                 line[wordNum] = oreg
                 line.splice(wordNum + 1, 3)
 
-            } else if (word == "function") {
-                var fname = offsetWord(-1)
+            } else if (word == "function" || word == "lambda") {
+                var fname = word == "lambda"? helpers.functions.newAnonFunctionLabel() : offsetWord(-1)
                 var params = offsetWord(2)
                 if (typeof (params) == "string")
                     params = [params]
@@ -1062,11 +1069,19 @@ function evaluate(line) {
                 var build = [];
                 var floatMath = false;
                 var stringMath = false;
+                var stringMathOverride = false
                 while (wordNum < line.length) {
                     word = line[wordNum]
                     if (onNum) {
                         if (defines.symbols.includes(word) || defines.operators.includes(word)) {
                             break;
+                        }
+                    }
+                    else
+                    {
+                        if(word != "+" && word != undefined)
+                        {
+                            stringMathOverride = true
                         }
                     }
                     var vtype = helpers.types.guessType(word)
@@ -1081,7 +1096,7 @@ function evaluate(line) {
                 }
                 // throwE(build, stringMath)
 
-                var lbl = stringMath ? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
+                var lbl = (stringMath && !stringMathOverride)? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
                 //throwE(outputCode.text)
                 line.splice(start, build.length + 1, lbl)
                 //throwE("spliced", line, build, build.length)

@@ -1,5 +1,15 @@
 /*
 TODO:
+
+
+    HOW TO REWORK SPLITTER FOR MULTILINE THINGS LIKE LAMBDAS
+        - Simple, forget line breaks! just use semi-colon as splitter
+        - Line breaks are all deleted
+        - make sure to fix issue with elif not working first
+
+
+
+
     MOVE createTemplateString TO SPLITTER INSTEAD
 
     WORKING ON BEING ABLE TO COMPILE AND LINK MULTIPLE HAM FILES
@@ -39,10 +49,6 @@ TODO:
 
     WHY NOT JUST HAVE ALL ALLOCATIONS SAVED IN TEMPOWNER????
         - removes need for return_new
-
-
-    add js template strings like `hello ${myName}`. Must be able to support nesting
-        - uses backtick which doesnt evaluate string until later
 
     TEMPOWNER REWORK:::::
         - WAIT IS THIS NEEDEDDDDD??????? YESSSSS

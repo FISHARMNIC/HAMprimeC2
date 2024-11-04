@@ -20,6 +20,7 @@ Vector format
         this.x <- this.x + vec.x;
         this.y <- this.y + vec.y;
         this.z <- this.z + vec.z;
+        
         return this;
     }
 
