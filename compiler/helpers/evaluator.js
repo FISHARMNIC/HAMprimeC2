@@ -805,6 +805,14 @@ function evaluate(line) {
                                 `call print_float_noPromo`,
                                 `add $4, %esp`
                             )
+                        } if("isChar" in dataType)
+                        {
+                            outputCode.autoPush(
+                                `call putchar`,
+                                `movb $'\\n', (%esp)`,
+                                `call putchar`,
+                                `add $4, %esp`
+                            )
                         } else {
                             outputCode.autoPush(
                                 `pushl $__PRINT_TYPE_INT__`,

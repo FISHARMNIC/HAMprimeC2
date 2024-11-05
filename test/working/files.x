@@ -89,31 +89,37 @@ iofile format
     .iofile operator(shr)<u32:reference outnum> -> iofile
     {
         outnum <- atoi(this.getLine());
+        return this;
+    }
+
+    .iofile operator(shr)<char:reference outch> -> iofile
+    {
+        outch <- char:(this.getLine()[0]);
+        return this;
     }
 
 }
 
 entry function<> -> u32
 {
-    /*
-    TODO note, references wont work for u8 16 since its just using eax and stuff, easy fix but do later
-    */
-
     create myFile <- iofile("test.txt");
-    myFile << "Rio is the best dog!\n" << 123 << "\nHello \n" << 456789 << " Bye!";
+
+    myFile << "Rio is the best dog!\n" << 123 << "\nC\nHello ";
+    myFile << 456789 << " Bye!"
     
     myFile.rewind();
     
     create string output;
-    create u32 onum;
+    create u32    onum;
+    create char   och;
 
-    myFile >> output;
+    myFile >> output >> onum;
+    myFile >> och;
+    
     print_(output);
-
-    myFile >> onum;
     print_(onum);
+    print_(och);
 
-    print_(myFile.getLine());
     print_(myFile.getLine());
 
     myFile.close();

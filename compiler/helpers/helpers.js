@@ -227,7 +227,14 @@ var types = {
             }
             if (type.size == 8) {
                 if (register == "s" || register == "i")
-                    throwE("[INTERNAL ERROR] Attempting to accept 8bit esi or edi")
+                {
+                    outputCode.autoPush(
+                        `# 8bit esi or edi attempt, moving to al`,
+                        `mov ${this.formatRegister(register, defines.types.u32)}, %eax`
+                    )
+                    register = "a" 
+                    //throwE("[INTERNAL ERROR] Attempting to accept 8bit esi or edi")
+                }
 
                 return low ? `%${register}l` : `%${register}h`
             }

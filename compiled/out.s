@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Tue Nov 05 2024 02:01:12 GMT-0700 (Mountain Standard Time)
+Compiled with love on Tue Nov 05 2024 11:36:46 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -63,6 +63,8 @@ __ALLOCFOR___operator_iofile_shl_1____ = 0
 __ALLOCFOR___operator_iofile_shr_2____ = 0
 .type	__operator_iofile_shr_3__, @function
 __ALLOCFOR___operator_iofile_shr_3____ = 0
+.type	__operator_iofile_shr_4__, @function
+__ALLOCFOR___operator_iofile_shr_4____ = 0
 __SIZEOF_iofile__ = 4
 # format "iofile" includes:
 #   - PROPERTY (p32) fptr
@@ -73,15 +75,13 @@ __SIZEOF_iofile__ = 4
 __STRING2__: .asciz "test.txt"
 .4byte 23
 __STRING3__: .asciz "Rio is the best dog!\n"
-.4byte 11
-__STRING4__: .asciz "\nHello \n"
+.4byte 12
+__STRING4__: .asciz "\nC\nHello "
 .4byte 6
 __STRING5__: .asciz " Bye!"
-__ALLOCFOR_entry__ = 12
+__ALLOCFOR_entry__ = 13
 __TEMP8_0__: .1byte 0
 __TEMP8_1__: .1byte 0
-__TEMP32_0__: .4byte 0
-__TEMP32_1__: .4byte 0
 ###################################
 .text
 
@@ -600,6 +600,51 @@ mov 8(%ebp), %eax
 movl %esi, (%eax)
 
 
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__operator_iofile_shr_4__:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_iofile_shr_4____, %esp
+
+pushl __this__
+movl __this__, %edx
+mov %edx, __this__
+# Calling function __method_iofile_getLine_
+call __method_iofile_getLine_
+mov %eax, %ecx
+popl __this__
+#indexing array
+mov %ecx, %eax
+movw $0, __TEMP8_0__
+mov 0(%eax), %dl
+mov %edx, __TEMP8_0__
+xor %edx, %edx
+xor %edx, %edx
+movb __TEMP8_0__, %dl
+mov %dl, __TEMP8_1__
+# SETTING outch <- __TEMP8_1__
+# Setting pointer __TEMP8_1__ -> 8(%ebp)
+mov 8(%ebp), %eax
+mov __TEMP8_1__, %dl
+movb %dl, (%eax)
+
+
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
 call __rc_quick_check__
 
 mov %ebp, %esp
@@ -655,34 +700,25 @@ mov %eax, %edi
 add $4, %esp
 pop %ecx
 pop %esi
-mov %edi, __this__
-push %esi
-push %ecx
-push %edi
+# note, read STACK VAR myFile -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
 # Calling function __operator_iofile_shl_1__
 pushl $456789
 call __operator_iofile_shl_1__
-mov %eax, __TEMP32_0__
+mov %eax, %ecx
 add $4, %esp
-pop %edi
-pop %ecx
-pop %esi
-movl __TEMP32_0__, %edx
-mov %edx, __this__
-push %esi
+mov %ecx, __this__
 push %ecx
-push %edi
 # Calling function __operator_iofile_shl_0__
 # converting conststr to string (function call)
 pushl $__STRING5__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_iofile_shl_0__
-mov %eax, __TEMP32_1__
+mov %eax, %esi
 add $4, %esp
-pop %edi
 pop %ecx
-pop %esi
 # note, read STACK VAR myFile -> -4(%ebp)
 mov -4(%ebp), %edx
 mov %edx, __this__
@@ -695,8 +731,14 @@ mov %edx, -8(%ebp)
 # Loading local variable "onum" @-12(%ebp)
 mov $0, %edx
 mov %edx, -12(%ebp)
+# Loading local variable "och" @-13(%ebp)
+xor %edx, %edx
+xor %edx, %edx
+mov $0, %dl
+mov %dl, -13(%ebp)
 # note, read STACK VAR myFile -> -4(%ebp)
 # note, read STACK VAR output -> -8(%ebp)
+# note, read STACK VAR onum -> -12(%ebp)
 mov -4(%ebp), %edx
 mov %edx, __this__
 # Calling function __operator_iofile_shr_2__
@@ -706,34 +748,42 @@ push %edx
 call __operator_iofile_shr_2__
 mov %eax, %ecx
 add $4, %esp
-# note, read STACK VAR output -> -8(%ebp)
-push -8(%ebp)
-call puts
-add $4, %esp
-# note, read STACK VAR myFile -> -4(%ebp)
-# note, read STACK VAR onum -> -12(%ebp)
-mov -4(%ebp), %edx
-mov %edx, __this__
+mov %ecx, __this__
+push %ecx
 # Calling function __operator_iofile_shr_3__
 # TODO optimize if variable just do movl
 lea -12(%ebp), %edx # PASS AS REFERENCE
 push %edx
 call __operator_iofile_shr_3__
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+# note, read STACK VAR myFile -> -4(%ebp)
+# note, read STACK VAR och -> -13(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __operator_iofile_shr_4__
+xor %edx, %edx
+# TODO optimize if variable just do movl
+lea -13(%ebp), %edx # PASS AS REFERENCE
+push %edx
+call __operator_iofile_shr_4__
 mov %eax, %ecx
+add $4, %esp
+# note, read STACK VAR output -> -8(%ebp)
+push -8(%ebp)
+call puts
 add $4, %esp
 # note, read STACK VAR onum -> -12(%ebp)
 push -12(%ebp)
 pushl $__PRINT_TYPE_INT__
 call printf
 add $8, %esp
-# note, read STACK VAR myFile -> -4(%ebp)
-mov -4(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_iofile_getLine_
-call __method_iofile_getLine_
-mov %eax, %ecx
-push %ecx
-call puts
+# note, read STACK VAR och -> -13(%ebp)
+push -13(%ebp)
+call putchar
+movb $'\n', (%esp)
+call putchar
 add $4, %esp
 # note, read STACK VAR myFile -> -4(%ebp)
 mov -4(%ebp), %edx
@@ -767,3 +817,4 @@ ret
 # myFile: 4
 # output: 8
 # onum: 12
+# och: 13

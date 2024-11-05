@@ -1,6 +1,9 @@
 /*
 TODO:
 
+    Fix chars being u32
+        - theres actually a lot of issues, see files.x and all of the casts needed
+
 
     HOW TO REWORK SPLITTER FOR MULTILINE THINGS LIKE LAMBDAS
         - Simple, forget line breaks! just use semi-colon as splitter

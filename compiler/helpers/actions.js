@@ -16,7 +16,7 @@ var assembly = {
             outputCode.autoPush(
                 `mov ${reference}, %eax`,
                 `mov (%eax), %edx`,
-                `mov %eax, ${lbl}`
+                `mov ${helpers.types.formatRegister("d", rtype)}, ${lbl}`
             )
 
         }
@@ -49,10 +49,18 @@ var assembly = {
     },
     allocateAndSet: function (value, type, low = true) {
         var reg = helpers.registers.getFreeLabelOrRegister(type)
-        return this.setRegister(value, helpers.registers.registerStringToLetterIfIs(reg), type, low)
+        if(helpers.types.stringIsRegister(reg))
+        {
+            return this.setRegister(value, helpers.registers.registerStringToLetterIfIs(reg), type, low)
+        }
+        else
+        {
+            //throwE(`moving ${value} => ${reg}`)
+            assembly.optimizeMove(value, reg, helpers.types.guessType(value), type)
+            return reg
+        }
     },
     optimizeMove: function (source, destination, sType, dType) {
-
 
         debugPrint(" reoifjeorjferiojerf", source)
         debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
@@ -206,8 +214,9 @@ var assembly = {
 
         outputCode.autoPush(`# Setting pointer ${data} -> ${address}`)
 
-        if (helpers.types.typeToBytes(addressType) != 4) {
-            throwE("Setting address is not 32bits")
+        var atypeBytes = helpers.types.typeToBytes(addressType)
+        if (atypeBytes != 4 && !("isReference" in addressType)) {
+            throwE(`Setting address is not 32bits, got ${helpers.types.convertTypeObjToName(addressType)} (${atypeBytes * 8})`)
         }
 
         if (helpers.types.stringIsRegister(address)) { // reg
@@ -1356,7 +1365,7 @@ var functions = {
                         }
                     }
 
-                    if ("isReference" in expectedType && helpers.types.stringIsRegister(x)) {
+                    if (expectedType != undefined && "isReference" in expectedType && helpers.types.stringIsRegister(x)) {
                         throwE("Unable to get reference of register, most likely a static value")
                     }
 
@@ -1409,10 +1418,10 @@ var functions = {
                                 // {
                                 //     throwE(x, r, fname, args, givenType)
                                 // }
-                                if ("isReference" in expectedType) {
+                                if (expectedType != undefined && ("isReference" in expectedType)) {
                                     bbuff.push(
                                         `# TODO optimize if variable just do movl`,
-                                        `lea ${x}, ${r} # PASS AS REFERENCE`,
+                                        `lea ${x}, %edx # PASS AS REFERENCE`,
                                         `push %edx`
                                     )
                                 }
