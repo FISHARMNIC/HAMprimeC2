@@ -1,5 +1,10 @@
 /*
 TODO:
+    make ide better where you can open projects and stuff and it links multiple files etc
+        - something more like visual studio or xcode
+
+    BIG FIX NEEDED
+        - Operator overloads only check first type, issue for array set and get
 
     Fix chars being u32
         - theres actually a lot of issues, see files.x and all of the casts needed
@@ -277,6 +282,27 @@ else {
     global.INPUTFILE = __dirname + "/../test/working/" + (process.argv.length == 2 ? "variadic.x" : process.argv[2])
 }
 
+var outName = "out"
+var numberOfInFiles = 1
+
+//console.log("::::::::", process.argv[process.argv.length - 1])
+var lastArg = process.argv[process.argv.length - 1]
+if(lastArg.includes("__ID_"))
+{
+    var idno = lastArg.slice(5)
+    if(idno == parseInt(idno))
+    {
+        outName = `out${idno}`
+
+        var numberOfInFiles = process.argv[process.argv.length - 2]
+        if(numberOfInFiles != parseInt(numberOfInFiles))
+        {
+            console.log("Bad parameter order")
+            process.exit(1)
+        }
+    }
+}
+
 try{
 global.inputCode = String(fs.readFileSync(INPUTFILE))
 }
@@ -336,12 +362,12 @@ inputCode = inputCode.map((line, lineNo) => {
 
 helpers.variables.genTempLabels();
 
-autoIncludes.push(mainDir + "/libs/gcollect.s")
-if (programRules.hasUsedMmap) {
-    autoIncludes.push(mainDir + "/libs/alloc.s")
-}
+// autoIncludes.push(mainDir + "/libs/gcollect.s")
+// if (programRules.hasUsedMmap) {
+//     autoIncludes.push(mainDir + "/libs/alloc.s")
+// }
 
-var out = parser.parseFinalCode()
+var out = parser.parseFinalCode(outName, numberOfInFiles)
 
 lineOwners["offset"] = out.index; // text section offset (must add to each key)
 lineOwners["file"] = INPUTFILE;
@@ -350,7 +376,7 @@ if (!MODE_DEBUG && !noPrintIfNotNec) {
     console.log("\n----- Note: debug mode is off -----\n")
 }
 
-fs.writeFileSync(__dirname + "/../compiled/out.s", out.out)
+fs.writeFileSync(__dirname + `/../compiled/${outName}.s`, out.out)
 fs.writeFileSync(__dirname + "/../compiled/debugInfo.json", JSON.stringify(lineOwners))
 
 if (returnHighlight) {
@@ -366,7 +392,7 @@ if (returnHighlight) {
 
 if (!noPrintIfNotNec) {
     console.log("\033[93m======== Program Compiled Successfully ======\033[0m")
-    console.log("|| Output in  : \033[96m" + __dirname + "/../compiled/out.s" + "\033[0m")
+    console.log("|| Output in  : \033[96m" + __dirname + `/../compiled/${outName}.s` + "\033[0m")
     console.log("|| Debug info : \033[96m" + __dirname + "/../compiled/debugInfo.json" + "\033[0m")
     console.log("\033[93m=============================================\033[0m")
 }

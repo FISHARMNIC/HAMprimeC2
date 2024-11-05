@@ -70,9 +70,9 @@ function assemble() {
 
     const asmFile = `${__dirname}/../../compiled/out.s`
 
-    assemblerArgs.inFiles.forEach(x => {
+    assemblerArgs.inFiles.forEach((x,i) => {
         try{
-            var out = String(execSync(`node ${__dirname}/../../compiler/main.js __RANOPRINT__ ${x}`)).trim()
+            var out = String(execSync(`node ${__dirname}/../../compiler/main.js __RANOPRINT__ ${x} __ID_${i}`)).trim()
             if(out.length != 0)
                 console.log(out)
         }
@@ -86,6 +86,7 @@ function assemble() {
     console.log("├ Assembly : " + asmFile)
     
     var asmPrefix = os.type() == "Darwin" ? "limactl shell debian" : ""
+
     try{
         var str = `${asmPrefix} gcc ${__dirname}/../../compiled/out.s ${assemblerArgs.linkLocals.join(" ")} -o ${assemblerArgs.outFile} -g -no-pie -m32 -fno-asynchronous-unwind-tables ${assemblerArgs.linkExternals.join(" ")}`
         //console.log("COMPILING\n\n", str, "\n\n")

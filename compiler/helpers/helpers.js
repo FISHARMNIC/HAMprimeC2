@@ -637,10 +637,14 @@ var formats = {
 
         return operator
     },
-    seeIfIncludesOperator: function (fmt, operator)
+    seeIfIncludesOperator: function (fmt, operator, paramType)
     {
-        var formattedName = formatters.formatOperatorName(fmt.formatPtr.name, operator)
-        return Object.keys(fmt.formatPtr.operators).includes(formattedName)
+        //console.log(fmt.formatPtr)
+        return(operator in fmt.formatPtr.operators && (fmt.formatPtr.operators[operator].find(e => {
+            return types.areEqualNonStrict(e.parameters[0].type, paramType)
+        }) != undefined))
+        //var formattedName = formatters.formatOperatorName(fmt.formatPtr.name, operator)
+        //return Object.keys(fmt.formatPtr.operators).includes(formattedName)
     }
 }
 

@@ -543,7 +543,12 @@ var variables = {
     readArray: function (aname, index, forceSize = false) {
 
         var aType = helpers.types.guessType(aname)
-        if ("formatPtr" in aType && helpers.formats.seeIfIncludesOperator(aType, "index_get")) {
+
+        var indexTypeGuess = helpers.types.guessType(index)
+
+        //console.log("----- EEEEEEE", helpers.formats.seeIfIncludesOperator(aType, "index_get", indexTypeGuess))
+
+        if ("formatPtr" in aType && helpers.formats.seeIfIncludesOperator(aType, "index_get", indexTypeGuess)) {
             return formats.callOperator(aname, "index_get", index)
         }
 
@@ -641,6 +646,7 @@ var variables = {
 
         var out = helpers.registers.getFreeLabelOrRegister(itemType)
 
+        //console.log(itemType)
         //throwE(helpers.types.guessType(out))
 
         var fullReg = helpers.types.conformRegisterIfIs(out, defines.types.u32)
@@ -715,6 +721,7 @@ var variables = {
             )
             return ogout
         }
+
         return out
     },
     readAddress: function (name) {
@@ -757,7 +764,7 @@ var variables = {
         var valueType = helpers.types.guessType(value)
 
         //console.log(arrType.formatPtr?.operators)
-        if ("formatPtr" in arrType && helpers.formats.seeIfIncludesOperator(arrType, "index_set")) {
+        if ("formatPtr" in arrType && helpers.formats.seeIfIncludesOperator(arrType, "index_set", indexType)) {
             //throwE(address, index, value, globalLineConts)
             return actions.formats.callOperator(address, "index_set", [index, ",", value])
             //throwE(arrType.formatPtr.operators)
@@ -1163,7 +1170,8 @@ var functions = {
             throwE(`Cannot create function "${fname}" as it is a reserved word`)
         }
         outputCode.data.push(
-            `.type	${fname}, @function`
+            `.type	${fname}, @function`,
+            `.global ${fname}`
         )
         outputCode.text.push(
             fname + ":",
@@ -1895,8 +1903,10 @@ var formats = {
     },
     callOperator: function (parent, operator, params) {
 
-        if (typeof params != "string") {
-            throwE("[INTERNAL] Operators cannot be called with multiple parameters")
+        //console.log("CALLING", parent, operator, params)
+        if (typeof params == "string") {
+            params = [params]
+            //throwE("[INTERNAL] Operators cannot be called with multiple parameters")
         }
 
         thisStack.save();
@@ -1907,7 +1917,7 @@ var formats = {
             throwE(`"${parent}" is not a format instance or does not exist`)
         }
 
-        var paramType = helpers.types.guessType(params)
+        var paramType = helpers.types.guessType(params[0])
         var operator = helpers.formats.convertOperatorToString(operator)
 
         // here, basically all code below is old and useless now

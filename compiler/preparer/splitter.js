@@ -133,7 +133,7 @@ function split(line) {
     return outBuffer;
 }
 
-function parseFinalCode() {
+function parseFinalCode(outName, numberOfFiles) {
     //console.log(outputCode)
     var out =
         `
@@ -148,21 +148,15 @@ Compiled with love on ${String(new Date())}
 .byte \\v
 .endm
 .data
-__rc_triggerSegfaultOnNullOwnership__: .byte ${programRules.segfaultOnNullOwnership? 1 : 0}
-__PRINT_TYPE_INT__: .asciz "%i\\n"
-######## Auto included libs #######
-`
-+ autoIncludes.map(x => `\n.include "${x}"\n`).join("\n") +
-`
-###################################
-.data
 .align 4
-__this__: .4byte 0
-__xmm_sse_temp__: .4byte 0
-___TEMPORARY_OWNER___: .4byte 0 
-.global ___TEMPORARY_OWNER___
-.global __this__
+
 .extern __disable_gc__
+.extern __rc_triggerSegfaultOnNullOwnership__
+.extern __PRINT_TYPE_INT__
+.extern __this__
+.extern __xmm_sse_temp__
+.extern ___TEMPORARY_OWNER___
+
 ######## user data section ########
 `
 + outputCode.data.join("\n") +
@@ -170,25 +164,23 @@ ___TEMPORARY_OWNER___: .4byte 0
 ###################################
 .text
 
-.global main
-.global user_init
-
-user_init:
 #### compiler initation section ###
-__init__:
+__init_for_${outName}__:
+${(hasEntryFunction && numberOfFiles != 1)? (new Array(numberOfFiles)).fill(0).map((x,i)=>`call __init_for_out${i}__`).join("\n"): ""}
 `
-        + outputCode.init.join("\n") +
-        `
++ outputCode.init.join("\n") +
+`
 ret
+.global __init_for_${outName}__
 ###################################
 
-${hasEntryFunction? "main:\ncall __init__\ncall entry\nret" : "# No main function"}
+${hasEntryFunction? `.global main\nmain:\ncall __init_for_${outName}__\ncall entry\nret` : "# No main function"}
 
 ###################################
 `
 
     var index = out.split("\n").length
-    out += outputCode.text.join("\n") + "\n"
+    out += outputCode.text.join("\n") + "\n\n"
     return { out, index }
 }
 

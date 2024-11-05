@@ -1,0 +1,2 @@
+compile with "ham link.x main.x -o ./bin/out"
+run with "./bin/out"

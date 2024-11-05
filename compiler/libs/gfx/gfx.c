@@ -76,7 +76,7 @@ GC *gfx_context_allocateColor(char *color)
     __qcolor(&true_color, color);
     XGCValues gc_values = (XGCValues){.foreground = true_color.pixel};
     gc_values.fill_style = FillOpaqueStippled;
-    GC *allocated = (GC *)__allocate_wsize__(sizeof(GC));
+    GC *allocated = 0; //(GC *)__allocate_wsize__(sizeof(GC)); FIX LATER
     *allocated = XCreateGC(_cx11_display_, _cx11_window_, GCForeground, &gc_values);
     return allocated;
 }

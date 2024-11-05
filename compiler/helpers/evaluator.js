@@ -434,6 +434,7 @@ function evaluate(line) {
         // #endregion
         // #region Arrays
         else if (word == "[") {
+            //console.log("ya", line)
             var index = offsetWord(1)
             var vname = offsetWord(-1)
             if (typeof (index) == "string") {
@@ -926,7 +927,7 @@ function evaluate(line) {
                     actions.functions.createFunction(fname)
                 }
                 nextIsForward = false
-                
+
             } else if (word == "while") {
                 outputCode.autoPush(
                     `# comparison for WHILE loop`,
