@@ -1,0 +1,9 @@
+forward fopen  function<string name, conststr perms> -> p32;
+forward fclose function<p32 fp> -> none;
+forward fwrite function<string buffer, u32 size, u32 count, p32 fp> -> u32;
+forward fgets  function<string str, u32 count, p32 fp> -> string;
+forward fscanf function<p32 fp, conststr fmtstr, ...> -> u32;
+forward fgetc  function<p32 fp> -> u8;
+forward rewind function<p32 fp> -> none;
+forward fseek  function<p32 fp, u32 offset, u32 whence> -> u32;
+forward atoi   function<string s> -> u32;

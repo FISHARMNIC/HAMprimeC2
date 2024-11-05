@@ -40,7 +40,29 @@ char *strjoinmany(int numberOfStrings, ...)
     return allocatedBufferOrigin;
 }
 
-#include "sinc.h"
+
+/*
+TODO, a function that tries using a pre allocated buffer until it maxes out
+    - then it counts the size of the remaining strings
+    - allocates dynamic for all
+    - copies current
+    - copies rest
+*/
+/*
+char *optimized_strjoinmany(int numberOfStrings, ...)
+{
+    
+    asm volatile("pusha");
+
+    static tempBuffer[100];
+
+    char **stringsbase = (char **)(&numberOfStrings + 1);
+
+
+
+    asm volatile("popa"); 
+}
+*/
 
 // #region conversion functions
 
@@ -48,7 +70,7 @@ char *ftos(float num)
 {
     asm volatile("pusha");
     static char obuff[35];
-    int len = sprintf(obuff, "%f", num) + 1;
+    int len = sprintf(obuff, "%f", num);
     char *o = __rc_allocate__(len, 0);
     while (len >= 0)
     {
@@ -74,13 +96,11 @@ char *itos(int num)
     asm volatile("pusha");
     static char obuff[11];
 
-    int len = sprintf(obuff, "%i\0", num) + 1;
+    int len = sprintf(obuff, "%i\0", num);
     //printf("%i\n", len);
 
     char *o = __rc_allocate__(len, 0);
 
-    o[len] = 0;
-    len--;
     while (len >= 0)
     {
         o[len] = obuff[len];

@@ -74,6 +74,7 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Support for GMP (look at `bignums` in `test/working`)
 
 Currently working on / roadmap:
+- Linking multiple files (issue due to the init sections that each file uses)
 - Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon
 - cant use operator "+" with string parameter (tries calling `.toString` instead)
 - easier built-in array features (push,pop,forEach,etc.)
@@ -105,6 +106,7 @@ Note: This is still being worked on, and editing still has some issues. This was
 * [Class](#Formats-as-classes)
 * [Class2](#Class-Example-2)
 * [Overloads](#Operator-Overloads)
+* [Overloads(2)](#More-Overloads)
 * [Strings](#Strings)
 * [Variadics](#Variadics)
 * [C Inclusion](#C-Inclusion)
@@ -253,7 +255,7 @@ entry function<> -> u32
 ### Class Example 2
 ```Dart
 /*
-Example for something simialar to Java ArrayList/C++ vector class
+Example for something similar to Java ArrayList/C++ vector class
 */
 
 List format {
@@ -516,6 +518,128 @@ entry function<> -> u32
 
     map["joe"] <- 654;
     print_(map["joe"]);
+}
+```
+
+### More Overloads
+```Dart
+#include sys cfiles
+
+iofile format
+{
+    .fptr p32;
+
+    .iofile constructor<>
+    {
+        this.fptr <- 0;
+    }
+
+    .iofile constructor<conststr name>
+    {
+        this.fptr <- fopen(name, "wb+");
+    }
+
+    .open method<conststr name>
+    {
+        this.fptr <- fopen(name, "wb+");
+    }
+
+    .openMode method<conststr name, conststr mode>
+    {
+        this.fptr <- fopen(name, mode);
+    }
+
+    .isOpen method<> -> u8
+    {
+        return(this.fptr != 0);
+    }
+
+    .close method<> -> none
+    {
+        fclose(this.fptr);
+    }
+
+    .rewind method<> -> none
+    {
+        rewind(this.fptr);
+    }
+
+    .seekg method<u32 address> -> u32
+    {
+        return(fseek(this.fptr, address, 0));
+    }
+
+    .write method<string buffer> -> none
+    {
+        fwrite(buffer, 1, strlen(buffer), this.fptr);
+    }
+
+    .getTo method<u8 character> -> string
+    {
+        create outString <- "";
+
+        create curChar <- fgetc(this.fptr);
+        while((curChar != character) && (curChar != -1))
+        {
+            outString <- outString + curChar;
+            curChar <- fgetc(this.fptr);
+        }
+
+        return outString;
+    }
+
+    .getLine method<> -> string
+    {
+        return(this.getTo(10));
+    }
+
+    .iofile operator(shl)<string buffer> -> iofile
+    {
+        this.write(buffer);
+        return this;
+    }
+
+    .iofile operator(shl)<u32 number> -> iofile
+    {
+        this.write(itos(number));
+        return this;
+    }
+
+    .iofile operator(shr)<string:reference buffer> -> iofile
+    {
+        buffer <- this.getLine();
+        return this;
+    }
+
+    .iofile operator(shr)<u32:reference outnum> -> iofile
+    {
+        outnum <- atoi(this.getLine());
+    }
+
+}
+
+entry function<> -> u32
+{
+    create myFile <- iofile("test.txt");
+    myFile << "Rio is the best dog!\n" << 123 << "\nHello \n" << 456789 << " Bye!";
+    
+    myFile.rewind();
+    
+    create string output;
+    create u32 onum;
+
+    myFile >> output;
+    print_(output);
+
+    myFile >> onum;
+    print_(onum);
+
+    print_(myFile.getLine());
+    print_(myFile.getLine());
+
+    myFile.close();
+
+    return 0;
 }
 ```
 
