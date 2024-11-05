@@ -62,7 +62,8 @@ char *ftos(float num)
 char *ctos(char ch)
 {
     asm volatile("pusha");
-    char *o = __rc_allocate__(1, 0);
+    char *o = __rc_allocate__(2, 0);
+    o[1] = 0;
     o[0] = ch;
     asm volatile("popa");
     return o;
@@ -72,18 +73,22 @@ char *itos(int num)
 {
     asm volatile("pusha");
     static char obuff[11];
-    int len = sprintf(obuff, "%i", num) + 1;
-    // printf("SPRINTED %s\n", obuff);
+
+    int len = sprintf(obuff, "%i\0", num) + 1;
+    //printf("%i\n", len);
 
     char *o = __rc_allocate__(len, 0);
+
+    o[len] = 0;
+    len--;
     while (len >= 0)
     {
         o[len] = obuff[len];
         len--;
-        // printf("MOVING\n");
+        //printf("MOVING [%i] %i\n", len + 1, o[len + 1]);
     }
     //__rc_requestOwnership__(o, &___TEMPORARY_OWNER___);
-    // printf("RETURNING %s\n", o);
+    //printf("RETURNING %s\n", o);
     asm volatile("popa");
     return o;
 }

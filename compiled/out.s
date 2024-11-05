@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Mon Nov 04 2024 19:40:30 GMT-0700 (Mountain Standard Time)
+Compiled with love on Tue Nov 05 2024 00:40:54 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -49,18 +49,20 @@ __ALLOCFOR___method_iofile_rewind___ = 0
 __ALLOCFOR___method_iofile_seekg___ = 0
 .type	__method_iofile_write_, @function
 __ALLOCFOR___method_iofile_write___ = 0
-.type	__operator_iofile_shl_0__, @function
-__ALLOCFOR___operator_iofile_shl_0____ = 0
 .type	__method_iofile_getTo_, @function
 .4byte 1
 __STRING1__: .asciz ""
 __ALLOCFOR___method_iofile_getTo___ = 5
 .type	__method_iofile_getLine_, @function
 __ALLOCFOR___method_iofile_getLine___ = 0
-.type	__operator_iofile_shr_1__, @function
-__ALLOCFOR___operator_iofile_shr_1____ = 0
+.type	__operator_iofile_shl_0__, @function
+__ALLOCFOR___operator_iofile_shl_0____ = 0
+.type	__operator_iofile_shl_1__, @function
+__ALLOCFOR___operator_iofile_shl_1____ = 0
 .type	__operator_iofile_shr_2__, @function
 __ALLOCFOR___operator_iofile_shr_2____ = 0
+.type	__operator_iofile_shr_3__, @function
+__ALLOCFOR___operator_iofile_shr_3____ = 0
 __SIZEOF_iofile__ = 4
 # format "iofile" includes:
 #   - PROPERTY (p32) fptr
@@ -71,11 +73,15 @@ __SIZEOF_iofile__ = 4
 __STRING2__: .asciz "test.txt"
 .4byte 23
 __STRING3__: .asciz "Rio is the best dog!\n"
-.4byte 4
-__STRING4__: .asciz "123"
+.4byte 11
+__STRING4__: .asciz "\nHello \n"
+.4byte 6
+__STRING5__: .asciz " Bye!"
 __ALLOCFOR_entry__ = 12
 __TEMP8_0__: .1byte 0
 __TEMP8_1__: .1byte 0
+__TEMP32_0__: .4byte 0
+__TEMP32_1__: .4byte 0
 ###################################
 .text
 
@@ -342,34 +348,6 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-__operator_iofile_shl_0__:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___operator_iofile_shl_0____, %esp
-
-# note, read PARAM buffer -> 8(%ebp)
-pushl __this__
-movl __this__, %edx
-mov %edx, __this__
-# Calling function __method_iofile_write_
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
-call __method_iofile_write_
-mov %eax, %ecx
-add $4, %esp
-popl __this__
-movl __this__, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
 __method_iofile_getTo_:
 push %ebp
 mov %esp, %ebp
@@ -504,10 +482,73 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-__operator_iofile_shr_1__:
+__operator_iofile_shl_0__:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___operator_iofile_shr_1____, %esp
+sub $__ALLOCFOR___operator_iofile_shl_0____, %esp
+
+# note, read PARAM buffer -> 8(%ebp)
+pushl __this__
+movl __this__, %edx
+mov %edx, __this__
+# Calling function __method_iofile_write_
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+call __method_iofile_write_
+mov %eax, %ecx
+add $4, %esp
+popl __this__
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__operator_iofile_shl_1__:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_iofile_shl_1____, %esp
+
+# note, read PARAM number -> 8(%ebp)
+# Calling function itos
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+call itos
+mov %eax, %ecx
+add $4, %esp
+pushl __this__
+movl __this__, %edx
+mov %edx, __this__
+push %ecx
+# Calling function __method_iofile_write_
+push %ecx
+call __method_iofile_write_
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+popl __this__
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__operator_iofile_shr_2__:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_iofile_shr_2____, %esp
 
 pushl __this__
 movl __this__, %edx
@@ -534,10 +575,10 @@ call __rc_quick_check__
 mov %ebp, %esp
 pop %ebp
 ret
-__operator_iofile_shr_2__:
+__operator_iofile_shr_3__:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___operator_iofile_shr_2____, %esp
+sub $__ALLOCFOR___operator_iofile_shr_3____, %esp
 
 pushl __this__
 movl __this__, %edx
@@ -595,15 +636,53 @@ mov %eax, %ecx
 add $4, %esp
 mov %ecx, __this__
 push %ecx
+# Calling function __operator_iofile_shl_1__
+pushl $123
+call __operator_iofile_shl_1__
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+mov %esi, __this__
+push %esi
+push %ecx
 # Calling function __operator_iofile_shl_0__
 # converting conststr to string (function call)
 pushl $__STRING4__
 call cptos
 mov %eax, (%esp) # str is alr in stack just overwrite
 call __operator_iofile_shl_0__
-mov %eax, %esi
+mov %eax, %edi
 add $4, %esp
 pop %ecx
+pop %esi
+mov %edi, __this__
+push %esi
+push %ecx
+push %edi
+# Calling function __operator_iofile_shl_1__
+pushl $456789
+call __operator_iofile_shl_1__
+mov %eax, __TEMP32_0__
+add $4, %esp
+pop %edi
+pop %ecx
+pop %esi
+movl __TEMP32_0__, %edx
+mov %edx, __this__
+push %esi
+push %ecx
+push %edi
+# Calling function __operator_iofile_shl_0__
+# converting conststr to string (function call)
+pushl $__STRING5__
+call cptos
+mov %eax, (%esp) # str is alr in stack just overwrite
+call __operator_iofile_shl_0__
+mov %eax, __TEMP32_1__
+add $4, %esp
+pop %edi
+pop %ecx
+pop %esi
 # note, read STACK VAR myFile -> -4(%ebp)
 mov -4(%ebp), %edx
 mov %edx, __this__
@@ -620,11 +699,11 @@ mov %edx, -12(%ebp)
 # note, read STACK VAR output -> -8(%ebp)
 mov -4(%ebp), %edx
 mov %edx, __this__
-# Calling function __operator_iofile_shr_1__
+# Calling function __operator_iofile_shr_2__
 # TODO optimize if variable just do movl
 lea -8(%ebp), %edx # PASS AS REFERENCE
 push %edx
-call __operator_iofile_shr_1__
+call __operator_iofile_shr_2__
 mov %eax, %ecx
 add $4, %esp
 # note, read STACK VAR output -> -8(%ebp)
@@ -635,11 +714,11 @@ add $4, %esp
 # note, read STACK VAR onum -> -12(%ebp)
 mov -4(%ebp), %edx
 mov %edx, __this__
-# Calling function __operator_iofile_shr_2__
+# Calling function __operator_iofile_shr_3__
 # TODO optimize if variable just do movl
 lea -12(%ebp), %edx # PASS AS REFERENCE
 push %edx
-call __operator_iofile_shr_2__
+call __operator_iofile_shr_3__
 mov %eax, %ecx
 add $4, %esp
 # note, read STACK VAR onum -> -12(%ebp)
@@ -647,6 +726,24 @@ push -12(%ebp)
 pushl $__PRINT_TYPE_INT__
 call printf
 add $8, %esp
+# note, read STACK VAR myFile -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_iofile_getLine_
+call __method_iofile_getLine_
+mov %eax, %ecx
+push %ecx
+call puts
+add $4, %esp
+# note, read STACK VAR myFile -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_iofile_getLine_
+call __method_iofile_getLine_
+mov %eax, %ecx
+push %ecx
+call puts
+add $4, %esp
 # note, read STACK VAR myFile -> -4(%ebp)
 mov -4(%ebp), %edx
 mov %edx, __this__

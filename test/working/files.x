@@ -1,10 +1,3 @@
-/* 
-NOTE: MUST BE RUN USING HAM FROM COMMANDLINE, NOT USING NODE
-
-like: ham files.x -o files
-NOT : node main files.x
-*/
-
 forward fopen  function<string name, conststr perms> -> p32;
 forward fclose function<p32 fp> -> none;
 forward fwrite function<string buffer, u32 size, u32 count, p32 fp> -> u32;
@@ -64,12 +57,6 @@ iofile format
         fwrite(buffer, 1, strlen(buffer), this.fptr);
     }
 
-    .iofile operator(shl)<string buffer> -> iofile
-    {
-        this.write(buffer);
-        return this;
-    }
-
     .getTo method<u8 character> -> string
     {
         create outString <- "";
@@ -77,7 +64,7 @@ iofile format
         create curChar <- fgetc(this.fptr);
         while((curChar != character) && (curChar != -1))
         {
-           // print_(`Reading ${curChar}`);
+            //print_(`Reading ${curChar}`);
             outString <- outString + curChar;
             curChar <- fgetc(this.fptr);
         }
@@ -88,6 +75,18 @@ iofile format
     .getLine method<> -> string
     {
         return(this.getTo(10));
+    }
+
+    .iofile operator(shl)<string buffer> -> iofile
+    {
+        this.write(buffer);
+        return this;
+    }
+
+    .iofile operator(shl)<u32 number> -> iofile
+    {
+        this.write(itos(number));
+        return this;
     }
 
     .iofile operator(shr)<string:reference buffer> -> iofile
@@ -110,7 +109,7 @@ entry function<> -> u32
     */
 
     create myFile <- iofile("test.txt");
-    myFile << "Rio is the best dog!\n" << "123";
+    myFile << "Rio is the best dog!\n" << 123 << "\nHello \n" << 456789 << " Bye!";
     
     myFile.rewind();
     
@@ -122,6 +121,9 @@ entry function<> -> u32
 
     myFile >> onum;
     print_(onum);
+
+    print_(myFile.getLine());
+    print_(myFile.getLine());
 
     myFile.close();
 
