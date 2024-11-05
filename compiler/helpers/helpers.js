@@ -50,7 +50,7 @@ var types = {
             a.pointer == b.pointer &&
             a.special == b.special &&
             a.dblRef == b.dblRef &&
-            fmteq && (("reference" in a) == ("reference" in b)) &&
+            fmteq &&
             a.hasData == b.hasData &&
             a.advptr == b.advptr &&
             a.elementsHaveData == b.elementsHaveData
