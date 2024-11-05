@@ -47,6 +47,7 @@ global.scope = [];
 global.currentStackOffset = 0;
 global.requestBracket = 0;
 global.oldFormatAllocs = [] // for freeing registers in property chains like a.b.c.d
+global.nextIsForward = false
 global.macros = {
     TRUE: "1",
     FALSE: "0",

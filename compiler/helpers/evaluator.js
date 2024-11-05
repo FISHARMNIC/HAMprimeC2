@@ -837,6 +837,9 @@ function evaluate(line) {
             } else if (word == "borrow") {
                 nextThingTakesOwnership = false;
                 line.splice(wordNum--, 1)
+            } else if (word == "forward") {
+                nextIsForward = true;
+                line.splice(wordNum--, 1)
             } else if (word == "duplicate") {
                 if (offsetWord(1) != "(") {
                     throwE(`Duplicate must be called like a function with parenthesis`)
@@ -914,7 +917,7 @@ function evaluate(line) {
                 }
                 userFunctions[fname] = data
 
-                if (offsetWord(-2) != "forward") {
+                if (!nextIsForward) {
                     requestBracket = {
                         type: keywordTypes.FUNCTION,
                         data
@@ -922,6 +925,8 @@ function evaluate(line) {
 
                     actions.functions.createFunction(fname)
                 }
+                nextIsForward = false
+                
             } else if (word == "while") {
                 outputCode.autoPush(
                     `# comparison for WHILE loop`,

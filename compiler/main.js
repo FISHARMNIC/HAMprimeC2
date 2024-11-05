@@ -4,6 +4,13 @@ TODO:
     Fix chars being u32
         - theres actually a lot of issues, see files.x and all of the casts needed
 
+    Add if using overloads, and a format is passed but there is no overload for that format, convert to string and attempt string overload
+        - like iofile << Person()
+        - convert person to string and call overload with string
+
+    For forward operators, methods etc.
+        - Just have a global variable called nextIsForward that is triggered whenever the line has the word "forward" in
+            - removes word and sets flag to true which each function should manually read
 
     HOW TO REWORK SPLITTER FOR MULTILINE THINGS LIKE LAMBDAS
         - Simple, forget line breaks! just use semi-colon as splitter

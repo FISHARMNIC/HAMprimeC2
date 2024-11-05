@@ -1,7 +1,7 @@
 var assembly = {
     convertReferenceToNormalIfIs: function (reference) {
         var rtype = helpers.types.guessType(reference)
-        if(!("isReference" in rtype))
+        if (!("isReference" in rtype))
             return reference
 
         var lbl = helpers.registers.getFreeLabelOrRegister(helpers.types.convertReferenceToNormal(rtype))
@@ -49,12 +49,10 @@ var assembly = {
     },
     allocateAndSet: function (value, type, low = true) {
         var reg = helpers.registers.getFreeLabelOrRegister(type)
-        if(helpers.types.stringIsRegister(reg))
-        {
+        if (helpers.types.stringIsRegister(reg)) {
             return this.setRegister(value, helpers.registers.registerStringToLetterIfIs(reg), type, low)
         }
-        else
-        {
+        else {
             //throwE(`moving ${value} => ${reg}`)
             assembly.optimizeMove(value, reg, helpers.types.guessType(value), type)
             return reg
@@ -114,7 +112,7 @@ var assembly = {
             return getAllStackVariables()[variable].offset
         return helpers.functions.getParameterOffset(variable)
     },
-    getStackVarAsEbp: function(vname) {
+    getStackVarAsEbp: function (vname) {
         //console.log("READING", vname, currentStackOffset)
         return `-${assembly.getStackOffset(vname)}(%ebp)`
     },
@@ -470,7 +468,7 @@ var variables = {
         // }
 
         var correctAddressing = isStack ? assembly.getStackVarAsEbp(vname) : (vname)
-        if(helpers.variables.checkIfParameter(vname))
+        if (helpers.variables.checkIfParameter(vname))
             correctAddressing = (helpers.functions.getParameterOffset(vname) + 8) + "(%ebp)"
 
         if (("hasData" in type) || (vname == "___TEMPORARY_OWNER___")) {
@@ -498,22 +496,21 @@ var variables = {
                 //throwE(type)
             }
         } else {
-            if("isReference" in type)
-            {
+            if ("isReference" in type) {
                 var tdupe = objCopy(type)
                 tdupe.pointer = true
                 actions.assembly.setMemAddr(correctAddressing, tdupe, value)
             }
-            else{
-            if (isStack) {
-                assembly.optimizeMove(value, correctAddressing, type, type)
-            } else if (objectIncludes(globalVariables, vname)) {       // if glob var
-                assembly.optimizeMove(value, vname, type, type)
-                //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
-            } else {
-                throwE(`Variable ${vname} has not been declared neither locally nor globally`)
+            else {
+                if (isStack) {
+                    assembly.optimizeMove(value, correctAddressing, type, type)
+                } else if (objectIncludes(globalVariables, vname)) {       // if glob var
+                    assembly.optimizeMove(value, vname, type, type)
+                    //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
+                } else {
+                    throwE(`Variable ${vname} has not been declared neither locally nor globally`)
+                }
             }
-        }
         }
         nextThingTakesOwnership = defaultAutomaticOwnership
         return vname
@@ -1161,6 +1158,7 @@ var functions = {
         return { params: robj.reverse(), oBytes, didVari }
     },
     createFunction: function (fname) {
+        nextIsForward = false
         if (helpers.general.isReserved(fname)) {
             throwE(`Cannot create function "${fname}" as it is a reserved word`)
         }
@@ -1665,17 +1663,21 @@ var formats = {
             _scope.constructors[fname] = _data
             userFunctions[fname] = _data
 
-            requestBracket = {
-                type: keywordTypes.CONSTRUCTOR,
-                data: _data
+            if (!nextIsForward) {
+
+                requestBracket = {
+                    type: keywordTypes.CONSTRUCTOR,
+                    data: _data
+                }
+
+                functions.createFunction(fname)
+                var save = allocations.allocateMmap("$" + helpers.formatters.formatAllocMacro(_scope.name), "Allocate for THIS")
+                outputCode.autoPush(`mov %eax, __this__`)
+
+                nextThingTakesOwnership = true
+                variables.set("___TEMPORARY_OWNER___", `__this__`)
             }
-
-            functions.createFunction(fname)
-            var save = allocations.allocateMmap("$" + helpers.formatters.formatAllocMacro(_scope.name), "Allocate for THIS")
-            outputCode.autoPush(`mov %eax, __this__`)
-
-            nextThingTakesOwnership = true
-            variables.set("___TEMPORARY_OWNER___", `__this__`)
+            nextIsForward = false
             //throwE(defines.types)
         }
         else {
@@ -1700,18 +1702,24 @@ var formats = {
 
             userFunctions[fname] = _data
 
-            requestBracket = {
-                type: keywordTypes.METHOD,
-                data: _data
-            }
+            if (!nextIsForward) {
+                requestBracket = {
+                    type: keywordTypes.METHOD,
+                    data: _data
+                }
 
-            functions.createFunction(fname)
+                functions.createFunction(fname)
+            }
+            nextIsForward = false
 
             //throwE(userFunctions)
         }
 
     },
-    createOperator: function (_scope, operator, params, ret) {
+    createOperator: function (_scope, operator, params, ret, isForward = false) {
+        if (isForward) {
+            throwE("ya")
+        }
         if (typeof (params) == "string")
             params = [params]
         var params_obj = actions.functions.createParams(params)
@@ -1736,12 +1744,15 @@ var formats = {
         userFormats[_scope.name] = _scope
         userFunctions[fname] = _data
 
-        requestBracket = {
-            type: keywordTypes.OPERATOR,
-            data: _data
-        }
+        if (!nextIsForward) {
+            requestBracket = {
+                type: keywordTypes.OPERATOR,
+                data: _data
+            }
 
-        functions.createFunction(fname)
+            functions.createFunction(fname)
+        }
+        nextIsForward = false
         //throwE("created " + fname)
     },
     callConstructor: function (className, params) {
