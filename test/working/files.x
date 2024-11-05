@@ -13,6 +13,7 @@ forward fscanf function<p32 fp, conststr fmtstr, ...> -> u32;
 forward fgetc  function<p32 fp> -> u8;
 forward rewind function<p32 fp> -> none;
 forward fseek  function<p32 fp, u32 offset, u32 whence> -> u32;
+forward atoi   function<string s> -> u32;
 
 iofile format
 {
@@ -25,12 +26,12 @@ iofile format
 
     .iofile constructor<conststr name>
     {
-        this.fptr <- fopen(name, "w+");
+        this.fptr <- fopen(name, "wb+");
     }
 
     .open method<conststr name>
     {
-        this.fptr <- fopen(name, "w+");
+        this.fptr <- fopen(name, "wb+");
     }
 
     .openMode method<conststr name, conststr mode>
@@ -74,11 +75,13 @@ iofile format
         create outString <- "";
 
         create curChar <- fgetc(this.fptr);
-        while(curChar != character)
+        while((curChar != character) && (curChar != -1))
         {
+           // print_(`Reading ${curChar}`);
             outString <- outString + curChar;
             curChar <- fgetc(this.fptr);
         }
+
         return outString;
     }
 
@@ -87,23 +90,40 @@ iofile format
         return(this.getTo(10));
     }
 
-    .iofile operator(shr)<string buffer> -> iofile
+    .iofile operator(shr)<string:reference buffer> -> iofile
     {
         buffer <- this.getLine();
         return this;
+    }
+
+    .iofile operator(shr)<u32:reference outnum> -> iofile
+    {
+        outnum <- atoi(this.getLine());
     }
 
 }
 
 entry function<> -> u32
 {
+    /*
+    TODO note, references wont work for u8 16 since its just using eax and stuff, easy fix but do later
+    */
+
     create myFile <- iofile("test.txt");
-    myFile << "Hello, World! \n" << "Rio is the best dog";
+    myFile << "Rio is the best dog!\n" << "123";
     
     myFile.rewind();
     
     create string output;
-    myFile >> output;
+    create u32 onum;
 
+    myFile >> output;
     print_(output);
+
+    myFile >> onum;
+    print_(onum);
+
+    myFile.close();
+
+    return 0;
 }

@@ -8,7 +8,13 @@ TODO:
         - make sure to fix issue with elif not working first
 
 
+    - ADD REFERENCE TYPE PARAMETERS
+        - special parameter property "isReference" which forces lea then push
 
+    - Passing any pointer of has data like a string, and then modifying that in the function doens't take ownership with the actual pointer, leading the memory to be destroyed
+        - see files.x
+        - solution, maybe pass all hasData by reference, not sure
+        - maybe add type:referece like string:reference 
 
     MOVE createTemplateString TO SPLITTER INSTEAD
 

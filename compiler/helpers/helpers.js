@@ -50,11 +50,17 @@ var types = {
             a.pointer == b.pointer &&
             a.special == b.special &&
             a.dblRef == b.dblRef &&
-            fmteq &&
+            fmteq && (("reference" in a) == ("reference" in b)) &&
             a.hasData == b.hasData &&
             a.advptr == b.advptr &&
             a.elementsHaveData == b.elementsHaveData
         )
+    },
+    areEqualNonStrict: function(a,b)
+    {
+        //console.log(a,b)
+        //console.log(types.isStringOrConststrType(a), types.isStringOrConststrType(b))
+        return this.areEqual(a,b) || (types.isStringOrConststrType(a) && types.isStringOrConststrType(b))
     },
     convertTypeObjToName: function (type) {
         var name = null;
@@ -289,6 +295,11 @@ var types = {
     convertTypeToHasData: function (type) {
         type = objCopy(type)
         type.hasData = true
+        return type
+    },
+    convertReferenceToNormal: function (type) {
+        type = objCopy(type)
+        delete type.isReference
         return type
     },
     guessType: function (word) {
@@ -633,8 +644,9 @@ var functions = {
     },
     getParameterOffset: function (param) {
         var offset = 0
-        debugPrint("-----------", param)
+        //console.log("-----------", param)
         general.getMostRecentFunction().data.parameters.some(x => {
+            //console.log("checking", x, offset)
             if (x.name == param) {
                 return true
             }

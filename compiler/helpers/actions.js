@@ -1,14 +1,35 @@
 var assembly = {
-    disableGC: function() {
-        if(GCisEnabled)
-        {
+    convertReferenceToNormalIfIs: function (reference) {
+        var rtype = helpers.types.guessType(reference)
+        if(!("isReference" in rtype))
+            return reference
+
+        var lbl = helpers.registers.getFreeLabelOrRegister(helpers.types.convertReferenceToNormal(rtype))
+        outputCode.autoPush(`# Converting reference ${reference} to normal`)
+        if (helpers.types.stringIsRegister(lbl)) {
+            outputCode.autoPush(
+                `mov ${reference}, %eax`,
+                `mov (%eax), ${lbl}`
+            )
+        }
+        else {
+            outputCode.autoPush(
+                `mov ${reference}, %eax`,
+                `mov (%eax), %edx`,
+                `mov %eax, ${lbl}`
+            )
+
+        }
+        return lbl
+    },
+    disableGC: function () {
+        if (GCisEnabled) {
             outputCode.autoPush("pushw __disable_gc__; movw $1, __disable_gc__")
             GCisEnabled = false
         }
     },
-    restoreGCActive: function() {
-        if(!GCisEnabled)
-        {
+    restoreGCActive: function () {
+        if (!GCisEnabled) {
             GCisEnabled = true
             outputCode.autoPush("popw __disable_gc__")
         }
@@ -68,8 +89,7 @@ var assembly = {
     },
     pushToStack: function (value, type) {
         debugPrint(value, helpers.types.conformRegisterIfIs(value, defines.types.u32))
-        if(type == undefined)
-        {
+        if (type == undefined) {
             throwE("Unknown type of", value)
         }
         if (helpers.types.isConstant(value) || (objectIncludes(globalVariables, value) && type.pointer)) {
@@ -82,12 +102,11 @@ var assembly = {
         }
     },
     getStackOffset: function (variable) {
-
-        if(helpers.variables.checkIfOnStack(variable)) 
+        if (helpers.variables.checkIfOnStack(variable))
             return getAllStackVariables()[variable].offset
         return helpers.functions.getParameterOffset(variable)
     },
-    getStackVarAsEbp(vname) {
+    getStackVarAsEbp: function(vname) {
         //console.log("READING", vname, currentStackOffset)
         return `-${assembly.getStackOffset(vname)}(%ebp)`
     },
@@ -441,11 +460,15 @@ var variables = {
         //     throwE(`Variable ${vname} has not been declared neither locally nor globally`)
         // }
 
+        var correctAddressing = isStack ? assembly.getStackVarAsEbp(vname) : (vname)
+        if(helpers.variables.checkIfParameter(vname))
+            correctAddressing = (helpers.functions.getParameterOffset(vname) + 8) + "(%ebp)"
+
         if (("hasData" in type) || (vname == "___TEMPORARY_OWNER___")) {
             if (nextThingTakesOwnership || (vname == "___TEMPORARY_OWNER___")) {
                 outputCode.autoPush(
-                    `# requesting ownership for ${vname} (set)`,
-                    `lea ${isStack ? assembly.getStackVarAsEbp(vname) : (vname)}, %eax`,
+                    `# requesting ownership for ${vname} (set). ${("isReference" in type) ? "Note, using MOV since reference" : ""}`,
+                    `${("isReference" in type) ? "mov" : "lea"} ${correctAddressing}, %eax`,
                     `push %eax`,
                     `push ${value}`,
                     `call __rc_requestOwnership__`,
@@ -456,7 +479,7 @@ var variables = {
                 delete type.hasData
 
                 if (isStack) {
-                    assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
+                    assembly.optimizeMove(value, correctAddressing, type, type)
                 } else if (objectIncludes(globalVariables, vname)) {       // if glob var
                     assembly.optimizeMove(value, vname, type, type)
                     //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
@@ -466,14 +489,22 @@ var variables = {
                 //throwE(type)
             }
         } else {
+            if("isReference" in type)
+            {
+                var tdupe = objCopy(type)
+                tdupe.pointer = true
+                actions.assembly.setMemAddr(correctAddressing, tdupe, value)
+            }
+            else{
             if (isStack) {
-                assembly.optimizeMove(value, assembly.getStackVarAsEbp(vname), type, type)
+                assembly.optimizeMove(value, correctAddressing, type, type)
             } else if (objectIncludes(globalVariables, vname)) {       // if glob var
                 assembly.optimizeMove(value, vname, type, type)
                 //outputCode.autoPush(`mov${suffix} ${value}, ${vname}`)
             } else {
                 throwE(`Variable ${vname} has not been declared neither locally nor globally`)
             }
+        }
         }
         nextThingTakesOwnership = defaultAutomaticOwnership
         return vname
@@ -1325,6 +1356,10 @@ var functions = {
                         }
                     }
 
+                    if ("isReference" in expectedType && helpers.types.stringIsRegister(x)) {
+                        throwE("Unable to get reference of register, most likely a static value")
+                    }
+
                     if (!skip) {
                         if (helpers.types.isConstOrLit(x)) {
 
@@ -1374,11 +1409,20 @@ var functions = {
                                 // {
                                 //     throwE(x, r, fname, args, givenType)
                                 // }
-                                bbuff.push(
-                                    `# TODO optimize if variable just do movl`,
-                                    `mov ${x}, ${r}`,
-                                    `push %edx`
-                                )
+                                if ("isReference" in expectedType) {
+                                    bbuff.push(
+                                        `# TODO optimize if variable just do movl`,
+                                        `lea ${x}, ${r} # PASS AS REFERENCE`,
+                                        `push %edx`
+                                    )
+                                }
+                                else {
+                                    bbuff.push(
+                                        `# TODO optimize if variable just do movl`,
+                                        `mov ${x}, ${r}`,
+                                        `push %edx`
+                                    )
+                                }
                                 tbuff.push(bbuff)
                             }
                         }
@@ -1675,7 +1719,7 @@ var formats = {
             isPublic: inPublicMode
         }
 
-        if(_scope.operators[operator] == undefined)
+        if (_scope.operators[operator] == undefined)
             _scope.operators[operator] = [_data]
         else
             _scope.operators[operator].push(_data)
@@ -1830,6 +1874,11 @@ var formats = {
         return r;
     },
     callOperator: function (parent, operator, params) {
+
+        if (typeof params != "string") {
+            throwE("[INTERNAL] Operators cannot be called with multiple parameters")
+        }
+
         thisStack.save();
 
         var parentType = helpers.types.guessType(parent)
@@ -1838,19 +1887,28 @@ var formats = {
             throwE(`"${parent}" is not a format instance or does not exist`)
         }
 
+        var paramType = helpers.types.guessType(params)
         var operator = helpers.formats.convertOperatorToString(operator)
 
         // here, basically all code below is old and useless now
-        throwE(parentType.formatPtr.operators[operator])
+        var foundOperatorFn = parentType.formatPtr.operators[operator].find(e => {
+            return helpers.types.areEqualNonStrict(e.parameters[0].type, paramType)
+        })
 
-        var formattedName = helpers.formatters.formatOperatorName(parentType.formatPtr.name, operator)
-        //throwE(parentType.formatPtr.operators)
-        if (!objectIncludes(parentType.formatPtr.operators, formattedName)) {
-            throwE(`Operator "${operator}" does not exist in format "${parentType.formatPtr.name}"`)
+        if (foundOperatorFn == undefined) {
+            throwE(`Unable to find an overload for "${operator}" in type "${parentType.formatPtr.name}" that accepts type "${helpers.types.convertTypeObjToName(paramType)}"`)
         }
 
-        if (helpers.formats.cannotUsePrivate(parentType.formatPtr.operators[formattedName])) {
-            throwE(`The "${operator}" operator overload for ${helpers.types.convertTypeObjToName(parentType)} is private`)
+        var formattedName = foundOperatorFn.name
+        //throwE(foundOperatorFn)
+        // var formattedName = helpers.formatters.formatOperatorName(parentType.formatPtr.name, operator)
+        // //throwE(parentType.formatPtr.operators)
+        // if (!objectIncludes(parentType.formatPtr.operators, formattedName)) {
+        //     throwE(`Operator "${operator}" does not exist in format "${parentType.formatPtr.name}"`)
+        // }
+
+        if (helpers.formats.cannotUsePrivate(foundOperatorFn)) {
+            throwE(`The "${operator}" operator overload for the type "${helpers.types.convertTypeObjToName(parentType)}" is private`)
         }
 
         var sr_this = false
@@ -1866,6 +1924,7 @@ var formats = {
         // throwE("calling", formattedName, params)
         var r = functions.callFunction(formattedName, params)
         //console.log(formattedName)
+
         if ("modifiesThis" in userFunctions[formattedName]) {
             outputCode.autoPush("# Loading into __this__ because function modified it ")
             actions.assembly.optimizeMove("__this__", parent, parentType, parentType)
@@ -1946,9 +2005,9 @@ var strings = {
                 }
             }
         })
-        
+
         finalArr = finalArr.map(x => x = [x, "+"]).flat()
-        finalArr = finalArr.slice(0,finalArr.length - 1)
+        finalArr = finalArr.slice(0, finalArr.length - 1)
 
         var evaluatedOut = stringAdder(finalArr)
 

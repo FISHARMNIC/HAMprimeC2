@@ -3,6 +3,10 @@
 HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Linux. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
+- Added reference type annexing
+    - Similar to c++ pass by reference
+- Added multiple overloads per operator per class
+    - Ex. now the same class can have 2 overloads for "+", one accepts a string and one accepts an int
 - Added string interpolation! See strings example below for `stringInterpolation.x`
 - Added `forEach` (See `feach.x`. Basic support, more coming soon) 
 - Added writing into memory address specified by pointer (still WIP, many cases don't work)
@@ -71,7 +75,6 @@ All of the things below work. Scroll down for examples or click [here](https://g
 
 Currently working on / roadmap:
 - Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon
-- operator overloading with different types of parameters
 - cant use operator "+" with string parameter (tries calling `.toString` instead)
 - easier built-in array features (push,pop,forEach,etc.)
 - Lamdba functions

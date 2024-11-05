@@ -20,7 +20,7 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed" || line[wordNum + 2] == "locked")) {
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed" || line[wordNum + 2] == "locked" || line[wordNum + 2] == "reference")) {
 
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
@@ -55,6 +55,10 @@ function evaluate(line) {
                 cpy.locked = true
                 defines.types[`__${word}__lockdef__`] = cpy
                 line[wordNum] = `__${word}__staticdef__`
+            } else if (line[wordNum + 2] == "reference") {
+                cpy.isReference = true;
+                defines.types[`__${word}__reference__`] = cpy
+                line[wordNum] = `__${word}__reference__`
             }
 
             line.splice(wordNum + 1, 2)
@@ -221,6 +225,7 @@ function evaluate(line) {
                     setting = true
                 line.splice(wordNum, 1)
             }
+
 
             var baseType = helpers.types.guessType(derefData)
             var retType = helpers.types.derefType(baseType)
@@ -539,6 +544,7 @@ function evaluate(line) {
                 // })
             } else {
                 //typeStack.push(defines.types.u32)
+                outputCode.autoPush(`# SETTING ${line.join(" ")}`)
                 return actions.variables.set(word, offsetWord(2))
             }
         } else if (word[0] == '"' && word[word.length - 1] == '"') { // string literal
@@ -550,11 +556,20 @@ function evaluate(line) {
             line[wordNum] = actions.strings.createTemplateString(word.slice(1, word.length - 1))
         } else if (objectIncludes(getAllStackVariables(), word) && offsetWord(1) != ":") // get stack var
         {
-            line[wordNum] = actions.assembly.getStackVarAsEbp(word)
+            //line[wordNum] = actions.assembly.getStackVarAsEbp(word)
+            var temp = actions.assembly.getStackVarAsEbp(word)
+            line[wordNum] = actions.assembly.convertReferenceToNormalIfIs(temp)
+            outputCode.autoPush(`# note, read STACK VAR ${word} -> ${temp}`)
+
             typeStack.push(getAllStackVariables()[word].type)
         } else if (helpers.variables.checkIfParameter(word) && offsetWord(1) != ":") {   // is param
-            //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))
-            line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
+            //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))   
+            //line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
+            var temp = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
+
+            line[wordNum] = actions.assembly.convertReferenceToNormalIfIs(temp)
+            outputCode.autoPush(`# note, read PARAM ${word} -> ${temp}`)
+            
         } else if (word == "$") {
             if(offsetWord(1) == "(")
             {
