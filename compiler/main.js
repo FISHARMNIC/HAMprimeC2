@@ -1,5 +1,11 @@
 /*
 TODO:
+
+    Maybe add more autocasts when assigning var to other var
+
+    Integrate iofiles and bignums into system libraries that just get autolinked
+        - .xh files just have forward decs of opertators, methods, constructors
+
     make ide better where you can open projects and stuff and it links multiple files etc
         - something more like visual studio or xcode
 
@@ -382,7 +388,7 @@ fs.writeFileSync(__dirname + "/../compiled/debugInfo.json", JSON.stringify(lineO
 if (returnHighlight) {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: ["borrowed", ...defines.keywords, "index_get", "index_set", "add", "sub", "mul", "div", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "forward", "dynamicChildren", "__arguments", "locked"],
+        keywords: ["borrowed", ...defines.keywords, "index_get", "index_set", "add", "sub", "mul", "div", "shl", "shr", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "reference", "forward", "dynamicChildren", "__arguments", "locked"],
         types: Object.keys(defines.types),
         ppdirs: ["include", "sys"],
         allVars: [...__anyVarEverMade, "this"]

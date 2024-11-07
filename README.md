@@ -107,7 +107,7 @@ Note: This is still being worked on, and editing still has some issues. This was
 
 # Interesting examples
 * [Class](#Formats-as-classes)
-* [Class2](#Class-Example-2)
+* [Class(2)](#Class-Example-2)
 * [Overloads](#Operator-Overloads)
 * [Overloads(2)](#More-Overloads)
 * [Strings](#Strings)
