@@ -33,3 +33,15 @@ function show(zone)
     // div.scrollTop = 99999999
     }
 }
+
+function openFileChooser()
+{
+    document.getElementById("overlay").hidden = false
+    document.getElementById("popup").hidden = false
+}
+
+function closeFileChooser()
+{
+    document.getElementById("overlay").hidden = true
+    document.getElementById("popup").hidden = true
+}

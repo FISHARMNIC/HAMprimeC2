@@ -36,7 +36,17 @@
 <body
     style="font-family: 'Courier New', monospace;height:100%; overflow: hidden;background-color: #242e32;scrollbar-color: red">
 
+    <div id="popup" onmouseleave="closeFileChooser()">
+    <h2 style="margin-top: 0px;margin-left: 5px;">File Picker</h2>
+    
+    <p style="margin-left: 5px;margin-bottom: 0px;">Pick folder (located in HAMPRIMEC2/projects) </p>
+    <input id="dirsel" style="margin-left: 5px; border-radius: 5px;margin-top: 0px;">
+    <button onclick="openDir(document.getElementById('dirsel').value)">select</button>
+    </div>
     <ul class="nav">
+        <li><i title="options" class="fa fa-folder navli" aria-hidden="true" style="font-size:30px;color:white;"
+            onclick="openFileChooser()"></i></li>
+
         <li><i title="compile" class="fa fa-check-circle navli" aria-hidden="true" style="font-size:30px;color:white;"
                 onclick="comms.compile()"></i></li>
         <li><i title="compile and run" class="fa fa-arrow-circle-right navli" aria-hidden="true"
@@ -46,7 +56,9 @@
         <li class="navli" style="padding-left: 30px"></li>
         <li><img src="Ham.svg" width="35px" style="float: right;padding-top: 9px;padding-right: 5px;" class="navli"
                 onclick="window.open('https://github.com/FISHARMNIC', '_blank')"></li>
-        <!-- <li><label class="checker"><input class="toggler" id="linkGFX" type="checkbox"
+       
+       
+                <!-- <li><label class="checker"><input class="toggler" id="linkGFX" type="checkbox"
                     name="copyNewAddrToBilling">Graphics</label></li>
         <li><label class="checker"><input class="toggler" id="linkMath" type="checkbox"
                     name="copyNewAddrToBilling">Math</label></li>
@@ -123,6 +135,8 @@
     <div style="position: absolute;z-index: 100;top: 95%;left: 58%;width:180px;text-align: right !important;">
     <textarea id="info_viewer" name="code" style="width:180px;height: 20px;"></textarea>
     </div>
+
+    <div id="overlay" hidden="true" onclick="closeFileChooser()"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/fold/foldcode.min.js" integrity="sha512-Q2qfEJEU257Qlqc4/5g6iKuJNnn5L0xu2D48p8WHe9YC/kLj2UfkdGD01qfxWk+XIcHsZngcA8WuKcizF8MAHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/fold/brace-fold.min.js" integrity="sha512-5MuaB1PVXvhsYVG0Ozb0bwauN7/D1VU4P8dwo5E/xiB9SXY+VSEhIyxt1ggYk2xaB/RKqKL7rPXpm1o1IlTQDA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

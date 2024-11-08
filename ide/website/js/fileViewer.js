@@ -1,8 +1,12 @@
 function renderFiles() {
         var files = comms.getFiles()
         var fileZone = document.getElementById("zone_files")
+        var dirName = comms.getDir()
 
-        var fileZoneOut = ['<ul class="fs" style="width: 100%">']
+        var fileZoneOut = [
+            '<ul class="fs" style="width: 100%">',
+            `<li><p style="text-align:center;margin:5px;color:white">${dirName.slice(dirName.lastIndexOf("/"))}</p></li>`
+        ]
         files.forEach(x => {
             // major security bug right here
             var isFolder = x[x.length - 1] == "/"
@@ -21,5 +25,19 @@ function renderFiles() {
         var nfname = window.prompt("New file name?")
         if (nfname != null) {
             comms.createFile(nfname)
+        }
+    }
+
+    function openDir(d)
+    {
+        var out = comms.setDir(d)
+        if(out.includes("ERR"))
+        {
+            window.alert("Unable to use directory")
+        }
+        else
+        {
+        closeFileChooser()
+        renderFiles()
         }
     }

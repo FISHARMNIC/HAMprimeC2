@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Thu Nov 07 2024 09:28:44 GMT-0700 (Mountain Standard Time)
+Compiled with love on Thu Nov 07 2024 20:45:24 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -20,30 +20,52 @@ Compiled with love on Thu Nov 07 2024 09:28:44 GMT-0700 (Mountain Standard Time)
 .extern ___TEMPORARY_OWNER___
 
 ######## user data section ########
-.type	__method_Person_toString_, @function
-.global __method_Person_toString_
-.4byte 7
-__STRING0__: .asciz "Name: "
-.4byte 10
-__STRING1__: .asciz " || Age: "
-__ALLOCFOR___method_Person_toString___ = 4
-__SIZEOF_Person__ = 8
-# format "Person" includes:
-#   - PROPERTY (p8) name
-#   - PROPERTY (u32) age
+.type	__constructor_List_0_, @function
+.global __constructor_List_0_
+__ALLOCFOR___constructor_List_0___ = 0
+.type	__constructor_List_1_, @function
+.global __constructor_List_1_
+__ALLOCFOR___constructor_List_1___ = 4
+.type	__method_List_push_, @function
+.global __method_List_push_
+__ALLOCFOR___method_List_push___ = 0
+.type	__method_List_pop_, @function
+.global __method_List_pop_
+__ALLOCFOR___method_List_pop___ = 4
+.type	__method_List_every_, @function
+.global __method_List_every_
+__ALLOCFOR___method_List_every___ = 4
+.type	__method_List_toString_, @function
+.global __method_List_toString_
+.4byte 2
+__STRING0__: .asciz "["
+.4byte 2
+__STRING1__: .asciz ","
+.4byte 2
+__STRING2__: .asciz "]"
+__ALLOCFOR___method_List_toString___ = 8
+.type	__operator_List_add_0__, @function
+.global __operator_List_add_0__
+__ALLOCFOR___operator_List_add_0____ = 4
+__SIZEOF_List__ = 8
+# format "List" includes:
+#   - PROPERTY (p32) buffer
+#   - PROPERTY (u32) length
+#   - CNSTRCTR __constructor_List_0_ (0 parameters)
+#   - CNSTRCTR __constructor_List_1_ (1 parameters, variadic)
+.type	putint, @function
+.global putint
+.4byte 15
+__STRING3__: .asciz "Printing: %i\n"
+__ALLOCFOR_putint__ = 0
 .type	entry, @function
 .global entry
-.4byte 5
-__STRING2__: .asciz "Nico"
-.4byte 5
-__STRING3__: .asciz "Nina"
-.4byte 4
-__STRING4__: .asciz "Mom"
-.4byte 4
-__STRING5__: .asciz "Dad"
-.4byte 4
-__STRING6__: .asciz "Dog"
-__ALLOCFOR_entry__ = 20
+.4byte 10
+__STRING4__: .asciz "[%i,%i]\n"
+__ALLOCFOR_entry__ = 12
+__TEMP8_0__: .1byte 0
+__TEMP32_0__: .4byte 0
+__TEMP32_1__: .4byte 0
 ###################################
 .text
 
@@ -62,227 +84,683 @@ call entry
 ret
 
 ###################################
-__method_Person_toString_:
+__constructor_List_0_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_Person_toString___, %esp
+sub $__ALLOCFOR___constructor_List_0___, %esp
 
-# Reading property "name" in "__this__"
-movl __this__, %eax
-mov 0(%eax), %edx
-mov %edx, %ecx
-# Reading property "age" in "__this__"
-movl __this__, %eax
-mov 4(%eax), %edx
-mov %edx, %esi
-pushw __disable_gc__; movw $1, __disable_gc__
-push %esi
-call itos
-add $4, %esp
+# Allocate for THIS
+pushl $0
+mov $__SIZEOF_List__, %edx
+push %edx
+call __rc_allocate__
+add $8, %esp
+mov %eax, __this__
+# requesting ownership for ___TEMPORARY_OWNER___ (set). 
+lea ___TEMPORARY_OWNER___, %eax
 push %eax
-pushl $__STRING1__
-push %ecx
-pushl $__STRING0__
-pushl $4
-call strjoinmany
-add $20, %esp
-mov %eax, %edi
-popw __disable_gc__
-# Loading local variable "outStr" @-4(%ebp)
-mov %edi, -4(%ebp)
-# requesting ownership for outStr (create)
-lea -4(%ebp), %eax
-push %eax
-push %edi
+push __this__
 call __rc_requestOwnership__
 add $8, %esp
-# note, read STACK VAR outStr -> -4(%ebp)
-mov -4(%ebp), %eax
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+movl $0, 0(%eax)
+# Reading property "length" in "__this__"
+movl __this__, %eax
+movl $0, 4(%eax)
+movl __this__, %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
-# note, read STACK VAR outStr -> -4(%ebp)
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# outStr: 4
-entry:
+__constructor_List_1_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_entry__, %esp
+sub $__ALLOCFOR___constructor_List_1___, %esp
 
-# Loading local variable "size" @-4(%ebp)
-mov $5, %edx
-mov %edx, -4(%ebp)
-# note, read STACK VAR size -> -4(%ebp)
-# Asked for -4(%ebp) allocations of "Person"
+# Allocate for THIS
+pushl $0
+mov $__SIZEOF_List__, %edx
+push %edx
+call __rc_allocate__
+add $8, %esp
+mov %eax, __this__
+# requesting ownership for ___TEMPORARY_OWNER___ (set). 
+lea ___TEMPORARY_OWNER___, %eax
+push %eax
+push __this__
+call __rc_requestOwnership__
+add $8, %esp
+# note, read PARAM size -> 8(%ebp)
+# Asked for 8(%ebp) allocations of "u32"
 mov $4, %edx
-mov -4(%ebp), %eax
+mov 8(%ebp), %eax
 mul %edx
 pushl $0
 push %eax
 call __rc_allocate__
 add $8, %esp
 mov %eax, %ecx
-# Loading local variable "arr" @-8(%ebp)
-mov %ecx, -8(%ebp)
-# requesting ownership for arr (create)
-lea -8(%ebp), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ecx # Local allocation address for Person
-mov $__STRING2__, %edx
-mov %edx, 0(%eax)
-movl $17, 4(%eax)
-# note, read STACK VAR arr -> -8(%ebp)
-#Array set begin
-mov -8(%ebp), %eax
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
 mov %ecx, 0(%eax)
-# requesting ownership for array index
+# requesting ownership for __this__ (property)
 lea 0(%eax), %eax
 push %eax
 push %ecx
 call __rc_requestOwnership__
 add $8, %esp
-#Set end
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ecx # Local allocation address for Person
-mov $__STRING3__, %edx
-mov %edx, 0(%eax)
-movl $17, 4(%eax)
-# note, read STACK VAR arr -> -8(%ebp)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ecx, 4(%eax)
-# requesting ownership for array index
-lea 4(%eax), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ecx # Local allocation address for Person
-mov $__STRING4__, %edx
-mov %edx, 0(%eax)
-movl $48, 4(%eax)
-# note, read STACK VAR arr -> -8(%ebp)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ecx, 8(%eax)
-# requesting ownership for array index
-lea 8(%eax), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ecx # Local allocation address for Person
-mov $__STRING5__, %edx
-mov %edx, 0(%eax)
-movl $43, 4(%eax)
-# note, read STACK VAR arr -> -8(%ebp)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ecx, 12(%eax)
-# requesting ownership for array index
-lea 12(%eax), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ecx # Local allocation address for Person
-mov $__STRING6__, %edx
-mov %edx, 0(%eax)
-movl $10, 4(%eax)
-# note, read STACK VAR arr -> -8(%ebp)
-#Array set begin
-mov -8(%ebp), %eax
-mov %ecx, 16(%eax)
-# requesting ownership for array index
-lea 16(%eax), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-# Loading local variable "__LABEL2__" @-12(%ebp)
+# note, read PARAM size -> 8(%ebp)
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 8(%ebp), %edx
+mov %edx, 4(%eax)
+# Loading local variable "i" @-4(%ebp)
 mov $0, %edx
-mov %edx, -12(%ebp)
-# Loading local variable "__LABEL3__" @-16(%ebp)
-mov $0, %edx
-mov %edx, -16(%ebp)
-# note, read STACK VAR arr -> -8(%ebp)
-# forEach loop
-mov -8(%ebp), %eax # load arr
-mov -4(%eax), %edx # get entry reference
-mov 8(%edx),  %edx # get size
-shr $2, %edx # divide by 4 (bytes to u32 or u16)
-mov %edx, -16(%ebp) # size to arr len holder
-mov (%eax), %eax # load first element into A
-mov %eax, %ecx
-# Loading local variable "item" @-20(%ebp)
-mov %ecx, -20(%ebp)
-# requesting ownership for item (create)
-lea -20(%ebp), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
+mov %edx, -4(%ebp)
 __LABEL0__:
-# comparison for forEach loop
-mov -12(%ebp), %eax 
-cmp -16(%ebp), %eax
-jge __LABEL1__ # exit if finished
+# note, read STACK VAR i -> -4(%ebp)
+# note, read PARAM size -> 8(%ebp)
+mov -4(%ebp), %eax
+mov 8(%ebp), %edx
+mov $0, %cl
+cmp %edx, %eax
+setl %cl
+# comparison for WHILE loop
+cmpb $1, %cl
+jne __LABEL1__
+# note, read STACK VAR i -> -4(%ebp)
+# note, read STACK VAR i -> -4(%ebp)
+mov -4(%ebp), %eax
+add $1, %eax
+mov %eax, %ecx
+mov %ecx, %eax
+add $2, %eax
+mov (%ebp, %eax, 4), %esi
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %edi
+#Array set begin
+# array load trash awful. Fix this bad optimize
+push %edi
+mov -4(%ebp), %eax
+shl $2, %eax
+add (%esp), %eax
+add $4, %esp
+mov %esi, (%eax)
+#Set end
+# note, read STACK VAR i -> -4(%ebp)
+mov -4(%ebp), %eax
+add $1, %eax
+mov %eax, %ecx
+# SETTING i <- %ecx
+mov %ecx, -4(%ebp)
+jmp __LABEL0__
+__LABEL1__:
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# i: 4
+__method_List_push_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_push___, %esp
+
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+mov %ecx, %eax
+add $1, %eax
+mov %eax, %esi
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov %esi, 4(%eax)
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+movb $0, __TEMP8_0__
+cmp $1, %ecx
+sete __TEMP8_0__
+cmpb $1, __TEMP8_0__
+jne __LABEL2__
+push %ecx
+# Asked for 1 allocations of "u32"
+pushl $0
+pushl $4
+call __rc_allocate__
+add $8, %esp
+pop %ecx
+mov %eax, %ecx
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov %ecx, 0(%eax)
+# requesting ownership for __this__ (property)
+lea 0(%eax), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+jmp __LABEL3__
+__LABEL2__:
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+# Asked for %ecx allocations of "u32"
+mov $4, %edx
+mov %ecx, %eax
+mul %edx
+pushl $0
+push %eax
+call __rc_allocate__
+add $8, %esp
+mov %eax, %esi
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %edi
+# realloc buffer
+push %edi
+push %esi
+call __copydata__
+add $8, %esp
+mov %eax, __TEMP32_0__
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+movl __TEMP32_0__, %edx
+mov %edx, 0(%eax)
+# requesting ownership for __this__ (property)
+lea 0(%eax), %eax
+push %eax
+push __TEMP32_0__
+call __rc_requestOwnership__
+add $8, %esp
+jmp __LABEL3__
+__LABEL4__:
+__LABEL3__:
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+mov %ecx, %eax
+sub $1, %eax
+mov %eax, %esi
+# note, read PARAM element -> 8(%ebp)
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %edi
+#Array set begin
+mov 8(%ebp), %edx
+mov %edx, (%edi, %esi, 4) # mhm
+#Set end
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+mov %ecx, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_List_pop_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_pop___, %esp
+
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+mov %ecx, %eax
+sub $1, %eax
+mov %eax, %esi
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov %esi, 4(%eax)
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %esi
 #indexing array
-mov -8(%ebp), %eax
-xor %esi, %esi
-mov -12(%ebp), %edx
+mov %esi, %eax
+mov (%eax, %ecx, 4), %edi
+# Loading local variable "retValue" @-4(%ebp)
+mov %edi, -4(%ebp)
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+# Asked for %ecx allocations of "u32"
+mov $4, %edx
+mov %ecx, %eax
+mul %edx
+pushl $0
+push %eax
+call __rc_allocate__
+add $8, %esp
+mov %eax, %esi
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %edi
+# realloc buffer
+push %edi
+push %esi
+call __copydata__
+add $8, %esp
+mov %eax, __TEMP32_0__
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+movl __TEMP32_0__, %edx
+mov %edx, 0(%eax)
+# requesting ownership for __this__ (property)
+lea 0(%eax), %eax
+push %eax
+push __TEMP32_0__
+call __rc_requestOwnership__
+add $8, %esp
+# note, read STACK VAR retValue -> -4(%ebp)
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# note, read STACK VAR retValue -> -4(%ebp)
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# retValue: 4
+__method_List_every_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_every___, %esp
+
+# Loading local variable "i" @-4(%ebp)
+mov $0, %edx
+mov %edx, -4(%ebp)
+__LABEL5__:
+# note, read STACK VAR i -> -4(%ebp)
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+mov -4(%ebp), %eax
+movb $0, __TEMP8_0__
+cmp %ecx, %eax
+setl __TEMP8_0__
+# comparison for WHILE loop
+cmpb $1, __TEMP8_0__
+jne __LABEL6__
+# note, read STACK VAR i -> -4(%ebp)
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+#indexing array
+mov %ecx, %eax
+mov -4(%ebp), %edx
 mov %edx, %edx
 mov (%eax, %edx, 4), %esi
-mov %esi, -20(%ebp)
-# note, read STACK VAR item -> -20(%ebp)
-mov -20(%ebp), %edx
+# note, read PARAM iterator -> 8(%ebp)
+push %esi
+push %ecx
+# Calling function __not_a_function__
+push %esi
+call *8(%ebp)
+mov %eax, %edi
+add $4, %esp
+pop %ecx
+pop %esi
+# note, read STACK VAR i -> -4(%ebp)
+mov -4(%ebp), %eax
+add $1, %eax
+mov %eax, %ecx
+# SETTING i <- %ecx
+mov %ecx, -4(%ebp)
+jmp __LABEL5__
+__LABEL6__:
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# i: 4
+__method_List_toString_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_toString___, %esp
+
+pushl $__STRING0__
+call cptos
+add $4, %esp
+mov %eax, %ecx
+# Loading local variable "build" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for build (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# Loading local variable "i" @-8(%ebp)
+mov $0, %edx
+mov %edx, -8(%ebp)
+__LABEL7__:
+# Reading property "length" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %ecx
+mov %ecx, %eax
+sub $1, %eax
+mov %eax, %esi
+# note, read STACK VAR i -> -8(%ebp)
+mov -8(%ebp), %eax
+movb $0, __TEMP8_0__
+cmp %esi, %eax
+setl __TEMP8_0__
+# comparison for WHILE loop
+cmpb $1, __TEMP8_0__
+jne __LABEL8__
+# note, read STACK VAR i -> -8(%ebp)
+# note, read STACK VAR build -> -4(%ebp)
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+#indexing array
+mov %ecx, %eax
+mov -8(%ebp), %edx
+mov %edx, %edx
+mov (%eax, %edx, 4), %esi
+pushw __disable_gc__; movw $1, __disable_gc__
+pushl $__STRING1__
+push %esi
+call itos
+add $4, %esp
+push %eax
+push -4(%ebp)
+pushl $3
+call strjoinmany
+add $16, %esp
+mov %eax, %edi
+popw __disable_gc__
+# SETTING build <- %edi
+# requesting ownership for build (set). 
+lea -4(%ebp), %eax
+push %eax
+push %edi
+call __rc_requestOwnership__
+add $8, %esp
+# note, read STACK VAR i -> -8(%ebp)
+mov -8(%ebp), %eax
+add $1, %eax
+mov %eax, %ecx
+# SETTING i <- %ecx
+mov %ecx, -8(%ebp)
+jmp __LABEL7__
+__LABEL8__:
+# note, read STACK VAR i -> -8(%ebp)
+# note, read STACK VAR build -> -4(%ebp)
+# Reading property "buffer" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+#indexing array
+mov %ecx, %eax
+mov -8(%ebp), %edx
+mov %edx, %edx
+mov (%eax, %edx, 4), %esi
+pushw __disable_gc__; movw $1, __disable_gc__
+pushl $__STRING2__
+push %esi
+call itos
+add $4, %esp
+push %eax
+push -4(%ebp)
+pushl $3
+call strjoinmany
+add $16, %esp
+mov %eax, %edi
+popw __disable_gc__
+# SETTING build <- %edi
+# requesting ownership for build (set). 
+lea -4(%ebp), %eax
+push %eax
+push %edi
+call __rc_requestOwnership__
+add $8, %esp
+# note, read STACK VAR build -> -4(%ebp)
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# note, read STACK VAR build -> -4(%ebp)
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# build: 4
+# i: 8
+__operator_List_add_0__:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_List_add_0____, %esp
+
+# copying buffer
+pushl __this__
+call __duplicate__
+add $4, %esp
+
+mov %eax, %ecx
+# Loading local variable "dupe" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for dupe (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# note, read PARAM rhs -> 8(%ebp)
+# note, read STACK VAR dupe -> -4(%ebp)
+pushl __this__
+mov -4(%ebp), %edx
 mov %edx, __this__
-# Calling function __method_Person_toString_
-call __method_Person_toString_
+# Calling function __method_List_push_
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+call __method_List_push_
+mov %eax, %ecx
+add $4, %esp
+popl __this__
+# note, read STACK VAR dupe -> -4(%ebp)
+mov -4(%ebp), %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# note, read STACK VAR dupe -> -4(%ebp)
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# dupe: 4
+putint:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR_putint__, %esp
+
+# note, read PARAM i -> 8(%ebp)
+# Calling function printf
+# TODO optimize if variable just do movl
+mov 8(%ebp), %edx
+push %edx
+pushl $__STRING3__
+call printf
+mov %eax, %ecx
+add $8, %esp
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+entry:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR_entry__, %esp
+
+# Calling function __constructor_List_0_
+call __constructor_List_0_
+mov %eax, %ecx
+# Loading local variable "myList" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for myList (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# note, read STACK VAR myList -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_List_push_
+pushl $123
+call __method_List_push_
+mov %eax, %ecx
+add $4, %esp
+# note, read STACK VAR myList -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_List_push_
+pushl $456
+call __method_List_push_
+mov %eax, %ecx
+add $4, %esp
+# note, read STACK VAR myList -> -4(%ebp)
+# Reading property "buffer" in "-4(%ebp)"
+movl -4(%ebp), %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+#indexing array
+mov %ecx, %eax
+mov 0(%eax), %esi
+# note, read STACK VAR myList -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+push %esi
+push %ecx
+# Calling function __method_List_pop_
+call __method_List_pop_
+mov %eax, %edi
+pop %ecx
+pop %esi
+push %esi
+push %ecx
+push %edi
+# Calling function printf
+push %edi
+push %esi
+pushl $__STRING4__
+call printf
+mov %eax, __TEMP32_0__
+add $12, %esp
+pop %edi
+pop %ecx
+pop %esi
+# note, read STACK VAR myList -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_List_push_
+pushl $321
+call __method_List_push_
+mov %eax, %ecx
+add $4, %esp
+lea putint, %ecx
+# note, read STACK VAR myList -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+push %ecx
+# Calling function __method_List_every_
+push %ecx
+call __method_List_every_
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+# Calling function __constructor_List_1_
+pushl $3
+pushl $2
+pushl $1
+pushl $3
+call __constructor_List_1_
+mov %eax, %ecx
+add $16, %esp
+# Loading local variable "secondList" @-8(%ebp)
+mov %ecx, -8(%ebp)
+# requesting ownership for secondList (create)
+lea -8(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# note, read STACK VAR secondList -> -8(%ebp)
+mov -8(%ebp), %edx
+mov %edx, __this__
+# Calling function __operator_List_add_0__
+pushl $4
+call __operator_List_add_0__
+mov %eax, %ecx
+add $4, %esp
+mov %ecx, __this__
+push %ecx
+# Calling function __operator_List_add_0__
+pushl $5
+call __operator_List_add_0__
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+# Loading local variable "thirdList" @-12(%ebp)
+mov %esi, -12(%ebp)
+# requesting ownership for thirdList (create)
+lea -12(%ebp), %eax
+push %eax
+push %esi
+call __rc_requestOwnership__
+add $8, %esp
+# note, read STACK VAR thirdList -> -12(%ebp)
+mov -12(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_List_toString_
+call __method_List_toString_
 mov %eax, %ecx
 push %ecx
 call puts
 add $4, %esp
-incw -12(%ebp)
-jmp __LABEL0__
-__LABEL1__:
 mov $0, %eax
 push %eax
 call __rc_free_all__
@@ -297,9 +775,7 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# size: 4
-# arr: 8
-# __LABEL2__: 12
-# __LABEL3__: 16
-# item: 20
+# myList: 4
+# secondList: 8
+# thirdList: 12
 

@@ -83,6 +83,12 @@ var comms = {
     getFiles: function () {
         return JSON.parse(get("ls")).data
     },
+    setDir: function(dir) {
+        return get(`sd/${dir}`)
+    },
+    getDir: function(dir) {
+        return get(`gd`)
+    },
     runCompiled: function () {
         show("terminal")
         getTerminal().value = "Compiling..."

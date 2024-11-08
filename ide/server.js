@@ -24,7 +24,7 @@ var server = http.createServer(function (req, res) {
     req.on('end', function () {
 
       body = JSON.parse(body)
-      var out = fs.writeFileSync(`${__dirname}/../test/working/${body.currentOpenFile}`, body.textContent)
+      var out = fs.writeFileSync(`${currentDirectory}/${body.currentOpenFile}`, body.textContent)
       if (out) {
         res.end('success')
       } else {

@@ -243,3 +243,29 @@ div.saveIcon {
     padding: 6.5px;
     padding-bottom: 3.0px;
 }
+
+/* taken from https://stackoverflow.com/questions/8502019/how-to-place-div-on-top-of-all-and-on-the-middle-of-page */
+#overlay {
+    position: absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    width:100%;
+    height:100%;
+    z-index:998;
+    background-color: Black;
+    opacity: .5;
+}
+
+#popup {
+    position: absolute;
+    width:50%;
+    height: 50%;
+    left:25%;
+    top: 25%;
+    background-color:#657f89;
+    border: 3px solid var(--env);
+    z-index: 999;
+    border-radius: 5px;
+}

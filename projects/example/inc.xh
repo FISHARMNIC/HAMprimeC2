@@ -1,0 +1,7 @@
+Person format
+{
+    .name string;
+    .age u32;
+
+    forward .toString method<> -> string;
+}

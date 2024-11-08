@@ -1,3 +1,5 @@
+globalThis.currentDirectory = `${__dirname}/../test/working`
+
 globalThis.fs = require("fs")
 
 function replace0s(line) {
@@ -34,7 +36,9 @@ function execute(command, stringify = true, acceptError = false) {
 
 module.exports = function (command) {
     if (command == "ls") {
-        return execute(`ls -p ${__dirname}/../test/working`)
+        return execute(`ls -p ${currentDirectory}`)
+    } else if(command == "gd") {
+        return currentDirectory
     } else if (command == "asm") {
         return String(fs.readFileSync(`${__dirname}/../compiled/out.s`))
     } else if (command == "highlightInfo")
@@ -68,7 +72,7 @@ module.exports = function (command) {
 
         console.log(command, sub)
         if (command == "read") {
-            return String(fs.readFileSync(`${__dirname}/../test/working/${sub}`))
+            return String(fs.readFileSync(`${currentDirectory}/${sub}`))
         } else if (command == "compile") {
             var out;
             try {
@@ -79,7 +83,23 @@ module.exports = function (command) {
             }
             return out
         } else if(command == "createFile") {
-            return String(fs.writeFileSync(`${__dirname}/../test/working/${sub}`, "", {flag: "a"}))
+            return String(fs.writeFileSync(`${currentDirectory}/${sub}`, "", {flag: "a"}))
+        } else if(command == "sd") {
+            sub = sub.trim()
+            if(sub.includes(".") || sub.length == 0)
+            {
+                return("ERR FINV")
+            }
+            else
+            {
+                currentDirectory = `${__dirname}/../projects/${sub}`
+                console.log(currentDirectory)
+                if(!fs.existsSync(currentDirectory))
+                {
+                    fs.mkdirSync(currentDirectory)
+                    fs.mkdirSync(currentDirectory + "/bin")
+                }
+            }
         }
     }
 }
