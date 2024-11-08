@@ -806,7 +806,8 @@ function evaluate(line) {
                                 `call print_float_noPromo`,
                                 `add $4, %esp`
                             )
-                        } if("isChar" in dataType)
+                        }
+                        else if("isChar" in dataType)
                         {
                             outputCode.autoPush(
                                 `call putchar`,
@@ -1058,7 +1059,40 @@ function evaluate(line) {
             } 
             else if (word == "privates") {
                 inPublicMode = false;
-            } 
+            }
+            else if (word == "root") {
+                if (offsetWord(1) != "(") {
+                    throwE(`root must be called like a function with parenthesis`)
+                } else if (offsetWord(3) != ")") {
+                    throwE(`root can only take one value`)
+                }
+                //throwE(offsetWord(2))
+
+                var num = offsetWord(2)
+                var type = helpers.types.guessType(num)
+
+                if(helpers.types.isConstant(num) || helpers.types.stringIsRegister(num))
+                {
+                    outputCode.autoPush(`movl ${(helpers.types.formatIfConstant(num))}, __xmm_sse_temp__`)
+                    num = "__xmm_sse_temp__"
+                }
+
+                if(!type.float)
+                {
+                    outputCode.autoPush(`cvtsi2ss ${num}, %xmm2`)
+                    num = "%xmm2"
+                }
+                
+                //outputCode.autoPush(`${type.float? "movss" : "cvtsi2ss"} ${num}, %xmm2`)
+
+                outputCode.autoPush(`sqrtss ${num}, %xmm1`)
+
+                var lbl = helpers.variables.newTempLabel(defines.types.f32)
+                outputCode.autoPush(`movss %xmm1, ${lbl}`)
+
+                line[wordNum] = lbl
+                line.splice(wordNum + 1, 3)
+            }
         }
         // #endregion
         // #region Functions
