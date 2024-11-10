@@ -1,8 +1,12 @@
 /*
 TODO:
 
+    Special flag for all untyped variables that disables warning on casting when assuming different type
+
+    Allow print_ of multiple statements (easy, dont be lazy)
+
     Maybe add more autocasts when assigning var to other var
-        - no
+        - maybe no seems weird like converts to string then try to add seems like a mess
 
     Integrate iofiles and bignums into system libraries that just get autolinked
         - .xh files just have forward decs of opertators, methods, constructors
@@ -359,6 +363,7 @@ inputCode = inputCode.map((line, lineNo) => {
     helpers.registers.resetExtendedTypes()
     typeStack = []
     oldFormatAllocs = []
+    allocationOnLine = false
 
     lsplit = nest.nest(lsplit);
     lsplit = nest.orderDeepestFirst(lsplit)

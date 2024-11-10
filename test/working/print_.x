@@ -5,7 +5,7 @@ Person format
 
     .toString method<> -> string
     {
-        return_new("Age: " + this.age + ", name: " + this.name);
+        return("Age: " + this.age + ", name: " + this.name);
     }
 }
 

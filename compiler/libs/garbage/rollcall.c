@@ -6,6 +6,7 @@ __linked_t *Roster = 0;
 static int allocated_bytes = 0;
 
 int __disable_gc__ = 0;
+void* __gc_dontClear__ = (void*)-1;
 
 const int SIZE_ROSTER_AND_ENTRY = (sizeof(roster_entry_t) + sizeof(roster_entry_t *));
 
@@ -94,14 +95,15 @@ void __rc_collect__()
         }
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
-        //printf("|- Checking %p vs %p\n", owner_should_point_to, owner_points_to);
-        if (owner_points_to != owner_should_point_to)
+        //printf("|- Checking %p vs %p and %p\n", owner_should_point_to, owner_points_to, __gc_dontClear__);
+        if ((owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
         {
             //printf("\t ^- Discarding item was %s now %p\n", owner_should_point_to, owner_points_to);
             list = __linked_remove(&Roster, list);
         }
         else
         {
+            printf("\t ^- Skipped \n");
             list = list->next;
         }
     }
@@ -180,6 +182,7 @@ int* __duplicate__(int* src)
 
 void quit(int code)
 {
+    __gc_dontClear__ = (void*) -1;
     __rc_free_all__();
     exit(code);
 }

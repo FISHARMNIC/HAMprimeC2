@@ -1003,7 +1003,7 @@ function evaluate(line) {
                 outputCode.autoPush(
                     `mov ${out}, ${actions.assembly.getStackVarAsEbp(elementVariable)}`
                 )
-            }else if (word == "return") {
+            }else if (word == "return" || word == "return_new") {
                 debugPrint("closer", line, scope)
 
                 var wrd = offsetWord(1)
@@ -1022,21 +1022,6 @@ function evaluate(line) {
                 }
 
                 actions.functions.closeFunction(helpers.general.getMostRecentFunction(), oldStack, true, wrd)
-            } else if (word == "return_new") {
-                debugPrint("closer", line, scope)
-
-                var wrd = offsetWord(1)
-                if (offsetWord(1) == "(") {
-                    wrd = offsetWord(2)
-                } else {
-                    wrd = evaluate([wrd])[0]
-                    if (line.length != 2) {
-                        throwE(`Place parenthesis around return statement [${line.join(" ")}]. like: return(stuff)`)
-                    }
-                }
-
-                outputCode.autoPush("# taking ownership AND returning")
-                actions.functions.closeFunction(helpers.general.getMostRecentFunction(), oldStack, true, wrd, true)
             }
             else if (word == "if") {
                 var localExit = helpers.variables.newUntypedLabel() // jump out of this if, but not out of whole block

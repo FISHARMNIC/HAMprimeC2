@@ -3,6 +3,8 @@
 HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Linux. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
+- Removed `return_new`!
+    - Compiler now automatically handles returning un-owned data
 - Improved untyped variables
 - Format properties can now be untyped
     - assume type of first value that they get assigned
@@ -111,6 +113,7 @@ Note: This is still being worked on, and editing still has some issues. This was
 # Interesting examples
 * [Class](#Formats-as-classes)
 * [Class(2)](#Class-Example-2)
+* [Type Inference](#Type-inference-example)
 * [Overloads](#Operator-Overloads)
 * [Overloads(2)](#More-Overloads)
 * [Strings](#Strings)
@@ -370,6 +373,40 @@ entry function<> -> u32
     create thirdList <- (secondList + 4 + 5);
     print_(thirdList);
     
+    return 0;
+}
+```
+
+### Type inference example
+```dart
+/*
+Limitations
+    - No auto parameters
+    - Cannot pass uninitialized untyped variables to functions
+    - Untyped variables assume the type of the first value that they are given
+*/
+Person format
+{
+    .name;
+    .age;
+
+    .Person constructor<string n, u32 age>
+    {
+        this.name <- n;
+        this.age  <- age;
+    }
+
+    .toString method<> -> auto
+    {
+        return(`${this.name} is ${this.age} years old`);
+    }
+}
+
+entry function<> -> auto
+{
+    create me <- Person("Nico", 18);
+    print_(me);
+
     return 0;
 }
 ```

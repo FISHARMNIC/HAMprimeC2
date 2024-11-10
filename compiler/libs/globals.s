@@ -12,3 +12,4 @@ ___TEMPORARY_OWNER___: .4byte 0
 .global ___TEMPORARY_OWNER___
 .global __rc_triggerSegfaultOnNullOwnership__
 .global __PRINT_TYPE_INT__
+.global __gc_dontClear__

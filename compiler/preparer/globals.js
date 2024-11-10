@@ -295,6 +295,7 @@ global.keywordTypes = {
     FOREACH: 8
 }
 
+
 global.quickSplit = function (inputCode) {
     return inputCode.replace(/\n/g, ";").split(";").filter(x => x).map(x => x.replace(/\t/g, ""))
 }

@@ -58,6 +58,7 @@ module.exports = function (arr) {
         `add \$${numStrs * 4 + 4}, %esp`,
         `mov %eax, ${retLbl}`
     )
+    allocationOnLine = true
     actions.assembly.restoreGCActive()
     // outputCode.autoPush(`popa`)
 

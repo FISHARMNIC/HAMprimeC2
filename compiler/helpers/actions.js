@@ -973,7 +973,7 @@ var allocations = {
     allocateMmap: function (bytes, note = "", restricted = 0) {
         //debugPrint("PUSHING")
         assembly.pushClobbers()
-
+        //allocationOnLine = true
         outputCode.autoPush(`# ${note}`)
         outputCode.autoPush(`pushl \$${restricted}`)
         assembly.pushToStack(bytes, defines.types.u32)
@@ -1202,13 +1202,14 @@ var functions = {
             d = d.data
         debugPrint("SC", scope, rVal)
 
-        if (forceOwnNew) {
-            if (("returnType" in d) && (rVal != null) && (helpers.types.guessType(rVal).hasData == true) && forceOwnNew) {
-                variables.set("___TEMPORARY_OWNER___", rVal)
-            } else {
-                throwE(`"return_new ${rVal}" doesn't return any allocated data. Use "return"`)
-            }
-        }
+        // if (forceOwnNew) {
+        //     outputCode.autoPush("# Returning new allocation")
+        //     if (("returnType" in d) && (rVal != null) && (helpers.types.guessType(rVal).hasData == true) && forceOwnNew) {
+        //         variables.set("___TEMPORARY_OWNER___", rVal)
+        //     } else {
+        //         throwE(`"return_new ${rVal}" doesn't return any allocated data. Use "return"`)
+        //     }
+        // }
 
         if (rVal != null) {
 
@@ -1216,6 +1217,11 @@ var functions = {
                 // TODO HERE
                 var givenRetType = helpers.types.guessType(rVal)
                 var scopeRetType = scope.data.returnType
+
+                if((helpers.types.guessType(rVal).hasData == true))
+                    {
+                        actions.assembly.optimizeMove(rVal, "__gc_dontClear__",givenRetType,defines.types.p32)
+                    }
 
                 if (scopeRetType == undefined) {
                     throwE(`No given return type in function "${scope.data.name}"`)
@@ -1231,7 +1237,10 @@ var functions = {
                 else if (!helpers.types.areEqual(givenRetType, scopeRetType)) {
                     var gtname = helpers.types.convertTypeObjToName(givenRetType)
                     //console.log(givenRetType)
-                    throwW(`Return type "${gtname}" does not match expected return type "${helpers.types.convertTypeObjToName(scopeRetType)}"\n ^^^^^^^ [FIXED BY] Retyping function to return "${gtname}"`)
+                    if(!("unknown" in scopeRetType))
+                    {
+                        throwW(`Return type "${gtname}" does not match expected return type "${helpers.types.convertTypeObjToName(scopeRetType)}"\n ^^^^^^^ [FIXED BY] Retyping function to return "${gtname}"`)
+                    }
                     scope.data.returnType = givenRetType
                 }
             }
@@ -1788,7 +1797,7 @@ var formats = {
 
         // if (lst == keywordTypes.FORMAT || lst == keywordTypes.CONSTRUCTOR || lst == keywordTypes.METHOD) {
         //     sr_this = true
-        //     outputCode.autoPush(`pushl __this__ # poop`)
+        //     outputCode.autoPush(`pushl __this__ # hi`)
         // }
 
         if (Object.keys(userFormats[className].constructors).length == 0) {

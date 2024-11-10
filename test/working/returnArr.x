@@ -1,8 +1,6 @@
 newArr function<> -> array
 {
-    create someArr <- {1,2,3};
-    return someArr;
-    // or you can do return_new({1,2,3});
+    return({1,2,3});
 }
 
 

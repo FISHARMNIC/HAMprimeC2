@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Sat Nov 09 2024 20:30:08 GMT-0700 (Mountain Standard Time)
+Compiled with love on Sun Nov 10 2024 16:54:26 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -127,13 +127,7 @@ call strjoinmany
 add $24, %esp
 mov %eax, %edi
 popw __disable_gc__
-# taking ownership AND returning
-# requesting ownership for ___TEMPORARY_OWNER___ (set). 
-lea ___TEMPORARY_OWNER___, %eax
-push %eax
-push %edi
-call __rc_requestOwnership__
-add $8, %esp
+mov %edi, __gc_dontClear__
 mov %edi, %eax
 call __rc_quick_check__
 
@@ -176,6 +170,14 @@ mov %eax, %ecx
 push %ecx
 call puts
 add $4, %esp
+mov $0, %eax
+push %eax
+call __rc_free_all__
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
 call __rc_free_all__
 mov  $0, %eax
 
