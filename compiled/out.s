@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Fri Nov 08 2024 09:45:51 GMT-0700 (Mountain Standard Time)
+Compiled with love on Sat Nov 09 2024 20:30:08 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -20,10 +20,28 @@ Compiled with love on Fri Nov 08 2024 09:45:51 GMT-0700 (Mountain Standard Time)
 .extern ___TEMPORARY_OWNER___
 
 ######## user data section ########
+.type	__constructor_Person_0_, @function
+.global __constructor_Person_0_
+__ALLOCFOR___constructor_Person_0___ = 0
+.type	__method_Person_toString_, @function
+.global __method_Person_toString_
+.4byte 1
+__STRING0__: .asciz ""
+.4byte 5
+__STRING1__: .asciz " is "
+.4byte 11
+__STRING2__: .asciz " years old"
+__ALLOCFOR___method_Person_toString___ = 0
+__SIZEOF_Person__ = 8
+# format "Person" includes:
+#   - PROPERTY (p8) name
+#   - PROPERTY (u32) age
+#   - CNSTRCTR __constructor_Person_0_ (2 parameters)
 .type	entry, @function
 .global entry
-__ALLOCFOR_entry__ = 0
-__TEMP32_0__: .4byte 0
+.4byte 5
+__STRING3__: .asciz "Nico"
+__ALLOCFOR_entry__ = 4
 ###################################
 .text
 
@@ -42,18 +60,121 @@ call entry
 ret
 
 ###################################
+__constructor_Person_0_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___constructor_Person_0___, %esp
+
+# Allocate for THIS
+pushl $0
+mov $__SIZEOF_Person__, %edx
+push %edx
+call __rc_allocate__
+add $8, %esp
+mov %eax, __this__
+# requesting ownership for ___TEMPORARY_OWNER___ (set). 
+lea ___TEMPORARY_OWNER___, %eax
+push %eax
+push __this__
+call __rc_requestOwnership__
+add $8, %esp
+# note, read PARAM n -> 8(%ebp)
+# Reading property "name" in "__this__"
+movl __this__, %eax
+mov 8(%ebp), %edx
+mov %edx, 0(%eax)
+# requesting ownership for __this__ (property)
+lea 0(%eax), %eax
+push %eax
+push 8(%ebp)
+call __rc_requestOwnership__
+add $8, %esp
+# note, read PARAM age -> 12(%ebp)
+# Reading property "age" in "__this__"
+movl __this__, %eax
+mov 12(%ebp), %edx
+mov %edx, 4(%eax)
+movl __this__, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__method_Person_toString_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_Person_toString___, %esp
+
+pushw __disable_gc__; movw $1, __disable_gc__
+# Reading property "name" in "__this__"
+movl __this__, %eax
+mov 0(%eax), %edx
+mov %edx, %ecx
+# Reading property "age" in "__this__"
+movl __this__, %eax
+mov 4(%eax), %edx
+mov %edx, %esi
+pushl $__STRING2__
+push %esi
+call itos
+add $4, %esp
+push %eax
+pushl $__STRING1__
+push %ecx
+pushl $__STRING0__
+pushl $5
+call strjoinmany
+add $24, %esp
+mov %eax, %edi
+popw __disable_gc__
+# taking ownership AND returning
+# requesting ownership for ___TEMPORARY_OWNER___ (set). 
+lea ___TEMPORARY_OWNER___, %eax
+push %eax
+push %edi
+call __rc_requestOwnership__
+add $8, %esp
+mov %edi, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-mov $1115684864, %ecx
-movl %ecx, __xmm_sse_temp__
-sqrtss __xmm_sse_temp__, %xmm1
-movss %xmm1, __TEMP32_0__
-movl __TEMP32_0__, %edx
-push %edx
-call print_float_noPromo
+# Calling function __constructor_Person_0_
+pushl $18
+# converting conststr to string (function call)
+pushl $__STRING3__
+call cptos
+mov %eax, (%esp) # str is alr in stack just overwrite
+call __constructor_Person_0_
+mov %eax, %ecx
+add $8, %esp
+# Loading local variable "me" @-4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for me (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# note, read STACK VAR me -> -4(%ebp)
+mov -4(%ebp), %edx
+mov %edx, __this__
+# Calling function __method_Person_toString_
+call __method_Person_toString_
+mov %eax, %ecx
+push %ecx
+call puts
 add $4, %esp
 call __rc_free_all__
 mov  $0, %eax
@@ -61,4 +182,5 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
+# me: 4
 

@@ -309,15 +309,22 @@ var types = {
         delete type.isReference
         return type
     },
-    guessType: function (word) {
+    guessType: function (word, allowunknown = false) {
         word = String(word)
 
         //console.log(":::", word, variables.variableExists(word),)
         if (variables.variableExists(word)) {
             //throwE(globalVariables[word])
-            return objCopy(variables.getVariableType(word))
+            return objCopy(variables.getVariableType(word, allowunknown))
         } else if (this.stringIsEbpOffset(word)) {
-            return objCopy(this.getVariableFromEbpOffsetString(word).type)
+            var r = this.getVariableFromEbpOffsetString(word)
+            //console.log(rtype.unknown)
+            if(!allowunknown && "unknown" in r.type)
+            {
+                //throwE(this.getVariableFromEbpOffsetString(word))
+                throwE(`Unable to read variable "${r.name}" as its type is unknown. Did you initialize it?`)
+            }
+            return objCopy(r.type)
         } else if (this.stringIsRegister(word)) {
             return objCopy(this.getRegisterType(word))
         } else if (variables.checkIfParameter(word)) {
@@ -392,12 +399,12 @@ var variables = {
     checkIfOnStack: function (vname) {
         return scope.length != 0 && objectIncludes(getAllStackVariables(), vname) // ) // if stack var
     },
-    getVariableType: function (vname) {
+    getVariableType: function (vname, allowunknown = false) {
         if (this.checkIfOnStack(vname)) {
-            return getAllStackVariables()[vname].type
+            otype = getAllStackVariables()[vname].type
         }
         else if (this.checkIfParameter(vname)) {
-            return(general.getMostRecentFunction().data.parameters.find(x => x.name == vname).type)
+            otype = (general.getMostRecentFunction().data.parameters.find(x => x.name == vname).type)
             //throwE("WIP")
             //return 
         } else {
@@ -410,8 +417,14 @@ var variables = {
                 throwW(`[INTERNAL WARN], "${vname}" seems to not have .type property. Most likely issue with __this__`)
                 return r
             }
-            return r.type
+            otype = r.type
         }
+
+        if(!allowunknown && ("unknown" in otype))
+        {
+            throwE(`Cannot access variable "${vname}" as its type is unknown`)
+        }
+        return otype
         //return this.checkIfOnStack(vname) ? getAllStackVariables()[vname].type : globalVariables[vname].type
     },
     setVariableType(vname, newType) {

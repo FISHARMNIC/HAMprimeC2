@@ -516,13 +516,14 @@ global.throwE = function (x) {
     console.log("\n\n================== THIS WAS THROWE ==================\n\n")
 
     console.log("\033[31m[ERROR]\033[0m on \033[96m[line " + (lineE + 1) + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
-    console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
-    drawColLine(lineE - 1)
-    drawColLine(lineE)
-    drawColLine(lineE + 1, true)
-    drawColLine(lineE + 2)
-    console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
-    console.log("\033[96m" + INPUTFILE + ":" + (lineE + 1) + "\033[0m")
+    console.log("\033[96m--->\033[0m", removeTabs(globalLineConts).trim(), "\n")
+    // console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
+    // drawColLine(lineE - 1)
+    // drawColLine(lineE)
+    // drawColLine(lineE + 1, true)
+    // drawColLine(lineE + 2)
+    // console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
+    // console.log("\033[96m" + INPUTFILE + ":" + (lineE + 1) + "\033[0m")
 
     }
 
@@ -555,10 +556,11 @@ global.objectIncludes = function (obj, inc) {
 global.objectValuesIncludes = function (obj, inc) {
     return Object.values(obj).includes(inc)
 }
-global.newStackVar = function (type, offset = currentStackOffset) {
+global.newStackVar = function (name, type, offset = currentStackOffset) {
     return {
         type: objCopy(type),
-        offset
+        offset,
+        name
     }
 }
 

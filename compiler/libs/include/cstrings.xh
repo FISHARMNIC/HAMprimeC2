@@ -1,0 +1,22 @@
+forward memcpy   function<conststr dest, conststr src, u32 count> -> conststr;
+forward memmove  function<conststr dest, conststr src, u32 count> -> conststr;
+forward strcpy   function<conststr dest, conststr src> -> conststr;
+forward strncpy  function<conststr dest, conststr src, u32 count> -> conststr;
+forward strcat   function<conststr dest, conststr src> -> conststr;
+forward strncat  function<conststr dest, conststr src, u32 count> -> conststr;
+forward memcmp   function<conststr ptra, conststr ptrb, u32 count> -> u32;
+forward strcmp   function<conststr stra, conststr strb> -> u32;
+forward strncmp  function<conststr stra, conststr strb, u32 count> -> u32;
+forward strcoll  function<conststr stra, conststr strb> -> u32;
+forward strchr   function<conststr str, char ch> -> conststr;
+forward strrchr  function<conststr str, char ch> -> conststr;
+forward strspn   function<conststr stra, conststr strb> -> u32;
+forward strcspn  function<conststr stra, conststr strb> -> u32;
+forward strpbrk  function<conststr stra, conststr strb> -> conststr;
+forward strstr   function<conststr haystack, conststr needle> -> conststr;
+forward strtok   function<conststr str, conststr delim> -> conststr;
+forward strlen   function<conststr str> -> u32;
+forward strerror function<u32 errnum> -> conststr;
+forward strxfrm  function<conststr dest, conststr src, u32 count> -> u32;
+forward memchr   function<conststr ptr, char ch, u32 count> -> conststr;
+forward memset   function<conststr ptr, u32 value, u32 count> -> conststr

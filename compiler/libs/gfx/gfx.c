@@ -86,7 +86,7 @@ void gfx_context_setContext(GC *ctx)
     _cx11_gc_ = *ctx;
 }
 
-int gfx_setup(int width, int height)
+int gfx_setup_mask(int width, int height, int mask)
 {
     _cx11_display_ = XOpenDisplay(NULL);
     if (_cx11_display_ == NULL)
@@ -96,10 +96,15 @@ int gfx_setup(int width, int height)
     _cx11_screen_ = DefaultScreen(_cx11_display_);
 
     _cx11_window_ = XCreateSimpleWindow(_cx11_display_, RootWindow(_cx11_display_, _cx11_screen_), 10, 10, width, height, 1, BlackPixel(_cx11_display_, _cx11_screen_), WhitePixel(_cx11_display_, _cx11_screen_));
-    XSelectInput(_cx11_display_, _cx11_window_, ExposureMask | KeyPressMask | PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
+    XSelectInput(_cx11_display_, _cx11_window_, mask);
     XMapWindow(_cx11_display_, _cx11_window_);
 
     _cx11_gc_ = DefaultGC(_cx11_display_, _cx11_screen_);
+}
+
+int gfx_setup(int width, int height)
+{
+    gfx_setup_mask(width, height, ExposureMask | KeyPressMask | PointerMotionMask | ButtonMotionMask | ButtonPressMask | ButtonReleaseMask);
 }
 
 int gfx_begin(fn_t *onEvent)

@@ -316,7 +316,7 @@ function evaluate(line) {
                         type: objectIncludes(defines.types, offsetWord(2)) ? objCopy(defines.types[offsetWord(2)]) : objCopy(defines.types.u32)
                     })
                     */
-                    var type = objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.u32)
+                    var type = objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.unknown)
                     if("voided" in type)
                     {
                         throwE("Cannot create void property")
@@ -365,11 +365,21 @@ function evaluate(line) {
                         //throwE(base, ptype.formatPtr)
                         //console.log("SEEEEE", base, ptype, offsetWord(1), line)
                         //console.log("EEEEE", base, ptype, offsetWord(1), true)
+                        //console.log(ptype.formatPtr)
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
+                        var intype = helpers.types.guessType(offsetWord(3))
+                        
+                        if("unknown" in dest.type)
+                        {
+                            ptype.formatPtr.properties.find(x => x.name == offsetWord(1)).type = intype
+                            dest.type = intype
+                        }
 
-                        actions.assembly.optimizeMove(offsetWord(3), dest.ptr, helpers.types.guessType(offsetWord(3)), dest.type)
+                        //throwE(ptype.formatPtr.properties)
 
-                        if ("hasData" in helpers.types.guessType(offsetWord(3)) && nextThingTakesOwnership) {
+                        actions.assembly.optimizeMove(offsetWord(3), dest.ptr, intype, dest.type)
+
+                        if ("hasData" in intype && nextThingTakesOwnership) {
                             outputCode.autoPush(
                                 `# requesting ownership for ${base} (property)`,
                                 `lea ${dest.ptr}, %eax`,
@@ -512,7 +522,8 @@ function evaluate(line) {
                 //console.log("______", line)
                 vtype = helpers.types.guessType(offsetWord(3))
             } else {
-                vtype = defines.types.u32
+                vtype = defines.types.unknown
+                //throwE("unknown", offsetWord(1))
             }
             //console.log(line)
             //throwW("%%%%", vtype)
@@ -561,14 +572,23 @@ function evaluate(line) {
             var temp = actions.assembly.getStackVarAsEbp(word)
             line[wordNum] = actions.assembly.convertReferenceToNormalIfIs(temp)
             outputCode.autoPush(`# note, read STACK VAR ${word} -> ${temp}`)
-
+            // if("unknown" in getAllStackVariables()[word].type)
+            // {
+            //     throwE(`Unable to read variable ${word} of unknown type`)
+            // }
             typeStack.push(getAllStackVariables()[word].type)
         } else if (helpers.variables.checkIfParameter(word) && offsetWord(1) != ":") {   // is param
             //debugPrint("READING PARAM", word, helpers.functions.getParameterWithOffset(helpers.functions.getParameterOffset(word) + 8))   
             //line[wordNum] = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
             var temp = (helpers.functions.getParameterOffset(word) + 8) + "(%ebp)"
 
-            line[wordNum] = actions.assembly.convertReferenceToNormalIfIs(temp)
+            var rep = actions.assembly.convertReferenceToNormalIfIs(temp)
+            line[wordNum] = rep
+
+            // if("unknown" in helpers.variables.getVariableType(rep))
+            // {
+            //     throwE(`Unable to read variable ${word} of unknounwn type`)
+            // }
             outputCode.autoPush(`# note, read PARAM ${word} -> ${temp}`)
             
         } else if (word == "$") {
@@ -1146,6 +1166,7 @@ function evaluate(line) {
                             stringMathOverride = true
                         }
                     }
+                    //console.log(line, word)
                     var vtype = helpers.types.guessType(word)
                     if (vtype.float) {
                         floatMath = true;

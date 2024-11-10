@@ -97,6 +97,14 @@ module.exports = {
             special: false,
             dblRef: false,
         },
+        "unknown": {
+            size: 32,
+            float: false,
+            pointer: false,
+            special: false,
+            dblRef: false,
+            unknown: true,
+        },
         "integer": {
             size: 32,
             float: false,

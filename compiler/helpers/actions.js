@@ -1,8 +1,13 @@
 var assembly = {
     convertReferenceToNormalIfIs: function (reference) {
-        var rtype = helpers.types.guessType(reference)
+        var rtype = helpers.types.guessType(reference, true)
         if (!("isReference" in rtype))
             return reference
+
+        if("unknown" in rtype)
+        {
+            throwE(`Unable to check type of ${reference}. Did you initialize the it?`)
+        }
 
         var lbl = helpers.registers.getFreeLabelOrRegister(helpers.types.convertReferenceToNormal(rtype))
         outputCode.autoPush(`# Converting reference ${reference} to normal`)
@@ -342,6 +347,7 @@ var variables = {
             assembly.optimizeMove(value, off, type, type)
 
             //console.log("::", doNotInit)
+            //console.log(scope, vname)
             if ("hasData" in type && !doNotInit) {
 
                 if (nextThingTakesOwnership) {
@@ -360,7 +366,7 @@ var variables = {
                 }
             }
             nextThingTakesOwnership = defaultAutomaticOwnership
-            createStackVariableListOnly(vname, newStackVar(type))
+            createStackVariableListOnly(vname, newStackVar(vname, type))
             //throwE(stackVariables)
         } else { // outside of function, global variable
 
@@ -387,16 +393,16 @@ var variables = {
 
             }
 
-            if ("hasData" in type && nextThingTakesOwnership && !doNotInit) {
-                outputCode.autoPush(
-                    `# requesting ownership for ${vname} (create)`,
-                    `push \$${vname}`,
-                    `push ${value}`,
-                    `call __rc_requestOwnership__`,
-                    `add $8, %esp`
-                )
+            // if ("hasData" in type && nextThingTakesOwnership && !doNotInit) {
+            //     outputCode.autoPush(
+            //         `# requesting ownership for ${vname} (create)`,
+            //         `push \$${vname}`,
+            //         `push ${value}`,
+            //         `call __rc_requestOwnership__`,
+            //         `add $8, %esp`
+            //     )
 
-            }
+            // }
             nextThingTakesOwnership = defaultAutomaticOwnership
 
         }
@@ -410,10 +416,15 @@ var variables = {
             helpers.general.setModifiesThis()
         }
         var isStack = helpers.variables.checkIfOnStack(vname) || helpers.variables.checkIfParameter(vname) // ) // if stack var
-        var type = helpers.variables.getVariableType(vname)
+        var type = helpers.variables.getVariableType(vname, true)
 
         // throwW("::", vname, getAllStackVariables())
         var valueType = helpers.types.guessType(value);
+
+        if("unknown" in type)
+            {
+                type = valueType
+            }
 
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___" && vname != "__this__") {
 
@@ -1219,7 +1230,7 @@ var functions = {
                 }
                 else if (!helpers.types.areEqual(givenRetType, scopeRetType)) {
                     var gtname = helpers.types.convertTypeObjToName(givenRetType)
-                    console.log(givenRetType)
+                    //console.log(givenRetType)
                     throwW(`Return type "${gtname}" does not match expected return type "${helpers.types.convertTypeObjToName(scopeRetType)}"\n ^^^^^^^ [FIXED BY] Retyping function to return "${gtname}"`)
                     scope.data.returnType = givenRetType
                 }
@@ -1619,15 +1630,15 @@ var formats = {
         var i = 0
 
         //throwE(helpers.general.getMostRecentFunction().data.parameters)
-
+        //console.log("-------------------")
         // should NOT be a normal type!!! TODO HERE SEP 11
         var baseTypeName = helpers.types.convertTypeObjToName(baseType)
         while (baseType.formatPtr.properties[i].name != propertyName) {
-            //console.log(baseType.formatPtr.properties[i], i)
+            //console.log(baseType.formatPtr.properties[i], i, propertyName)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
             if (baseType.formatPtr.properties[i + 1] == undefined) {
                 //throwE(globalVariables.__this__)
-                throwE(`Couldn't find property ${propertyName} in ${base}`)
+                throwE(`Couldn't find property "${propertyName}" in ${base}`)
             }
             i++
         }
@@ -1647,6 +1658,11 @@ var formats = {
         if (readAddress)
             return { ptr: `${offset}(${base})`, type: propertyType }
         assembly.optimizeMove(`${offset}(${base})`, out, propertyType, propertyType)
+
+        if("unknown" in propertyType)
+        {
+            throwE(`Property "${propertyName}" in "${base}" cannot be read since its type is unknown. Did you initialize it?`)
+        }
         return out
     },
     createMethodOrConstructor: function (_scope, fname, params, ret = null) {
@@ -1919,6 +1935,7 @@ var formats = {
 
         var paramType = helpers.types.guessType(params[0])
         var operator = helpers.formats.convertOperatorToString(operator)
+
 
         // here, basically all code below is old and useless now
         var foundOperatorFn = parentType.formatPtr.operators[operator].find(e => {

@@ -3,6 +3,9 @@
 HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Linux. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
+- Improved untyped variables
+- Format properties can now be untyped
+    - assume type of first value that they get assigned
 - Added linking multiple files
     - see `test/working/link-example/howto.txt`
 - Added reference type annexing

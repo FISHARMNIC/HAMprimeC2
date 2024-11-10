@@ -2,9 +2,11 @@
 TODO:
 
     Maybe add more autocasts when assigning var to other var
+        - no
 
     Integrate iofiles and bignums into system libraries that just get autolinked
         - .xh files just have forward decs of opertators, methods, constructors
+        - maybe add like #link so linking
 
     make ide better where you can open projects and stuff and it links multiple files etc
         - something more like visual studio or xcode
