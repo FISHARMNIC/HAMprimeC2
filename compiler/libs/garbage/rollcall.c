@@ -103,7 +103,7 @@ void __rc_collect__()
         }
         else
         {
-            printf("\t ^- Skipped \n");
+            //printf("\t ^- Skipped \n");
             list = list->next;
         }
     }

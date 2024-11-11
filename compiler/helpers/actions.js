@@ -1946,9 +1946,10 @@ var formats = {
         var operator = helpers.formats.convertOperatorToString(operator)
 
 
-        // here, basically all code below is old and useless now
         var foundOperatorFn = parentType.formatPtr.operators[operator].find(e => {
-            return helpers.types.areEqualNonStrict(e.parameters[0].type, paramType)
+            return e.parameters.every((p,i) => {
+                return helpers.types.areEqualNonStrict(p.type, helpers.types.guessType(params[i]))
+            })
         })
 
         if (foundOperatorFn == undefined) {
