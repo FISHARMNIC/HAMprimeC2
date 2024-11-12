@@ -36,19 +36,19 @@ int __linked_getSize(__linked_t *list)
     return index;
 }
 
-void __linked_add(__linked_t **list_db, roster_entry_t *item)
+void __linked_add(__linked_t **list_db, roster_entry_t *item, __linked_t* listItem)
 {
     __linked_t* list = *list_db;
 
     if(list == 0)
     {
-        list = malloc(sizeof(__linked_t));
+        list = listItem;
         *list_db = list;
         list->item = item;
         list->next = 0;
     } else {
         list = __linked_getLast(list);
-        list->next = malloc(sizeof(__linked_t));
+        list->next = listItem;
         list->next->item = item;
         list->next->next = 0;
     }
@@ -84,23 +84,20 @@ void __linked_add(__linked_t **list_db, roster_entry_t *item)
 //     //return list;
 // }
 
-__linked_t *__linked_remove(__linked_t **list_db, __linked_t *item)
+__linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked_t *curr)
 {
-    __linked_t * list = *list_db;
-    if (list != item)
+    __linked_t* list = *list_db;
+    
+    if (previous != (__linked_t*)0)
     {
-        while(list->next != item)
-        {
-            list = list->next;
-            assert(list->next != (void*)0);
-        }
-        __linked_t *nextPtr = list->next->next;
-        memset(list->next->item->pointer, 0, list->next->item->size);
+        __linked_t *nextPtr = curr->next;
+        memset(curr->item->pointer, 0, curr->item->size);
         
-        free(list->next->item);
-        free(list->next);
+        //free(curr->item);
+        free(curr);
 
-        list->next = nextPtr;
+        previous->next = nextPtr;
+        
         return nextPtr;
     }
     else
@@ -108,13 +105,13 @@ __linked_t *__linked_remove(__linked_t **list_db, __linked_t *item)
         __linked_t *nextPtr = list->next;
         memset(list->item->pointer, 0, list->item->size);
         
-        free(list->item);
+        //free(list->item);
         free(list);
         
         *list_db = nextPtr;
+
         return nextPtr;
     }
-    //return list;
 }
 
 int __linked_itemExists(__linked_t* list, roster_entry_t* _item)

@@ -1,7 +1,7 @@
 #include "rollcall.h"
 #include "linked.h"
 
-// #include <stdio.h>
+#include <stdio.h>
 
 __linked_t *Roster = 0;
 static int allocated_bytes = 0;
@@ -9,7 +9,7 @@ static int allocated_bytes = 0;
 int __disable_gc__ = 0;
 void* __gc_dontClear__ = (void*)-1;
 
-const int SIZE_ROSTER_AND_ENTRY = (sizeof(roster_entry_t) + sizeof(roster_entry_t *));
+const int SIZE_ROSTER_AND_ENTRY_AND_LIST = (sizeof(roster_entry_t) + sizeof(roster_entry_t *)) + (sizeof(__linked_t));
 
 void __rc_quick_check__()
 {
@@ -28,7 +28,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     // asm volatile("pusha");
     // Note, here using malloc which also stores size, maybe switch to mmap2
 
-    allocated_bytes += SIZE_ROSTER_AND_ENTRY + size_bytes + 1;
+    allocated_bytes += SIZE_ROSTER_AND_ENTRY_AND_LIST + size_bytes;
 
     //printf(":::: Attempting malloc of size %i\n", size_bytes);
     //Better, only one malloc call and one free
@@ -38,8 +38,9 @@ void *__rc_allocate__(int size_bytes, int restricted)
             //          TRY ALLOC + extra 32 on issue.x
             //          EVEN TRYING +1 WORKS!
             //    TEMP FIX: added +1
-
-    roster_entry_t *roster_entry = malloc(SIZE_ROSTER_AND_ENTRY + size_bytes + 1);
+    
+    __linked_t *listEntry = malloc(SIZE_ROSTER_AND_ENTRY_AND_LIST + size_bytes);
+    roster_entry_t *roster_entry = (roster_entry_t *) (((char*)listEntry) + sizeof(__linked_t));
     described_buffer_t *described_buffer = (described_buffer_t *) (((char*)roster_entry) + sizeof(roster_entry_t));
 
     assert(roster_entry != 0);
@@ -52,7 +53,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     roster_entry->pointer = &(described_buffer->data);
 
     //printf("ATTEMPTING ADD TO ROSTER\n");
-    __linked_add(&Roster, roster_entry);
+    __linked_add(&Roster, roster_entry, listEntry);
 
     //printf("\t\tAllocated Roster[%i] {%i} @%p\n", __linked_getSize(Roster), size_bytes, &(described_buffer->data));
     //asm volatile("popa");
@@ -70,8 +71,8 @@ void __rc_collect__()
 {
     //printf("------Collecting-----\n");
     __linked_t *list = Roster;
-    //__linked_t *previous = (__linked_t*)0;
-
+    __linked_t *previous = (__linked_t*)0;
+    
     while (list != 0)
     {
         roster_entry_t *roster_entry = list->item;
@@ -88,12 +89,13 @@ void __rc_collect__()
         //printf("|- Checking %p vs %p and %p\n", owner_should_point_to, owner_points_to, __gc_dontClear__);
         if (unlikely(owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
         {
-            //printf("\t ^- Discarding item was %s now %p\n", owner_should_point_to, owner_points_to);
-            list = __linked_remove(&Roster, list);
+            //printf("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
+            list = __linked_remove(&Roster, previous, list);
         }
         else
         {
             //printf("\t ^- Skipped \n");
+            previous = list;
             list = list->next;
         }
     }
@@ -111,13 +113,13 @@ void __rc_free_all__()
     
     list = Roster->next;
 
-    free(Roster->item);
+    //free(Roster->item);
     free(Roster);
 
     while(list != (void*) 0)
     {
         __linked_t * nextPtr = list->next;
-        free(list->item);
+        //free(list->item);
         free(list);
         list = nextPtr;
     }

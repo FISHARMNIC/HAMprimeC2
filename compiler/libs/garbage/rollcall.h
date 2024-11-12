@@ -8,7 +8,7 @@
 #define FALSE (0)
 #define TRUE (1)
 
-#define BYTES_PER_GC 128 // For testing use like 32. Should be 128
+#define BYTES_PER_GC 4096 // For testing use like 32. Should be 128
 
 /// @brief Allocate data that can be automatically freed by the garbage collector
 /// @param size_bytes Bytes to be allocated
