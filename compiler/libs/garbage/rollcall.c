@@ -70,7 +70,7 @@ void __rc_collect__()
 {
     //printf("------Collecting-----\n");
     __linked_t *list = Roster;
-    __linked_t *previous = (__linked_t*)0;
+    //__linked_t *previous = (__linked_t*)0;
 
     while (list != 0)
     {

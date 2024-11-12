@@ -1,8 +1,9 @@
 #ifndef RC_H
+
 #define RC_H
 
 #include <assert.h>
-#include <strings.h>
+#include <string.h>
 
 #define FALSE (0)
 #define TRUE (1)
@@ -39,7 +40,7 @@ int* __copydata__(int* dest, int* src);
 /// @brief Allocates a new buffer and copies the source buffer into the new one
 /// @param src buffer to be duplicated
 /// @return new duplicated buffer
-int* __duplicate__(int* src)
+int* __duplicate__(int* src);
 
 /// @brief Request owner
 /// @param allocation pointer to allocated data
