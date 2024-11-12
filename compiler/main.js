@@ -1,6 +1,10 @@
 /*
 TODO:
 
+    In RollCall, keep track of previous pointer too (make sure edge cases)
+        - then pass previous to linkedRemove, so that its better time
+        - Currently, linkedRemove has to scan through the entire list until it finds the one looking for
+        
     Special flag for all untyped variables that disables warning on casting when assuming different type
 
     Allow print_ of multiple statements (easy, dont be lazy)
