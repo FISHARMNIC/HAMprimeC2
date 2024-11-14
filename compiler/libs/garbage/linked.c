@@ -36,12 +36,11 @@ __linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked
 {
     __linked_t *nextPtr = curr->next;
     
+    memset(curr->item->pointer, 0, curr->item->size);
     free(curr);
 
     if (likely(previous != (__linked_t*)0)) // if not the beginning
-    {
-        //memset(curr->item->pointer, 0, curr->item->size);
-        
+    {   
         previous->next = nextPtr;
 
         if(nextPtr == (__linked_t*)0) // deleting last item
@@ -53,8 +52,6 @@ __linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked
     }
     else // if the beginning
     {
-        //memset(list->item->pointer, 0, list->item->size);
-        
         *list_db = nextPtr;
 
         if(nextPtr == (__linked_t*)0) // deleting last item

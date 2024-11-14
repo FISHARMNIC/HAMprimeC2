@@ -11,6 +11,13 @@ typedef struct __linked_t
     struct __linked_t* next;
 } __linked_t;
 
+typedef struct
+{
+    __linked_t section_linked;
+    roster_entry_t section_rosterEntry;
+    described_buffer_t section_describedBuffer;
+} full_malloc_t;
+
 //__linked_t* __linked_readIndex(__linked_t* list, int index);
 //__linked_t* __linked_getLast(__linked_t* list);
 //int __linked_getSize(__linked_t* list);

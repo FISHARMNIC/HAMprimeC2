@@ -11,6 +11,12 @@
 #define BYTES_PER_GC   4096 // For testing use like 32. Should be 128
 #define BYTES_FORCE_GC 65536
 
+#ifdef _DEBUG
+#define dbgprint(...)  printf(__VA_ARGS__);
+#else
+#define dbgprint(...)  
+#endif
+
 /// @brief Allocate data that can be automatically freed by the garbage collector
 /// @param size_bytes Bytes to be allocated
 /// @param restricted Restrict ownership
@@ -47,6 +53,10 @@ int* __duplicate__(int* src);
 /// @param allocation pointer to allocated data
 /// @param newOwner address of the new owner
 void __rc_requestOwnership__(void* allocation, void* newOwner);
+
+/// @brief Similar to exit(code) but frees all allocated data first
+/// @param code exit code
+void quit(int code);
 
 extern int ___TEMPORARY_OWNER___;
 
