@@ -1,8 +1,6 @@
 #include "rollcall.h"
 #include "linked.h"
 
-#include <stdio.h>
-
 __linked_t *Roster = 0;
 static int allocated_bytes = 0;
 
@@ -28,7 +26,14 @@ void *__rc_allocate__(int size_bytes, int restricted)
     // asm volatile("pusha");
     // Note, here using malloc which also stores size, maybe switch to mmap2
 
-    allocated_bytes += SIZE_ROSTER_AND_ENTRY_AND_LIST + size_bytes;
+    if(allocated_bytes >= BYTES_FORCE_GC)
+    {
+        __rc_collect__();
+    }
+
+    int actualAllocSize = SIZE_ROSTER_AND_ENTRY_AND_LIST + size_bytes;
+
+    allocated_bytes += actualAllocSize;
 
     //printf(":::: Attempting malloc of size %i\n", size_bytes);
     //Better, only one malloc call and one free
@@ -39,7 +44,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
             //          EVEN TRYING +1 WORKS!
             //    TEMP FIX: added +1
     
-    __linked_t *listEntry = malloc(SIZE_ROSTER_AND_ENTRY_AND_LIST + size_bytes);
+    __linked_t *listEntry = malloc(actualAllocSize);
     roster_entry_t *roster_entry = (roster_entry_t *) (((char*)listEntry) + sizeof(__linked_t));
     described_buffer_t *described_buffer = (described_buffer_t *) (((char*)roster_entry) + sizeof(roster_entry_t));
 
@@ -102,6 +107,7 @@ void __rc_collect__()
 
     //printf("\\---------------------/\n");
 }
+
 
 /// @brief Free all allocated data regardless of if it's garbage or not
 void __rc_free_all__()

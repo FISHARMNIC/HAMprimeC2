@@ -115,6 +115,12 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
+    "__rc_quick_check__": {
+        name: "__rc_quick_check__",
+        parameters: [],
+        variadic: false,
+        returnType: defines.types.none
+    },
     "malloc": {
         name: "malloc",
         parameters: [

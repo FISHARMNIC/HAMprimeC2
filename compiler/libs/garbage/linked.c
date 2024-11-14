@@ -4,6 +4,69 @@
 // #include <stdio.h>
 // #include <string.h>
 
+static __linked_t *lastPtr = (__linked_t *) 0;
+
+void __linked_add(__linked_t **list_db, roster_entry_t *item, __linked_t* listItem)
+{
+    __linked_t* list = *list_db;
+
+    if(unlikely(list == 0)) // empty
+    {
+        list = listItem;
+        *list_db = list;
+
+        listItem->item = item;
+        listItem->next = 0;
+
+        lastPtr = listItem;
+    } 
+    else 
+    {
+        list = lastPtr;
+        list->next = listItem;
+
+        listItem->item = item;
+        listItem->next = 0;
+
+        lastPtr = listItem;
+    }
+}
+
+__linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked_t *curr)
+{
+    __linked_t *nextPtr = curr->next;
+    
+    free(curr);
+
+    if (likely(previous != (__linked_t*)0)) // if not the beginning
+    {
+        //memset(curr->item->pointer, 0, curr->item->size);
+        
+        previous->next = nextPtr;
+
+        if(nextPtr == (__linked_t*)0) // deleting last item
+        {
+            lastPtr = previous; // last to previous
+        }
+        
+        return nextPtr;
+    }
+    else // if the beginning
+    {
+        //memset(list->item->pointer, 0, list->item->size);
+        
+        *list_db = nextPtr;
+
+        if(nextPtr == (__linked_t*)0) // deleting last item
+        {
+            lastPtr = 0; // last to previous
+        }
+
+        return nextPtr;
+    }
+}
+
+/*
 __linked_t *__linked_readIndex(__linked_t *list, int index)
 {
     while (index > 0)
@@ -13,105 +76,6 @@ __linked_t *__linked_readIndex(__linked_t *list, int index)
         index--;
     }
     return list;
-}
-
-__linked_t *__linked_getLast(__linked_t *list)
-{
-    while (list->next != 0)
-    {
-        //printf("%p %p\n", list, list->next);
-        list = list->next;
-    }
-    return list;
-}
-
-int __linked_getSize(__linked_t *list)
-{
-    int index = 0;
-    while (list->next != 0)
-    {
-        list = list->next;
-        index++;
-    }
-    return index;
-}
-
-void __linked_add(__linked_t **list_db, roster_entry_t *item, __linked_t* listItem)
-{
-    __linked_t* list = *list_db;
-
-    if(list == 0)
-    {
-        list = listItem;
-        *list_db = list;
-        list->item = item;
-        list->next = 0;
-    } else {
-        list = __linked_getLast(list);
-        list->next = listItem;
-        list->next->item = item;
-        list->next->next = 0;
-    }
-}
-
-// __linked_t *__linked_remove(__linked_t **list_db, int index)
-// {
-//     __linked_t * list = *list_db;
-//     //printf("Removing %p, %i\n", list_db, index);
-//     if (index != 0)
-//     {
-//         list = __linked_readIndex(list, index - 1);
-//         //printf("\tIndex addr: %p, %p\n", list, list->next); // WHY NIL? 
-//         __linked_t *save_link = list->next->next;
-//         //printf("\tSave_link: %p\n", save_link);
-//         // test for zeroing out garbage
-//         memset(list->next->item->pointer, 0, list->next->item->size);
-//         //printf("\tFreeing: %p\n", list->next);
-//         free(list->next);
-//         list->next = save_link;
-//         return list->next;
-//     }
-//     else
-//     {
-//         __linked_t *save_link = list->next;
-//         // test for zeroing out garbage
-//         //memset(list->item->pointer, 0, list->item->size);
-//         free(list);
-//         list = save_link;
-//         *list_db = list;
-//         return list;
-//     }
-//     //return list;
-// }
-
-__linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked_t *curr)
-{
-    __linked_t* list = *list_db;
-    
-    if (previous != (__linked_t*)0)
-    {
-        __linked_t *nextPtr = curr->next;
-        memset(curr->item->pointer, 0, curr->item->size);
-        
-        //free(curr->item);
-        free(curr);
-
-        previous->next = nextPtr;
-        
-        return nextPtr;
-    }
-    else
-    {
-        __linked_t *nextPtr = list->next;
-        memset(list->item->pointer, 0, list->item->size);
-        
-        //free(list->item);
-        free(list);
-        
-        *list_db = nextPtr;
-
-        return nextPtr;
-    }
 }
 
 int __linked_itemExists(__linked_t* list, roster_entry_t* _item)
@@ -126,3 +90,26 @@ int __linked_itemExists(__linked_t* list, roster_entry_t* _item)
     }
     return FALSE;
 }
+
+int __linked_getSize(__linked_t *list)
+{
+    int index = 0;
+    while (list->next != 0)
+    {
+        list = list->next;
+        index++;
+    }
+    return index;
+}
+
+__linked_t *__linked_getLast(__linked_t *list)
+{
+    while (list->next != 0)
+    {
+        //printf("%p %p\n", list, list->next);
+        list = list->next;
+    }
+    return list;
+}
+
+*/

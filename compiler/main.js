@@ -1,6 +1,12 @@
 /*
 TODO:
 
+    Add calling garbage collection on allocation if theres a lot (maybe like 100 megas)
+        - Only remove 1/2 of garbage
+        
+    fix float comparison
+    fix float <-> int casts
+
     In RollCall, keep track of previous pointer too (make sure edge cases)
         - then pass previous to linkedRemove, so that its better time
         - Currently, linkedRemove has to scan through the entire list until it finds the one looking for

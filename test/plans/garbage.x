@@ -38,9 +38,10 @@ entry function<> -> u32
     create bob <- {1,2,3};
     create nina <- Person<age:17,name:"Nina">;
     create i <- 0;
-    while(i <: 1000)
+    while(i <: 100000)
     {
         nina <- Person<age:17,name:"Nina">;
+        //__rc_quick_check__();
         i <- i + 1;
     }
     nina <- 123;
