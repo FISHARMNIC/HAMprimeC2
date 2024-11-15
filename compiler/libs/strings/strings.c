@@ -85,8 +85,8 @@ char *ctos(char ch)
 {
     asm volatile("pusha");
     char *o = __rc_allocate__(2, 0);
-    o[1] = 0;
     o[0] = ch;
+    o[1] = 0;
     asm volatile("popa");
     return o;
 }
@@ -141,7 +141,7 @@ char *substr(char *src, int start, int end)
         }
         else
         {
-            printf("[sslice]: %i (end) is less than or equal to %i (start)\n", end, start);
+            printf("[substr]: %i (end) is less than or equal to %i (start)\n", end, start);
             exit(0);
         }
     }
@@ -171,7 +171,7 @@ char* strapp(char** src, char letter)
     int len = strlen(*src);
     char* dest = __rc_allocate__(len + 2, 0);
     memcpy(dest, *src, len);
-    *(short*)(*src + len) = ((short) letter) << 1 | 0;
+    *(short*)(*src + len) = ((short)letter << 8) | 0;
     __rc_requestOwnership__(dest, src);
 
     return *src;

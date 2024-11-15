@@ -33,20 +33,16 @@ void *__rc_allocate__(int size_bytes, int restricted)
 
     int actualAllocSize = sizeof(full_malloc_t) + size_bytes;
 
-    allocated_bytes += actualAllocSize;
-
-    dbgprint(":::: Attempting malloc of size %i\n", size_bytes);
+    dbgprint(":::: Attempting malloc of with inner data of size %i\n", size_bytes);
 
     full_malloc_t *allocation = malloc(actualAllocSize);
     assert(allocation != 0);
 
+    allocated_bytes += actualAllocSize;
+
     __linked_t *listEntry = (__linked_t*) allocation;
     roster_entry_t *roster_entry = &(allocation->section_rosterEntry);
     described_buffer_t *described_buffer = &(allocation->section_describedBuffer);
-
-    //__linked_t *listEntry = malloc(actualAllocSize);
-    //roster_entry_t *roster_entry = (roster_entry_t *) (((char*)listEntry) + sizeof(__linked_t));
-    //described_buffer_t *described_buffer = (described_buffer_t *) (((char*)roster_entry) + sizeof(roster_entry_t));
 
     described_buffer->entry_reference = roster_entry;
 
@@ -58,7 +54,6 @@ void *__rc_allocate__(int size_bytes, int restricted)
     dbgprint("ATTEMPTING ADD TO ROSTER\n");
     __linked_add(&Roster, roster_entry, listEntry);
 
-    dbgprint("\t\tAllocated Roster[%i] {%i} @%p\n", __linked_getSize(Roster), size_bytes, &(described_buffer->data));
     //asm volatile("popa");
     return roster_entry->pointer;
 }
@@ -108,8 +103,6 @@ void __rc_collect__()
     dbgprint("\\---------------------/\n");
 }
 
-
-/// @brief Free all allocated data regardless of if it's garbage or not
 void __rc_free_all__()
 {
     __linked_t * list;
