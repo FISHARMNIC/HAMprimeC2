@@ -19,7 +19,7 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Li
 - Added `forEach` (See `test/working/feach.x`. Basic support, more coming soon) 
 - Added writing into memory address specified by pointer (still WIP, many cases don't work)
 - Operator overloads addded!
-    - Currently only support the four main math functions (+-/*) and array set and get
+    - Currently only support the four main math functions (+-/*), shifting, and array set/get
     - See [math overload example](#Class-Example-2) or [array overload example](#Operator-Overloads) below
 - Math is now evaluated in the proper order! (now for floats too)
 - old big update stuff:

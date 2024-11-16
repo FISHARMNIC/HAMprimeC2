@@ -1,9 +1,5 @@
 /*
 TODO:
-
-    Add calling garbage collection on allocation if theres a lot (maybe like 100 megas)
-        - Only remove 1/2 of garbage
-        
     fix float comparison
     fix float <-> int casts
 
