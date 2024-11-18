@@ -1,6 +1,15 @@
 /*
 TODO:
 
+    Make a new parser that handles allowing mutli-line statements
+        * Make sure that it should now allow:
+            * variables/functions that include a type name like: my_char
+            * variables/functions that include a number like: bob123
+            * For some reason single quotes wont show up in double quote strings
+
+        * Also add a lexical analyzer with the parser (not passed to the compiler)
+        * Analyzer makes sure that theres nothing like calling unknown functions or stuff
+
     maybe add like auto returns for include files
         * compile files without .h first
         * look in compiled files for that function

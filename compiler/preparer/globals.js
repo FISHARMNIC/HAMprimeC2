@@ -4,14 +4,13 @@
 //     return JSON.parse(JSON.stringify(x))
 // }
 
-global.objCopy = function(x) {
+global.objCopy = function (x) {
     var new_ = structuredClone(x)
 
-    if("formatPtr" in x)
-    {
+    if ("formatPtr" in x) {
         new_.formatPtr = x.formatPtr
     }
-    
+
     return new_
 }
 
@@ -24,21 +23,18 @@ global.newGlobalVar = function (type, info = {}) {
 
 // ONLY FOR HIGHLIGHTING IN IDE
 global.__anyVarEverMade = []
-global.__addToAnyVarEverMade = function(x)
-{
-    if(!__anyVarEverMade.includes(x))
+global.__addToAnyVarEverMade = function (x) {
+    if (!__anyVarEverMade.includes(x))
         __anyVarEverMade.push(x)
 }
 
 global.thisStack = []
 
-thisStack.save = function()
-{
+thisStack.save = function () {
     thisStack.push(objCopy(globalVariables.__this__))
 }
 
-thisStack.restore = function()
-{
+thisStack.restore = function () {
     globalVariables.__this__ = thisStack.pop()
 }
 
@@ -162,7 +158,7 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.string
     },
-    "strjoinmany" : {
+    "strjoinmany": {
         name: "strjoinmany",
         parameters: [
             { name: "number", type: defines.types.u32 },
@@ -170,7 +166,7 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: true,
         returnType: defines.types.string
     },
-    "strlen" : {
+    "strlen": {
         name: "strlen",
         parameters: [
             { name: "string", type: defines.types.string },
@@ -178,7 +174,7 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
-    "putch" : {
+    "putch": {
         name: "putch",
         parameters: [
             { name: "char", type: defines.types.u8 },
@@ -186,7 +182,7 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
-    "sleep" : {
+    "sleep": {
         name: "sleep",
         parameters: [
             { name: "time", type: defines.types.u32 },
@@ -194,7 +190,7 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
-    "usleep" : {
+    "usleep": {
         name: "usleep",
         parameters: [
             { name: "time", type: defines.types.u32 },
@@ -202,13 +198,13 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
-    "rand" : {
+    "rand": {
         name: "rand",
         parameters: [],
         variadic: false,
         returnType: defines.types.u32
     },
-    "exit" : {
+    "exit": {
         name: "exit",
         parameters: [
             { name: "code", type: defines.types.u32 }
@@ -216,7 +212,7 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
-    "quit" : {
+    "quit": {
         name: "quit",
         parameters: [
             { name: "code", type: defines.types.u32 }
@@ -224,12 +220,12 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: false,
         returnType: defines.types.u32
     },
-    "substr" : {
+    "substr": {
         name: "substr",
         parameters: [
-            {name: "src", type: defines.types.string},
-            {name: "start", type: defines.types.u32},
-            {name: "end", type: defines.types.u32}
+            { name: "src", type: defines.types.string },
+            { name: "start", type: defines.types.u32 },
+            { name: "end", type: defines.types.u32 }
         ],
         variadic: false,
         returnType: defines.types.string
@@ -301,9 +297,92 @@ global.keywordTypes = {
     FOREACH: 8
 }
 
+function _quickSplitLookahead(inputCode, line, build, n2, nest = []) {
+
+    //console.log("STARTING WITH:", nest)
+    if(line >= inputCode.length)
+    {
+        throwE(`[PARSER] Bracket was never closed`)
+        // todo, trace back, maybe hold var that stores intial
+    }
+
+    var qline = parser.split(inputCode[line])
+
+    build.push(inputCode[line])
+
+    qline.forEach(x => {
+        if (objectIncludes(n2, x)) {
+            nest.push(n2[x]) // open brack
+        }
+        else if (objectValuesIncludes(n2, x)) { // close brack
+            //console.log("-->", nest, x)
+            if (nest[nest.length - 1] == x) {
+                nest.pop()
+            }
+            else {
+               // console.log(inputCode[line], x)
+                throwE(`[PARSER] Unopened bracket on:`)
+            }
+        }
+    })
+    if (nest.length != 0) {
+        throwW(`[PARSER] Unclosed bracket on:`)
+        //console.log("CALLING WITH", nest)
+        _quickSplitLookahead(inputCode, line + 1, build, n2, nest)
+    }
+    //console.log("---END FOUND---")
+    // else
+    // {
+    //     return build
+    // }
+}
 
 global.quickSplit = function (inputCode) {
-    return inputCode.replace(/\n/g, ";").split(";").filter(x => x).map(x => x.replace(/\t/g, ""))
+    var q = inputCode.replace(/\n/g, ";").split(";").filter(x => x).map(x => x.trim())
+
+    var n2 = objCopy(parser.nesters)
+    delete n2["{"]
+
+    for (var qlineNo = 0; qlineNo < q.length; qlineNo++) {
+        // var qline = parser.split(q[qlineNo])
+        global.globalLineConts = q[qlineNo]
+
+        var build = []
+
+        //console.log("### START", q[qlineNo])
+        _quickSplitLookahead(q, qlineNo, build, n2)
+        //console.log("### BUILD", build)
+        if(build.length == 0)
+        {
+            throwE("[PARSER] Critical error")
+        }
+        q[qlineNo] = build.join("")
+        q.splice(qlineNo + 1, build.length - 1)
+        //console.log(q)
+        /*
+        qline.forEach(x => {
+            if (objectIncludes(n2, x)) {
+                nest.push(n2[x])
+            }
+            else if (objectValuesIncludes(n2, x)) {
+                console.log("-->", nest, x)
+                if (nest[nest.length - 1] == x) {
+                    nest.pop()
+                }
+                else {
+                    console.log(q[qlineNo], x)
+                    throwE(`[PARSER] Unopened bracket on:`)
+                }
+            }
+        })
+        if (nest.length != 0) {
+            throwW(`[PARSER] Unclosed bracket on:`)
+
+        }
+        */
+    }
+    //console.log(q)
+    return q
 }
 
 global.getLastScopeType = function () {
@@ -312,7 +391,7 @@ global.getLastScopeType = function () {
     return scope[scope.length - 1].type
 }
 
-global._saveRegs = function() {
+global._saveRegs = function () {
     var pushed = []
     Object.entries(helpers.registers.inLineClobbers).forEach(pair => {
         if (pair[1] == 1) {
@@ -324,7 +403,7 @@ global._saveRegs = function() {
     return pushed
 }
 
-global._restoreRegs = function(pushed) {
+global._restoreRegs = function (pushed) {
     if (pushed == undefined) {
         throwE("[INTERNAL] Didn't push")
     }
@@ -334,7 +413,7 @@ global._restoreRegs = function(pushed) {
     })
 }
 
-global.evalMath = function(arr, treater) {
+global.evalMath = function (arr, treater) {
     var old;
 
     do { // just keep nesting
@@ -362,7 +441,7 @@ global.evalMath = function(arr, treater) {
 }
 
 
-global._deClob = function(tempClobs) {
+global._deClob = function (tempClobs) {
     tempClobs.pop() // last one is the one to keep
     tempClobs.forEach(x => {
         if (helpers.types.stringIsRegister(x)) {
@@ -373,7 +452,7 @@ global._deClob = function(tempClobs) {
     })
 }
 
-global.formatMath_helper = function(oldArr) {
+global.formatMath_helper = function (oldArr) {
     // todo, add shift, bitwise OR and AND, and rotate
     var trumpOps = ["*", "/", "%"]
     var lowerOps = ["+", "-", "<<", ">>"]
@@ -421,8 +500,7 @@ global.formatMath_helper = function(oldArr) {
 
 }
 
-global.formatMath = function(arr)
-{
+global.formatMath = function (arr) {
     var looper = formatMath_helper(arr)
     while (JSON.stringify(looper) != JSON.stringify(formatMath_helper(looper))) {
         looper = formatMath_helper(looper)
@@ -487,8 +565,7 @@ global.getTrueLine = function (execFileLikeTrue, line) {
             lookAtFile++
         }
     }
-    if(lookAtFile == -1)
-    {
+    if (lookAtFile == -1) {
         console.log("UNABLE TO TRACK LINE")
         process.exit(1)
     }
@@ -509,8 +586,7 @@ function drawColLine(l, isError = false) {
 global.throwE = function (x) {
     var lineE = getTrueLine(inputCodeLikeTrue, globalLine) - includeFileOff - 1
     //console.log(lineE, includeFileOff, lineE - includeFileOff)
-    if(returnHighlight)
-    {
+    if (returnHighlight) {
         console.log(JSON.stringify(
             {
                 issue: true,
@@ -519,18 +595,18 @@ global.throwE = function (x) {
             }
         ))
     } else {
-    console.trace()
-    console.log("\n\n================== THIS WAS THROWE ==================\n\n")
+        console.trace()
+        console.log("\n\n================== THIS WAS THROWE ==================\n\n")
 
-    console.log("\033[31m[ERROR]\033[0m on \033[96m[line " + (lineE + 1) + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
-    console.log("\033[96m--->\033[0m", removeTabs(globalLineConts).trim(), "\n")
-    // console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
-    // drawColLine(lineE - 1)
-    // drawColLine(lineE)
-    // drawColLine(lineE + 1, true)
-    // drawColLine(lineE + 2)
-    // console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
-    // console.log("\033[96m" + INPUTFILE + ":" + (lineE + 1) + "\033[0m")
+        console.log("\033[31m[ERROR]\033[0m on \033[96m[line " + (lineE + 1) + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
+        console.log("\033[96m--->\033[0m", removeTabs(globalLineConts).trim(), "\n")
+        // console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
+        // drawColLine(lineE - 1)
+        // drawColLine(lineE)
+        // drawColLine(lineE + 1, true)
+        // drawColLine(lineE + 2)
+        // console.log("\033[93m" + "=".repeat(process.stdout.columns) + "\033[0m")
+        // console.log("\033[96m" + INPUTFILE + ":" + (lineE + 1) + "\033[0m")
 
     }
 
