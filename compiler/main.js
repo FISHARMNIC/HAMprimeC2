@@ -1,12 +1,15 @@
 /*
 TODO:
+
+    maybe add like auto returns for include files
+        * compile files without .h first
+        * look in compiled files for that function
+        * see what its return type was at the end
+        * Assume that type
+
     fix float comparison
     fix float <-> int casts
-
-    In RollCall, keep track of previous pointer too (make sure edge cases)
-        - then pass previous to linkedRemove, so that its better time
-        - Currently, linkedRemove has to scan through the entire list until it finds the one looking for
-        
+  
     Special flag for all untyped variables that disables warning on casting when assuming different type
 
     Allow print_ of multiple statements (easy, dont be lazy)
@@ -48,15 +51,6 @@ TODO:
         - see files.x
         - solution, maybe pass all hasData by reference, not sure
         - maybe add type:referece like string:reference 
-
-    MOVE createTemplateString TO SPLITTER INSTEAD
-
-    WORKING ON BEING ABLE TO COMPILE AND LINK MULTIPLE HAM FILES
-        - issues:
-            __init__ needs to be reworked to be able to have different names
-                * maybe pass file number as argument, which then does __init1__, etc.
-                * then in the one with main, call all inits
-            needs to generate multiple asm files and then call gcc on all of them
 
     add test case thing that just runs all in working automatically and checks for correct output
 
