@@ -3,13 +3,13 @@ Person format
     .name string;
     .age u32;
 
-    .toString method<> -> string
+    .toString method<> -> auto
     {
-        return_new(`My name is ${this.name} and I am ${this.age} years old`);
+        return(`My name is ${this.name} and I am ${this.age} years old`);
     }
 }
 
-greet function<string name> -> u32
+greet function<string name> -> none
 {
     print_("hello " + name);
 }

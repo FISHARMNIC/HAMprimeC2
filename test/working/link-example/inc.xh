@@ -5,3 +5,5 @@ Person format
 
     forward .toString method<> -> string;
 }
+
+forward greet function<string name> -> none;

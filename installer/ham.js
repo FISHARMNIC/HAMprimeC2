@@ -16,6 +16,8 @@ var assemblerArgs = {
             `${__dirname}/../../compiler/libs/strings/bin/strings.o`,
             `${__dirname}/../../compiler/libs/garbage/bin/garbage_linked.o`,
             `${__dirname}/../../compiler/libs/garbage/bin/garbage_rollcall.o`,
+            `${__dirname}/../../compiler/libs/globals.s`,
+            `${__dirname}/../../compiler/libs/gcollect.s`,
         ],
     linkExternals: [],
 
@@ -70,9 +72,13 @@ function assemble() {
 
     const asmFile = `${__dirname}/../../compiled/out.s`
 
+    var numberOfInFiles = assemblerArgs.inFiles.length
+    var assemblyOutFiles = []
+
     assemblerArgs.inFiles.forEach((x,i) => {
         try{
-            var out = String(execSync(`node ${__dirname}/../../compiler/main.js __RANOPRINT__ ${x} __ID_${i}`)).trim()
+            var out = String(execSync(`node ${__dirname}/../../compiler/main.js __RANOPRINT__ ${x} ${numberOfInFiles == 1 ? "" : `${numberOfInFiles} __ID_${i}`}`)).trim()
+            assemblyOutFiles.push(`${__dirname}/../../compiled/out${numberOfInFiles == 1 ? "" : i}.s`)
             if(out.length != 0)
                 console.log(out)
         }
@@ -88,7 +94,7 @@ function assemble() {
     var asmPrefix = os.type() == "Darwin" ? "limactl shell debian" : ""
 
     try{
-        var str = `${asmPrefix} gcc ${__dirname}/../../compiled/out.s ${assemblerArgs.linkLocals.join(" ")} -o ${assemblerArgs.outFile} -g -no-pie -m32 -fno-asynchronous-unwind-tables ${assemblerArgs.linkExternals.join(" ")}`
+        var str = `${asmPrefix} gcc ${assemblyOutFiles.join(" ")} ${assemblerArgs.linkLocals.join(" ")} -o ${assemblerArgs.outFile} -g -no-pie -m32 -fno-asynchronous-unwind-tables ${assemblerArgs.linkExternals.join(" ")}`
         //console.log("COMPILING\n\n", str, "\n\n")
         var out = String(execSync(str)).trim()
         if(out.length != 0)
