@@ -7,11 +7,18 @@ module.exports = function (code) {
             var out = treat(x.substring(1).split(" "))
             code.splice(i, 1, ...out)
         } else {
-            code[i] = treatOther(parser.split(x)).join(" ")
+            var out = treatOther(parser.split(x), code, i)
 
+            code[i] = out.data.join(" ")
+            i = out.lineNo
+
+            out.post()
+
+           // console.log(i)
             //process.exit(0)
         }
     }
+    //throwE(code)
     //console.log(code)
 }
 
@@ -40,7 +47,9 @@ function treat(instruction) {
     }
 }
 
-function treatOther(line) {
+function treatOther(line, raw, rawLineNum) {
+
+    var post = () => {}
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         var word = line[wordNum]
         var offsetWord = x => wordNum + x >= 0 ? line[wordNum + x] : null;
@@ -128,7 +137,14 @@ function treatOther(line) {
             line[wordNum] = "$" + lbname
             //console.log(line.slice(wordNum, num + 1))
             line.splice(wordNum + 1, line.slice(wordNum, num + 1).length - 1)
+
+            post = () => {
+                raw.splice(rawLineNum - 2, 0, `__asm__ "pushl ${lbname}ebpCapture__;mov %ebp, ${lbname}ebpCapture__"`)
+                raw.splice(rawLineNum, 0, `__asm__ "popl ${lbname}ebpCapture__"`)
+            }
+
+            rawLineNum += 2;
         }
     }
-    return line
+    return {data:line, lineNo: rawLineNum, post}
 }

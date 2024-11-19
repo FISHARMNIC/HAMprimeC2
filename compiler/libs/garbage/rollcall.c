@@ -23,7 +23,7 @@ void __rc_quick_check__()
 
 void *__rc_allocate__(int size_bytes, int restricted)
 {
-    // asm volatile("pusha");
+    //asm volatile("pusha");
     // Note, here using malloc which also stores size, maybe switch to mmap2
 
     if(allocated_bytes >= BYTES_FORCE_GC)

@@ -63,7 +63,7 @@ var assembly = {
         }
     },
     optimizeMove: function (source, destination, sType, dType) {
-
+        outputCode.autoPush(`# optimized move from ${source} to ${destination}`)
         debugPrint(" reoifjeorjferiojerf", source)
         debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
         debugPrint(source)
@@ -116,9 +116,18 @@ var assembly = {
             return getAllStackVariables()[variable].offset
         return helpers.functions.getParameterOffset(variable)
     },
+    getCaptureStackOffset: function (variable) {
+        if (helpers.variables.checkIfOnCaptureStack(variable))
+            return helpers.general.getMostRecentFunction()?.data?.capturedStackVars[variable].offset
+        return helpers.functions.getCaptureParameterOffset(variable)
+    },
     getStackVarAsEbp: function (vname) {
         //console.log("READING", vname, currentStackOffset)
         return `-${assembly.getStackOffset(vname)}(%ebp)`
+    },
+    getCapturedStackVarAsEcx: function (vname) {
+        //console.log("READING", vname, currentStackOffset)
+        return `-${assembly.getCaptureStackOffset(vname)}(%ecx)`
     },
     pushClobbers: function () {
 
@@ -135,6 +144,16 @@ var assembly = {
             if (helpers.registers.inLineClobbers[x] == 1) {
                 outputCode.autoPush(`pop ${helpers.types.formatRegister(x, defines.types.u32)}`)
             }
+        })
+    },
+    pushMLclobbers: function() {
+        helpers.registers.multiLineClobbers.forEach(x =>{
+            outputCode.autoPush(`push ${helpers.types.formatRegister(x, defines.types.u32)}`)
+        })
+    },
+    popMLclobbers: function() {
+        helpers.registers.multiLineClobbers.slice().reverse().forEach(x => {
+            outputCode.autoPush(`pop ${helpers.types.formatRegister(x, defines.types.u32)}`)
         })
     },
     copyData: function (source) {
@@ -414,7 +433,7 @@ var variables = {
         if (vname == "__this__") {
             helpers.general.setModifiesThis()
         }
-        var isStack = helpers.variables.checkIfOnStack(vname) || helpers.variables.checkIfParameter(vname) // ) // if stack var
+        var isStack = helpers.variables.checkIfOnStack(vname) || helpers.variables.checkIfParameter(vname) || helpers.variables.checkIfOnCaptureStack(vname)// ) // if stack var
         var type = helpers.variables.getVariableType(vname, true)
 
         // throwW("::", vname, getAllStackVariables())
@@ -476,7 +495,19 @@ var variables = {
         //     throwE(`Variable ${vname} has not been declared neither locally nor globally`)
         // }
 
-        var correctAddressing = isStack ? assembly.getStackVarAsEbp(vname) : (vname)
+        var correctAddressing = vname
+        if(isStack)
+        {
+            if(helpers.variables.checkIfOnCaptureStack(vname))
+            {
+                correctAddressing = assembly.getCapturedStackVarAsEcx(vname)
+            }
+            else
+            {
+                assembly.getStackVarAsEbp(vname)
+            }
+        }
+
         if (helpers.variables.checkIfParameter(vname))
             correctAddressing = (helpers.functions.getParameterOffset(vname) + 8) + "(%ebp)"
 
@@ -1190,7 +1221,7 @@ var functions = {
         if (isLambda) {
             helpers.registers.multiLineClobberRegister('c')
             outputCode.text.push(
-                `mov %ebp, %ecx`
+                `mov ${fname}ebpCapture__, %ecx`
             )
         }
 
@@ -1275,13 +1306,14 @@ var functions = {
                 )
             }
         }
-        else if (programRules.optimizeMemory) {
-            outputCode.text.push(
-                `pusha # C trashes registers. Make this move optimized later by using push clobbers`,
-                `call __rc_collect__`,
-                `popa`,
-            )
-        } else {
+        // else if (programRules.optimizeMemory) {
+        //     outputCode.text.push(
+        //         `pusha # C trashes registers. Make this move optimized later by using push clobbers`,
+        //         `call __rc_collect__`,
+        //         `popa`,
+        //     )
+        // } 
+        else {
             outputCode.text.push(
                 `call __rc_quick_check__`
             )

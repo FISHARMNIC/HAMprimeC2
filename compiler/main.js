@@ -1,6 +1,9 @@
 /*
 TODO:
 
+    * make js function push/popClobbersExcept(register) so to optimize (search "todo !@# ###" in actions.js)
+    * LOOK FOR ALL: "`call"
+        * all internal function calls need to preverse multi line registers
     * rework function attributes to allow multiple, like __forward__ __ccalled__ 
         * allow __ccalled__ lambdas
 
@@ -9,8 +12,9 @@ TODO:
     * DONE --> doesnt have to be before frame change, just access 0(%ebp) for old frame, and store that in register
         * example mov (%ebp), %edi
         * Store that register in the compile time function data (maybe like "outerFrame")
-    * copy current scoped variables (params and stack vars) into new function (compile time, JS)
-        * for each one, add special flag like "isCaptured"
+        * ${fname}ebpCapture__ -> ecx
+    * DONE --> copy current scoped variables (params and stack vars) into new function (compile time, JS)
+        * WORKING ON --> for each one, add special flag like "isCaptured"
     * when accessing any of those captured variables, it reads that flag "isCaptured"
         * If set, then access with offset "outerFrame" instead of ebp
     * for example, if "outerFrame" is %edi, and accessing captured stack var #1

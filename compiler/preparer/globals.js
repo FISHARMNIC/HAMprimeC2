@@ -572,6 +572,15 @@ global.getAllStackVariables = function () {
     return obj
 }
 
+global.getCaptureStackVars = function () {
+    return helpers.general.getMostRecentFunction()?.data?.capturedStackVars || {}
+}
+
+global.getCaptureParams = function () {
+    return helpers.general.getMostRecentFunction()?.data?.capturedParams || []
+}
+
+
 function removeTabs(e) {
     return e.split("").map(x => x == "\t" ? "" : x).join("")
     // e = e.split("")
@@ -683,6 +692,8 @@ global.methodExists = function (n) {
     return Object.values(formatMethods).map(x => Object.keys(x)).flat().includes(n)
 }
 global.objectIncludes = function (obj, inc) {
+    if(obj == undefined)
+        return false
     return Object.keys(obj).includes(inc)
 }
 

@@ -329,6 +329,10 @@ var types = {
             return objCopy(this.getRegisterType(word))
         } else if (variables.checkIfParameter(word)) {
             return functions.getParameterType(word)
+        } else if (variables.checkIfOnCaptureStack(word)) {
+            return getCaptureStackVars()[word].type
+        } else if (variables.checkIfCaptureParam(word)) {
+            throwE("Capture params WIP")
         }
         if (nextNumIsFloat) {
             nextNumIsFloat = false
@@ -399,6 +403,9 @@ var variables = {
     checkIfOnStack: function (vname) {
         return scope.length != 0 && objectIncludes(getAllStackVariables(), vname) // ) // if stack var
     },
+    checkIfOnCaptureStack: function (vname) {
+        return objectIncludes(getCaptureStackVars(), vname)
+    },
     getVariableType: function (vname, allowunknown = false) {
         if (this.checkIfOnStack(vname)) {
             otype = getAllStackVariables()[vname].type
@@ -407,6 +414,11 @@ var variables = {
             otype = (general.getMostRecentFunction().data.parameters.find(x => x.name == vname).type)
             //throwE("WIP")
             //return 
+        }
+        else if (this.checkIfOnCaptureStack(vname)) {
+            otype = getCaptureStackVars()[vname].type
+        } else if (this.checkIfCaptureParam(vname)) {
+            throwE("Capture params WIP")
         } else {
             //console.log("EEEEE", globalVariables)
             var r = globalVariables[vname]
@@ -465,6 +477,10 @@ var variables = {
 
     checkIfParameter: function (word) {
         return (scope.length > 0 && (general.getMostRecentFunction() != undefined) && general.getMostRecentFunction().data.parameters.findIndex(x => x.name == word) != -1)
+    },
+
+    checkIfCaptureParam: function (word) {
+        return getCaptureParams().findIndex(x => x.name == word) != -1
     }
 }
 
@@ -693,6 +709,18 @@ var functions = {
         var offset = 0
         //console.log("-----------", param)
         general.getMostRecentFunction().data.parameters.some(x => {
+            //console.log("checking", x, offset)
+            if (x.name == param) {
+                return true
+            }
+            offset += 4
+        })
+        return offset
+    },
+    getCaptureParameterOffset: function (param) {
+        var offset = 0
+        //console.log("-----------", param)
+        helpers.general.getMostRecentFunction().data.capturedParams.some(x => {
             //console.log("checking", x, offset)
             if (x.name == param) {
                 return true

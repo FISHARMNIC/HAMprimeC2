@@ -185,6 +185,7 @@ function evaluate(line) {
                             `mov %eax, ${out}`
                         )
                     } else {
+                        actions.assembly.pushClobbers() // todo !@# ### no need to push and pop var "out" since its not used yet
                         outputCode.autoPush(
                             `# Asked for ${num} allocations of "${word}"`,
                             `mov \$${bytes}, %edx`,
@@ -194,8 +195,9 @@ function evaluate(line) {
                             `push %eax`,
                             `call __rc_allocate__`,
                             `add $8, %esp`,
-                            `mov %eax, ${out}`
                         )
+                        actions.assembly.popClobbers()
+                        outputCode.autoPush(`mov %eax, ${out}`)
                     }
                     line[wordNum] = out
                     line.splice(wordNum + 1, 3)
@@ -322,8 +324,7 @@ function evaluate(line) {
                     })
                     */
                     var type = objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.unknown)
-                    if("voided" in type)
-                    {
+                    if ("voided" in type) {
                         throwE("Cannot create void property")
                     }
 
@@ -373,9 +374,8 @@ function evaluate(line) {
                         //console.log(ptype.formatPtr)
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
                         var intype = helpers.types.guessType(offsetWord(3))
-                        
-                        if("unknown" in dest.type)
-                        {
+
+                        if ("unknown" in dest.type) {
                             ptype.formatPtr.properties.find(x => x.name == offsetWord(1)).type = intype
                             dest.type = intype
                         }
@@ -541,13 +541,11 @@ function evaluate(line) {
         } else if (word == "import" || word == "importTLS") {
             //throwE(line, offsetWord(1))
             globalVariables[offsetWord(2)] = newGlobalVar(defines.types[offsetWord(1)])
-            if(word == "importTLS")
-            {
+            if (word == "importTLS") {
                 outputCode.data.push(".section .tbss;\n.extern " + offsetWord(2) + ";\n.data")
             }
-            else
-            {
-            outputCode.data.push(".extern " + offsetWord(2))
+            else {
+                outputCode.data.push(".extern " + offsetWord(2))
             }
             wordNum += 2
         }
@@ -595,35 +593,41 @@ function evaluate(line) {
             //     throwE(`Unable to read variable ${word} of unknounwn type`)
             // }
             outputCode.autoPush(`# note, read PARAM ${word} -> ${temp}`)
-            
-        } else if (word == "$") {
+
+        } else if (helpers.variables.checkIfOnCaptureStack(word) && offsetWord(1) != ":") // is lambda stack var capture
+        {
+            line[wordNum] = actions.assembly.getCapturedStackVarAsEcx(word)
+            typeStack.push(helpers.types.guessType(word))
+            //throwE("cap", line[wordNum])
+        } else if (objectIncludes(helpers.general.getMostRecentFunction()?.data?.capturedParams, word) && offsetWord(1) != ":") // is lambda param capture
+        {
+            throwE("Lambda capture params WIP")
+        }
+        else if (word == "$") {
             var word = ""
 
-            if(offsetWord(1) == "(")
-            {
-                if(offsetWord(3) != ")")
-                {
+            if (offsetWord(1) == "(") {
+                if (offsetWord(3) != ")") {
                     throwE("\"address of\" operator missing close bracket")
                 }
                 word = offsetWord(2)
                 line[wordNum] = actions.variables.readAddress(word)
                 line.splice(wordNum + 1, 3)
             }
-            else
-            {
+            else {
                 word = offsetWord(1)
                 line[wordNum] = actions.variables.readAddress(word)
                 line.splice(wordNum + 1, 1)
             }
             console.log("#####", word, lambdaQueue)
-            
+
             var f = lambdaQueue.find(x => {
                 return x.name == word
             })
 
-            if(f != undefined)
-            {
+            if (f != undefined) {
                 f.capturedParams = objCopy(helpers.general.getMostRecentFunction().data.parameters)
+                //throwE(getAllStackVariables())
                 f.capturedStackVars = objCopy(getAllStackVariables())
                 f.ready = true
                 //throwE("found", getAllStackVariables())
@@ -688,11 +692,10 @@ function evaluate(line) {
             } else if (oldScope.type == keywordTypes.FUNCTION) {
                 actions.functions.closeFunction(oldScope, oldStack)
             } else if (oldScope.type == keywordTypes.WHILE || oldScope.type == keywordTypes.FOREACH) {
-                if(oldScope.type == keywordTypes.FOREACH)
-                {
+                if (oldScope.type == keywordTypes.FOREACH) {
                     outputCode.autoPush(`incw ${oldScope.data.indexer}`)
                 }
-                outputCode.autoPush(      
+                outputCode.autoPush(
                     `jmp ${oldScope.data.name}`,
                     `${oldScope.data.exit}:` // exit loop
                 )
@@ -768,6 +771,8 @@ function evaluate(line) {
                 //throwE(defines.types)
             } else if (word == "print_" || word == "println_") {
                 //throwE("WIP")
+
+                actions.assembly.pushMLclobbers()
 
                 if (offsetWord(1) != "(") {
                     throwE(`Print must be called like a function with parenthesis`)
@@ -849,8 +854,7 @@ function evaluate(line) {
                                 `add $4, %esp`
                             )
                         }
-                        else if("isChar" in dataType)
-                        {
+                        else if ("isChar" in dataType) {
                             outputCode.autoPush(
                                 `call putchar`,
                                 `movb $'\\n', (%esp)`,
@@ -867,6 +871,8 @@ function evaluate(line) {
                     }
                 }
                 //throwE("WIP")
+
+                actions.assembly.popMLclobbers()
             }
 
             else if (word == "transient") {
@@ -936,11 +942,14 @@ function evaluate(line) {
                 line[wordNum] = oreg
                 line.splice(wordNum + 1, 3)
 
-            } else if (word == "JS_EVAL")
-            {
-                line[wordNum] = eval(offsetWord(1).slice(1,offsetWord(1).length - 1))
+            } else if (word == "JS_EVAL") {
+                line[wordNum] = eval(offsetWord(1).slice(1, offsetWord(1).length - 1))
                 line.splice(wordNum + 1, 1)
-            } else if (word == "function") {
+            } else if (word == "__asm__") {
+                outputCode.autoPush(offsetWord(1).slice(1, offsetWord(1).length - 1))
+                break
+            }
+            else if (word == "function") {
                 var fname = offsetWord(-1)
                 var params = offsetWord(2)
                 if (typeof (params) == "string")
@@ -968,16 +977,19 @@ function evaluate(line) {
                     isLambda
                 }
 
-                if(isLambda)
-                {
+                if (isLambda) {
                     var instance = _allLambdas.find(x => x.name == fname)
-                    if(instance == undefined)
-                    {
+                    if (instance == undefined) {
                         throwE(`Unable to find lambda reference for "${fname}"`)
                     }
-
-                    throwE("wefewfwf", instance)
+                    outputCode.data.push(`${fname}ebpCapture__: .4byte 0 # Capture ebp for anonymous function`)
+                    
+                    data.capturedParams = instance.capturedParams
+                    data.capturedStackVars = instance.capturedStackVars
+                   
+                    //throwE("wefewfwf", instance)
                 }
+
 
                 userFunctions[fname] = data
                 /*
@@ -1053,8 +1065,7 @@ function evaluate(line) {
                 var arrayType = helpers.types.guessType(array)
                 var elementType = helpers.types.derefType(arrayType)
 
-                if("hasData" in arrayType)
-                {
+                if ("hasData" in arrayType) {
                     outputCode.autoPush(
                         `# forEach loop`,
                         `mov ${array}, %eax # load arr`,
@@ -1062,16 +1073,14 @@ function evaluate(line) {
                         `mov 8(%edx),  %edx # get size`
                     )
                 }
-                else
-                {
+                else {
                     throwE("forEach not implemented on static arrays yet")
                 }
 
                 var regA = helpers.types.formatRegister('a', elementType)
                 var b = helpers.types.typeToBytes(elementType)
 
-                if(b != 1)
-                {
+                if (b != 1) {
                     outputCode.autoPush(`shr \$${b / 2}, %edx # divide by ${b} (bytes to u32 or u16)`)
                 }
                 outputCode.autoPush(
@@ -1094,7 +1103,7 @@ function evaluate(line) {
                 outputCode.autoPush(
                     `mov ${out}, ${actions.assembly.getStackVarAsEbp(elementVariable)}`
                 )
-            }else if (word == "return" || word == "return_new") {
+            } else if (word == "return" || word == "return_new") {
                 debugPrint("closer", line, scope)
                 var wrd = offsetWord(1)
                 if (offsetWord(1) == "(") {
@@ -1148,10 +1157,10 @@ function evaluate(line) {
             } else if (word == "__define") {
                 macros[offsetWord(1)] = offsetWord(2)
                 wordNum += 2
-            } 
+            }
             else if (word == "publics") {
                 inPublicMode = true;
-            } 
+            }
             else if (word == "privates") {
                 inPublicMode = false;
             }
@@ -1166,18 +1175,16 @@ function evaluate(line) {
                 var num = offsetWord(2)
                 var type = helpers.types.guessType(num)
 
-                if(helpers.types.isConstant(num) || helpers.types.stringIsRegister(num))
-                {
+                if (helpers.types.isConstant(num) || helpers.types.stringIsRegister(num)) {
                     outputCode.autoPush(`movl ${(helpers.types.formatIfConstant(num))}, __xmm_sse_temp__`)
                     num = "__xmm_sse_temp__"
                 }
 
-                if(!type.float)
-                {
+                if (!type.float) {
                     outputCode.autoPush(`cvtsi2ss ${num}, %xmm2`)
                     num = "%xmm2"
                 }
-                
+
                 //outputCode.autoPush(`${type.float? "movss" : "cvtsi2ss"} ${num}, %xmm2`)
 
                 outputCode.autoPush(`sqrtss ${num}, %xmm1`)
@@ -1234,10 +1241,8 @@ function evaluate(line) {
                             break;
                         }
                     }
-                    else
-                    {
-                        if(word != "+" && word != undefined)
-                        {
+                    else {
+                        if (word != "+" && word != undefined) {
                             stringMathOverride = true
                         }
                     }
@@ -1254,7 +1259,7 @@ function evaluate(line) {
                 }
                 // throwE(build, stringMath)
 
-                var lbl = (stringMath && !stringMathOverride)? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
+                var lbl = (stringMath && !stringMathOverride) ? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
                 //throwE(outputCode.text)
                 line.splice(start, build.length + 1, lbl)
                 //throwE("spliced", line, build, build.length)
