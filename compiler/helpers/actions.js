@@ -434,6 +434,7 @@ var variables = {
             helpers.general.setModifiesThis()
         }
         var isStack = helpers.variables.checkIfOnStack(vname) || helpers.variables.checkIfParameter(vname) || helpers.variables.checkIfOnCaptureStack(vname)// ) // if stack var
+
         var type = helpers.variables.getVariableType(vname, true)
 
         // throwW("::", vname, getAllStackVariables())
@@ -504,7 +505,7 @@ var variables = {
             }
             else
             {
-                assembly.getStackVarAsEbp(vname)
+                correctAddressing = assembly.getStackVarAsEbp(vname)
             }
         }
 
@@ -812,7 +813,7 @@ var variables = {
 
         if (("hasData" in valueType || helpers.types.checkIfElementsHaveData(arrType)) && nextThingTakesOwnership) {
             if (!helpers.types.checkIfElementsHaveData(arrType)) {
-                throwE(arrType)
+                throwE(valueType, arrType, elementType)
                 throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(arrType)}"`)
             } else if (!("hasData" in valueType)) {
                 if (helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr

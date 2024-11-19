@@ -1,7 +1,11 @@
 /*
 TODO:
 
+    * maybe merge all getCapture... with the normal functions   
+        * merge CapturedVariables with stack variables, but add special flag
+
     * make js function push/popClobbersExcept(register) so to optimize (search "todo !@# ###" in actions.js)
+    
     * LOOK FOR ALL: "`call"
         * all internal function calls need to preverse multi line registers
     * rework function attributes to allow multiple, like __forward__ __ccalled__ 

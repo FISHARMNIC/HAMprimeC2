@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Tue Nov 19 2024 15:46:50 GMT-0700 (Mountain Standard Time)
+Compiled with love on Tue Nov 19 2024 16:35:49 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -20,27 +20,27 @@ Compiled with love on Tue Nov 19 2024 15:46:50 GMT-0700 (Mountain Standard Time)
 .extern ___TEMPORARY_OWNER___
 
 ######## user data section ########
-.type	doOperation, @function
-.global doOperation
-__ALLOCFOR_doOperation__ = 0
+.type	map, @function
+.global map
+__ALLOCFOR_map__ = 4
 .type	entry, @function
 .global entry
-.4byte 16
-__STRING0__: .asciz "someVar is now "
-.4byte 1
-__STRING1__: .asciz ""
-__ALLOCFOR_entry__ = 8
+.4byte 4
+__STRING0__: .asciz "Dad"
+.4byte 4
+__STRING1__: .asciz "Mom"
+.4byte 4
+__STRING2__: .asciz "Dog"
+.4byte 4
+__STRING3__: .asciz "Cat"
+__ALLOCFOR_entry__ = 16
 __anonymous_a__ebpCapture__: .4byte 0 # Capture ebp for anonymous function
 .type	__anonymous_a__, @function
 .global __anonymous_a__
-.4byte 12
-__STRING2__: .asciz "someVar is "
-.4byte 21
-__STRING3__: .asciz "setting someVar to: "
-.4byte 4
-__STRING4__: .asciz " + "
-.4byte 4
-__STRING5__: .asciz " = "
+.4byte 11
+__STRING4__: .asciz "I love my "
+.4byte 1
+__STRING5__: .asciz ""
 __ALLOCFOR___anonymous_a____ = 0
 ###################################
 .text
@@ -60,92 +60,170 @@ call entry
 ret
 
 ###################################
-doOperation:
+map:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_doOperation__, %esp
+sub $__ALLOCFOR_map__, %esp
 
-# note, read PARAM a -> 8(%ebp)
-# note, read PARAM b -> 12(%ebp)
-# note, read PARAM operation -> 16(%ebp)
-# Calling function __not_a_function__
-# TODO optimize if variable just do movl
+# Loading local variable "i" @-4(%ebp)
+# optimized move from $0 to -4(%ebp)
+mov $0, %edx
+mov %edx, -4(%ebp)
+__LABEL1__:
+# note, read STACK VAR i -> -4(%ebp)
+# note, read PARAM size -> 12(%ebp)
+mov -4(%ebp), %eax
 mov 12(%ebp), %edx
-push %edx
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
+mov $0, %cl
+cmp %edx, %eax
+setl %cl
+# comparison for WHILE loop
+cmpb $1, %cl
+jne __LABEL2__
+# note, read STACK VAR i -> -4(%ebp)
+# note, read STACK VAR i -> -4(%ebp)
+# note, read PARAM arr -> 8(%ebp)
+#indexing array
+mov 8(%ebp), %eax
+# optimized move from -4(%ebp) to %edx
+mov -4(%ebp), %edx
+mov %edx, %edx
+mov (%eax, %edx, 4), %ecx
+# note, read PARAM operation -> 16(%ebp)
+push %ecx
+# Calling function __not_a_function__
+push %ecx
 call *16(%ebp)
-mov %eax, %ecx
+mov %eax, %esi
+add $4, %esp
+pop %ecx
+# note, read PARAM arr -> 8(%ebp)
+#Array set begin
+mov 8(%ebp), %eax
+# array load trash awful. Fix this bad optimize
+push %eax
+mov -4(%ebp), %eax
+shl $2, %eax
+add (%esp), %eax
+add $4, %esp
+mov %esi, (%eax)
+# requesting ownership for array index
+push %eax
+push %esi
+call __rc_requestOwnership__
 add $8, %esp
-mov %ecx, %eax
+#Set end
+# note, read STACK VAR i -> -4(%ebp)
+mov -4(%ebp), %eax
+add $1, %eax
+mov %eax, %ecx
+# SETTING i <- %ecx
+# optimized move from %ecx to -4(%ebp)
+mov %ecx, -4(%ebp)
+jmp __LABEL1__
+__LABEL2__:
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
+# i: 4
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-# Loading local variable "someVar" @-4(%ebp)
-# optimized move from $123 to -4(%ebp)
-mov $123, %edx
-mov %edx, -4(%ebp)
-# Loading local variable "otherVar" @-8(%ebp)
-# optimized move from $456 to -8(%ebp)
-mov $456, %edx
-mov %edx, -8(%ebp)
+# Allocation for array
+pushl $0
+pushl $16
+call __rc_allocate__
+add $8, %esp
+# optimized move from __STRING0__ to 0(%eax)
+mov $__STRING0__, %edx
+mov %edx, 0(%eax)
+# optimized move from __STRING1__ to 4(%eax)
+mov $__STRING1__, %edx
+mov %edx, 4(%eax)
+# optimized move from __STRING2__ to 8(%eax)
+mov $__STRING2__, %edx
+mov %edx, 8(%eax)
+# optimized move from __STRING3__ to 12(%eax)
+mov $__STRING3__, %edx
+mov %edx, 12(%eax)
+mov %eax, %ecx
+# Loading local variable "family" @-4(%ebp)
+# optimized move from %ecx to -4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for family (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
 pushl __anonymous_a__ebpCapture__;mov %ebp, __anonymous_a__ebpCapture__
+# note, read STACK VAR family -> -4(%ebp)
 lea __anonymous_a__, %ecx
 push %ecx
-# Calling function doOperation
+# Calling function map
 push %ecx
-pushl $5
 pushl $4
-call doOperation
+# TODO optimize if variable just do movl
+mov -4(%ebp), %edx
+push %edx
+call map
 mov %eax, %esi
 add $12, %esp
 pop %ecx
 popl __anonymous_a__ebpCapture__
-pushw __disable_gc__; movw $1, __disable_gc__
-# note, read STACK VAR someVar -> -4(%ebp)
-pushl $__STRING1__
-push -4(%ebp)
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING0__
-pushl $3
-call strjoinmany
-add $16, %esp
+# Loading local variable "__LABEL5__" @-8(%ebp)
+# optimized move from $0 to -8(%ebp)
+mov $0, %edx
+mov %edx, -8(%ebp)
+# Loading local variable "__LABEL6__" @-12(%ebp)
+# optimized move from $0 to -12(%ebp)
+mov $0, %edx
+mov %edx, -12(%ebp)
+# note, read STACK VAR family -> -4(%ebp)
+# forEach loop
+mov -4(%ebp), %eax # load arr
+mov -4(%eax), %edx # get entry reference
+mov 8(%edx),  %edx # get size
+shr $2, %edx # divide by 4 (bytes to u32 or u16)
+mov %edx, -12(%ebp) # size to arr len holder
+mov (%eax), %eax # load first element into A
 mov %eax, %ecx
-popw __disable_gc__
-push %ecx
+# Loading local variable "person" @-16(%ebp)
+# optimized move from %ecx to -16(%ebp)
+mov %ecx, -16(%ebp)
+__LABEL3__:
+# comparison for forEach loop
+mov -8(%ebp), %eax 
+cmp -12(%ebp), %eax
+jge __LABEL4__ # exit if finished
+#indexing array
+mov -4(%ebp), %eax
+# optimized move from -8(%ebp) to %edx
+mov -8(%ebp), %edx
+mov %edx, %edx
+mov (%eax, %edx, 4), %esi
+mov %esi, -16(%ebp)
+# note, read STACK VAR person -> -16(%ebp)
+push -16(%ebp)
 call puts
 add $4, %esp
-mov $0, %eax
-push %eax
-call __rc_free_all__
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
+incw -8(%ebp)
+jmp __LABEL3__
+__LABEL4__:
 call __rc_free_all__
 mov  $0, %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
-# someVar: 4
-# otherVar: 8
+# family: 4
+# __LABEL5__: 8
+# __LABEL6__: 12
+# person: 16
 __anonymous_a__:
 mov __anonymous_a__ebpCapture__, %ecx
 push %ebp
@@ -153,73 +231,23 @@ mov %esp, %ebp
 sub $__ALLOCFOR___anonymous_a____, %esp
 
 pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING1__
-mov -4(%ecx), %edx
-push %edx
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING2__
+# note, read PARAM value -> 8(%ebp)
+pushl $__STRING5__
+push 8(%ebp)
+pushl $__STRING4__
 pushl $3
 call strjoinmany
 add $16, %esp
 mov %eax, %esi
 popw __disable_gc__
-push %ecx
-push %esi
-call puts
-add $4, %esp
-pop %ecx
-pushw __disable_gc__; movw $1, __disable_gc__
-# note, read PARAM pa -> 8(%ebp)
-# note, read PARAM pb -> 12(%ebp)
-# note, read PARAM pa -> 8(%ebp)
-# note, read PARAM pb -> 12(%ebp)
-mov 8(%ebp), %eax
-add 12(%ebp), %eax
-add -4(%ecx), %eax
-mov %eax, %esi
-pushl $__STRING1__
-push %esi
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING5__
-mov -4(%ecx), %edx
-push %edx
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING4__
-push 12(%ebp)
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING4__
-push 8(%ebp)
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING3__
-pushl $9
-call strjoinmany
-add $40, %esp
-mov %eax, %edi
-popw __disable_gc__
-push %ecx
-push %edi
-call puts
-add $4, %esp
-pop %ecx
-# note, read PARAM pa -> 8(%ebp)
-# note, read PARAM pb -> 12(%ebp)
-mov 8(%ebp), %eax
-add 12(%ebp), %eax
-add -4(%ecx), %eax
-mov %eax, %esi
-# SETTING someVar <- %esi
-# optimized move from %esi to -4(%ecx)
-mov %esi, -4(%ecx)
+# optimized move from %esi to __gc_dontClear__
+mov %esi, __gc_dontClear__
+mov %esi, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
 call __rc_quick_check__
 
 mov %ebp, %esp

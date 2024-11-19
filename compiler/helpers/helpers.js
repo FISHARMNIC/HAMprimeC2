@@ -180,6 +180,7 @@ var types = {
     },
     checkIfElementsHaveData: function(type)
     {
+        //console.log(type)
         if("arrayElements" in type)
         {
             return("hasData" in (type.arrayElements))

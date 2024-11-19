@@ -20,7 +20,7 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed" || line[wordNum + 2] == "locked" || line[wordNum + 2] == "reference")) {
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (/*objectIncludes(defines.types, line[wordNum + 2]) || */line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed" || line[wordNum + 2] == "locked" || line[wordNum + 2] == "reference")) {
 
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
@@ -37,15 +37,22 @@ function evaluate(line) {
                 defines.types[`__${word}__staticdef__`] = cpy
                 line[wordNum] = `__${word}__staticdef__`
             } else if (line[wordNum + 2] == "array") {
-                if ("hasData" in cpy) {
-                    cpy.elementsHaveData = true;
-                    defines.types[`__${word}__dynamicChildrendef__`] = cpy
-                    line[wordNum] = `__${word}__dynamicChildrendef__`
-                } else {
-                    cpy.hasData = true;
-                    defines.types[`__${word}__dynamicdef__`] = cpy
-                    line[wordNum] = `__${word}__dynamicdef__`
-                }
+                // if ("hasData" in cpy) {
+                //     cpy.elementsHaveData = true;
+                //     defines.types[`__${word}__dynamicChildrendef__`] = cpy
+                //     line[wordNum] = `__${word}__dynamicChildrendef__`
+                // } else {
+                //     cpy.hasData = true;
+                //     defines.types[`__${word}__dynamicdef__`] = cpy
+                //     line[wordNum] = `__${word}__dynamicdef__`
+                // }
+ 
+                var n = objCopy(defines.types.array)
+                n.arrayElements = cpy
+                var name = helpers.variables.newUntypedLabel()
+                defines.types[`__TYPE_${name}__`] = n
+                line[wordNum] = `__TYPE_${name}__`
+
             } else if (line[wordNum + 2] == "locked") {
                 throwE("Locked pointers are still in development")
 
@@ -59,7 +66,14 @@ function evaluate(line) {
                 cpy.isReference = true;
                 defines.types[`__${word}__reference__`] = cpy
                 line[wordNum] = `__${word}__reference__`
-            }
+            } 
+            // else if (objectIncludes(defines.types, line[wordNum + 2]))
+            // {
+            //     cpy.arrayElements = objCopy(defines.types[line[wordNum + 2]])
+            //     var name = helpers.variables.newUntypedLabel()
+            //     defines.types[`__TYPE_${name}__`] = cpy
+            //     line[wordNum] = `__TYPE_${name}__`
+            // }
 
             line.splice(wordNum + 1, 2)
             /*
@@ -718,6 +732,7 @@ function evaluate(line) {
                 //arrayClamp = defines.types.u32
 
                 var begin = oldScope.begin
+
                 var output = actions.allocations.allocateArray(line.slice(begin), `Allocation for array`)
 
                 lastArrayType = output.arrayType
