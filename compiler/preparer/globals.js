@@ -38,30 +38,35 @@ thisStack.restore = function () {
     globalVariables.__this__ = thisStack.pop()
 }
 global.lambdaQueue = []
+global._allLambdas = []
 global.MODE_DEBUG = false;
 global.scope = [];
 
-scope.popScope = function() 
-{
+scope.__proto__.popScope = function () {
     var o = this.pop()
-    if(this.length == 0)
-    {
+    if (this.length == 0) {
         console.log("EMPTY SCOPE", lambdaQueue)
 
         var out = []
 
-        lambdaQueue.forEach(func => {
-            out.push(
-                `${func.name} function${func.def}`,
-                `{`,
-                ...func.code.filter(x=>x),
-                `}`,
-            )
-        })
-        
+        for (var i = 0; i < lambdaQueue.length; i++) {
+            var func = lambdaQueue[i]
+            if (func.ready) {
+                //console.log("CREEEE", func)
+                // note that func.isLambda is false, only used converting the inline to global
+                out.push(
+                    `__lambda__ ${func.name} function${func.def}`,
+                    `{`,
+                    ...func.code.filter(x => x),
+                    `}`,
+                )
+                lambdaQueue.splice(i, 1)
+                i--
+            }
+        }
+
         console.log(out)
-        if(out.length != 0)
-        {
+        if (out.length != 0) {
             inputCode.splice(globalLine + 1, 0, ...out)
             //throwE(inputCode)
             lambdaQueue = []
@@ -332,22 +337,21 @@ function _quickSplitLookahead(inputCode, line, build, n2, nest = [], addSemiC = 
 
     //console.log("STARTING WITH:", nest)
 
-    if(line >= inputCode.length)
-    {
+    if (line >= inputCode.length) {
         throwE(`[PARSER] Bracket was never closed`)
         // todo, trace back, maybe hold var that stores intial
     }
 
     var qline = parser.split(inputCode[line])
 
-    if(qline[qline.length - 1] == "{")
+    if (qline[qline.length - 1] == "{")
         addSemiC++
-    
-    if(qline[qline.length - 1] == "}")
+
+    if (qline[qline.length - 1] == "}")
         addSemiC--
 
 
-    build.push(inputCode[line] + (addSemiC > 0? ";" : ""))
+    build.push(inputCode[line] + (addSemiC > 0 ? ";" : ""))
 
     qline.forEach(x => {
         if (objectIncludes(n2, x)) {
@@ -359,7 +363,7 @@ function _quickSplitLookahead(inputCode, line, build, n2, nest = [], addSemiC = 
                 nest.pop()
             }
             else {
-               // console.log(inputCode[line], x)
+                // console.log(inputCode[line], x)
                 throwE(`[PARSER] Unopened bracket on:`)
             }
         }
@@ -367,7 +371,7 @@ function _quickSplitLookahead(inputCode, line, build, n2, nest = [], addSemiC = 
     if (nest.length != 0) {
         throwW(`[PARSER] Unclosed bracket on:`)
         //console.log("CALLING WITH", nest)
-        _quickSplitLookahead(inputCode, line + 1, build, n2, nest,  addSemiC)
+        _quickSplitLookahead(inputCode, line + 1, build, n2, nest, addSemiC)
     }
     //console.log("---END FOUND---")
     // else
@@ -390,8 +394,7 @@ global.quickSplit = function (inputCode) {
 
         _quickSplitLookahead(q, qlineNo, build, n2)
         //console.log("### BUILD", build)
-        if(build.length == 0)
-        {
+        if (build.length == 0) {
             throwE("[PARSER] Critical error")
         }
         q[qlineNo] = build.join("")
@@ -612,13 +615,13 @@ global.getTrueLine = function (execFileLikeTrue, line) {
 }
 
 // taken from https://stackoverflow.com/questions/3145030/convert-integer-into-its-character-equivalent-where-0-a-1-b-etc
-global.numberToUniqueStr = function(i) {
+global.numberToUniqueStr = function (i) {
     return (
-      (i >= 26 ? numberToUniqueStr(((i / 26) >> 0) - 1) : "") +
-      "abcdefghijklmnopqrstuvwxyz"[i % 26 >> 0]
+        (i >= 26 ? numberToUniqueStr(((i / 26) >> 0) - 1) : "") +
+        "abcdefghijklmnopqrstuvwxyz"[i % 26 >> 0]
     );
 }
-  
+
 
 global.debugPrint = function () {
     if (MODE_DEBUG)

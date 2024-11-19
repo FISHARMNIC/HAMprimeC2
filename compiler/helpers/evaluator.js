@@ -597,21 +597,38 @@ function evaluate(line) {
             outputCode.autoPush(`# note, read PARAM ${word} -> ${temp}`)
             
         } else if (word == "$") {
+            var word = ""
+
             if(offsetWord(1) == "(")
             {
                 if(offsetWord(3) != ")")
                 {
                     throwE("\"address of\" operator missing close bracket")
                 }
-                line[wordNum] = actions.variables.readAddress(offsetWord(2))
+                word = offsetWord(2)
+                line[wordNum] = actions.variables.readAddress(word)
                 line.splice(wordNum + 1, 3)
             }
             else
             {
-                line[wordNum] = actions.variables.readAddress(offsetWord(1))
-            line.splice(wordNum + 1, 1)
+                word = offsetWord(1)
+                line[wordNum] = actions.variables.readAddress(word)
+                line.splice(wordNum + 1, 1)
             }
+            console.log("#####", word, lambdaQueue)
             
+            var f = lambdaQueue.find(x => {
+                return x.name == word
+            })
+
+            if(f != undefined)
+            {
+                f.capturedParams = objCopy(helpers.general.getMostRecentFunction().data.parameters)
+                f.capturedStackVars = objCopy(getAllStackVariables())
+                f.ready = true
+                //throwE("found", getAllStackVariables())
+                // here, make lambda ready, and copy scope
+            }
         }
         // #endregion
         // #region Brackets
@@ -919,6 +936,10 @@ function evaluate(line) {
                 line[wordNum] = oreg
                 line.splice(wordNum + 1, 3)
 
+            } else if (word == "JS_EVAL")
+            {
+                line[wordNum] = eval(offsetWord(1).slice(1,offsetWord(1).length - 1))
+                line.splice(wordNum + 1, 1)
             } else if (word == "function") {
                 var fname = offsetWord(-1)
                 var params = offsetWord(2)
@@ -935,14 +956,29 @@ function evaluate(line) {
 
                 // throwE(line, offsetWord(3), offsetWord(4))
 
+                var isLambda = offsetWord(-2) == "__lambda__"
+
                 var data = {
                     name: fname,
                     parameters: params_obj.params,
                     returnType,
                     variadic: params_obj.didVari,
                     totalAlloc: 0,
-                    saveRegs: offsetWord(-2) == "__ccalled__"
+                    saveRegs: offsetWord(-2) == "__ccalled__",
+                    isLambda
                 }
+
+                if(isLambda)
+                {
+                    var instance = _allLambdas.find(x => x.name == fname)
+                    if(instance == undefined)
+                    {
+                        throwE(`Unable to find lambda reference for "${fname}"`)
+                    }
+
+                    throwE("wefewfwf", instance)
+                }
+
                 userFunctions[fname] = data
                 /*
                 if(word == "lambda")
@@ -1000,7 +1036,7 @@ function evaluate(line) {
                         data
                     }
 
-                    actions.functions.createFunction(fname)
+                    actions.functions.createFunction(fname, isLambda)
                 }
                 nextIsForward = false
 

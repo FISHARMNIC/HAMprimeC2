@@ -470,6 +470,7 @@ var variables = {
 
 var registers = {
     clobberOrder: ['s', 'c', 'i'],
+    multiLineClobbers: [],
     inLineClobbers: {
        // 'b': 0, // ax is reserved for function returns
         'c': 0, // dx is reserved for other stuff
@@ -483,6 +484,9 @@ var registers = {
             's': 0,
             'i': 0,
         }
+        this.multiLineClobbers.forEach(x => {
+            this.inLineClobbers[x] = 1
+        })
     },
     extendedTypes: {
         'a': defines.types.u32,
@@ -537,6 +541,25 @@ var registers = {
     clobberRegister: function (register) {
         //if(register.length == 1)
         this.inLineClobbers[register] = 1
+    },
+    multiLineClobberRegister: function (register)
+    {
+        this.inLineClobbers[register] = 1
+        if(this.multiLineClobbers.includes(register))
+        {
+            throwE(`[INTERNAL] Register "${register}" is already clobbered`)
+        }
+        this.multiLineClobbers.push(register)
+    },
+    deClobberMultiLineRegister: function (register) {
+        var mcb = this.multiLineClobbers
+        if(!mcb.includes(register))
+        {
+            throwE(`[INTERNAL] Register "${register}" was never clobbered`)
+        }
+        this.multiLineClobbers.splice(mcb.indexOf(register), 1)
+        if (register.length == 1)
+            this.inLineClobbers[register] = 0
     },
     deClobberRegister: function (register) {
         if (register.length == 1)

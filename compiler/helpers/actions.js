@@ -4,8 +4,7 @@ var assembly = {
         if (!("isReference" in rtype))
             return reference
 
-        if("unknown" in rtype)
-        {
+        if ("unknown" in rtype) {
             throwE(`Unable to check type of ${reference}. Did you initialize the it?`)
         }
 
@@ -421,10 +420,9 @@ var variables = {
         // throwW("::", vname, getAllStackVariables())
         var valueType = helpers.types.guessType(value);
 
-        if("unknown" in type)
-            {
-                type = valueType
-            }
+        if ("unknown" in type) {
+            type = valueType
+        }
 
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___" && vname != "__this__") {
 
@@ -1175,7 +1173,8 @@ var functions = {
         })
         return { params: robj.reverse(), oBytes, didVari }
     },
-    createFunction: function (fname) {
+    createFunction: function (fname, isLambda = false) {
+
         nextIsForward = false
         if (helpers.general.isReserved(fname)) {
             throwE(`Cannot create function "${fname}" as it is a reserved word`)
@@ -1186,9 +1185,18 @@ var functions = {
         )
         outputCode.text.push(
             fname + ":",
+        )
+
+        if (isLambda) {
+            helpers.registers.multiLineClobberRegister('c')
+            outputCode.text.push(
+                `mov %ebp, %ecx`
+            )
+        }
+
+        outputCode.text.push(
             `push %ebp`,
             `mov %esp, %ebp`,
-            //`pusha`,
             `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`,
             `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
 
@@ -1218,17 +1226,15 @@ var functions = {
                 var givenRetType = helpers.types.guessType(rVal)
                 var scopeRetType = scope.data.returnType
 
-                if((helpers.types.guessType(rVal).hasData == true))
-                    {
-                        actions.assembly.optimizeMove(rVal, "__gc_dontClear__",givenRetType,defines.types.p32)
-                    }
+                if ((helpers.types.guessType(rVal).hasData == true)) {
+                    actions.assembly.optimizeMove(rVal, "__gc_dontClear__", givenRetType, defines.types.p32)
+                }
 
                 if (scopeRetType == undefined) {
                     throwE(`No given return type in function "${scope.data.name}"`)
                 }
 
-                if ("unknown" in scopeRetType)
-                {
+                if ("unknown" in scopeRetType) {
                     scopeRetType = givenRetType
                     userFunctions[scope.data.name].returnType = givenRetType
                 }
@@ -1243,8 +1249,7 @@ var functions = {
                 else if (!helpers.types.areEqual(givenRetType, scopeRetType)) {
                     var gtname = helpers.types.convertTypeObjToName(givenRetType)
                     //console.log(givenRetType)
-                    if(!("unknown" in scopeRetType))
-                    {
+                    if (!("unknown" in scopeRetType)) {
                         throwW(`Return type "${gtname}" does not match expected return type "${helpers.types.convertTypeObjToName(scopeRetType)}"\n ^^^^^^^ [FIXED BY] Retyping function to return "${gtname}"`)
                     }
                     scope.data.returnType = givenRetType
@@ -1302,6 +1307,11 @@ var functions = {
                     `# ${sv[0]}: ${sv[1].offset}`
                 )
             })
+
+            if(scope.data?.isLambda)
+            {
+                helpers.registers.deClobberMultiLineRegister("c")
+            }
         }
         //throwE(st)
     },
@@ -1675,8 +1685,7 @@ var formats = {
             return { ptr: `${offset}(${base})`, type: propertyType }
         assembly.optimizeMove(`${offset}(${base})`, out, propertyType, propertyType)
 
-        if("unknown" in propertyType)
-        {
+        if ("unknown" in propertyType) {
             throwE(`Property "${propertyName}" in "${base}" cannot be read since its type is unknown. Did you initialize it?`)
         }
         return out
@@ -1954,7 +1963,7 @@ var formats = {
 
 
         var foundOperatorFn = parentType.formatPtr.operators[operator].find(e => {
-            return e.parameters.every((p,i) => {
+            return e.parameters.every((p, i) => {
                 return helpers.types.areEqualNonStrict(p.type, helpers.types.guessType(params[i]))
             })
         })

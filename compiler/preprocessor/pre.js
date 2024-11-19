@@ -113,7 +113,17 @@ function treatOther(line) {
             }
 
             var lbname = helpers.functions.newAnonFunctionLabel()
-            lambdaQueue.push({name: lbname, code: out, def:line.slice(wordNum + 1, numStart - 1).join(" ")})
+
+            var newLam = {
+                name: lbname, 
+                code: out, 
+                def:line.slice(wordNum + 1, numStart - 1).join(" "), 
+                ready: false
+            }
+
+            lambdaQueue.push(newLam)
+
+            _allLambdas.push(newLam)
 
             line[wordNum] = "$" + lbname
             //console.log(line.slice(wordNum, num + 1))
