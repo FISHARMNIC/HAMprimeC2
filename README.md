@@ -90,7 +90,10 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Support for GMP (look at `bignums` in `test/working`)
 
 Currently working on / roadmap:
-- Lamdba functions are a WIP, and can be accessed in the `lambdas` branch
+- `Lambda` branch currently includes:
+    - Lamdba functions (very much a WIP)
+    - `__asm__` keyword for inline assembly
+    - `JS_EXEC` keyword for compile time debugging 
 - Char literals being treated as ints leading to a mess of casting if you use char type
 - Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon
 - cant use operator "+" with string parameter (tries calling `.toString` instead)
