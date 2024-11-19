@@ -90,11 +90,11 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Support for GMP (look at `bignums` in `test/working`)
 
 Currently working on / roadmap:
+- Lamdba functions are a WIP, and can be accessed in the `lambdas` branch
 - Char literals being treated as ints leading to a mess of casting if you use char type
 - Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon
 - cant use operator "+" with string parameter (tries calling `.toString` instead)
 - easier built-in array features (push,pop,forEach,etc.)
-- Lamdba functions
 - inline assembly
 
 #### differences from the first compiler
