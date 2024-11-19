@@ -1,6 +1,19 @@
 /*
 TODO:
 
+    any quote wont work inside backtick strings, like `abc "ggg"` -> `abc ggg`
+
+    Make it so any function default return type is "unknown" (like when you dont specify the return type)
+
+    Lambdas how to:
+        * on detection of lambda:
+        * find close bracket (make sure to use a stack of opens and closes )
+        * add newline before after any open bracket
+        * add newline before and after any close bracket
+        * generate function
+        * replace with function name
+        * how to captures?
+
     Make a new parser that handles allowing mutli-line statements
         * Make sure that it should now allow:
             * variables/functions that include a type name like: my_char
@@ -265,6 +278,24 @@ TODO:
     - temporarily disabled stack allocations for formats since if you do loops it will be overriting the same thing
 */
 
+/*
+// enable to show where console.logs were called from
+// taken from https://remysharp.com/2014/05/23/where-is-that-console-log
+
+['log', 'warn'].forEach(function(method) {
+  var old = console[method];
+  console[method] = function() {
+    var stack = (new Error()).stack.split(/\n/);
+    // Chrome includes a single "Error" line, FF doesn't.
+    if (stack[0].indexOf('Error') === 0) {
+      stack = stack.slice(1);
+    }
+    var args = [].slice.apply(arguments).concat([stack[1].trim()]);
+    return old.apply(console, args);
+  };
+});
+
+*/
 const fs = require("fs");
 const exec = require('child_process').exec;
 // All required libs
@@ -351,7 +382,10 @@ process.on('uncaughtException', function (err) {
 });
 
 
-inputCode = inputCode.map((line, lineNo) => {
+for(var lineNo = 0; lineNo < inputCode.length; lineNo++)
+{
+    var line = inputCode[lineNo]
+
     // parse it into words
     globalLine = lineNo
     globalLineConts = line
@@ -366,6 +400,11 @@ inputCode = inputCode.map((line, lineNo) => {
         prioritizeWord(lsplit[0], lsplit.slice(1))
     }
 
+    // if(lsplit.includes("__anonymous_a__"))
+    // {
+    //     throwE("foun")
+    // }
+
     arrayClamp = defines.types.u32
     lastArrayType = defines.types.u32
     helpers.registers.clearClobbers()
@@ -379,8 +418,40 @@ inputCode = inputCode.map((line, lineNo) => {
     lsplit = nest.runDeepestFirst(lsplit)
 
     helpers.counters.setMaxTempLabels();
-    return lsplit;
-})
+    inputCode[lineNo] = lsplit;
+
+}
+
+// inputCode = inputCode.map((line, lineNo) => {
+//     // parse it into words
+//     globalLine = lineNo
+//     globalLineConts = line
+
+//     var lsplit = parser.split(line);
+//     var io = lsplit.indexOf("//")
+//     if (io != -1) {
+//         lsplit = lsplit.slice(0, lsplit.indexOf("//"))
+//     }
+
+//     if (defines.priorityWords.includes(lsplit[0]) && !inComment) {
+//         prioritizeWord(lsplit[0], lsplit.slice(1))
+//     }
+
+//     arrayClamp = defines.types.u32
+//     lastArrayType = defines.types.u32
+//     helpers.registers.clearClobbers()
+//     helpers.registers.resetExtendedTypes()
+//     typeStack = []
+//     oldFormatAllocs = []
+//     allocationOnLine = false
+
+//     lsplit = nest.nest(lsplit);
+//     lsplit = nest.orderDeepestFirst(lsplit)
+//     lsplit = nest.runDeepestFirst(lsplit)
+
+//     helpers.counters.setMaxTempLabels();
+//     return lsplit;
+// })
 
 helpers.variables.genTempLabels();
 

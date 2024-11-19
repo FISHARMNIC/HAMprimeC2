@@ -109,10 +109,10 @@ function split(line) {
                     inquotes = char;
                 }
             } else if ((char == parseInt(char)) != mode) { // if we are going from numbers to letters or vice versa
-                if (build != "")
-                    outBuffer.push(build);
-                mode = !mode;
-                build = char;
+                    if (build != "")
+                        outBuffer.push(build);
+                    mode = !mode;
+                    build = char;
             } else {
                 build += char; // build current char
             }
@@ -159,22 +159,22 @@ Compiled with love on ${String(new Date())}
 
 ######## user data section ########
 `
-+ outputCode.data.join("\n") +
-`
+        + outputCode.data.join("\n") +
+        `
 ###################################
 .text
 
 #### compiler initation section ###
 __init_for_${outName}__:
-${(hasEntryFunction && numberOfFiles != 1)? (new Array(numberOfFiles)).fill(0).map((x,i)=>`call __init_for_out${i}__`).join("\n"): ""}
+${(hasEntryFunction && numberOfFiles != 1) ? (new Array(numberOfFiles)).fill(0).map((x, i) => `call __init_for_out${i}__`).join("\n") : ""}
 `
-+ outputCode.init.join("\n") +
-`
+        + outputCode.init.join("\n") +
+        `
 ret
 .global __init_for_${outName}__
 ###################################
 
-${hasEntryFunction? `.global main\nmain:\ncall __init_for_${outName}__\ncall entry\nret` : "# No main function"}
+${hasEntryFunction ? `.global main\nmain:\ncall __init_for_${outName}__\ncall entry\nret` : "# No main function"}
 
 ###################################
 `

@@ -8,8 +8,7 @@ getNum function<u32 n> -> u32
     return(n);
 }
 
-entry function<> -> u32
-{
+entry function<> -> u32 {
     create x <- 1;
     create y <- 9;
     while(x <= getNum(10))

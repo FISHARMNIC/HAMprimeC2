@@ -1227,6 +1227,12 @@ var functions = {
                     throwE(`No given return type in function "${scope.data.name}"`)
                 }
 
+                if ("unknown" in scopeRetType)
+                {
+                    scopeRetType = givenRetType
+                    userFunctions[scope.data.name].returnType = givenRetType
+                }
+
                 if ("voided" in scopeRetType) {
                     throwE(`Cannot return data in function that returns nothing`)
                 }
@@ -1317,6 +1323,7 @@ var functions = {
         var callAddress = fname
 
         //console.log(`Calling ${fname} with ${args.join(" ")}, ${typeIfFromAddress}`)
+        //console.log(args.filter(x => x != ","))
         if (typeof args != "string") {
             var filtered = args.filter(x => x != ",")
             if (typeIfFromAddress == null && !userFunctions[fname].variadic && (filtered.length != userFunctions[fname].parameters.length)) {

@@ -664,7 +664,7 @@ var formats = {
 var functions = {
     newAnonFunctionLabel: function()
     {
-        return formatters.anonymousFunction(counters.anonLabels++)
+        return formatters.anonymousFunction(numberToUniqueStr(counters.anonLabels++))
     },
     getParameterOffset: function (param) {
         var offset = 0

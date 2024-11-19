@@ -37,9 +37,40 @@ thisStack.save = function () {
 thisStack.restore = function () {
     globalVariables.__this__ = thisStack.pop()
 }
-
+global.lambdaQueue = []
 global.MODE_DEBUG = false;
 global.scope = [];
+
+scope.popScope = function() 
+{
+    var o = this.pop()
+    if(this.length == 0)
+    {
+        console.log("EMPTY SCOPE", lambdaQueue)
+
+        var out = []
+
+        lambdaQueue.forEach(func => {
+            out.push(
+                `${func.name} function${func.def}`,
+                `{`,
+                ...func.code.filter(x=>x),
+                `}`,
+            )
+        })
+        
+        console.log(out)
+        if(out.length != 0)
+        {
+            inputCode.splice(globalLine + 1, 0, ...out)
+            //throwE(inputCode)
+            lambdaQueue = []
+        }
+    }
+    return o
+}
+
+
 global.currentStackOffset = 0;
 global.requestBracket = 0;
 global.oldFormatAllocs = [] // for freeing registers in property chains like a.b.c.d
@@ -297,9 +328,10 @@ global.keywordTypes = {
     FOREACH: 8
 }
 
-function _quickSplitLookahead(inputCode, line, build, n2, nest = []) {
+function _quickSplitLookahead(inputCode, line, build, n2, nest = [], addSemiC = 0) {
 
     //console.log("STARTING WITH:", nest)
+
     if(line >= inputCode.length)
     {
         throwE(`[PARSER] Bracket was never closed`)
@@ -308,7 +340,14 @@ function _quickSplitLookahead(inputCode, line, build, n2, nest = []) {
 
     var qline = parser.split(inputCode[line])
 
-    build.push(inputCode[line])
+    if(qline[qline.length - 1] == "{")
+        addSemiC++
+    
+    if(qline[qline.length - 1] == "}")
+        addSemiC--
+
+
+    build.push(inputCode[line] + (addSemiC > 0? ";" : ""))
 
     qline.forEach(x => {
         if (objectIncludes(n2, x)) {
@@ -328,7 +367,7 @@ function _quickSplitLookahead(inputCode, line, build, n2, nest = []) {
     if (nest.length != 0) {
         throwW(`[PARSER] Unclosed bracket on:`)
         //console.log("CALLING WITH", nest)
-        _quickSplitLookahead(inputCode, line + 1, build, n2, nest)
+        _quickSplitLookahead(inputCode, line + 1, build, n2, nest,  addSemiC)
     }
     //console.log("---END FOUND---")
     // else
@@ -349,7 +388,6 @@ global.quickSplit = function (inputCode) {
 
         var build = []
 
-        //console.log("### START", q[qlineNo])
         _quickSplitLookahead(q, qlineNo, build, n2)
         //console.log("### BUILD", build)
         if(build.length == 0)
@@ -572,6 +610,15 @@ global.getTrueLine = function (execFileLikeTrue, line) {
     return lookAtFile
 
 }
+
+// taken from https://stackoverflow.com/questions/3145030/convert-integer-into-its-character-equivalent-where-0-a-1-b-etc
+global.numberToUniqueStr = function(i) {
+    return (
+      (i >= 26 ? numberToUniqueStr(((i / 26) >> 0) - 1) : "") +
+      "abcdefghijklmnopqrstuvwxyz"[i % 26 >> 0]
+    );
+}
+  
 
 global.debugPrint = function () {
     if (MODE_DEBUG)

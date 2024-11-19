@@ -95,26 +95,31 @@ function evaluate(line) {
 
         // #region modifications
         if (word == '(' || word == ')') {
-            if (offsetWord(-2) == "call" || (offsetWord(-3) == "call" && (offsetWord(-2) in defines.types))) {
+            if (offsetWord(-2) == "call") {
                 var returnType = defines.types.u32
-                var offset = -2
-                if (offsetWord(-2) in defines.types) // if next word is a type
-                {
-                    returnType = defines.types[offsetWord(-2)]
-                    offset += 1
-                }
 
-                var fnName = offsetWord(1 + offset)
-                var params = offsetWord(3 + offset)
+                var hasRet = false
+                if (offsetWord(3) == "->") // if next word is a type
+                {
+                    hasRet = true
+                    //throwE("ya")
+                    returnType = defines.types[offsetWord(4)]
+                }
+                //throwE(offsetWord(-1), line)
+
+                var fnName = offsetWord(-1)
+                var params = offsetWord(1)
 
                 // call as address
-                if ((offsetWord(-2) in defines.types)) {
-                    line[wordNum - 3] = actions.functions.callFunction(fnName, params, false, null, returnType)
-                    line.splice(wordNum - 2, 5)
+                if (hasRet) {
+                    line[wordNum - 2] = actions.functions.callFunction(fnName, params, false, null, returnType)
+                    line.splice(wordNum - 1, 6)
                 } else {
                     line[wordNum - 2] = actions.functions.callFunction(fnName, params, false, null, returnType)
                     line.splice(wordNum - 1, 4)
                 }
+
+                //throwE(line, wordNum)
 
             }
             else {
@@ -625,7 +630,7 @@ function evaluate(line) {
 
             }
         } else if (word == "}") {
-            var oldScope = scope.pop()
+            var oldScope = scope.popScope()
             debugPrint("EXITING", oldScope)
             var oldStack = stackVariables.pop()
 
@@ -914,16 +919,17 @@ function evaluate(line) {
                 line[wordNum] = oreg
                 line.splice(wordNum + 1, 3)
 
-            } else if (word == "function" || word == "lambda") {
-                var fname = word == "lambda"? helpers.functions.newAnonFunctionLabel() : offsetWord(-1)
+            } else if (word == "function") {
+                var fname = offsetWord(-1)
                 var params = offsetWord(2)
                 if (typeof (params) == "string")
                     params = [params]
                 var params_obj = actions.functions.createParams(params)
                 var returnType = objCopy(defines.types.u32)
+                var noReturnType = true
 
                 if (offsetWord(4) == "->") {
-
+                    noReturnType = false
                     returnType = defines.types[offsetWord(5)]
                 }
 
@@ -938,7 +944,56 @@ function evaluate(line) {
                     saveRegs: offsetWord(-2) == "__ccalled__"
                 }
                 userFunctions[fname] = data
+                /*
+                if(word == "lambda")
+                {
+                    var num = noReturnType ? 4 : 6
 
+                    if(offsetWord(num) != "{")
+                    {
+                        throwE("No function statement provided in lambda")
+                    }
+
+                    var nest = 0
+
+                    var numStart = ++num
+
+                    // capture code in lambda
+                    while(num < line.length)
+                    {
+                        if(offsetWord(num) == "{")
+                        {
+                            console.log("n", nest)
+                            nest++
+                        }
+                        else if(offsetWord(num) == "}")
+                        {
+                            console.log("c", nest)
+                            if(nest == 0)
+                            {
+                                break
+                            }
+                            else
+                            {
+                                nest--
+                            }
+                        }
+                        num++
+                    }
+
+                    if(num >= line.length)
+                    {
+                        throwE("Lambda was not closed")
+                    }
+
+                    numStart += wordNum
+                    num += wordNum
+
+                    //line.slice(wordNum, num + 1) // whole thing including dec
+                    // issue is that things are being evaluated inside the lmabda since they have parenthesis
+                    throwE(line.slice(numStart, num))
+                }
+                */
                 if (!nextIsForward) {
                     requestBracket = {
                         type: keywordTypes.FUNCTION,
@@ -1005,7 +1060,6 @@ function evaluate(line) {
                 )
             }else if (word == "return" || word == "return_new") {
                 debugPrint("closer", line, scope)
-
                 var wrd = offsetWord(1)
                 if (offsetWord(1) == "(") {
                     wrd = offsetWord(2)
