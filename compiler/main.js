@@ -1,6 +1,18 @@
 /*
 TODO:
 
+    HOW TO DO VARIABLE CAPTURE FOR LAMBDAS
+    * on entry, store old ebp in register
+    * doesnt have to be before frame change, just access 0(%ebp) for old frame, and store that in register
+        * example mov (%ebp), %edi
+        * Store that register in the compile time function data (maybe like "outerFrame")
+    * copy current scoped variables (params and stack vars) into new function (compile time, JS)
+        * for each one, add special flag like "isCaptured"
+    * when accessing any of those captured variables, it reads that flag "isCaptured"
+        * If set, then access with offset "outerFrame" instead of ebp
+    * for example, if "outerFrame" is %edi, and accessing captured stack var #1
+        * -4(%edi) instead of -4(%ebp)
+
     any quote wont work inside backtick strings, like `abc "ggg"` -> `abc ggg`
 
     Make it so any function default return type is "unknown" (like when you dont specify the return type)
