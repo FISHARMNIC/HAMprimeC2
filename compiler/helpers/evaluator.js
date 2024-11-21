@@ -20,7 +20,7 @@ function evaluate(line) {
         var word = line[wordNum]
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
-        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed" || line[wordNum + 2] == "locked" || line[wordNum + 2] == "reference")) {
+        } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (/*objectIncludes(defines.types, line[wordNum + 2]) || */line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed" || line[wordNum + 2] == "locked" || line[wordNum + 2] == "reference")) {
 
             var ogtype = defines.types[word]
             var cpy = objCopy(ogtype)
@@ -37,15 +37,22 @@ function evaluate(line) {
                 defines.types[`__${word}__staticdef__`] = cpy
                 line[wordNum] = `__${word}__staticdef__`
             } else if (line[wordNum + 2] == "array") {
-                if ("hasData" in cpy) {
-                    cpy.elementsHaveData = true;
-                    defines.types[`__${word}__dynamicChildrendef__`] = cpy
-                    line[wordNum] = `__${word}__dynamicChildrendef__`
-                } else {
-                    cpy.hasData = true;
-                    defines.types[`__${word}__dynamicdef__`] = cpy
-                    line[wordNum] = `__${word}__dynamicdef__`
-                }
+                // if ("hasData" in cpy) {
+                //     cpy.elementsHaveData = true;
+                //     defines.types[`__${word}__dynamicChildrendef__`] = cpy
+                //     line[wordNum] = `__${word}__dynamicChildrendef__`
+                // } else {
+                //     cpy.hasData = true;
+                //     defines.types[`__${word}__dynamicdef__`] = cpy
+                //     line[wordNum] = `__${word}__dynamicdef__`
+                // }
+ 
+                var n = objCopy(defines.types.array)
+                n.arrayElements = cpy
+                var name = helpers.variables.newUntypedLabel()
+                defines.types[`__TYPE_${name}__`] = n
+                line[wordNum] = `__TYPE_${name}__`
+
             } else if (line[wordNum + 2] == "locked") {
                 throwE("Locked pointers are still in development")
 
@@ -59,7 +66,14 @@ function evaluate(line) {
                 cpy.isReference = true;
                 defines.types[`__${word}__reference__`] = cpy
                 line[wordNum] = `__${word}__reference__`
-            }
+            } 
+            // else if (objectIncludes(defines.types, line[wordNum + 2]))
+            // {
+            //     cpy.arrayElements = objCopy(defines.types[line[wordNum + 2]])
+            //     var name = helpers.variables.newUntypedLabel()
+            //     defines.types[`__TYPE_${name}__`] = cpy
+            //     line[wordNum] = `__TYPE_${name}__`
+            // }
 
             line.splice(wordNum + 1, 2)
             /*
@@ -95,26 +109,31 @@ function evaluate(line) {
 
         // #region modifications
         if (word == '(' || word == ')') {
-            if (offsetWord(-2) == "call" || (offsetWord(-3) == "call" && (offsetWord(-2) in defines.types))) {
+            if (offsetWord(-2) == "call") {
                 var returnType = defines.types.u32
-                var offset = -2
-                if (offsetWord(-2) in defines.types) // if next word is a type
-                {
-                    returnType = defines.types[offsetWord(-2)]
-                    offset += 1
-                }
 
-                var fnName = offsetWord(1 + offset)
-                var params = offsetWord(3 + offset)
+                var hasRet = false
+                if (offsetWord(3) == "->") // if next word is a type
+                {
+                    hasRet = true
+                    //throwE("ya")
+                    returnType = defines.types[offsetWord(4)]
+                }
+                //throwE(offsetWord(-1), line)
+
+                var fnName = offsetWord(-1)
+                var params = offsetWord(1)
 
                 // call as address
-                if ((offsetWord(-2) in defines.types)) {
-                    line[wordNum - 3] = actions.functions.callFunction(fnName, params, false, null, returnType)
-                    line.splice(wordNum - 2, 5)
+                if (hasRet) {
+                    line[wordNum - 2] = actions.functions.callFunction(fnName, params, false, null, returnType)
+                    line.splice(wordNum - 1, 6)
                 } else {
                     line[wordNum - 2] = actions.functions.callFunction(fnName, params, false, null, returnType)
                     line.splice(wordNum - 1, 4)
                 }
+
+                //throwE(line, wordNum)
 
             }
             else {
@@ -180,6 +199,7 @@ function evaluate(line) {
                             `mov %eax, ${out}`
                         )
                     } else {
+                        actions.assembly.pushClobbers() // todo !@# ### no need to push and pop var "out" since its not used yet
                         outputCode.autoPush(
                             `# Asked for ${num} allocations of "${word}"`,
                             `mov \$${bytes}, %edx`,
@@ -189,8 +209,9 @@ function evaluate(line) {
                             `push %eax`,
                             `call __rc_allocate__`,
                             `add $8, %esp`,
-                            `mov %eax, ${out}`
                         )
+                        actions.assembly.popClobbers()
+                        outputCode.autoPush(`mov %eax, ${out}`)
                     }
                     line[wordNum] = out
                     line.splice(wordNum + 1, 3)
@@ -317,8 +338,7 @@ function evaluate(line) {
                     })
                     */
                     var type = objectIncludes(defines.types, offsetWord(2)) ? defines.types[offsetWord(2)] : objCopy(defines.types.unknown)
-                    if("voided" in type)
-                    {
+                    if ("voided" in type) {
                         throwE("Cannot create void property")
                     }
 
@@ -368,9 +388,8 @@ function evaluate(line) {
                         //console.log(ptype.formatPtr)
                         var dest = actions.formats.readProperty(base, ptype, offsetWord(1), true)
                         var intype = helpers.types.guessType(offsetWord(3))
-                        
-                        if("unknown" in dest.type)
-                        {
+
+                        if ("unknown" in dest.type) {
                             ptype.formatPtr.properties.find(x => x.name == offsetWord(1)).type = intype
                             dest.type = intype
                         }
@@ -536,13 +555,11 @@ function evaluate(line) {
         } else if (word == "import" || word == "importTLS") {
             //throwE(line, offsetWord(1))
             globalVariables[offsetWord(2)] = newGlobalVar(defines.types[offsetWord(1)])
-            if(word == "importTLS")
-            {
+            if (word == "importTLS") {
                 outputCode.data.push(".section .tbss;\n.extern " + offsetWord(2) + ";\n.data")
             }
-            else
-            {
-            outputCode.data.push(".extern " + offsetWord(2))
+            else {
+                outputCode.data.push(".extern " + offsetWord(2))
             }
             wordNum += 2
         }
@@ -590,23 +607,46 @@ function evaluate(line) {
             //     throwE(`Unable to read variable ${word} of unknounwn type`)
             // }
             outputCode.autoPush(`# note, read PARAM ${word} -> ${temp}`)
-            
-        } else if (word == "$") {
-            if(offsetWord(1) == "(")
-            {
-                if(offsetWord(3) != ")")
-                {
+
+        } else if (helpers.variables.checkIfOnCaptureStack(word) && offsetWord(1) != ":") // is lambda stack var capture
+        {
+            line[wordNum] = actions.assembly.getCapturedStackVarAsEcx(word)
+            typeStack.push(helpers.types.guessType(word))
+            //throwE("cap", line[wordNum])
+        } else if (objectIncludes(helpers.general.getMostRecentFunction()?.data?.capturedParams, word) && offsetWord(1) != ":") // is lambda param capture
+        {
+            throwE("Lambda capture params WIP")
+        }
+        else if (word == "$") {
+            var word = ""
+
+            if (offsetWord(1) == "(") {
+                if (offsetWord(3) != ")") {
                     throwE("\"address of\" operator missing close bracket")
                 }
-                line[wordNum] = actions.variables.readAddress(offsetWord(2))
+                word = offsetWord(2)
+                line[wordNum] = actions.variables.readAddress(word)
                 line.splice(wordNum + 1, 3)
             }
-            else
-            {
-                line[wordNum] = actions.variables.readAddress(offsetWord(1))
-            line.splice(wordNum + 1, 1)
+            else {
+                word = offsetWord(1)
+                line[wordNum] = actions.variables.readAddress(word)
+                line.splice(wordNum + 1, 1)
             }
-            
+            //console.log("#####", word, lambdaQueue)
+
+            var f = lambdaQueue.find(x => {
+                return x.name == word
+            })
+
+            if (f != undefined) {
+                f.capturedParams = objCopy(helpers.general.getMostRecentFunction().data.parameters)
+                //throwE(getAllStackVariables())
+                f.capturedStackVars = objCopy(getAllStackVariables())
+                f.ready = true
+                //throwE("found", getAllStackVariables())
+                // here, make lambda ready, and copy scope
+            }
         }
         // #endregion
         // #region Brackets
@@ -625,7 +665,7 @@ function evaluate(line) {
 
             }
         } else if (word == "}") {
-            var oldScope = scope.pop()
+            var oldScope = scope.popScope()
             debugPrint("EXITING", oldScope)
             var oldStack = stackVariables.pop()
 
@@ -666,11 +706,10 @@ function evaluate(line) {
             } else if (oldScope.type == keywordTypes.FUNCTION) {
                 actions.functions.closeFunction(oldScope, oldStack)
             } else if (oldScope.type == keywordTypes.WHILE || oldScope.type == keywordTypes.FOREACH) {
-                if(oldScope.type == keywordTypes.FOREACH)
-                {
+                if (oldScope.type == keywordTypes.FOREACH) {
                     outputCode.autoPush(`incw ${oldScope.data.indexer}`)
                 }
-                outputCode.autoPush(      
+                outputCode.autoPush(
                     `jmp ${oldScope.data.name}`,
                     `${oldScope.data.exit}:` // exit loop
                 )
@@ -693,6 +732,7 @@ function evaluate(line) {
                 //arrayClamp = defines.types.u32
 
                 var begin = oldScope.begin
+
                 var output = actions.allocations.allocateArray(line.slice(begin), `Allocation for array`)
 
                 lastArrayType = output.arrayType
@@ -746,6 +786,8 @@ function evaluate(line) {
                 //throwE(defines.types)
             } else if (word == "print_" || word == "println_") {
                 //throwE("WIP")
+
+                actions.assembly.pushMLclobbers()
 
                 if (offsetWord(1) != "(") {
                     throwE(`Print must be called like a function with parenthesis`)
@@ -827,8 +869,7 @@ function evaluate(line) {
                                 `add $4, %esp`
                             )
                         }
-                        else if("isChar" in dataType)
-                        {
+                        else if ("isChar" in dataType) {
                             outputCode.autoPush(
                                 `call putchar`,
                                 `movb $'\\n', (%esp)`,
@@ -845,6 +886,8 @@ function evaluate(line) {
                     }
                 }
                 //throwE("WIP")
+
+                actions.assembly.popMLclobbers()
             }
 
             else if (word == "transient") {
@@ -914,20 +957,30 @@ function evaluate(line) {
                 line[wordNum] = oreg
                 line.splice(wordNum + 1, 3)
 
-            } else if (word == "function" || word == "lambda") {
-                var fname = word == "lambda"? helpers.functions.newAnonFunctionLabel() : offsetWord(-1)
+            } else if (word == "JS_EVAL") {
+                line[wordNum] = eval(offsetWord(1).slice(1, offsetWord(1).length - 1))
+                line.splice(wordNum + 1, 1)
+            } else if (word == "__asm__") {
+                outputCode.autoPush(offsetWord(1).slice(1, offsetWord(1).length - 1))
+                break
+            }
+            else if (word == "function") {
+                var fname = offsetWord(-1)
                 var params = offsetWord(2)
                 if (typeof (params) == "string")
                     params = [params]
                 var params_obj = actions.functions.createParams(params)
                 var returnType = objCopy(defines.types.u32)
+                var noReturnType = true
 
                 if (offsetWord(4) == "->") {
-
+                    noReturnType = false
                     returnType = defines.types[offsetWord(5)]
                 }
 
                 // throwE(line, offsetWord(3), offsetWord(4))
+
+                var isLambda = offsetWord(-2) == "__lambda__"
 
                 var data = {
                     name: fname,
@@ -935,17 +988,82 @@ function evaluate(line) {
                     returnType,
                     variadic: params_obj.didVari,
                     totalAlloc: 0,
-                    saveRegs: offsetWord(-2) == "__ccalled__"
+                    saveRegs: offsetWord(-2) == "__ccalled__",
+                    isLambda
                 }
-                userFunctions[fname] = data
 
+                if (isLambda) {
+                    var instance = _allLambdas.find(x => x.name == fname)
+                    if (instance == undefined) {
+                        throwE(`Unable to find lambda reference for "${fname}"`)
+                    }
+                    outputCode.data.push(`${fname}ebpCapture__: .4byte 0 # Capture ebp for anonymous function`)
+                    
+                    data.capturedParams = instance.capturedParams
+                    data.capturedStackVars = instance.capturedStackVars
+                   
+                    //throwE("wefewfwf", instance)
+                }
+
+
+                userFunctions[fname] = data
+                /*
+                if(word == "lambda")
+                {
+                    var num = noReturnType ? 4 : 6
+
+                    if(offsetWord(num) != "{")
+                    {
+                        throwE("No function statement provided in lambda")
+                    }
+
+                    var nest = 0
+
+                    var numStart = ++num
+
+                    // capture code in lambda
+                    while(num < line.length)
+                    {
+                        if(offsetWord(num) == "{")
+                        {
+                            console.log("n", nest)
+                            nest++
+                        }
+                        else if(offsetWord(num) == "}")
+                        {
+                            console.log("c", nest)
+                            if(nest == 0)
+                            {
+                                break
+                            }
+                            else
+                            {
+                                nest--
+                            }
+                        }
+                        num++
+                    }
+
+                    if(num >= line.length)
+                    {
+                        throwE("Lambda was not closed")
+                    }
+
+                    numStart += wordNum
+                    num += wordNum
+
+                    //line.slice(wordNum, num + 1) // whole thing including dec
+                    // issue is that things are being evaluated inside the lmabda since they have parenthesis
+                    throwE(line.slice(numStart, num))
+                }
+                */
                 if (!nextIsForward) {
                     requestBracket = {
                         type: keywordTypes.FUNCTION,
                         data
                     }
 
-                    actions.functions.createFunction(fname)
+                    actions.functions.createFunction(fname, isLambda)
                 }
                 nextIsForward = false
 
@@ -962,8 +1080,7 @@ function evaluate(line) {
                 var arrayType = helpers.types.guessType(array)
                 var elementType = helpers.types.derefType(arrayType)
 
-                if("hasData" in arrayType)
-                {
+                if ("hasData" in arrayType) {
                     outputCode.autoPush(
                         `# forEach loop`,
                         `mov ${array}, %eax # load arr`,
@@ -971,16 +1088,14 @@ function evaluate(line) {
                         `mov 8(%edx),  %edx # get size`
                     )
                 }
-                else
-                {
+                else {
                     throwE("forEach not implemented on static arrays yet")
                 }
 
                 var regA = helpers.types.formatRegister('a', elementType)
                 var b = helpers.types.typeToBytes(elementType)
 
-                if(b != 1)
-                {
+                if (b != 1) {
                     outputCode.autoPush(`shr \$${b / 2}, %edx # divide by ${b} (bytes to u32 or u16)`)
                 }
                 outputCode.autoPush(
@@ -1003,9 +1118,8 @@ function evaluate(line) {
                 outputCode.autoPush(
                     `mov ${out}, ${actions.assembly.getStackVarAsEbp(elementVariable)}`
                 )
-            }else if (word == "return" || word == "return_new") {
+            } else if (word == "return" || word == "return_new") {
                 debugPrint("closer", line, scope)
-
                 var wrd = offsetWord(1)
                 if (offsetWord(1) == "(") {
                     wrd = offsetWord(2)
@@ -1058,10 +1172,10 @@ function evaluate(line) {
             } else if (word == "__define") {
                 macros[offsetWord(1)] = offsetWord(2)
                 wordNum += 2
-            } 
+            }
             else if (word == "publics") {
                 inPublicMode = true;
-            } 
+            }
             else if (word == "privates") {
                 inPublicMode = false;
             }
@@ -1076,18 +1190,16 @@ function evaluate(line) {
                 var num = offsetWord(2)
                 var type = helpers.types.guessType(num)
 
-                if(helpers.types.isConstant(num) || helpers.types.stringIsRegister(num))
-                {
+                if (helpers.types.isConstant(num) || helpers.types.stringIsRegister(num)) {
                     outputCode.autoPush(`movl ${(helpers.types.formatIfConstant(num))}, __xmm_sse_temp__`)
                     num = "__xmm_sse_temp__"
                 }
 
-                if(!type.float)
-                {
+                if (!type.float) {
                     outputCode.autoPush(`cvtsi2ss ${num}, %xmm2`)
                     num = "%xmm2"
                 }
-                
+
                 //outputCode.autoPush(`${type.float? "movss" : "cvtsi2ss"} ${num}, %xmm2`)
 
                 outputCode.autoPush(`sqrtss ${num}, %xmm1`)
@@ -1144,10 +1256,8 @@ function evaluate(line) {
                             break;
                         }
                     }
-                    else
-                    {
-                        if(word != "+" && word != undefined)
-                        {
+                    else {
+                        if (word != "+" && word != undefined) {
                             stringMathOverride = true
                         }
                     }
@@ -1164,7 +1274,7 @@ function evaluate(line) {
                 }
                 // throwE(build, stringMath)
 
-                var lbl = (stringMath && !stringMathOverride)? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
+                var lbl = (stringMath && !stringMathOverride) ? stringAdder(build) : (floatMath ? floatEngine(build) : mathEngine(build))
                 //throwE(outputCode.text)
                 line.splice(start, build.length + 1, lbl)
                 //throwE("spliced", line, build, build.length)

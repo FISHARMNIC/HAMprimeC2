@@ -3,6 +3,11 @@
 HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Linux. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
+- **Big Update**
+    * Added lambdas! see `test/working/lambda.x`
+- Added `JS_EXEC "any javascript code to be run at compile time"` (for debug)
+- Added `__asm__ "any assembly code"`
+- Reworked `call` keyword. Now `call some_function(params) -> some_type`
 - Statements can now be broken up into multiple lines
     - Like: 
     ```
@@ -88,12 +93,11 @@ All of the things below work. Scroll down for examples or click [here](https://g
 - Math
     - Floats and ints 
     - Support for GMP (look at `bignums` in `test/working`)
+- Lambdas
+    - Capture scoped variables by reference (very much WIP, may be buggy!)
 
 Currently working on / roadmap:
-- `Lambda` branch currently includes:
-    - Lamdba functions (very much a WIP)
-    - `__asm__` keyword for inline assembly
-    - `JS_EXEC` keyword for compile time debugging 
+- Lambda capturing parameters
 - Char literals being treated as ints leading to a mess of casting if you use char type
 - Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon
 - cant use operator "+" with string parameter (tries calling `.toString` instead)
@@ -127,6 +131,8 @@ Note: This is still being worked on, and editing still has some issues. This was
 * [Type Inference](#Type-inference-example)
 * [Overloads](#Operator-Overloads)
 * [Overloads(2)](#More-Overloads)
+* [Lambdas](#Lambdas)
+* [Lambdas(2)](#Lambda-Captures)
 * [Strings](#Strings)
 * [Variadics](#Variadics)
 * [C Inclusion](#C-Inclusion)
@@ -693,6 +699,63 @@ entry function<> -> u32
 
     myFile.close();
 
+    return 0;
+}
+```
+
+### Lambdas
+```Dart
+/* For now, lambdas must be passed as "any"*/
+map function<string:array arr, u32 size, any operation> -> none
+{
+    create i <- 0;
+
+    while(i <: size)
+    {
+        /* For now, lambdas must be called with "call func_name(params) -> returnType" */
+        arr[i] <- (call operation(arr[i]) -> string);
+        i <- i + 1;
+    }
+}
+
+entry function<> -> u32
+{
+    create family <- {"Dad", "Mom", "Dog", "Cat"};
+
+    map(family, 4, lambda<string value> -> string {
+        return (`I love my ${value}`);
+    });
+
+    forEach(person in family)
+    {
+        print_(person);
+    }
+}
+```
+
+### Lambda Captures
+```Dart
+doOperation function<u32 a, u32 b, any operation> -> auto
+{
+    return(call operation(a,b) -> u32);
+}
+
+entry function<> -> u32
+{
+    create someVar <- 123;
+    create otherVar <- 456;
+
+    /* someVar and otherVar can be read and modified within the lambda */
+    doOperation(4,5, 
+        lambda<u32 pa, u32 pb> -> auto {
+            print_(`someVar is ${someVar}`);
+            print_(`setting someVar to: ${pa} + ${pb} + ${someVar} = ${pa + pb + someVar}`); 
+            someVar <- pa + pb + someVar;
+        }
+    );
+
+    /* should be 132 now */
+    print_(`someVar is now ${someVar}`);
     return 0;
 }
 ```

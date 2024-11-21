@@ -37,9 +37,45 @@ thisStack.save = function () {
 thisStack.restore = function () {
     globalVariables.__this__ = thisStack.pop()
 }
-
+global.lambdaQueue = []
+global._allLambdas = []
 global.MODE_DEBUG = false;
 global.scope = [];
+
+scope.__proto__.popScope = function () {
+    var o = this.pop()
+    if (this.length == 0) {
+        //console.log("EMPTY SCOPE", lambdaQueue)
+
+        var out = []
+
+        for (var i = 0; i < lambdaQueue.length; i++) {
+            var func = lambdaQueue[i]
+            if (func.ready) {
+                //console.log("CREEEE", func)
+                // note that func.isLambda is false, only used converting the inline to global
+                out.push(
+                    `__lambda__ ${func.name} function${func.def}`,
+                    `{`,
+                    ...func.code.filter(x => x),
+                    `}`,
+                )
+                lambdaQueue.splice(i, 1)
+                i--
+            }
+        }
+
+        //console.log(out)
+        if (out.length != 0) {
+            inputCode.splice(globalLine + 1, 0, ...out)
+            //throwE(inputCode)
+            lambdaQueue = []
+        }
+    }
+    return o
+}
+
+
 global.currentStackOffset = 0;
 global.requestBracket = 0;
 global.oldFormatAllocs = [] // for freeing registers in property chains like a.b.c.d
@@ -297,18 +333,25 @@ global.keywordTypes = {
     FOREACH: 8
 }
 
-function _quickSplitLookahead(inputCode, line, build, n2, nest = []) {
+function _quickSplitLookahead(inputCode, line, build, n2, nest = [], addSemiC = 0) {
 
     //console.log("STARTING WITH:", nest)
-    if(line >= inputCode.length)
-    {
+
+    if (line >= inputCode.length) {
         throwE(`[PARSER] Bracket was never closed`)
         // todo, trace back, maybe hold var that stores intial
     }
 
     var qline = parser.split(inputCode[line])
 
-    build.push(inputCode[line])
+    if (qline[qline.length - 1] == "{")
+        addSemiC++
+
+    if (qline[qline.length - 1] == "}")
+        addSemiC--
+
+
+    build.push(inputCode[line] + (addSemiC > 0 ? ";" : ""))
 
     qline.forEach(x => {
         if (objectIncludes(n2, x)) {
@@ -320,15 +363,15 @@ function _quickSplitLookahead(inputCode, line, build, n2, nest = []) {
                 nest.pop()
             }
             else {
-               // console.log(inputCode[line], x)
+                // console.log(inputCode[line], x)
                 throwE(`[PARSER] Unopened bracket on:`)
             }
         }
     })
     if (nest.length != 0) {
-        throwW(`[PARSER] Unclosed bracket on:`)
+        //throwW(`[PARSER] Unclosed bracket on:`)
         //console.log("CALLING WITH", nest)
-        _quickSplitLookahead(inputCode, line + 1, build, n2, nest)
+        _quickSplitLookahead(inputCode, line + 1, build, n2, nest, addSemiC)
     }
     //console.log("---END FOUND---")
     // else
@@ -349,11 +392,9 @@ global.quickSplit = function (inputCode) {
 
         var build = []
 
-        //console.log("### START", q[qlineNo])
         _quickSplitLookahead(q, qlineNo, build, n2)
         //console.log("### BUILD", build)
-        if(build.length == 0)
-        {
+        if (build.length == 0) {
             throwE("[PARSER] Critical error")
         }
         q[qlineNo] = build.join("")
@@ -531,6 +572,15 @@ global.getAllStackVariables = function () {
     return obj
 }
 
+global.getCaptureStackVars = function () {
+    return helpers.general.getMostRecentFunction()?.data?.capturedStackVars || {}
+}
+
+global.getCaptureParams = function () {
+    return helpers.general.getMostRecentFunction()?.data?.capturedParams || []
+}
+
+
 function removeTabs(e) {
     return e.split("").map(x => x == "\t" ? "" : x).join("")
     // e = e.split("")
@@ -572,6 +622,15 @@ global.getTrueLine = function (execFileLikeTrue, line) {
     return lookAtFile
 
 }
+
+// taken from https://stackoverflow.com/questions/3145030/convert-integer-into-its-character-equivalent-where-0-a-1-b-etc
+global.numberToUniqueStr = function (i) {
+    return (
+        (i >= 26 ? numberToUniqueStr(((i / 26) >> 0) - 1) : "") +
+        "abcdefghijklmnopqrstuvwxyz"[i % 26 >> 0]
+    );
+}
+
 
 global.debugPrint = function () {
     if (MODE_DEBUG)
@@ -633,6 +692,8 @@ global.methodExists = function (n) {
     return Object.values(formatMethods).map(x => Object.keys(x)).flat().includes(n)
 }
 global.objectIncludes = function (obj, inc) {
+    if(obj == undefined)
+        return false
     return Object.keys(obj).includes(inc)
 }
 
