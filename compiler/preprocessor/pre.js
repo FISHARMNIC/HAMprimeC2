@@ -19,7 +19,6 @@ module.exports = function (code) {
         }
     }
     //throwE(code)
-    //console.log(code)
 }
 
 function treat(instruction) {
@@ -105,6 +104,7 @@ function treatOther(line, raw, rawLineNum) {
             //console.log(line.slice(wordNum, num + 1)) // whole thing including dec
             // issue is that things are being evaluated inside the lmabda since they have parenthesis
             var t = line.slice(numStart, num)
+
             var build = []
             var out = []
             for(var i = 0; i < t.length; i++)
@@ -120,6 +120,8 @@ function treatOther(line, raw, rawLineNum) {
                     build.push(letter)
                 }
             }
+
+            //console.log("CAP", out)
 
             var lbname = helpers.functions.newAnonFunctionLabel()
 

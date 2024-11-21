@@ -344,11 +344,19 @@ function _quickSplitLookahead(inputCode, line, build, n2, nest = [], addSemiC = 
 
     var qline = parser.split(inputCode[line])
 
-    if (qline[qline.length - 1] == "{")
-        addSemiC++
+    qline.forEach(x => {
+        if(x == "{")
+            addSemiC++
+        else if(x == "}")
+            addSemiC--
+    })
+    // if (qline[qline.length - 1] == "{")
+    //     addSemiC++
 
-    if (qline[qline.length - 1] == "}")
-        addSemiC--
+    // if (qline[qline.length - 1] == "}")
+    //     addSemiC--
+
+    //console.log(qline, addSemiC)
 
 
     build.push(inputCode[line] + (addSemiC > 0 ? ";" : ""))

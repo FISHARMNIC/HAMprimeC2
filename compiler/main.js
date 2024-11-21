@@ -305,7 +305,6 @@ TODO:
 
 // enable to show where console.logs were called from
 // taken from https://remysharp.com/2014/05/23/where-is-that-console-log
-
 // ['log', 'warn'].forEach(function(method) {
 //   var old = console[method];
 //   console[method] = function() {

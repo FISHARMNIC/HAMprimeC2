@@ -19,6 +19,7 @@ entry function<> -> u32
             someVar <- pa + pb + someVar;
         }
     );
+    
     print_(`someVar is now ${someVar}`);
     return 0;
 }

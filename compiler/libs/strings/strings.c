@@ -238,26 +238,31 @@ void print_formatArr(fn_toString_t *toStringFn, int size, int **arr)
 {
     size /= 4;
 
-    // if (size == 0)
-    // {
-    //     printf("[]\n");
-    //     return;
-    // }
-    // else if (size == 1)
-    // {
-    //     // todo
-    //     printf("[%i]\n");
-    //     return;
-    // }
-
     __this__ = arr[0];
-    printf("[%p,", toStringFn());
-    // int i = 1;
-    // for (; i < size - 1; i++)
-    // {
-    //     printf("%i,", arr[i]);
-    // }
-    // printf("%i]\n", arr[i]);
+
+    if (size == 0)
+    {
+        printf("[]\n");
+        return;
+    }
+    else if (size == 1)
+    {
+        // todo
+        printf("[%s]\n", toStringFn());
+        return;
+    }
+    else
+    {
+        printf("[\n   %s,", toStringFn());
+        int i = 1;
+        for (; i < size - 1; i++)
+        {
+            __this__ = arr[i];
+            printf("\n   %s,", toStringFn());
+        }
+        __this__ = arr[i];
+        printf("\n   %s\n]\n", toStringFn());
+    }
 }
 
 // #endregion

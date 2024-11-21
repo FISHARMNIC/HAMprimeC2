@@ -18,10 +18,16 @@ entry function<> -> u32
 
     print_("hi");
 
-    print_(123); // Current issue with IDE displayign garbage.
+    print_(123); // Current issue with IDE displaying garbage.
     print_(456.789);
 
     print_(Person<age:17,name:"Nico">);
+
+    create fmtArr <- Person[2];
+    fmtArr[0] <- Person<name:"Joe",age:123>;
+    fmtArr[1] <- Person<name:"Jim",age:456>;
+    
+    print_(fmtArr);
     
     return 0;
 }

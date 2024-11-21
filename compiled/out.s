@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Wed Nov 20 2024 17:16:53 GMT-0700 (Mountain Standard Time)
+Compiled with love on Thu Nov 21 2024 01:20:03 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -20,84 +20,28 @@ Compiled with love on Wed Nov 20 2024 17:16:53 GMT-0700 (Mountain Standard Time)
 .extern ___TEMPORARY_OWNER___
 
 ######## user data section ########
-.extern gfx_mouse_x
-.extern gfx_mouse_y
-.extern gfx_mouse_button
-.extern gfx_keypress_keycode
-.extern gfx_keypress_key
-.type	exit_game, @function
-.global exit_game
-.4byte 23
-__STRING0__: .asciz " Your final score was "
-__ALLOCFOR_exit_game__ = 0
-__SIZEOF_Position__ = 8
-# format "Position" includes:
-#   - PROPERTY (u32) x
-#   - PROPERTY (u32) y
-.type	__method_Food_move_, @function
-.global __method_Food_move_
-__ALLOCFOR___method_Food_move___ = 8
-.type	__constructor_Food_0_, @function
-.global __constructor_Food_0_
-__ALLOCFOR___constructor_Food_0___ = 0
-.type	__method_Food_render_, @function
-.global __method_Food_render_
-__ALLOCFOR___method_Food_render___ = 0
-__SIZEOF_Food__ = 4
-# format "Food" includes:
-#   - PROPERTY (p0) pos
-#   - CNSTRCTR __constructor_Food_0_ (0 parameters)
-.type	__constructor_Snake_1_, @function
-.global __constructor_Snake_1_
-__ALLOCFOR___constructor_Snake_1___ = 4
-.type	__method_Snake_grow_, @function
-.global __method_Snake_grow_
-.4byte 5
-__STRING1__: .asciz "Win!"
-__ALLOCFOR___method_Snake_grow___ = 8
-.type	__method_Snake_setVelocity_, @function
-.global __method_Snake_setVelocity_
-__ALLOCFOR___method_Snake_setVelocity___ = 0
-.type	__method_Snake_checkEat_, @function
-.global __method_Snake_checkEat_
-__ALLOCFOR___method_Snake_checkEat___ = 0
-.type	__method_Snake_moveAndRender_, @function
-.global __method_Snake_moveAndRender_
+.type	__method_Person_toString_, @function
+.global __method_Person_toString_
 .4byte 6
-__STRING2__: .asciz "Fail!"
-__ALLOCFOR___method_Snake_moveAndRender___ = 4
-__SIZEOF_Snake__ = 20
-# format "Snake" includes:
-#   - PROPERTY (u32) vx
-#   - PROPERTY (u32) vy
-#   - PROPERTY (u32) length
-#   - PROPERTY (p0) head
-#   - PROPERTY (p32) nodes
-#   - CNSTRCTR __constructor_Snake_1_ (1 parameters)
-snake: .4byte 0
-food: .4byte 0
-.type	render, @function
-.global render
-.4byte 8
-__STRING3__: .asciz "Score: "
-__ALLOCFOR_render__ = 0
+__STRING0__: .asciz "Age: "
+.4byte 9
+__STRING1__: .asciz ", name: "
+__ALLOCFOR___method_Person_toString___ = 0
+__SIZEOF_Person__ = 8
+# format "Person" includes:
+#   - PROPERTY (u32) age
+#   - PROPERTY (p8) name
 .type	entry, @function
 .global entry
-__ALLOCFOR_entry__ = 0
-__TEMP8_0__: .1byte 0
-__TEMP8_1__: .1byte 0
-__TEMP8_2__: .1byte 0
-__TEMP8_3__: .1byte 0
-__TEMP8_4__: .1byte 0
-__TEMP8_5__: .1byte 0
-__TEMP8_6__: .1byte 0
-__TEMP32_0__: .4byte 0
-__TEMP32_1__: .4byte 0
-__TEMP32_2__: .4byte 0
-__TEMP32_3__: .4byte 0
-__TEMP32_4__: .4byte 0
-__TEMP32_5__: .4byte 0
-__TEMP32_6__: .4byte 0
+.4byte 3
+__STRING2__: .asciz "hi"
+.4byte 5
+__STRING3__: .asciz "Nico"
+.4byte 4
+__STRING4__: .asciz "Joe"
+.4byte 4
+__STRING5__: .asciz "Jim"
+__ALLOCFOR_entry__ = 8
 ###################################
 .text
 
@@ -116,1280 +60,44 @@ call entry
 ret
 
 ###################################
-exit_game:
+__method_Person_toString_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_exit_game__, %esp
+sub $__ALLOCFOR___method_Person_toString___, %esp
 
-# note, read PARAM message -> 8(%ebp)
-# note, read PARAM score -> 12(%ebp)
-pushw __disable_gc__; movw $1, __disable_gc__
-push 12(%ebp)
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING0__
-push 8(%ebp)
-pushl $3
-call strjoinmany
-add $16, %esp
-mov %eax, %ecx
-popw __disable_gc__
-push %ecx
-call puts
-add $4, %esp
-# Calling function gfx_end
-call gfx_end
-mov %eax, %ecx
-# Calling function quit
-pushl $0
-call quit
-mov %eax, %ecx
-add $4, %esp
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Food_move_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Food_move___, %esp
-
-# Calling function rand
-call rand
-mov %eax, %ecx
-mov %ecx, %eax
-mov $96, %ebx
-xor %edx, %edx
-div %ebx
-mov %edx, %eax
-mov %eax, %esi
-mov %esi, %eax
-mov $5, %ebx
-mul %ebx
-mov %eax, %edi
-# Loading local variable "rx" @-4(%ebp)
-# optimized move from %edi to -4(%ebp)
-mov %edi, -4(%ebp)
-# Calling function rand
-call rand
-mov %eax, %ecx
-mov %ecx, %eax
-mov $72, %ebx
-xor %edx, %edx
-div %ebx
-mov %edx, %eax
-mov %eax, %esi
-mov %esi, %eax
-mov $5, %ebx
-mul %ebx
-mov %eax, %edi
-# Loading local variable "ry" @-8(%ebp)
-# optimized move from %edi to -8(%ebp)
-mov %edi, -8(%ebp)
-# note, read STACK VAR rx -> -4(%ebp)
-# note, read STACK VAR ry -> -8(%ebp)
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ecx # Local allocation address for Position
-# optimized move from -4(%ebp) to 0(%eax)
-mov -4(%ebp), %edx
-mov %edx, 0(%eax)
-# optimized move from -8(%ebp) to 4(%eax)
-mov -8(%ebp), %edx
-mov %edx, 4(%eax)
-# Reading property "pos" in "__this__"
-movl __this__, %eax
-# optimized move from %ecx to 0(%eax)
-mov %ecx, 0(%eax)
-# requesting ownership for __this__ (property)
-lea 0(%eax), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# rx: 4
-# ry: 8
-__constructor_Food_0_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___constructor_Food_0___, %esp
-
-# Allocate for THIS
-pushl $0
-mov $__SIZEOF_Food__, %edx
-push %edx
-call __rc_allocate__
-add $8, %esp
-mov %eax, __this__
-# requesting ownership for ___TEMPORARY_OWNER___ (set). 
-lea ___TEMPORARY_OWNER___, %eax
-push %eax
-push __this__
-call __rc_requestOwnership__
-add $8, %esp
-pushl __this__
-# optimized move from __this__ to __this__
-movl __this__, %edx
-mov %edx, __this__
-# Calling function __method_Food_move_
-call __method_Food_move_
-mov %eax, %ecx
-popl __this__
-movl __this__, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Food_render_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Food_render___, %esp
-
-# Reading property "pos" in "__this__"
+# Reading property "age" in "__this__"
 movl __this__, %eax
 # optimized move from 0(%eax) to %ecx
 mov 0(%eax), %edx
 mov %edx, %ecx
-# Reading property "x" in "%ecx"
-# optimized move from 0(%ecx) to %esi
-mov 0(%ecx), %edx
-mov %edx, %esi
-# Reading property "pos" in "__this__"
+# Reading property "name" in "__this__"
 movl __this__, %eax
-# optimized move from 0(%eax) to %edi
-mov 0(%eax), %edx
-mov %edx, %edi
-# Reading property "y" in "%edi"
-# optimized move from 4(%edi) to __TEMP32_0__
-mov 4(%edi), %edx
-mov %edx, __TEMP32_0__
-push %esi
-push %ecx
-push %edi
-# Calling function gfx_draw_rect
-pushl $5
-pushl $5
-# TODO optimize if variable just do movl
-mov __TEMP32_0__, %edx
-push %edx
-push %esi
-call gfx_draw_rect
-mov %eax, __TEMP32_1__
-add $16, %esp
-pop %edi
-pop %ecx
-pop %esi
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__constructor_Snake_1_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___constructor_Snake_1___, %esp
-
-# Allocate for THIS
-pushl $0
-mov $__SIZEOF_Snake__, %edx
-push %edx
-call __rc_allocate__
-add $8, %esp
-mov %eax, __this__
-# requesting ownership for ___TEMPORARY_OWNER___ (set). 
-lea ___TEMPORARY_OWNER___, %eax
-push %eax
-push __this__
-call __rc_requestOwnership__
-add $8, %esp
-# Reading property "vx" in "__this__"
-movl __this__, %eax
-# optimized move from 5 to 0(%eax)
-movl $5, 0(%eax)
-# Reading property "vy" in "__this__"
-movl __this__, %eax
-# optimized move from 0 to 4(%eax)
-movl $0, 4(%eax)
-# note, read PARAM startingSz -> 8(%ebp)
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%ebp) to 8(%eax)
-mov 8(%ebp), %edx
-mov %edx, 8(%eax)
-push %ecx
-# Asked for 100 allocations of "Position"
-pushl $0
-pushl $400
-call __rc_allocate__
-add $8, %esp
-pop %ecx
-mov %eax, %ecx
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from %ecx to 16(%eax)
-mov %ecx, 16(%eax)
-# requesting ownership for __this__ (property)
-lea 16(%eax), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-# Loading local variable "i" @-4(%ebp)
-# optimized move from $0 to -4(%ebp)
-mov $0, %edx
-mov %edx, -4(%ebp)
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-mov %eax, %ecx # Local allocation address for Position
-# optimized move from 240 to 0(%eax)
-movl $240, 0(%eax)
-# optimized move from 180 to 4(%eax)
-movl $180, 4(%eax)
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from %ecx to 12(%eax)
-mov %ecx, 12(%eax)
-# requesting ownership for __this__ (property)
-lea 12(%eax), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-__LABEL1__:
-# note, read STACK VAR i -> -4(%ebp)
-# note, read PARAM startingSz -> 8(%ebp)
-mov -4(%ebp), %eax
-mov 8(%ebp), %edx
-mov $0, %cl
-cmp %edx, %eax
-setl %cl
-# comparison for WHILE loop
-cmpb $1, %cl
-jne __LABEL2__
-# note, read STACK VAR i -> -4(%ebp)
-# note, read STACK VAR i -> -4(%ebp)
-mov -4(%ebp), %eax
-mov $5, %ebx
-mul %ebx
-mov %eax, %ecx
-mov $235, %eax
-sub %ecx, %eax
-mov %eax, %esi
-push %esi
-push %ecx
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-pop %ecx
-pop %esi
-mov %eax, %edi # Local allocation address for Position
-# optimized move from %esi to 0(%eax)
-mov %esi, 0(%eax)
-# optimized move from 180 to 4(%eax)
-movl $180, 4(%eax)
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to __TEMP32_0__
-mov 16(%eax), %edx
-mov %edx, __TEMP32_0__
-#Array set begin
-mov __TEMP32_0__, %eax
-# array load trash awful. Fix this bad optimize
-push %eax
-mov -4(%ebp), %eax
-shl $2, %eax
-add (%esp), %eax
-add $4, %esp
-mov %edi, (%eax)
-# requesting ownership for array index
-push %eax
-push %edi
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-# note, read STACK VAR i -> -4(%ebp)
-mov -4(%ebp), %eax
-add $1, %eax
-mov %eax, %ecx
-# SETTING i <- %ecx
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
-jmp __LABEL1__
-__LABEL2__:
-movl __this__, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# i: 4
-__method_Snake_grow_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Snake_grow___, %esp
-
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-movb $0, __TEMP8_0__
-cmp $100, %ecx
-sete __TEMP8_0__
-cmpb $1, __TEMP8_0__
-jne __LABEL3__
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-push %ecx
-# Calling function exit_game
-push %ecx
-pushl $__STRING1__
-call exit_game
-mov %eax, %esi
-add $8, %esp
-pop %ecx
-jmp __LABEL4__
-__LABEL3__:
-__LABEL4__:
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-mov %ecx, %eax
-sub $1, %eax
-mov %eax, %esi
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %edi
-mov 16(%eax), %edx
-mov %edx, %edi
-#indexing array
-mov %edi, %eax
-mov (%eax, %esi, 4), %edx
-mov %edx, __TEMP32_0__
-# Reading property "x" in "__TEMP32_0__"
-movl __TEMP32_0__, %eax
-# optimized move from 0(%eax) to __TEMP32_1__
-mov 0(%eax), %edx
-mov %edx, __TEMP32_1__
-# Reading property "vx" in "__this__"
-movl __this__, %eax
-# optimized move from 0(%eax) to __TEMP32_2__
-mov 0(%eax), %edx
-mov %edx, __TEMP32_2__
-mov __TEMP32_1__, %eax
-subl __TEMP32_2__, %eax
-mov %eax, __TEMP32_3__
-# Loading local variable "x" @-4(%ebp)
-# optimized move from __TEMP32_3__ to -4(%ebp)
-movl __TEMP32_3__, %edx
-mov %edx, -4(%ebp)
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-mov %ecx, %eax
-sub $1, %eax
-mov %eax, %esi
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %edi
-mov 16(%eax), %edx
-mov %edx, %edi
-#indexing array
-mov %edi, %eax
-mov (%eax, %esi, 4), %edx
-mov %edx, __TEMP32_0__
-# Reading property "y" in "__TEMP32_0__"
-movl __TEMP32_0__, %eax
-# optimized move from 4(%eax) to __TEMP32_1__
+# optimized move from 4(%eax) to %esi
 mov 4(%eax), %edx
-mov %edx, __TEMP32_1__
-# Reading property "vy" in "__this__"
-movl __this__, %eax
-# optimized move from 4(%eax) to __TEMP32_2__
-mov 4(%eax), %edx
-mov %edx, __TEMP32_2__
-mov __TEMP32_1__, %eax
-subl __TEMP32_2__, %eax
-mov %eax, __TEMP32_3__
-# Loading local variable "y" @-8(%ebp)
-# optimized move from __TEMP32_3__ to -8(%ebp)
-movl __TEMP32_3__, %edx
-mov %edx, -8(%ebp)
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-# note, read STACK VAR x -> -4(%ebp)
-# note, read STACK VAR y -> -8(%ebp)
-push %ecx
-# 
-pushl $0
-pushl $8
-call __rc_allocate__
-add $8, %esp
-pop %ecx
-mov %eax, %esi # Local allocation address for Position
-# optimized move from -4(%ebp) to 0(%eax)
-mov -4(%ebp), %edx
-mov %edx, 0(%eax)
-# optimized move from -8(%ebp) to 4(%eax)
-mov -8(%ebp), %edx
-mov %edx, 4(%eax)
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %edi
-mov 16(%eax), %edx
-mov %edx, %edi
-#Array set begin
-mov %esi, (%edi, %ecx, 4) # mhm
-# requesting ownership for array index
-lea (%edi, %ecx, 4), %eax
-push %eax
-push %esi
-call __rc_requestOwnership__
-add $8, %esp
-#Set end
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-mov %ecx, %eax
-add $1, %eax
-mov %eax, %esi
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from %esi to 8(%eax)
-mov %esi, 8(%eax)
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# x: 4
-# y: 8
-__method_Snake_setVelocity_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Snake_setVelocity___, %esp
-
-# note, read PARAM x -> 8(%ebp)
-# Reading property "vx" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%ebp) to 0(%eax)
-mov 8(%ebp), %edx
-mov %edx, 0(%eax)
-# note, read PARAM y -> 12(%ebp)
-# Reading property "vy" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%ebp) to 4(%eax)
-mov 12(%ebp), %edx
-mov %edx, 4(%eax)
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Snake_checkEat_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Snake_checkEat___, %esp
-
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %ecx
-mov 12(%eax), %edx
-mov %edx, %ecx
-# Reading property "x" in "%ecx"
-# optimized move from 0(%ecx) to %esi
-mov 0(%ecx), %edx
 mov %edx, %esi
-# note, read PARAM cfood -> 8(%ebp)
-# Reading property "pos" in "8(%ebp)"
-movl 8(%ebp), %eax
-# optimized move from 0(%eax) to %edi
-mov 0(%eax), %edx
-mov %edx, %edi
-# Reading property "x" in "%edi"
-# optimized move from 0(%edi) to __TEMP32_0__
-mov 0(%edi), %edx
-mov %edx, __TEMP32_0__
-mov __TEMP32_0__, %edx
-movb $0, __TEMP8_0__
-cmp %edx, %esi
-sete __TEMP8_0__
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to __TEMP32_1__
-mov 12(%eax), %edx
-mov %edx, __TEMP32_1__
-# Reading property "y" in "__TEMP32_1__"
-movl __TEMP32_1__, %eax
-# optimized move from 4(%eax) to __TEMP32_2__
-mov 4(%eax), %edx
-mov %edx, __TEMP32_2__
-# note, read PARAM cfood -> 8(%ebp)
-# Reading property "pos" in "8(%ebp)"
-movl 8(%ebp), %eax
-# optimized move from 0(%eax) to __TEMP32_3__
-mov 0(%eax), %edx
-mov %edx, __TEMP32_3__
-# Reading property "y" in "__TEMP32_3__"
-movl __TEMP32_3__, %eax
-# optimized move from 4(%eax) to __TEMP32_4__
-mov 4(%eax), %edx
-mov %edx, __TEMP32_4__
-mov __TEMP32_2__, %eax
-mov __TEMP32_4__, %edx
-movb $0, __TEMP8_1__
-cmp %edx, %eax
-sete __TEMP8_1__
-# AND comparison
-movb $0, __TEMP8_2__
-cmpb $1, __TEMP8_0__
-jne __LABEL5__
-cmpb $1, __TEMP8_1__
-sete __TEMP8_2__
-__LABEL5__:
-cmpb $1, __TEMP8_2__
-jne __LABEL6__
-pushl __this__
-# optimized move from __this__ to __this__
-movl __this__, %edx
-mov %edx, __this__
-# Calling function __method_Snake_grow_
-call __method_Snake_grow_
-mov %eax, %ecx
-popl __this__
-# note, read PARAM cfood -> 8(%ebp)
-pushl __this__
-# optimized move from 8(%ebp) to __this__
-mov 8(%ebp), %edx
-mov %edx, __this__
-# Calling function __method_Food_move_
-call __method_Food_move_
-mov %eax, %ecx
-popl __this__
-jmp __LABEL7__
-__LABEL6__:
-__LABEL7__:
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Snake_moveAndRender_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Snake_moveAndRender___, %esp
-
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %ecx
-mov 12(%eax), %edx
-mov %edx, %ecx
-# Reading property "x" in "%ecx"
-# optimized move from 0(%ecx) to %esi
-mov 0(%ecx), %edx
-mov %edx, %esi
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %edi
-mov 12(%eax), %edx
-mov %edx, %edi
-# Reading property "y" in "%edi"
-# optimized move from 4(%edi) to __TEMP32_0__
-mov 4(%edi), %edx
-mov %edx, __TEMP32_0__
-push %esi
-push %ecx
-push %edi
-# Calling function gfx_draw_rect
-pushl $5
-pushl $5
-# TODO optimize if variable just do movl
-mov __TEMP32_0__, %edx
-push %edx
-push %esi
-call gfx_draw_rect
-mov %eax, __TEMP32_1__
-add $16, %esp
-pop %edi
-pop %ecx
-pop %esi
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %ecx
-mov 12(%eax), %edx
-mov %edx, %ecx
-# Reading property "x" in "%ecx"
-# optimized move from 0(%ecx) to %esi
-mov 0(%ecx), %edx
-mov %edx, %esi
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %edi
-mov 16(%eax), %edx
-mov %edx, %edi
-#indexing array
-mov %edi, %eax
-mov 0(%eax), %edx
-mov %edx, __TEMP32_0__
-# Reading property "x" in "__TEMP32_0__"
-movl __TEMP32_0__, %eax
-# optimized move from %esi to 0(%eax)
-mov %esi, 0(%eax)
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %ecx
-mov 12(%eax), %edx
-mov %edx, %ecx
-# Reading property "y" in "%ecx"
-# optimized move from 4(%ecx) to %esi
-mov 4(%ecx), %edx
-mov %edx, %esi
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %edi
-mov 16(%eax), %edx
-mov %edx, %edi
-#indexing array
-mov %edi, %eax
-mov 0(%eax), %edx
-mov %edx, __TEMP32_0__
-# Reading property "y" in "__TEMP32_0__"
-movl __TEMP32_0__, %eax
-# optimized move from %esi to 4(%eax)
-mov %esi, 4(%eax)
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-mov %ecx, %eax
-sub $1, %eax
-mov %eax, %esi
-# Loading local variable "i" @-4(%ebp)
-# optimized move from %esi to -4(%ebp)
-mov %esi, -4(%ebp)
-__LABEL8__:
-# note, read STACK VAR i -> -4(%ebp)
-mov -4(%ebp), %eax
-mov $0, %cl
-cmp $0, %eax
-setg %cl
-# comparison for WHILE loop
-cmpb $1, %cl
-jne __LABEL9__
-# note, read STACK VAR i -> -4(%ebp)
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %ecx
-mov 16(%eax), %edx
-mov %edx, %ecx
-#indexing array
-mov %ecx, %eax
-# optimized move from -4(%ebp) to %edx
-mov -4(%ebp), %edx
-mov %edx, %edx
-mov (%eax, %edx, 4), %esi
-# Reading property "x" in "%esi"
-# optimized move from 0(%esi) to %edi
-mov 0(%esi), %edx
-mov %edx, %edi
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to __TEMP32_0__
-mov 12(%eax), %edx
-mov %edx, __TEMP32_0__
-# Reading property "x" in "__TEMP32_0__"
-movl __TEMP32_0__, %eax
-# optimized move from 0(%eax) to __TEMP32_1__
-mov 0(%eax), %edx
-mov %edx, __TEMP32_1__
-mov __TEMP32_1__, %edx
-movb $0, __TEMP8_0__
-cmp %edx, %edi
-sete __TEMP8_0__
-# note, read STACK VAR i -> -4(%ebp)
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to __TEMP32_2__
-mov 16(%eax), %edx
-mov %edx, __TEMP32_2__
-#indexing array
-mov __TEMP32_2__, %eax
-# TEST DOES THIS WORK??? (1)
-mov -4(%ebp), %edx
-mov (%eax, %edx, 4), %edx
-# END TEST
-mov %edx, __TEMP32_3__
-# Reading property "y" in "__TEMP32_3__"
-movl __TEMP32_3__, %eax
-# optimized move from 4(%eax) to __TEMP32_4__
-mov 4(%eax), %edx
-mov %edx, __TEMP32_4__
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to __TEMP32_5__
-mov 12(%eax), %edx
-mov %edx, __TEMP32_5__
-# Reading property "y" in "__TEMP32_5__"
-movl __TEMP32_5__, %eax
-# optimized move from 4(%eax) to __TEMP32_6__
-mov 4(%eax), %edx
-mov %edx, __TEMP32_6__
-mov __TEMP32_4__, %eax
-mov __TEMP32_6__, %edx
-movb $0, __TEMP8_1__
-cmp %edx, %eax
-sete __TEMP8_1__
-# AND comparison
-movb $0, __TEMP8_2__
-cmpb $1, __TEMP8_0__
-jne __LABEL10__
-cmpb $1, __TEMP8_1__
-sete __TEMP8_2__
-__LABEL10__:
-cmpb $1, __TEMP8_2__
-jne __LABEL11__
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-push %ecx
-# Calling function exit_game
-push %ecx
-pushl $__STRING2__
-call exit_game
-mov %eax, %esi
-add $8, %esp
-pop %ecx
-jmp __LABEL12__
-__LABEL11__:
-__LABEL12__:
-# note, read STACK VAR i -> -4(%ebp)
-# note, read STACK VAR i -> -4(%ebp)
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %ecx
-mov 16(%eax), %edx
-mov %edx, %ecx
-#indexing array
-mov %ecx, %eax
-# optimized move from -4(%ebp) to %edx
-mov -4(%ebp), %edx
-mov %edx, %edx
-mov (%eax, %edx, 4), %esi
-# Reading property "x" in "%esi"
-# optimized move from 0(%esi) to %edi
-mov 0(%esi), %edx
-mov %edx, %edi
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to __TEMP32_0__
-mov 16(%eax), %edx
-mov %edx, __TEMP32_0__
-#indexing array
-mov __TEMP32_0__, %eax
-# TEST DOES THIS WORK??? (1)
-mov -4(%ebp), %edx
-mov (%eax, %edx, 4), %edx
-# END TEST
-mov %edx, __TEMP32_1__
-# Reading property "y" in "__TEMP32_1__"
-movl __TEMP32_1__, %eax
-# optimized move from 4(%eax) to __TEMP32_2__
-mov 4(%eax), %edx
-mov %edx, __TEMP32_2__
-push %esi
-push %ecx
-push %edi
-# Calling function gfx_draw_rect
-pushl $5
-pushl $5
-# TODO optimize if variable just do movl
-mov __TEMP32_2__, %edx
-push %edx
-push %edi
-call gfx_draw_rect
-mov %eax, __TEMP32_3__
-add $16, %esp
-pop %edi
-pop %ecx
-pop %esi
-# note, read STACK VAR i -> -4(%ebp)
-# note, read STACK VAR i -> -4(%ebp)
-mov -4(%ebp), %eax
-sub $1, %eax
-mov %eax, %ecx
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %esi
-mov 16(%eax), %edx
-mov %edx, %esi
-#indexing array
-mov %esi, %eax
-mov (%eax, %ecx, 4), %edi
-# Reading property "x" in "%edi"
-# optimized move from 0(%edi) to __TEMP32_0__
-mov 0(%edi), %edx
-mov %edx, __TEMP32_0__
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to __TEMP32_1__
-mov 16(%eax), %edx
-mov %edx, __TEMP32_1__
-#indexing array
-mov __TEMP32_1__, %eax
-# TEST DOES THIS WORK??? (1)
-mov -4(%ebp), %edx
-mov (%eax, %edx, 4), %edx
-# END TEST
-mov %edx, __TEMP32_2__
-# Reading property "x" in "__TEMP32_2__"
-movl __TEMP32_2__, %eax
-# optimized move from __TEMP32_0__ to 0(%eax)
-movl __TEMP32_0__, %edx
-mov %edx, 0(%eax)
-# note, read STACK VAR i -> -4(%ebp)
-# note, read STACK VAR i -> -4(%ebp)
-mov -4(%ebp), %eax
-sub $1, %eax
-mov %eax, %ecx
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to %esi
-mov 16(%eax), %edx
-mov %edx, %esi
-#indexing array
-mov %esi, %eax
-mov (%eax, %ecx, 4), %edi
-# Reading property "y" in "%edi"
-# optimized move from 4(%edi) to __TEMP32_0__
-mov 4(%edi), %edx
-mov %edx, __TEMP32_0__
-# Reading property "nodes" in "__this__"
-movl __this__, %eax
-# optimized move from 16(%eax) to __TEMP32_1__
-mov 16(%eax), %edx
-mov %edx, __TEMP32_1__
-#indexing array
-mov __TEMP32_1__, %eax
-# TEST DOES THIS WORK??? (1)
-mov -4(%ebp), %edx
-mov (%eax, %edx, 4), %edx
-# END TEST
-mov %edx, __TEMP32_2__
-# Reading property "y" in "__TEMP32_2__"
-movl __TEMP32_2__, %eax
-# optimized move from __TEMP32_0__ to 4(%eax)
-movl __TEMP32_0__, %edx
-mov %edx, 4(%eax)
-# note, read STACK VAR i -> -4(%ebp)
-mov -4(%ebp), %eax
-sub $1, %eax
-mov %eax, %ecx
-# SETTING i <- %ecx
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
-jmp __LABEL8__
-__LABEL9__:
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %ecx
-mov 12(%eax), %edx
-mov %edx, %ecx
-# Reading property "x" in "%ecx"
-# optimized move from 0(%ecx) to %esi
-mov 0(%ecx), %edx
-mov %edx, %esi
-# Reading property "vx" in "__this__"
-movl __this__, %eax
-# optimized move from 0(%eax) to %edi
-mov 0(%eax), %edx
-mov %edx, %edi
-mov %esi, %eax
-add %edi, %eax
-mov %eax, __TEMP32_0__
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to __TEMP32_1__
-mov 12(%eax), %edx
-mov %edx, __TEMP32_1__
-# Reading property "x" in "__TEMP32_1__"
-movl __TEMP32_1__, %eax
-# optimized move from __TEMP32_0__ to 0(%eax)
-movl __TEMP32_0__, %edx
-mov %edx, 0(%eax)
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %ecx
-mov 12(%eax), %edx
-mov %edx, %ecx
-# Reading property "y" in "%ecx"
-# optimized move from 4(%ecx) to %esi
-mov 4(%ecx), %edx
-mov %edx, %esi
-# Reading property "vy" in "__this__"
-movl __this__, %eax
-# optimized move from 4(%eax) to %edi
-mov 4(%eax), %edx
-mov %edx, %edi
-mov %esi, %eax
-add %edi, %eax
-mov %eax, __TEMP32_0__
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to __TEMP32_1__
-mov 12(%eax), %edx
-mov %edx, __TEMP32_1__
-# Reading property "y" in "__TEMP32_1__"
-movl __TEMP32_1__, %eax
-# optimized move from __TEMP32_0__ to 4(%eax)
-movl __TEMP32_0__, %edx
-mov %edx, 4(%eax)
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %ecx
-mov 12(%eax), %edx
-mov %edx, %ecx
-# Reading property "x" in "%ecx"
-# optimized move from 0(%ecx) to %esi
-mov 0(%ecx), %edx
-mov %edx, %esi
-movb $0, __TEMP8_0__
-cmp $0, %esi
-setl __TEMP8_0__
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to %edi
-mov 12(%eax), %edx
-mov %edx, %edi
-# Reading property "x" in "%edi"
-# optimized move from 0(%edi) to __TEMP32_0__
-mov 0(%edi), %edx
-mov %edx, __TEMP32_0__
-mov __TEMP32_0__, %eax
-movb $0, __TEMP8_1__
-cmp $480, %eax
-setg __TEMP8_1__
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to __TEMP32_1__
-mov 12(%eax), %edx
-mov %edx, __TEMP32_1__
-# Reading property "y" in "__TEMP32_1__"
-movl __TEMP32_1__, %eax
-# optimized move from 4(%eax) to __TEMP32_2__
-mov 4(%eax), %edx
-mov %edx, __TEMP32_2__
-mov __TEMP32_2__, %eax
-movb $0, __TEMP8_2__
-cmp $0, %eax
-setl __TEMP8_2__
-# Reading property "head" in "__this__"
-movl __this__, %eax
-# optimized move from 12(%eax) to __TEMP32_3__
-mov 12(%eax), %edx
-mov %edx, __TEMP32_3__
-# Reading property "y" in "__TEMP32_3__"
-movl __TEMP32_3__, %eax
-# optimized move from 4(%eax) to __TEMP32_4__
-mov 4(%eax), %edx
-mov %edx, __TEMP32_4__
-mov __TEMP32_4__, %eax
-movb $0, __TEMP8_3__
-cmp $360, %eax
-setg __TEMP8_3__
-# OR comparison
-movb $0, __TEMP8_4__
-cmpb $1, __TEMP8_0__
-sete __TEMP8_4__
-je __LABEL13__
-cmpb $1, __TEMP8_1__
-sete __TEMP8_4__
-__LABEL13__:
-# OR comparison
-movb $0, __TEMP8_5__
-cmpb $1, __TEMP8_4__
-sete __TEMP8_5__
-je __LABEL14__
-cmpb $1, __TEMP8_2__
-sete __TEMP8_5__
-__LABEL14__:
-# OR comparison
-movb $0, __TEMP8_6__
-cmpb $1, __TEMP8_5__
-sete __TEMP8_6__
-je __LABEL15__
-cmpb $1, __TEMP8_3__
-sete __TEMP8_6__
-__LABEL15__:
-cmpb $1, __TEMP8_6__
-jne __LABEL16__
-# Reading property "length" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
-push %ecx
-# Calling function exit_game
-push %ecx
-pushl $__STRING2__
-call exit_game
-mov %eax, %esi
-add $8, %esp
-pop %ecx
-jmp __LABEL17__
-__LABEL16__:
-__LABEL17__:
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# i: 4
-render:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR_render__, %esp
-pusha
-# Calling function gfx_clear
-call gfx_clear
-mov %eax, %ecx
-# optimized move from snake to __this__
-movl snake, %edx
-mov %edx, __this__
-# Calling function __method_Snake_checkEat_
-# TODO optimize if variable just do movl
-mov food, %edx
-push %edx
-call __method_Snake_checkEat_
-mov %eax, %ecx
-add $4, %esp
-# optimized move from snake to __this__
-movl snake, %edx
-mov %edx, __this__
-# Calling function __method_Snake_moveAndRender_
-call __method_Snake_moveAndRender_
-mov %eax, %ecx
-# optimized move from food to __this__
-movl food, %edx
-mov %edx, __this__
-# Calling function __method_Food_render_
-call __method_Food_render_
-mov %eax, %ecx
-# Reading property "length" in "snake"
-movl snake, %eax
-# optimized move from 8(%eax) to %ecx
-mov 8(%eax), %edx
-mov %edx, %ecx
 pushw __disable_gc__; movw $1, __disable_gc__
+push %esi
+pushl $__STRING1__
 push %ecx
 call itos
 add $4, %esp
 push %eax
-pushl $__STRING3__
-pushl $2
+pushl $__STRING0__
+pushl $4
 call strjoinmany
-add $12, %esp
-mov %eax, %esi
-popw __disable_gc__
-push %esi
-push %ecx
-# Calling function gfx_draw_text
-push %esi
-pushl $15
-pushl $5
-call gfx_draw_text
+add $20, %esp
 mov %eax, %edi
-add $12, %esp
-pop %ecx
-pop %esi
-# note, read PARAM event -> 8(%ebp)
-mov 8(%ebp), %eax
-mov $0, %cl
-cmp $2, %eax
-sete %cl
-cmpb $1, %cl
-jne __LABEL18__
-mov gfx_keypress_key, %al
-mov $0, %cl
-cmp $97, %al
-sete %cl
-# Reading property "vx" in "snake"
-movl snake, %eax
-# optimized move from 0(%eax) to %esi
-mov 0(%eax), %edx
-mov %edx, %esi
-movb $0, __TEMP8_0__
-cmp $5, %esi
-setne __TEMP8_0__
-# AND comparison
-movb $0, __TEMP8_1__
-cmpb $1, %cl
-jne __LABEL20__
-cmpb $1, __TEMP8_0__
-sete __TEMP8_1__
-__LABEL20__:
-cmpb $1, __TEMP8_1__
-jne __LABEL21__
-# optimized move from snake to __this__
-movl snake, %edx
-mov %edx, __this__
-# Calling function __method_Snake_setVelocity_
-pushl $0
-pushl $-5
-call __method_Snake_setVelocity_
-mov %eax, %ecx
-add $8, %esp
-jmp __LABEL22__
-__LABEL21__:
-mov gfx_keypress_key, %al
-mov $0, %cl
-cmp $100, %al
-sete %cl
-# Reading property "vx" in "snake"
-movl snake, %eax
-# optimized move from 0(%eax) to %esi
-mov 0(%eax), %edx
-mov %edx, %esi
-movb $0, __TEMP8_0__
-cmp $-5, %esi
-setne __TEMP8_0__
-# AND comparison
-movb $0, __TEMP8_1__
-cmpb $1, %cl
-jne __LABEL23__
-cmpb $1, __TEMP8_0__
-sete __TEMP8_1__
-__LABEL23__:
-cmpb $1, __TEMP8_1__
-jne __LABEL24__
-# optimized move from snake to __this__
-movl snake, %edx
-mov %edx, __this__
-# Calling function __method_Snake_setVelocity_
-pushl $0
-pushl $5
-call __method_Snake_setVelocity_
-mov %eax, %ecx
-add $8, %esp
-jmp __LABEL22__
-__LABEL24__:
-mov gfx_keypress_key, %al
-mov $0, %cl
-cmp $119, %al
-sete %cl
-# Reading property "vy" in "snake"
-movl snake, %eax
-# optimized move from 4(%eax) to %esi
-mov 4(%eax), %edx
-mov %edx, %esi
-movb $0, __TEMP8_0__
-cmp $5, %esi
-setne __TEMP8_0__
-# AND comparison
-movb $0, __TEMP8_1__
-cmpb $1, %cl
-jne __LABEL25__
-cmpb $1, __TEMP8_0__
-sete __TEMP8_1__
-__LABEL25__:
-cmpb $1, __TEMP8_1__
-jne __LABEL26__
-# optimized move from snake to __this__
-movl snake, %edx
-mov %edx, __this__
-# Calling function __method_Snake_setVelocity_
-pushl $-5
-pushl $0
-call __method_Snake_setVelocity_
-mov %eax, %ecx
-add $8, %esp
-jmp __LABEL22__
-__LABEL26__:
-mov gfx_keypress_key, %al
-mov $0, %cl
-cmp $115, %al
-sete %cl
-# Reading property "vy" in "snake"
-movl snake, %eax
-# optimized move from 4(%eax) to %esi
-mov 4(%eax), %edx
-mov %edx, %esi
-movb $0, __TEMP8_0__
-cmp $-5, %esi
-setne __TEMP8_0__
-# AND comparison
-movb $0, __TEMP8_1__
-cmpb $1, %cl
-jne __LABEL27__
-cmpb $1, __TEMP8_0__
-sete __TEMP8_1__
-__LABEL27__:
-cmpb $1, __TEMP8_1__
-jne __LABEL28__
-# optimized move from snake to __this__
-movl snake, %edx
-mov %edx, __this__
-# Calling function __method_Snake_setVelocity_
-pushl $5
-pushl $0
-call __method_Snake_setVelocity_
-mov %eax, %ecx
-add $8, %esp
-jmp __LABEL22__
-__LABEL28__:
-__LABEL22__:
-jmp __LABEL19__
-__LABEL18__:
-# note, read PARAM event -> 8(%ebp)
-mov 8(%ebp), %eax
-mov $0, %cl
-cmp $12, %eax
-sete %cl
-cmpb $1, %cl
-jne __LABEL29__
-# Calling function usleep
-pushl $50000
-call usleep
-mov %eax, %ecx
-add $4, %esp
-# Calling function gfx_redraw
-call gfx_redraw
-mov %eax, %ecx
-jmp __LABEL19__
-__LABEL29__:
-__LABEL19__:
+popw __disable_gc__
+# optimized move from %edi to __gc_dontClear__
+mov %edi, __gc_dontClear__
+mov %edi, %eax
 call __rc_quick_check__
-popa
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
 mov %ebp, %esp
 pop %ebp
 ret
@@ -1398,49 +106,170 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp
 
-# Calling function __constructor_Snake_1_
-pushl $10
-call __constructor_Snake_1_
+# Allocation for array
+pushl $0
+pushl $12
+call __rc_allocate__
+add $8, %esp
+# optimized move from 1 to 0(%eax)
+movl $1, 0(%eax)
+# optimized move from 2 to 4(%eax)
+movl $2, 4(%eax)
+# optimized move from 3 to 8(%eax)
+movl $3, 8(%eax)
 mov %eax, %ecx
+# Loading local variable "arr" @-4(%ebp)
+# optimized move from %ecx to -4(%ebp)
+mov %ecx, -4(%ebp)
+# requesting ownership for arr (create)
+lea -4(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# note, read STACK VAR arr -> -4(%ebp)
+# printing array
+mov -4(%ebp), %eax
+push %eax     # load buffer
+mov -4(%eax), %edx
+pushl 8(%edx) # load size
+call print_arr32
+add $8, %esp
+# Allocation for array
+pushl $0
+pushl $12
+call __rc_allocate__
+add $8, %esp
+# optimized move from 4 to 0(%eax)
+movl $4, 0(%eax)
+# optimized move from 5 to 4(%eax)
+movl $5, 4(%eax)
+# optimized move from 6 to 8(%eax)
+movl $6, 8(%eax)
+mov %eax, %ecx
+# printing array
+mov %ecx, %eax
+push %eax     # load buffer
+mov -4(%eax), %edx
+pushl 8(%edx) # load size
+call print_arr32
+add $8, %esp
+pushl $__STRING2__
+call puts
 add $4, %esp
-# SETTING snake <- %ecx
-# requesting ownership for snake (set). 
-lea snake, %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
+pushl $123
+pushl $__PRINT_TYPE_INT__
+call printf
 add $8, %esp
-# Calling function __constructor_Food_0_
-call __constructor_Food_0_
-mov %eax, %ecx
-# SETTING food <- %ecx
-# requesting ownership for food (set). 
-lea food, %eax
-push %eax
+mov $1139041534, %ecx
 push %ecx
-call __rc_requestOwnership__
+call print_float_noPromo
+add $4, %esp
+# 
+pushl $0
+pushl $8
+call __rc_allocate__
 add $8, %esp
-# Calling function gfx_setup
-pushl $360
-pushl $480
-call gfx_setup
-mov %eax, %ecx
-add $8, %esp
-lea render, %ecx
+mov %eax, %ecx # Local allocation address for Person
+# optimized move from 17 to 0(%eax)
+movl $17, 0(%eax)
+# optimized move from __STRING3__ to 4(%eax)
+mov $__STRING3__, %edx
+mov %edx, 4(%eax)
+# optimized move from %ecx to __this__
+mov %ecx, __this__
 push %ecx
-# Calling function gfx_begin
-push %ecx
-call gfx_begin
+# Calling function __method_Person_toString_
+call __method_Person_toString_
 mov %eax, %esi
-add $4, %esp
 pop %ecx
-# Calling function gfx_end
-call gfx_end
+push %esi
+call puts
+add $4, %esp
+push %ecx
+# Asked for 2 allocations of "Person"
+pushl $0
+pushl $8
+call __rc_allocate__
+add $8, %esp
+pop %ecx
 mov %eax, %ecx
+# Loading local variable "fmtArr" @-8(%ebp)
+# optimized move from %ecx to -8(%ebp)
+mov %ecx, -8(%ebp)
+# requesting ownership for fmtArr (create)
+lea -8(%ebp), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+# 
+pushl $0
+pushl $8
+call __rc_allocate__
+add $8, %esp
+mov %eax, %ecx # Local allocation address for Person
+# optimized move from 123 to 0(%eax)
+movl $123, 0(%eax)
+# optimized move from __STRING4__ to 4(%eax)
+mov $__STRING4__, %edx
+mov %edx, 4(%eax)
+# note, read STACK VAR fmtArr -> -8(%ebp)
+#Array set begin
+mov -8(%ebp), %eax
+mov %ecx, 0(%eax)
+# requesting ownership for array index
+lea 0(%eax), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+#Set end
+# 
+pushl $0
+pushl $8
+call __rc_allocate__
+add $8, %esp
+mov %eax, %ecx # Local allocation address for Person
+# optimized move from 456 to 0(%eax)
+movl $456, 0(%eax)
+# optimized move from __STRING5__ to 4(%eax)
+mov $__STRING5__, %edx
+mov %edx, 4(%eax)
+# note, read STACK VAR fmtArr -> -8(%ebp)
+#Array set begin
+mov -8(%ebp), %eax
+mov %ecx, 4(%eax)
+# requesting ownership for array index
+lea 4(%eax), %eax
+push %eax
+push %ecx
+call __rc_requestOwnership__
+add $8, %esp
+#Set end
+# note, read STACK VAR fmtArr -> -8(%ebp)
+# printing format array
+mov -8(%ebp), %eax
+push %eax     # load buffer
+mov -4(%eax), %edx
+pushl 8(%edx) # load size
+pushl $__method_Person_toString_ # load toString method
+call print_formatArr
+add $8, %esp
+mov $0, %eax
+push %eax
+call __rc_free_all__
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
 call __rc_free_all__
 mov  $0, %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
+# arr: 4
+# fmtArr: 8
 

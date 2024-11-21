@@ -799,6 +799,7 @@ var variables = {
         var index = index[0]
 
         var arrType = helpers.types.guessType(address)
+        //console.log("----", address, arrType)
         var elementType = helpers.types.derefType(arrType)
         var elementBytes = helpers.types.typeToBytes(elementType)
         var indexType = helpers.types.guessType(index)
@@ -1692,6 +1693,8 @@ var formats = {
         //console.log("-------------------")
         // should NOT be a normal type!!! TODO HERE SEP 11
         var baseTypeName = helpers.types.convertTypeObjToName(baseType)
+
+        //console.log(":::", base)
         while (baseType.formatPtr.properties[i].name != propertyName) {
             //console.log(baseType.formatPtr.properties[i], i, propertyName)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)

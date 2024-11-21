@@ -179,14 +179,17 @@ function evaluate(line) {
                 var bytes = helpers.types.typeToBytes(defines.types[word])//helpers.types.typeToBytesWithFmts(defines.types[word])
 
                 if (offsetWord(3) == "]") {
-                    var elementsHaveData = false
-                    if (defines.types[word].hasData || "formatPtr" in defines.types[word])
-                        elementsHaveData = true
-                    var newType = helpers.types.convertTypeToHasData(defines.types[word])
-                    newType.pointer = true // if broken delete
-                    if (elementsHaveData) {
-                        newType.elementsHaveData = true
-                    }
+                    // var elementsHaveData = false
+                    // if (defines.types[word].hasData || "formatPtr" in defines.types[word])
+                    //     elementsHaveData = true
+                    // var newType = helpers.types.convertTypeToHasData(defines.types[word])
+                    // newType.pointer = true // if broken delete
+                    // if (elementsHaveData) {
+                    //     newType.elementsHaveData = true
+                    // }
+
+                    var newType = objCopy(defines.types.array)
+                    newType.arrayElements = objCopy(defines.types[word])
 
                     var out = helpers.registers.getFreeLabelOrRegister(newType)
 
@@ -413,7 +416,7 @@ function evaluate(line) {
 
                         return [""]
                     } else {
-
+                        //console.log("#####", ptype)
                         var out = actions.formats.readProperty(base, ptype, offsetWord(1), false)
                         line[wordNum - 1] = out
                         line.splice(wordNum, 2)
@@ -800,11 +803,11 @@ function evaluate(line) {
 
                 //throwE(dataType)
                 if (helpers.types.checkIfElementsHaveData(dataType)) {
-                    throwE("Printing format arrays are still WIP")
+                    //throwE("Printing format arrays are still WIP", dataType.arrayElements)
 
                     // IMPORTANT need to save and restore "this" before and after
-                    var toStringMethod = helpers.formatters.formatMethodName(dataType.formatPtr.name, "toString")
-                    actions.assembly.optimizeMove(data, "__this__", dataType, dataType)
+                    var toStringMethod = helpers.formatters.formatMethodName(dataType.arrayElements.formatPtr.name, "toString")
+                    //actions.assembly.optimizeMove(data, "__this__", dataType, dataType)
                     outputCode.autoPush(
                         `# printing format array`,
                         `mov ${data}, %eax`,
