@@ -633,7 +633,7 @@ function evaluate(line) {
                 line[wordNum] = actions.variables.readAddress(word)
                 line.splice(wordNum + 1, 1)
             }
-            console.log("#####", word, lambdaQueue)
+            //console.log("#####", word, lambdaQueue)
 
             var f = lambdaQueue.find(x => {
                 return x.name == word

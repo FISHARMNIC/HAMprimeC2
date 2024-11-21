@@ -45,7 +45,7 @@ global.scope = [];
 scope.__proto__.popScope = function () {
     var o = this.pop()
     if (this.length == 0) {
-        console.log("EMPTY SCOPE", lambdaQueue)
+        //console.log("EMPTY SCOPE", lambdaQueue)
 
         var out = []
 
@@ -65,7 +65,7 @@ scope.__proto__.popScope = function () {
             }
         }
 
-        console.log(out)
+        //console.log(out)
         if (out.length != 0) {
             inputCode.splice(globalLine + 1, 0, ...out)
             //throwE(inputCode)
@@ -369,7 +369,7 @@ function _quickSplitLookahead(inputCode, line, build, n2, nest = [], addSemiC = 
         }
     })
     if (nest.length != 0) {
-        throwW(`[PARSER] Unclosed bracket on:`)
+        //throwW(`[PARSER] Unclosed bracket on:`)
         //console.log("CALLING WITH", nest)
         _quickSplitLookahead(inputCode, line + 1, build, n2, nest, addSemiC)
     }

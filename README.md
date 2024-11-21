@@ -5,7 +5,7 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Li
 ## Recent Update Log
 - Added `JS_EXEC "any javascript code to be run at compile time"` (for debug)
 - Added `__asm__ "any assembly code"`
-- Added lambdas! see `test/working/lambda.x`
+- **Added lambdas!** see `test/working/lambda.x`
 - Reworked `call` keyword. Now `call some_function(params) -> some_type`
 - Statements can now be broken up into multiple lines
     - Like: 
@@ -92,8 +92,11 @@ All of the things below work. Scroll down for examples or click [here](https://g
 - Math
     - Floats and ints 
     - Support for GMP (look at `bignums` in `test/working`)
+- Lambdas
+    - Capture scoped variables by reference (very much WIP, may be buggy!)
 
 Currently working on / roadmap:
+- Lambda capturing parameters
 - Char literals being treated as ints leading to a mess of casting if you use char type
 - Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon
 - cant use operator "+" with string parameter (tries calling `.toString` instead)
