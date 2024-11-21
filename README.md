@@ -132,6 +132,8 @@ Note: This is still being worked on, and editing still has some issues. This was
 * [Type Inference](#Type-inference-example)
 * [Overloads](#Operator-Overloads)
 * [Overloads(2)](#More-Overloads)
+* [Lambdas](#Lambdas)
+* [Lambdas(2)](#Lambda-Captures)
 * [Strings](#Strings)
 * [Variadics](#Variadics)
 * [C Inclusion](#C-Inclusion)
@@ -698,6 +700,63 @@ entry function<> -> u32
 
     myFile.close();
 
+    return 0;
+}
+```
+
+### Lambdas
+```Dart
+/* For now, lambdas must be passed as "any"*/
+map function<string:array arr, u32 size, any operation> -> none
+{
+    create i <- 0;
+
+    while(i <: size)
+    {
+        /* For now, lambdas must be called with "call func_name(params) -> returnType" */
+        arr[i] <- (call operation(arr[i]) -> string);
+        i <- i + 1;
+    }
+}
+
+entry function<> -> u32
+{
+    create family <- {"Dad", "Mom", "Dog", "Cat"};
+
+    map(family, 4, lambda<string value> -> string {
+        return (`I love my ${value}`);
+    });
+
+    forEach(person in family)
+    {
+        print_(person);
+    }
+}
+```
+
+### Lambda Captures
+```Dart
+doOperation function<u32 a, u32 b, any operation> -> auto
+{
+    return(call operation(a,b) -> u32);
+}
+
+entry function<> -> u32
+{
+    create someVar <- 123;
+    create otherVar <- 456;
+
+    /* someVar and otherVar can be read and modified within the lambda */
+    doOperation(4,5, 
+        lambda<u32 pa, u32 pb> -> auto {
+            print_(`someVar is ${someVar}`);
+            print_(`setting someVar to: ${pa} + ${pb} + ${someVar} = ${pa + pb + someVar}`); 
+            someVar <- pa + pb + someVar;
+        }
+    );
+
+    /* should be 132 now */
+    print_(`someVar is now ${someVar}`);
     return 0;
 }
 ```
