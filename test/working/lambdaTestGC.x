@@ -24,7 +24,8 @@ entry function<> -> u32
             jon <- Person[2];
             jon[0] <- Person<name:"Joe",age:123>;
             jon[1] <- Person<name:"Jim",age:456>;
-    });
+        }
+    );
 
     /* to show that no gc issues */
     __rc_collect__();

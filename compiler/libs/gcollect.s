@@ -1,3 +1,4 @@
+.section .note.GNU-stack,"",@progbits
 .data
 
 __rc_transfer_error__: .asciz "** [Roll-Call Error] Could not transfer locked reference %p\n"

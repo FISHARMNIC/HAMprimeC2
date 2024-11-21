@@ -20,10 +20,15 @@ entry function<> -> u32
     arr[3] <- Person<name:"Dad",age:43>;
     arr[4] <- Person<name:"Dog",age:10>;
 
+    print_(arr);
+
+    // Or you can do
+    /* 
     forEach(item in arr)
     {
         print_(item);
     }
+    */
     
     return 0;
 }

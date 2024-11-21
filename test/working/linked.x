@@ -85,6 +85,7 @@ Linked format
                  - Ownership won't be completed
                  - If you want an error to be thrown instead, do:
                      "__rule segfaultOnNullOwnership true;"
+                     NOTE I think that for now changing this rule doesnt actually do anything
                 */ 
                 previous.next <- previous.next.next;
             }

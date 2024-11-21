@@ -1,3 +1,6 @@
+# Notes
+* Only works on architectures x86 and x86-64
+
 # Dependencies
 * **Must be installed before continuing**
 * NodeJS

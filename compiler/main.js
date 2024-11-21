@@ -1,6 +1,14 @@
 /*
 TODO:
 
+    * dont think segfaultOnNullOwnership works anymore
+    * add way to get arr len
+
+    * add check for print_formatArr to check if toString for format actually exists
+
+    * not sure if {Person<...>, Person<...>} works due to GC?
+
+    HIGH PRIORITY
     * maybe merge all getCapture... with the normal functions   
         * merge CapturedVariables with stack variables, but add special flag
 
@@ -210,7 +218,7 @@ TODO:
     - !! IMPORTANT !! just make global arrays allocated dynamically
         - removes confusion between p8 and array8 
 
-    - add push and pop for array types
+    - add push and pop for array types + .map, .forEach (watch for collisions with forEach loop), etc
     - throw error if defining function or variable that is keyword
     - see plans/settingptr.x
     - Automatic return typing, see warns on linked.x

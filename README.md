@@ -1,6 +1,6 @@
 # <img src="https://github.com/FISHARMNIC/proglan2/assets/73864341/9a5327b9-ffcc-425a-b927-ad829415715b" width="20px"> HAM' Language
 # About Ham
-HAM' (HAM prime) is a fully compiled 32-bit programming language that runs on Linux. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
+HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
 - `print_` now supports arrays of formats (see `test/working/print_.x`)
@@ -738,7 +738,7 @@ entry function<> -> u32
 ```Dart
 doOperation function<u32 a, u32 b, any operation> -> auto
 {
-    return(call operation(a,b) -> u32);
+    call operation(a,b) -> none;
 }
 
 entry function<> -> u32

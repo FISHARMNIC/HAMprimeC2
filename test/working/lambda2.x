@@ -1,6 +1,6 @@
 doOperation function<u32 a, u32 b, any operation> -> auto
 {
-    return(call operation(a,b) -> u32);
+    call operation(a,b) -> none;
 }
 
 entry function<> -> u32
@@ -19,7 +19,7 @@ entry function<> -> u32
             someVar <- pa + pb + someVar;
         }
     );
-    
+
     print_(`someVar is now ${someVar}`);
     return 0;
 }
