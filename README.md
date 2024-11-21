@@ -3,9 +3,14 @@
 HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
+- `something function<> -> auto {...}` is no longer needed.
+    * Now you can just do `something function<> {...}`
+    * Works for lambdas, methods, and operators too
 - `print_` now supports arrays of formats (see `test/working/print_.x`)
 - **Big Update**
     * Added lambdas! see `test/working/lambda.x`
+    * Must be passed as type `any`
+    * Must be called using `call` keyword
 - Added `JS_EXEC "any javascript code to be run at compile time"` (for debug)
 - Added `__asm__ "any assembly code"`
 - Reworked `call` keyword. Now `call some_function(params) -> some_type`
@@ -398,11 +403,15 @@ entry function<> -> u32
 ### Type inference example
 ```dart
 /*
-Limitations
+Showcase for inherited typing
+Rules
     - No auto parameters
     - Cannot pass uninitialized untyped variables to functions
-    - Untyped variables assume the type of the first value that they are given
+    - Once on an untype variable has been initialized, if it assumes another type a warning will be thrown 
+        - the variable will then be converted to that type
+        - plans to maybe remove this warning for untyped variables
 */
+
 Person format
 {
     .name;
@@ -414,13 +423,14 @@ Person format
         this.age  <- age;
     }
 
-    .toString method<> -> auto
+    /* Same as saying ".toString method<> -> auto" */
+    .toString method<>
     {
         return(`${this.name} is ${this.age} years old`);
     }
 }
 
-entry function<> -> auto
+entry function<>
 {
     create me <- Person("Nico", 18);
     print_(me);

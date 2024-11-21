@@ -1,5 +1,7 @@
 /*
 TODO:
+    * make new type "fn" that can be called without "call" 
+        * can specify ret type by doing "bob() -> u32"
 
     * dont think segfaultOnNullOwnership works anymore
     * add way to get arr len
