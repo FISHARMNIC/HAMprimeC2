@@ -312,7 +312,7 @@ var types = {
     guessType: function (word, allowunknown = false) {
         word = String(word)
 
-        //console.log(":::", word, variables.variableExists(word),)
+        //console.log("--::>", word, variables.variableExists(word))
         if (variables.variableExists(word)) {
             //throwE(globalVariables[word])
             return objCopy(variables.getVariableType(word, allowunknown))
@@ -333,7 +333,7 @@ var types = {
                 throwE(`Unable to read variable "${r.name}" as its type is unknown. Did you initialize it?`)
             }
             return objCopy(r.type)
-            
+
         } else if (this.stringIsRegister(word)) {
             return objCopy(this.getRegisterType(word))
         } else if (variables.checkIfParameter(word)) {

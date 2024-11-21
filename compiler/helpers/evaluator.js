@@ -307,7 +307,7 @@ function evaluate(line) {
 
 
                     __addToAnyVarEverMade(offsetWord(1))
-                    var retType = objCopy(offsetWord(6) == "->" ? defines.types[offsetWord(7)] : defines.types.u32) // default return if none given. Note: prob don't need objcopy for this
+                    var retType = objCopy(offsetWord(6) == "->" ? defines.types[offsetWord(7)] : defines.types.unknown) // default return if none given. Note: prob don't need objcopy for this
                     //throwE(retType)
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatMethodName(scope[scope.length - 1].data.name, offsetWord(1)), offsetWord(4), retType)
 
@@ -325,7 +325,7 @@ function evaluate(line) {
                     }
 
                     var operator = offsetWord(4)
-                    var retType = objCopy(offsetWord(9) == "->" ? defines.types[offsetWord(10)] : defines.types.u32)
+                    var retType = objCopy(offsetWord(9) == "->" ? defines.types[offsetWord(10)] : defines.types.unknown)
 
                     var _scope = scope[scope.length - 1].data
                     var params = offsetWord(7)
@@ -973,7 +973,7 @@ function evaluate(line) {
                 if (typeof (params) == "string")
                     params = [params]
                 var params_obj = actions.functions.createParams(params)
-                var returnType = objCopy(defines.types.u32)
+                var returnType = objCopy(defines.types.unknown)
                 var noReturnType = true
 
                 if (offsetWord(4) == "->") {
@@ -1212,6 +1212,18 @@ function evaluate(line) {
 
                 line[wordNum] = lbl
                 line.splice(wordNum + 1, 3)
+            }
+            else if (word == "len") 
+            {
+                if (offsetWord(1) != "(") {
+                    throwE(`Print must be called like a function with parenthesis`)
+                } else if (offsetWord(3) != ")") {
+                    throwE(`Print can only take one value`)
+                }
+                //console.log("====", offsetWord(2))
+                line[wordNum] = actions.arrays.getLength(offsetWord(2))
+                line.splice(wordNum + 1, 3)
+                //console.log("@@@@", line)
             }
         }
         // #endregion

@@ -146,12 +146,12 @@ var assembly = {
             }
         })
     },
-    pushMLclobbers: function() {
-        helpers.registers.multiLineClobbers.forEach(x =>{
+    pushMLclobbers: function () {
+        helpers.registers.multiLineClobbers.forEach(x => {
             outputCode.autoPush(`push ${helpers.types.formatRegister(x, defines.types.u32)}`)
         })
     },
-    popMLclobbers: function() {
+    popMLclobbers: function () {
         helpers.registers.multiLineClobbers.slice().reverse().forEach(x => {
             outputCode.autoPush(`pop ${helpers.types.formatRegister(x, defines.types.u32)}`)
         })
@@ -497,14 +497,11 @@ var variables = {
         // }
 
         var correctAddressing = vname
-        if(isStack)
-        {
-            if(helpers.variables.checkIfOnCaptureStack(vname))
-            {
+        if (isStack) {
+            if (helpers.variables.checkIfOnCaptureStack(vname)) {
                 correctAddressing = assembly.getCapturedStackVarAsEcx(vname)
             }
-            else
-            {
+            else {
                 correctAddressing = assembly.getStackVarAsEbp(vname)
             }
         }
@@ -1342,8 +1339,7 @@ var functions = {
                 )
             })
 
-            if(scope.data?.isLambda)
-            {
+            if (scope.data?.isLambda) {
                 helpers.registers.deClobberMultiLineRegister("c")
             }
         }
@@ -2128,6 +2124,43 @@ var strings = {
     }
 }
 
+var arrays = {
+    getLength: function (array) {
+
+        //console.log("$$$$", array)
+        var arrayType = helpers.types.guessType(array)
+        var elementType = helpers.types.derefType(arrayType)
+
+        var ret = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
+        var using = helpers.types.stringIsRegister(ret) ? ret : "%edx"
+
+        if ("hasData" in arrayType) {
+            outputCode.autoPush(
+                `# Get array size`,
+                `mov ${array}, %eax # load arr`,
+                `mov -4(%eax), %edx # get entry reference`,
+                `mov 8(%edx),  ${using} # get size`
+            )
+        }
+        else {
+            throwE("array length not implemented on static arrays yet")
+        }
+
+        var b = helpers.types.typeToBytes(elementType)
+        if (b != 1) {
+            outputCode.autoPush(`shr \$${b / 2}, ${using} # divide by ${b} (bytes to u32 or u16)`)
+        }
+
+        if (using == "%edx") {
+            outputCode.autoPush(
+                `mov %edx, ${ret} # size to arr len holder`,
+            )
+        }
+
+        return ret
+    }
+}
+
 module.exports = {
     assembly,
     variables,
@@ -2135,4 +2168,5 @@ module.exports = {
     functions,
     formats,
     strings,
+    arrays,
 }

@@ -216,7 +216,7 @@ module.exports = {
         }
     },
     keywords: [
-        "__asm__", "JS_EVAL", "publics", "privates", "null", "duplicate", "copy", "print_", "println_", "method","function","format","initializer", "persistent", "transient", "while", "return_new", "return", "if", "elif", "else", "__rule", "__define", "own", "borrow", "forEach", "lambda", "forward", "root"
+        "len", "__asm__", "JS_EVAL", "publics", "privates", "null", "duplicate", "copy", "print_", "println_", "method","function","format","initializer", "persistent", "transient", "while", "return_new", "return", "if", "elif", "else", "__rule", "__define", "own", "borrow", "forEach", "lambda", "forward", "root"
     ],
     priorityWords: [
         "while", "forEach"

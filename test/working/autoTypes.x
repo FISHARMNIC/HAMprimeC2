@@ -6,7 +6,6 @@ Rules
     - Once on an untype variable has been initialized, if it assumes another type a warning will be thrown 
         - the variable will then be converted to that type
         - plans to maybe remove this warning for untyped variables
-
 */
 
 Person format
@@ -20,13 +19,14 @@ Person format
         this.age  <- age;
     }
 
-    .toString method<> -> auto
+    /* Same as saying ".toString method<> -> auto" */
+    .toString method<>
     {
         return(`${this.name} is ${this.age} years old`);
     }
 }
 
-entry function<> -> auto
+entry function<>
 {
     create me <- Person("Nico", 18);
     print_(me);

@@ -1,6 +1,9 @@
-map function<string:array arr, u32 size, any operation> -> none
+/* if no return type is specified, functions default to "auto" */
+
+map function<string:array arr, any operation>
 {
     create i <- 0;
+    create size <- len(arr);
 
     while(i <: size)
     {
@@ -9,11 +12,11 @@ map function<string:array arr, u32 size, any operation> -> none
     }
 }
 
-entry function<> -> u32
+entry function<>
 {
     create family <- {"Dad", "Mom", "Dog", "Cat"};
 
-    map(family, 4, lambda<string value> -> string {
+    map(family, lambda<string value> {
         return (`I love my ${value}`);
     });
 
@@ -21,4 +24,6 @@ entry function<> -> u32
     {
         print_(person);
     }
+
+    return 0;
 }
