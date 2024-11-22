@@ -3,6 +3,8 @@
 HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
+- added new type `dyna` which is the same as `any:dynamic`
+- Array length can be get with `len(arr)`
 - `something function<> -> auto {...}` is no longer needed.
     * Now you can just do `something function<> {...}`
     * Works for lambdas, methods, and operators too
@@ -11,7 +13,7 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
     * Added lambdas! see `test/working/lambda.x`
     * Must be passed as type `any`
     * Must be called using `call` keyword
-- Added `JS_EXEC "any javascript code to be run at compile time"` (for debug)
+- Added `JS_EVAL "any javascript code to be run at compile time"` (for debug)
 - Added `__asm__ "any assembly code"`
 - Reworked `call` keyword. Now `call some_function(params) -> some_type`
 - Statements can now be broken up into multiple lines
@@ -103,6 +105,8 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Capture scoped variables by reference (very much WIP, may be buggy!)
 
 Currently working on / roadmap:
+- Function overloads (constructors and operators can be overloaded but not methods and functions)
+
 - Lambda capturing parameters
 - Char literals being treated as ints leading to a mess of casting if you use char type
 - Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon

@@ -1,5 +1,29 @@
 /*
 TODO:
+
+    * issues for implementing function overloads
+        * if getting addressOf how to specify? maybe do 
+        * "getFnOverload(none, bob, string, u32)"
+        * dont do "function_a", "function_b", etc
+            * do first dec is "function"
+            * then next do "function_b" etc
+    
+    * simplifying overloads:
+        * something like: 
+            map function supports
+                <any:dynamic:array arr, any operation>
+                <any:static:array arr, any operation>
+            {
+            ...
+            }
+        * basically duplicates the function, one for each param type
+
+    * type "smart" which can be split into:
+        * smart:dynamic
+        * smart:static
+        * The dynamic type can be used for all dynamics
+        * see plans/lambdaSmart.x
+    
     * make new type "fn" that can be called without "call" 
         * can specify ret type by doing "bob() -> u32"
 

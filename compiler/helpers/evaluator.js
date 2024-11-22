@@ -18,6 +18,7 @@ function evaluate(line) {
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         // HERE is where forced dynamic should be like "Linked:dynamic"
         var word = line[wordNum]
+        //console.log(">:::", line, wordNum, objectIncludes(defines.types, word) && line[wordNum + 1] == ":")
         if (objectIncludes(macros, word)) {
             line[wordNum] = macros[word]
         } else if (objectIncludes(defines.types, word) && line[wordNum + 1] == ":" && (/*objectIncludes(defines.types, line[wordNum + 2]) || */line[wordNum + 2] == "dynamic" || line[wordNum + 2] == "array" || line[wordNum + 2] == "borrowed" || line[wordNum + 2] == "locked" || line[wordNum + 2] == "reference")) {
@@ -76,6 +77,9 @@ function evaluate(line) {
             // }
 
             line.splice(wordNum + 1, 2)
+
+            //console.log(line, wordNum)
+            wordNum--
             /*
             should work like creates a second type called __Linked__dynamicdef__ which is a clone of the original one but has hasData enabled
             And then replaces the three words "Linked:dynamic" with __Linked__dynamicdef__
@@ -841,13 +845,20 @@ function evaluate(line) {
 
                 else if ("hasData" in dataType) {
                     var arr_type = dataType.size;
+                    var printFn = `print_arr${arr_type}`
+
+                    if(helpers.types.areEqualNonStrict(dataType.arrayElements,defines.types.string))
+                    {
+                        printFn = `print_stringArr`
+                    }
+
                     outputCode.autoPush(
                         `# printing array`,
                         `mov ${data}, %eax`,
                         `push %eax     # load buffer`,
                         `mov -4(%eax), %edx`,
                         `pushl 8(%edx) # load size`,
-                        `call print_arr${arr_type}`,
+                        `call ${printFn}`,
                         `add $8, %esp`
                     )
                     //throwE("Printing buffers not finished")

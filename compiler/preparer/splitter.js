@@ -12,7 +12,7 @@ var noExes = [
     "#f",
     "..."
 ];
-noExes.push(...Object.keys(defines.types), ...defines.conditionals, "<<", ">>") // laod all types into exceptions
+noExes.push( ...["dynamic"], ...Object.keys(defines.types), ...defines.conditionals, "<<", ">>") // laod all types into exceptions
 
 var quoteMarks = [
     `"`,
@@ -72,9 +72,35 @@ function split(line) {
             }
 
             var noExe = noExes.every(x => {
+                // NEW
+
+                var revbuild = line.slice(charNum)
+                var index = revbuild.length - 1
+
+                //console.log("INDEX", index, revbuild, x)
+                while (index >= 0) {
+                    if (x == revbuild) {
+                        //console.log("READING", x)
+                        if (build != "")
+                            outBuffer.push(build) // push current
+                        outBuffer.push(x) // push sequence
+                        build = "" // clear current
+                        charNum += x.length - 1; //offset by length of sequence
+                        //console.log("FOUND", x)
+                        return false;
+                    }
+                    //console.log(revbuild)
+                    revbuild = revbuild.slice(0, revbuild.length - 1)
+                    index--
+                }
+                return true
+
+                // OLD
+
                 // if length = 2, then sum up the current and the next
                 // if length = 3, current + next + second next
                 if (cascade(x.length, charOffset) == x) {
+                    console.log("READING", x)
                     if (build != "")
                         outBuffer.push(build) // push current
                     outBuffer.push(x) // push sequence
@@ -83,7 +109,9 @@ function split(line) {
                     return false;
                 }
                 return true
+
             })
+
             if (!noExe) continue; // there was a resevered sequence, dont split and skip
 
             if (symbols.includes(char)) { // splitting character
@@ -109,10 +137,10 @@ function split(line) {
                     inquotes = char;
                 }
             } else if ((char == parseInt(char)) != mode) { // if we are going from numbers to letters or vice versa
-                    if (build != "")
-                        outBuffer.push(build);
-                    mode = !mode;
-                    build = char;
+                if (build != "")
+                    outBuffer.push(build);
+                mode = !mode;
+                build = char;
             } else {
                 build += char; // build current char
             }

@@ -1,13 +1,18 @@
 /* if no return type is specified, functions default to "auto" */
 
-map function<string:array arr, any operation>
+/* dyna:array = any:dynamic:array means an array of any dynamic type
+ * for example, an array of strings
+ * or an array of formats
+*/
+
+map function<dyna:array arr, any operation>
 {
     create i <- 0;
     create size <- len(arr);
 
     while(i <: size)
     {
-        arr[i] <- (call operation(arr[i]) -> string);
+        arr[i] <- (call operation(arr[i]) -> dyna);
         i <- i + 1;
     }
 }
@@ -20,10 +25,7 @@ entry function<>
         return (`I love my ${value}`);
     });
 
-    forEach(person in family)
-    {
-        print_(person);
-    }
+    print_(family);
 
     return 0;
 }

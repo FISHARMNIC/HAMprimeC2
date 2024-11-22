@@ -120,6 +120,15 @@ module.exports = {
             dblRef: false,
             acceptsAny: true
         },
+        "dyna": {
+            size: 32,
+            float: false,
+            pointer: false,
+            special: false,
+            dblRef: false,
+            acceptsAny: true,
+            hasData: true
+        },
         "none": {
             size: 32,
             float: false,

@@ -205,6 +205,31 @@ void print_arr32(int size, int *arr)
     printf("%i]\n", arr[i]);
 }
 
+// todo later just pass a %i, %f, etc
+void print_stringArr(int size, int *arr)
+{
+    size /= 4;
+
+    if (size == 0)
+    {
+        printf("[]\n");
+        return;
+    }
+    else if (size == 1)
+    {
+        printf("[\"%s\"]\n");
+        return;
+    }
+
+    printf("[\n   \"%s\",\n", arr[0]);
+    int i = 1;
+    for (; i < size - 1; i++)
+    {
+        printf("   \"%s\",\n", arr[i]);
+    }
+    printf("   \"%s\"\n]\n", arr[i]);
+}
+
 void print_arr16(int size, short *arr)
 {
     size /= 2;

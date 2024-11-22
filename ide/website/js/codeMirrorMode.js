@@ -55,7 +55,7 @@ CodeMirror.defineMode("HAM", function () {
       else if (matchAll(stream, operators)) // ops
       {
         return "ops"
-      } else if (stream.match(/".*?"/)) { // strings
+      } else if (stream.match(/".*?"/) || stream.match(/`.*?`/)) { // strings
         return "string";
       } else {
         stream.next();
