@@ -1003,7 +1003,8 @@ function evaluate(line) {
                     variadic: params_obj.didVari,
                     totalAlloc: 0,
                     saveRegs: offsetWord(-2) == "__ccalled__",
-                    isLambda
+                    isLambda,
+                    overloads: []
                 }
 
                 if (isLambda) {
@@ -1019,58 +1020,20 @@ function evaluate(line) {
                     //throwE("wefewfwf", instance)
                 }
 
-
-                userFunctions[fname] = data
-                /*
-                if(word == "lambda")
-                {
-                    var num = noReturnType ? 4 : 6
-
-                    if(offsetWord(num) != "{")
-                    {
-                        throwE("No function statement provided in lambda")
-                    }
-
-                    var nest = 0
-
-                    var numStart = ++num
-
-                    // capture code in lambda
-                    while(num < line.length)
-                    {
-                        if(offsetWord(num) == "{")
-                        {
-                            console.log("n", nest)
-                            nest++
-                        }
-                        else if(offsetWord(num) == "}")
-                        {
-                            console.log("c", nest)
-                            if(nest == 0)
-                            {
-                                break
-                            }
-                            else
-                            {
-                                nest--
-                            }
-                        }
-                        num++
-                    }
-
-                    if(num >= line.length)
-                    {
-                        throwE("Lambda was not closed")
-                    }
-
-                    numStart += wordNum
-                    num += wordNum
-
-                    //line.slice(wordNum, num + 1) // whole thing including dec
-                    // issue is that things are being evaluated inside the lmabda since they have parenthesis
-                    throwE(line.slice(numStart, num))
+                if (fname == "__not_a_function__") {
+                    throwE(`Do not declare a function named "__not_a_function__"`)
                 }
-                */
+
+                if(fname in userFunctions)
+                {
+                    var newlbl = `${fname}__overload__${helpers.functions.newUniqueStr()}__`
+                    userFunctions[fname].overloads.push(data)
+                    fname = newlbl
+                    data.name = fname
+                    //throwE(`Function "${fname}" already exists, and overloads are not yet implemented`)
+                }
+                userFunctions[fname] = data
+
                 if (!nextIsForward) {
                     requestBracket = {
                         type: keywordTypes.FUNCTION,

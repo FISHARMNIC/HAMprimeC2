@@ -1227,7 +1227,7 @@ var functions = {
         outputCode.text.push(
             `push %ebp`,
             `mov %esp, %ebp`,
-            `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp`,
+            `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp # total stack allocation`,
             `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
 
         )
@@ -1256,17 +1256,27 @@ var functions = {
                 var givenRetType = helpers.types.guessType(rVal)
                 var scopeRetType = scope.data.returnType
 
+                if ("unknown" in scopeRetType) {
+                    if (helpers.types.isStringOrConststrType(givenRetType) && !("hasData" in givenRetType)) {
+                        outputCode.autoPush(
+                            `# char lit to string (return)`,
+                            `pushl ${helpers.types.formatIfConstOrLit(rVal)}`,
+                            `call cptos`,
+                            `add $4, %esp`,
+                        )
+                    }
+                    rVal = "%eax"
+                    helpers.registers.extendedTypes["a"] = defines.types.string
+                    scopeRetType = givenRetType
+                    userFunctions[scope.data.name].returnType = givenRetType
+                }
+
                 if ((helpers.types.guessType(rVal).hasData == true)) {
                     actions.assembly.optimizeMove(rVal, "__gc_dontClear__", givenRetType, defines.types.p32)
                 }
 
                 if (scopeRetType == undefined) {
                     throwE(`No given return type in function "${scope.data.name}"`)
-                }
-
-                if ("unknown" in scopeRetType) {
-                    scopeRetType = givenRetType
-                    userFunctions[scope.data.name].returnType = givenRetType
                 }
 
                 if ("voided" in scopeRetType) {
@@ -1285,7 +1295,9 @@ var functions = {
                     scope.data.returnType = givenRetType
                 }
             }
-            assembly.setRegister(rVal, "a", defines.types.u32)
+
+            if (rVal != "%eax")
+                assembly.setRegister(rVal, "a", defines.types.u32)
         }
 
         if (scope.data?.name == "entry") {
@@ -1372,9 +1384,9 @@ var functions = {
         }
 
         if (typeIfFromAddress != null) {
-            if ("__not_a_function__" in userFunctions) {
-                throwE("Do not declare a function named __not_a_function__")
-            }
+            // if ("__not_a_function__" in userFunctions) {
+            //     throwE("Do not declare a function named __not_a_function__")
+            // }
             fname = "__not_a_function__"
             userFunctions.__not_a_function__ = {
                 name: fname,
@@ -1422,6 +1434,9 @@ var functions = {
 
                     var et_s = expectedType == undefined ? "" : helpers.types.convertTypeObjToName(expectedType)
                     var gt_s = helpers.types.convertTypeObjToName(givenType)
+
+                    if(fname != "__not_a_function__")
+                    console.log(">>>>", expectedType, givenType, helpers.types.areEqual(expectedType, givenType))
 
                     if (!(expectedType == undefined ? false : "acceptsAny" in expectedType) && !helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s)))) {
                         if ("hasData" in expectedType && helpers.types.isStringOrConststrType(expectedType) && helpers.types.isStringOrConststrType(givenType)) {

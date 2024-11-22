@@ -42,13 +42,16 @@ var types = {
         var aName = (aHas && a.formatPtr != null) ? a.formatPtr.name : null
         var bName = (bHas && b.formatPtr != null) ? b.formatPtr.name : null
         var fmteq = aName == bName
+        var bothHaveChildren = ("arrayElements" in a) && ("arrayElements" in b)
+        //console.log("::::", a.arrayElements, b.arrayElements)
+        //var chEq = bothHaveChildren? this.areEqual(a.arrayElements, b.arrayElements) : true
         return (
             a.size == b.size &&
             a.float == b.float &&
             a.pointer == b.pointer &&
             a.special == b.special &&
             a.dblRef == b.dblRef &&
-            fmteq &&
+            fmteq && 
             a.hasData == b.hasData &&
             a.advptr == b.advptr &&
             a.elementsHaveData == b.elementsHaveData
@@ -337,9 +340,9 @@ var types = {
         } else if (this.stringIsRegister(word)) {
             return objCopy(this.getRegisterType(word))
         } else if (variables.checkIfParameter(word)) {
-            return functions.getParameterType(word)
+            return objCopy(functions.getParameterType(word))
         } else if (variables.checkIfOnCaptureStack(word)) {
-            return getCaptureStackVars()[word].type
+            return objCopy(getCaptureStackVars()[word].type)
         } else if (variables.checkIfCaptureParam(word)) {
             throwE("Capture params WIP")
         }
@@ -727,6 +730,9 @@ var formats = {
 var functions = {
     newAnonFunctionLabel: function () {
         return formatters.anonymousFunction(numberToUniqueStr(counters.anonLabels++))
+    },
+    newUniqueStr: function() {
+        return numberToUniqueStr(counters.anonLabels++)
     },
     getParameterOffset: function (param) {
         var offset = 0

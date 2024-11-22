@@ -1,12 +1,14 @@
 /*
 TODO:
 
+    * think that doing var names like bobChar is fixed?
     * issues for implementing function overloads
         * if getting addressOf how to specify? maybe do 
         * "getFnOverload(none, bob, string, u32)"
         * dont do "function_a", "function_b", etc
             * do first dec is "function"
             * then next do "function_b" etc
+        * Maybe do special property like .overloads
     
     * simplifying overloads:
         * something like: 
@@ -17,6 +19,7 @@ TODO:
             ...
             }
         * basically duplicates the function, one for each param type
+        * done in pre proc
 
     * type "smart" which can be split into:
         * smart:dynamic
