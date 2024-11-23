@@ -1,6 +1,11 @@
 /*
 TODO:
 
+    * overloads need to be written in same order in header file as defintion
+        * for constructor, operator, and normal function overloads (when implemented)
+        * maybe use hash function that converts types to numbers
+        * currenty typeObjToString is not that detailed about the type (any includes colons)
+
     * think that doing var names like bobChar is fixed?
     * issues for implementing function overloads
         * if getting addressOf how to specify? maybe do 
@@ -544,6 +549,7 @@ if (returnHighlight) {
 }
 
 if (!noPrintIfNotNec) {
+    console.log("\033[31m[Program compiled with " + warnCount + " warning(s)]\033[0m")
     console.log("\033[93m======== Program Compiled Successfully ======\033[0m")
     console.log("|| Output in  : \033[96m" + __dirname + `/../compiled/${outName}.s` + "\033[0m")
     console.log("|| Debug info : \033[96m" + __dirname + "/../compiled/debugInfo.json" + "\033[0m")

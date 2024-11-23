@@ -1,11 +1,8 @@
-entry function<> -> u32
+entry function<>
 {
-    create bob <- 100;
-    if(bob < 100)
-    {
+    create sarr <- {"hello", "world", "bannanas"};
 
-    } elif(bob == 100) // Doesn't like the one-liner
-    {
+    print_(sarr);
+    return 0;
 
-    }
 }

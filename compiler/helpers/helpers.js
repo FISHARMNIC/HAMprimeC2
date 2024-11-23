@@ -42,7 +42,6 @@ var types = {
         var aName = (aHas && a.formatPtr != null) ? a.formatPtr.name : null
         var bName = (bHas && b.formatPtr != null) ? b.formatPtr.name : null
         var fmteq = aName == bName
-        var bothHaveChildren = ("arrayElements" in a) && ("arrayElements" in b)
         //console.log("::::", a.arrayElements, b.arrayElements)
         //var chEq = bothHaveChildren? this.areEqual(a.arrayElements, b.arrayElements) : true
         return (
@@ -56,6 +55,18 @@ var types = {
             a.advptr == b.advptr &&
             a.elementsHaveData == b.elementsHaveData
         )
+    },
+    areSimilarArrayTypes: function(a, b) {
+
+        var bothHaveChildren = ("arrayElements" in a) && ("arrayElements" in b)
+
+        //console.log()
+        var cheq = bothHaveChildren ? (
+            a.arrayElements.hasData == b.arrayElements.hasData &&
+            a.arrayElements.elementsHaveData == b.arrayElements.elementsHaveData
+        ) : true
+
+        return cheq && this.areEqual(a, b)
     },
     areEqualNonStrict: function (a, b) {
         //console.log(a,b)
@@ -131,6 +142,9 @@ var types = {
     },
     isStringOrConststrType: function (x) {
         return "advptr" in x && x.size == 8 && x.pointer
+    },
+    isConststrType: function (x) {
+        return this.isStringOrConststrType(x) && !("hasData" in x)
     },
     isConstOrLit: function (x) {
         return (x.substring(0, 8) == "__STRING" || this.isConstant(x) || objectIncludes(userFunctions, x))

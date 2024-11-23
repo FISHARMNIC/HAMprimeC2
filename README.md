@@ -720,17 +720,18 @@ entry function<> -> u32
 
 ### Lambdas
 ```Dart
-/* For now, lambdas must be passed as "any"*/
-/* if no return type is specified, functions default to "auto" */
-
-map function<string:array arr, any operation>
+/* 
+* For now, lambdas must be passed as "any"
+* if no return type is specified, functions default to "auto" 
+* the "dyna" type is identical to any:dynamic, so "dyna:array" will accept any array that holds dynamics */
+map function<dyna:array arr, any operation>
 {
     create i <- 0;
     create size <- len(arr);
 
     while(i <: size)
     {
-        arr[i] <- (call operation(arr[i]) -> string);
+        arr[i] <- (call operation(arr[i]) -> dyna);
         i <- i + 1;
     }
 }

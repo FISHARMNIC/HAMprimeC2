@@ -1068,10 +1068,13 @@ var allocations = {
         // IF ERROR HERE BUG ISSUE CRASH REMOVE REMOVE NEXT UNCOMMENTED LINE AND UNCOMMENT NEXT LINE
         //arr = arr.slice(1, arr.length - 1)
         arr = arr.slice(1, arr.indexOf("}"))
-        //throwE(arr)
+
         arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
-        var allocLbl = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
+        var oldAllocLabel = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
+        var allocLbl = helpers.registers.getFreeLabelOrRegister(defines.types.dyna)
+        outputCode.autoPush(`mov ${oldAllocLabel}, ${allocLbl}`)
+
         //throwE(helpers.types.guessType(allocLbl))
         if ("hasData" in arrayClamp) {
             arrayClamp.elementsHaveData = true
@@ -1094,13 +1097,43 @@ var allocations = {
         var index = 0
 
         var allElementTypes = []
-        arr.forEach((x) => {
+        arr.every((x) => {
             if (onComma) {
                 if (x != ",") {
                     throwE(`Expected comma in array allocation: [${arr.join(",")}]`)
                 }
             } else {
                 var elementType = helpers.types.guessType(x)
+                if(helpers.types.isConststrType(elementType))
+                {
+                    // outputCode.autoPush(
+                    //     `# cptos string array`,
+                    //     `pushl ${helpers.types.formatIfConstOrLit(x)}`,
+                    //     `call cptos`,
+                    //     `add $4, %esp`
+                    // )
+                    // x = "%eax"
+                    // elementType = defines.types.string
+                    allElementTypes.push(defines.types.string)
+                    var a = arr.filter(x => x != ",")
+                    a.forEach(x => {
+                        outputCode.autoPush(`pushl \$${x}`)
+                        if(!helpers.types.isConststrType(helpers.types.guessType(x)))
+                        {
+                            throwE("String arrays can only contain strings")
+                        }
+                    })
+
+                    outputCode.autoPush(
+                        `pushl \$${a.length}`,
+                        `pushl ${allocLbl}`,
+                        `call __sinc_loadStringArray`,
+                        `add \$${a.length * 4 + 8}, %esp`
+                    )
+                    return false
+                    
+
+                }
                 allElementTypes.push(elementType)
 
                 //console.log(x, " :: ", helpers.types.convertTypeObjToName(elementType))
@@ -1132,6 +1165,7 @@ var allocations = {
                 index++
             }
             onComma = !onComma
+            return true
         })
 
         var allSame = true
@@ -1142,7 +1176,7 @@ var allocations = {
                 return
             if (!(helpers.types.areEqual(x, next))) {
 
-                throwW(`Multiple types in an array is undefined behavior (for now).\nExpected "${helpers.types.convertTypeObjToName(x)}" but got "${helpers.types.convertTypeObjToName(next)}" when creating {${arr.join("")}}`)
+                throwE(`Multiple types in an array is undefined behavior (for now).\nExpected "${helpers.types.convertTypeObjToName(x)}" but got "${helpers.types.convertTypeObjToName(next)}" when creating {${arr.join("")}}`)
                 allSame = false
             }
         })
@@ -1436,9 +1470,15 @@ var functions = {
                     var gt_s = helpers.types.convertTypeObjToName(givenType)
 
                     if(fname != "__not_a_function__")
-                    console.log(">>>>", expectedType, givenType, helpers.types.areEqual(expectedType, givenType))
+                    //console.log(">>>>", helpers.types.areSimilarArrayTypes(expectedType, givenType))
+                    var as = expectedType == undefined? true : helpers.types.areSimilarArrayTypes(expectedType, givenType)
 
-                    if (!(expectedType == undefined ? false : "acceptsAny" in expectedType) && !helpers.types.isConstant(x) && ((variadic && (expectedType != undefined && (et_s != gt_s))) || (!variadic && (et_s != gt_s)))) {
+                    // if broken, before all "as" was (et_s != gt_s)
+                    if (
+                        !(expectedType == undefined ? false : "acceptsAny" in expectedType) && 
+                        !helpers.types.isConstant(x) && 
+                        ((variadic && ((expectedType != undefined) && (!as))) || (!variadic && (!as)))) 
+                        {
                         if ("hasData" in expectedType && helpers.types.isStringOrConststrType(expectedType) && helpers.types.isStringOrConststrType(givenType)) {
                             tbuff.push([
                                 `# converting conststr to string (function call)`,
@@ -1449,7 +1489,7 @@ var functions = {
                             skip = true
                         }
                         else {
-                            throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}"`)
+                            throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}". If those types seem identical, one of the parameter's may be an array holding dynamic data and the other not`)
                         }
                     }
 

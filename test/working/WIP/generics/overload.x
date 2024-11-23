@@ -17,12 +17,24 @@ map function<dyna:array arr, p32 operation>
     }
 }
 
+map function<any:array arr, p32 operation>
+{
+    create i <- 0;
+    create size <- len(arr);
+
+    while(i <: size)
+    {
+        arr[i] <- (call operation(arr[i]) -> any);
+        i <- i + 1;
+    }
+}
+
 entry function<>
 {
     create family <- {"Dad", "Mom", "Dog", "Cat"};
     create ages <- {1,2,3,4};
 
-    map(family, lambda<string value> {
+    map(ages, lambda<string value> {
         return (`I love my ${value}`);
     });
 

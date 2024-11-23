@@ -47,7 +47,7 @@ function evaluate(line) {
                 //     defines.types[`__${word}__dynamicdef__`] = cpy
                 //     line[wordNum] = `__${word}__dynamicdef__`
                 // }
- 
+
                 var n = objCopy(defines.types.array)
                 n.arrayElements = cpy
                 var name = helpers.variables.newUntypedLabel()
@@ -67,7 +67,7 @@ function evaluate(line) {
                 cpy.isReference = true;
                 defines.types[`__${word}__reference__`] = cpy
                 line[wordNum] = `__${word}__reference__`
-            } 
+            }
             // else if (objectIncludes(defines.types, line[wordNum + 2]))
             // {
             //     cpy.arrayElements = objCopy(defines.types[line[wordNum + 2]])
@@ -809,19 +809,32 @@ function evaluate(line) {
                 if (helpers.types.checkIfElementsHaveData(dataType)) {
                     //throwE("Printing format arrays are still WIP", dataType.arrayElements)
 
-                    // IMPORTANT need to save and restore "this" before and after
-                    var toStringMethod = helpers.formatters.formatMethodName(dataType.arrayElements.formatPtr.name, "toString")
-                    //actions.assembly.optimizeMove(data, "__this__", dataType, dataType)
                     outputCode.autoPush(
-                        `# printing format array`,
+                        `# printing array (either string or format array)`,
                         `mov ${data}, %eax`,
                         `push %eax     # load buffer`,
                         `mov -4(%eax), %edx`,
                         `pushl 8(%edx) # load size`,
-                        `pushl \$${toStringMethod} # load toString method`,
-                        `call print_formatArr`,
-                        `add $8, %esp`
                     )
+
+                    // IMPORTANT need to save and restore "this" before and after
+                    if (helpers.types.isStringOrConststrType(dataType.arrayElements)) {
+
+                        outputCode.autoPush(
+                            `call print_stringArr`,
+                            `add $8, %esp`
+                        )
+                    }
+                    else {
+                        var toStringMethod = helpers.formatters.formatMethodName(dataType.arrayElements.formatPtr.name, "toString")
+                        //actions.assembly.optimizeMove(data, "__this__", dataType, dataType)
+                        outputCode.autoPush(
+                            `pushl \$${toStringMethod} # load toString method`,
+                            `call print_formatArr`,
+                            `add $12, %esp`
+                        )
+
+                    }
                 }
                 else if ("formatPtr" in dataType) {
                     var out = actions.formats.callMethod(data, "toString", "")
@@ -847,8 +860,7 @@ function evaluate(line) {
                     var arr_type = dataType.size;
                     var printFn = `print_arr${arr_type}`
 
-                    if(helpers.types.areEqualNonStrict(dataType.arrayElements,defines.types.string))
-                    {
+                    if (helpers.types.areEqualNonStrict(dataType.arrayElements, defines.types.string)) {
                         printFn = `print_stringArr`
                     }
 
@@ -1013,10 +1025,10 @@ function evaluate(line) {
                         throwE(`Unable to find lambda reference for "${fname}"`)
                     }
                     outputCode.data.push(`${fname}ebpCapture__: .4byte 0 # Capture ebp for anonymous function`)
-                    
+
                     data.capturedParams = instance.capturedParams
                     data.capturedStackVars = instance.capturedStackVars
-                   
+
                     //throwE("wefewfwf", instance)
                 }
 
@@ -1024,8 +1036,8 @@ function evaluate(line) {
                     throwE(`Do not declare a function named "__not_a_function__"`)
                 }
 
-                if(fname in userFunctions)
-                {
+                if (fname in userFunctions) {
+                    throwE("overloads WIP. Can be created but not called yet")
                     var newlbl = `${fname}__overload__${helpers.functions.newUniqueStr()}__`
                     userFunctions[fname].overloads.push(data)
                     fname = newlbl
@@ -1187,8 +1199,7 @@ function evaluate(line) {
                 line[wordNum] = lbl
                 line.splice(wordNum + 1, 3)
             }
-            else if (word == "len") 
-            {
+            else if (word == "len") {
                 if (offsetWord(1) != "(") {
                     throwE(`Print must be called like a function with parenthesis`)
                 } else if (offsetWord(3) != ")") {

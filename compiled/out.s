@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Fri Nov 22 2024 11:57:21 GMT-0700 (Mountain Standard Time)
+Compiled with love on Fri Nov 22 2024 17:50:42 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -148,26 +148,23 @@ pushl $0
 pushl $16
 call __rc_allocate__
 add $8, %esp
-# optimized move from __STRING0__ to 0(%eax)
-mov $__STRING0__, %edx
-mov %edx, 0(%eax)
-# optimized move from __STRING1__ to 4(%eax)
-mov $__STRING1__, %edx
-mov %edx, 4(%eax)
-# optimized move from __STRING2__ to 8(%eax)
-mov $__STRING2__, %edx
-mov %edx, 8(%eax)
-# optimized move from __STRING3__ to 12(%eax)
-mov $__STRING3__, %edx
-mov %edx, 12(%eax)
 mov %eax, %ecx
+pushl $__STRING0__
+pushl $__STRING1__
+pushl $__STRING2__
+pushl $__STRING3__
+pushl $4
+pushl %ecx
+call __sinc_loadStringArray
+add $24, %esp
+mov %ecx, %esi
 # Loading local variable "family" @-4(%ebp)
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
+# optimized move from %esi to -4(%ebp)
+mov %esi, -4(%ebp)
 # requesting ownership for family (create)
 lea -4(%ebp), %eax
 push %eax
-push %ecx
+push %esi
 call __rc_requestOwnership__
 add $8, %esp
 # Allocation for array
@@ -175,22 +172,23 @@ pushl $0
 pushl $16
 call __rc_allocate__
 add $8, %esp
-# optimized move from 1 to 0(%eax)
-movl $1, 0(%eax)
-# optimized move from 2 to 4(%eax)
-movl $2, 4(%eax)
-# optimized move from 3 to 8(%eax)
-movl $3, 8(%eax)
-# optimized move from 4 to 12(%eax)
-movl $4, 12(%eax)
 mov %eax, %ecx
+# optimized move from 1 to 0(%ecx)
+movl $1, 0(%ecx)
+# optimized move from 2 to 4(%ecx)
+movl $2, 4(%ecx)
+# optimized move from 3 to 8(%ecx)
+movl $3, 8(%ecx)
+# optimized move from 4 to 12(%ecx)
+movl $4, 12(%ecx)
+mov %ecx, %esi
 # Loading local variable "ages" @-8(%ebp)
-# optimized move from %ecx to -8(%ebp)
-mov %ecx, -8(%ebp)
+# optimized move from %esi to -8(%ebp)
+mov %esi, -8(%ebp)
 # requesting ownership for ages (create)
 lea -8(%ebp), %eax
 push %eax
-push %ecx
+push %esi
 call __rc_requestOwnership__
 add $8, %esp
 pushl __anonymous_a__ebpCapture__;mov %ebp, __anonymous_a__ebpCapture__
@@ -207,8 +205,11 @@ mov %eax, %esi
 add $8, %esp
 pop %ecx
 popl __anonymous_a__ebpCapture__
+# Calling function __rc_collect__
+call __rc_collect__
+mov %eax, %ecx
 # note, read STACK VAR family -> -4(%ebp)
-# printing array
+# printing array (either string or format array)
 mov -4(%ebp), %eax
 push %eax     # load buffer
 mov -4(%eax), %edx

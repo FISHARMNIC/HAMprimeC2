@@ -123,6 +123,28 @@ char *cptos(const char *str)
     return o;
 }
 
+// First there are X number of sources
+// Then there are X numbero of destinations
+// TODO
+char *__sinc_loadStringArray(char* destArr, int numberOfStrings, ...)
+{
+    asm volatile("pusha");
+
+    char **sourceStrings = (char **)(&numberOfStrings + 1);
+
+    for(int i = 0; i < numberOfStrings; i++)
+    {
+        char* string = sourceStrings[numberOfStrings - 1 - i];
+        // printf("--- %s --> %i\n", string, 4 * i);
+        int strlen = *(((int *)string) - 1); // length is stored in int right before str
+        char *o = __rc_allocate__(strlen, 0);
+        memcpy(o, string, strlen);
+        __rc_requestOwnership__(o, destArr + (4 * i));
+    }
+
+    asm volatile("popa");
+}
+
 // #endregion
 
 // #region util functions

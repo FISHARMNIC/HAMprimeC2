@@ -680,7 +680,9 @@ global.throwE = function (x) {
     process.exit(126)
     //console.log(lineE)
 }
+global.warnCount = 0
 global.throwW = function (x) {
+    warnCount++
     var lineE = getTrueLine(inputCodeLikeTrue, globalLine) + 1 - includeFileOff
     console.log("\033[93m[WARNING]\033[0m on \033[96m[line " + lineE + "]\033[0m ::\033[33m", ...arguments, "\033[0m")
     //console.log(inputCodeLikeTrue[lineE], inputCodeLikeTrue[lineE].trim())
