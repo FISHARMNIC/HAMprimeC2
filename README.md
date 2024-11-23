@@ -104,9 +104,10 @@ All of the things below work. Scroll down for examples or click [here](https://g
 - Lambdas
     - Capture scoped variables by reference (very much WIP, may be buggy!)
 
-Currently working on / roadmap:
+Currently working on / roadmap / issues:
+- **Global arrays are broken**
+    - if you wish to use a global array, create a typed variable on a global scope, and allocate data for it in a function
 - Function overloads (constructors and operators can be overloaded but not methods and functions)
-
 - Lambda capturing parameters
 - Char literals being treated as ints leading to a mess of casting if you use char type
 - Nested arrays have a lot of issues, it's sort of a big mess that I have to fix soon
