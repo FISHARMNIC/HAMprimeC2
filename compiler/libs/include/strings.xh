@@ -1,0 +1,2 @@
+forward strpush function<string:reference src, char letter> -> string;
+forward strpop function<string:reference src> -> char;

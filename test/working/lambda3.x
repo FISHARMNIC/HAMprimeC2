@@ -20,12 +20,13 @@ map function<dyna:array arr, p32 operation>
 entry function<>
 {
     create family <- {"Dad", "Mom", "Dog", "Cat"};
-    create ages <- {1,2,3,4};
+    create ages <- {1,2,3,4}; 
 
     map(family, lambda<string value> {
         return (`I love my ${value}`);
     });
 
+    /* just GC test */
     __rc_collect__();
 
     print_(family);

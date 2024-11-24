@@ -1,6 +1,13 @@
 /*
 TODO:
 
+    * `bob${123}` will join the empty string at the end, wastes time
+
+    * add JS prototypes, like 
+        push prototype<string, char ch> -> string {...}
+        * allows "bob".push('h')
+        must allow overloads too
+
     * overloads need to be written in same order in header file as defintion
         * for constructor, operator, and normal function overloads (when implemented)
         * maybe use hash function that converts types to numbers
@@ -53,32 +60,9 @@ TODO:
     * rework function attributes to allow multiple, like __forward__ __ccalled__ 
         * allow __ccalled__ lambdas
 
-    HOW TO DO VARIABLE CAPTURE FOR LAMBDAS
-    * on entry, store old ebp in register
-    * DONE --> doesnt have to be before frame change, just access 0(%ebp) for old frame, and store that in register
-        * example mov (%ebp), %edi
-        * Store that register in the compile time function data (maybe like "outerFrame")
-        * ${fname}ebpCapture__ -> ecx
-    * DONE --> copy current scoped variables (params and stack vars) into new function (compile time, JS)
-        * WORKING ON --> for each one, add special flag like "isCaptured"
-    * when accessing any of those captured variables, it reads that flag "isCaptured"
-        * If set, then access with offset "outerFrame" instead of ebp
-    * for example, if "outerFrame" is %edi, and accessing captured stack var #1
-        * -4(%edi) instead of -4(%ebp)
     * allow support for this.x in lambda
 
     any quote wont work inside backtick strings, like `abc "ggg"` -> `abc ggg`
-
-    Make it so any function default return type is "unknown" (like when you dont specify the return type)
-
-    Lambdas how to:
-        * on detection of lambda:
-        * find close bracket (make sure to use a stack of opens and closes )
-        * add newline before after any open bracket
-        * add newline before and after any close bracket
-        * generate function
-        * replace with function name
-        * how to captures?
 
     Make a new parser that handles allowing mutli-line statements
         * Make sure that it should now allow:
@@ -147,8 +131,6 @@ TODO:
 
     IMPORTANT   
         Splitter for some reason just removes single quote when doing like "'s"
-
-    add forward decs for formats, their properties, methods, cons, operators
 
     FOREACH notes:
         note, "load first element into eax", shouldn't always be eax, depends on element type
@@ -230,7 +212,7 @@ TODO:
             - do this and then keep ecx reserved and use it as "this". Make sure to push and pop ecx before and after if clobbered
 
     - maybe class function aliases, like in bignumNEW, it would be nice to have the memberfunctions just directly reference the gmp functions
-        - something like: ".set alias(__gmpf_set_ui)<self, u32 other> -> Bignum"
+        - something like: ".set alias(__gmpf_set_ui)<this, u32 other> -> Bignum"
 
     - new type "bool" that print_ automatically displays "true" or "false".
     - just u32 with special property called like: "specialType: 'bool'"

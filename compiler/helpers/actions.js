@@ -1298,9 +1298,9 @@ var functions = {
                             `call cptos`,
                             `add $4, %esp`,
                         )
+                        rVal = "%eax"
+                        helpers.registers.extendedTypes["a"] = defines.types.string
                     }
-                    rVal = "%eax"
-                    helpers.registers.extendedTypes["a"] = defines.types.string
                     scopeRetType = givenRetType
                     userFunctions[scope.data.name].returnType = givenRetType
                 }
@@ -1330,6 +1330,7 @@ var functions = {
                 }
             }
 
+            //console.log(rVal, scope.data.name)
             if (rVal != "%eax")
                 assembly.setRegister(rVal, "a", defines.types.u32)
         }

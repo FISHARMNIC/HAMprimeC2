@@ -29,7 +29,7 @@ function execute(command, stringify = true, acceptError = false) {
             }
             return out
         }
-        console.log("FAILLL", String(error))
+        console.log("FAILLL", String(error), String(error.stdout))
         return -1
     }
 }

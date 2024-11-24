@@ -1,4 +1,5 @@
 #include "sinc.h"
+#include "stringUtil.c"
 
 char *strjoinmany(int numberOfStrings, ...)
 {
@@ -145,60 +146,6 @@ char *__sinc_loadStringArray(char* destArr, int numberOfStrings, ...)
     asm volatile("popa");
 }
 
-// #endregion
-
-// #region util functions
-
-char *substr(char *src, int start, int end)
-{
-    asm volatile("pusha");
-
-    int len = strlen(src);
-
-    if (end <= start)
-    {
-        if (end == -1)
-        {
-            end = len;
-        }
-        else
-        {
-            printf("[substr]: %i (end) is less than or equal to %i (start)\n", end, start);
-            exit(0);
-        }
-    }
-
-    char *buffer = __rc_allocate__(end - start + 1, 0);
-
-    int index = start;
-    int writeIndex = 0;
-    while (index < end)
-    {
-        buffer[writeIndex] = src[index];
-        writeIndex++;
-        index++;
-    }
-
-    buffer[writeIndex] = 0;
-
-    asm volatile("popa");
-
-    return buffer;
-}
-
-char* strapp(char** src, char letter)
-{
-    asm volatile("pusha");
-
-    int len = strlen(*src);
-    char* dest = __rc_allocate__(len + 2, 0);
-    memcpy(dest, *src, len);
-    *(short*)(*src + len) = ((short)letter << 8) | 0;
-    __rc_requestOwnership__(dest, src);
-
-    return *src;
-    asm volatile("popa");
-}
 // #endregion
 
 // #region print functions

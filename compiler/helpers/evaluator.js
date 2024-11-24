@@ -806,6 +806,7 @@ function evaluate(line) {
                 var dataType = helpers.types.guessType(data)
 
                 //throwE(dataType)
+                //console.log(dataType)
                 if (helpers.types.checkIfElementsHaveData(dataType)) {
                     //throwE("Printing format arrays are still WIP", dataType.arrayElements)
 
@@ -895,7 +896,7 @@ function evaluate(line) {
                                 `add $4, %esp`
                             )
                         }
-                        else if ("isChar" in dataType) {
+                        else if ("isChar" in dataType || dataType.size == 8) {
                             outputCode.autoPush(
                                 `call putchar`,
                                 `movb $'\\n', (%esp)`,

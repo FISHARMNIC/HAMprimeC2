@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Fri Nov 22 2024 17:52:54 GMT-0700 (Mountain Standard Time)
+Compiled with love on Sun Nov 24 2024 11:06:28 GMT-0800 (Pacific Standard Time)
 **************************
 */
 
@@ -216,8 +216,7 @@ mov -4(%eax), %edx
 pushl 8(%edx) # load size
 call print_stringArr
 add $8, %esp
-# optimized move from %eax to __gc_dontClear__
-mov %eax, __gc_dontClear__
+mov $0, %eax
 push %eax
 call __rc_free_all__
 pop %eax
@@ -249,8 +248,9 @@ call strjoinmany
 add $16, %esp
 mov %eax, %esi
 popw __disable_gc__
-# optimized move from %eax to __gc_dontClear__
-mov %eax, __gc_dontClear__
+# optimized move from %esi to __gc_dontClear__
+mov %esi, __gc_dontClear__
+mov %esi, %eax
 call __rc_quick_check__
 
 mov %ebp, %esp
