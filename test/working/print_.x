@@ -18,7 +18,7 @@ entry function<> -> u32
 
     print_("hi");
 
-    print_(123); // Current issue with IDE displaying garbage.
+    print_(123);
     print_(456.789);
 
     print_(Person<age:17,name:"Nico">);

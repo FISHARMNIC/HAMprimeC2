@@ -59,6 +59,7 @@ void __rc_requestOwnership__(void* allocation, void* newOwner);
 void quit(int code);
 
 extern int ___TEMPORARY_OWNER___;
+extern int allocated_bytes;
 
 typedef struct roster_entry_t
 {

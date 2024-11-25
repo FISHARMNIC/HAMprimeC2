@@ -2,7 +2,7 @@
 #include "linked.h"
 
 __linked_t *Roster = 0;
-static int allocated_bytes = 0;
+int allocated_bytes = 0;
  
 int __disable_gc__ = 0;
 void* __gc_dontClear__ = (void*)-1;
@@ -15,7 +15,6 @@ void __rc_quick_check__()
     {
         dbgprint("trigger\n");
         __rc_collect__();
-        allocated_bytes = 0;
     }
 
     asm volatile("popa");
@@ -120,6 +119,8 @@ void __rc_free_all__()
         free(list);
         list = nextPtr;
     }
+
+    allocated_bytes = 0;
 }
 
 int* __copydata__(int* dest, int* src)

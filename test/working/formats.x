@@ -18,6 +18,7 @@ giveNewID function<Student stud, u32 new_id> -> u32
 
 entry function<> -> u32
 {
+    /* ISSUE: doesn't split >>, thinks never gets closed */
     create bob <- Student<id:123,info:Person<age:15,name:"bob">>;
 
     giveNewID(bob, 321);

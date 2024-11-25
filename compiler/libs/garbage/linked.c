@@ -36,8 +36,11 @@ __linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked
 {
     __linked_t *nextPtr = curr->next;
     
-    memset(curr->item->pointer, 0, curr->item->size);
+    int sz = curr->item->size;
+    memset(curr->item->pointer, 0, sz);
+    allocated_bytes -= sizeof(full_malloc_t) + sz;
     free(curr);
+
 
     if (likely(previous != (__linked_t*)0)) // if not the beginning
     {   

@@ -1,6 +1,8 @@
 /*
 TODO:
 
+    * [CRUCIAL] see formats.x
+
     * `bob${123}` will join the empty string at the end, wastes time
 
     * add JS prototypes, like 
