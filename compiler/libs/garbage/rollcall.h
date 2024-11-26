@@ -8,14 +8,35 @@
 #define FALSE (0)
 #define TRUE (1)
 
-#define BYTES_PER_GC   4096 // For testing use like 32. Should be 128
+// #define BYTES_PER_GC   4096 // MOVED TO gcollect.s
 #define BYTES_FORCE_GC 65536
+
+#define likely(c) __builtin_expect((c), 1)
+#define unlikely(c) __builtin_expect((c), 0)
 
 #ifdef _DEBUG
 #define dbgprint(...)  printf(__VA_ARGS__);
 #else
 #define dbgprint(...)  
 #endif
+
+extern int ___TEMPORARY_OWNER___;
+extern int __rc_total_allocated_bytes__;
+
+typedef struct roster_entry_t
+{
+    void *owner;
+    int restricted;
+    int size;
+    void *pointer;
+} roster_entry_t;
+
+typedef struct described_buffer_t
+{
+    // This struct doesn't have a defined size as the size of data varies
+    roster_entry_t *entry_reference;
+    int data[]; // This is NOT a pointer. the actual data exists right here
+} described_buffer_t;
 
 /// @brief Allocate data that can be automatically freed by the garbage collector
 /// @param size_bytes Bytes to be allocated
@@ -57,26 +78,5 @@ void __rc_requestOwnership__(void* allocation, void* newOwner);
 /// @brief Similar to exit(code) but frees all allocated data first
 /// @param code exit code
 void quit(int code);
-
-extern int ___TEMPORARY_OWNER___;
-extern int allocated_bytes;
-
-typedef struct roster_entry_t
-{
-    void *owner;
-    int restricted;
-    int size;
-    void *pointer;
-} roster_entry_t;
-
-typedef struct described_buffer_t
-{
-    // This struct doesn't have a defined size as the size of data varies
-    roster_entry_t *entry_reference;
-    int data[]; // This is NOT a pointer. the actual data exists right here
-} described_buffer_t;
-
-#define likely(c) __builtin_expect((c), 1)
-#define unlikely(c) __builtin_expect((c), 0)
 
 #endif

@@ -4,8 +4,15 @@
 __rc_transfer_error__: .asciz "** [Roll-Call Error] Could not transfer locked reference %p\n"
 __rc_transfer_nullOwnership__: .asciz "** [Roll-Call Warning] Attempting to own null pointer\n   ** Most likely attempting to set a dynamic to value 0\n"
 
+BYTES_PER_GC = 4096 # For testing use like 32
+
 //_e_: .asciz "Setting ownership @%p: %i\n"
 .globl __rc_requestOwnership__
+.globl __rc_quick_check__
+
+.extern __disable_gc__
+.extern __rc_collect__
+
 .text
 
 /*
@@ -17,6 +24,21 @@ entry_reference struct
     void *pointer
 }
 */
+
+__rc_quick_check__:                
+    push %ebp            
+    mov %esp, %ebp  
+    pusha    
+    cmpl $BYTES_PER_GC, __rc_total_allocated_bytes__       
+    jl 0f                
+    cmpl $0, __disable_gc__          
+    jne 0f               
+    call __rc_collect__  
+    0:                   
+    popa                          
+    mov %ebp, %esp
+    pop %ebp       
+    ret                  
 
 // I forgot why I wrote this in assembly
 __rc_requestOwnership__:

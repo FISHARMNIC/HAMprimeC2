@@ -38,7 +38,8 @@ __linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked
     
     int sz = curr->item->size;
     memset(curr->item->pointer, 0, sz);
-    allocated_bytes -= sizeof(full_malloc_t) + sz;
+    __rc_total_allocated_bytes__ -= sizeof(full_malloc_t) + sz;
+    //printf("-- : %i => %i\n", sizeof(full_malloc_t) + sz, __rc_total_allocated_bytes__);
     free(curr);
 
 

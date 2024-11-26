@@ -2,32 +2,40 @@
 #include "linked.h"
 
 __linked_t *Roster = 0;
-int allocated_bytes = 0;
+int __rc_total_allocated_bytes__ = 0;
  
 int __disable_gc__ = 0;
 void* __gc_dontClear__ = (void*)-1;
 
+int bob = 0;
+
+/*
+// moved to assembly in gcollect.s, no idea what was going on AT ALL
+// Switch to asm seemed to work
 void __rc_quick_check__()
 {
     asm volatile("pusha");
 
-    if((allocated_bytes > BYTES_PER_GC) && (__disable_gc__ == 0))
+    if((__rc_total_allocated_bytes__ > BYTES_PER_GC) && (__disable_gc__ == 0))
     {
-        dbgprint("trigger\n");
+        //dbgprint("trigger\n");
+        //printf("hi\n");
         __rc_collect__();
-        // Uncommeting this breaks it
-        allocated_bytes = 0;
+        // Commenting this breaks it
+        // Why???????????
+        bob = 100;
     }
 
     asm volatile("popa");
 }
+*/
 
 void *__rc_allocate__(int size_bytes, int restricted)
 {
     //asm volatile("pusha");
     // Note, here using malloc which also stores size, maybe switch to mmap2
 
-    if(allocated_bytes >= BYTES_FORCE_GC)
+    if(__rc_total_allocated_bytes__ >= BYTES_FORCE_GC)
     {
         __rc_collect__();
     }
@@ -39,7 +47,8 @@ void *__rc_allocate__(int size_bytes, int restricted)
     full_malloc_t *allocation = malloc(actualAllocSize);
     assert(allocation != 0);
 
-    allocated_bytes += actualAllocSize;
+    //printf("++ : %i => %i\n", actualAllocSize, __rc_total_allocated_bytes__);
+    __rc_total_allocated_bytes__ += actualAllocSize;
 
     __linked_t *listEntry = (__linked_t*) allocation;
     roster_entry_t *roster_entry = &(allocation->section_rosterEntry);
@@ -122,7 +131,7 @@ void __rc_free_all__()
         list = nextPtr;
     }
 
-   // allocated_bytes = 0;
+   // __rc_total_allocated_bytes__ = 0;
 }
 
 int* __copydata__(int* dest, int* src)
