@@ -7,9 +7,8 @@ int __rc_total_allocated_bytes__ = 0;
 int __disable_gc__ = 0;
 void* __gc_dontClear__ = (void*)-1;
 
-int bob = 0;
-
 /*
+// int bob = 0;
 // moved to assembly in gcollect.s, no idea what was going on AT ALL
 // Switch to asm seemed to work
 void __rc_quick_check__()
