@@ -15,6 +15,8 @@ void __rc_quick_check__()
     {
         dbgprint("trigger\n");
         __rc_collect__();
+        // Uncommeting this breaks it
+        allocated_bytes = 0;
     }
 
     asm volatile("popa");
@@ -120,7 +122,7 @@ void __rc_free_all__()
         list = nextPtr;
     }
 
-    allocated_bytes = 0;
+   // allocated_bytes = 0;
 }
 
 int* __copydata__(int* dest, int* src)
