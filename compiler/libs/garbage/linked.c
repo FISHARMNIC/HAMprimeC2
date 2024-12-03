@@ -10,7 +10,7 @@ void __linked_add(__linked_t **list_db, roster_entry_t *item, __linked_t* listIt
 {
     __linked_t* list = *list_db;
 
-    if(unlikely(list == 0)) // empty
+    if(UNLIKELY(list == 0)) // empty
     {
         list = listItem;
         *list_db = list;
@@ -36,14 +36,14 @@ __linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked
 {
     __linked_t *nextPtr = curr->next;
     
-    int sz = curr->item->size;
-    memset(curr->item->pointer, 0, sz);
-    __rc_total_allocated_bytes__ -= sizeof(full_malloc_t) + sz;
-    //printf("-- : %i => %i\n", sizeof(full_malloc_t) + sz, __rc_total_allocated_bytes__);
+    int allocated_bytes = curr->item->size;
+    memset(curr->item->pointer, 0, allocated_bytes);
+    __rc_total_allocated_bytes__ -= GET_ALLOC_SIZE(allocated_bytes);
+    //printf("-- : %i => %i\n", sizeof(full_malloc_t) + allocated_bytes, __rc_total_allocated_bytes__);
     free(curr);
 
 
-    if (likely(previous != (__linked_t*)0)) // if not the beginning
+    if (LIKELY(previous != (__linked_t*)0)) // if not the beginning
     {   
         previous->next = nextPtr;
 

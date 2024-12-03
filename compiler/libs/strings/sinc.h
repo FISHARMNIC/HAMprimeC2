@@ -7,8 +7,8 @@ void __rc_requestOwnership__(void *, void *);
 
 int sprintf(char *, const char *, ...);
 int printf(const char *, ...);
-void *memcpy(void *, void *, int);
-int strlen(char*);
+//void *memcpy(void *, void *, int);
+//int strlen(char*);
 
 void exit(int);
 

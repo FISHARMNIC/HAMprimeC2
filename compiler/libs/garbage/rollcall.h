@@ -11,8 +11,10 @@
 // #define BYTES_PER_GC   4096 // MOVED TO gcollect.s
 #define BYTES_FORCE_GC 65536
 
-#define likely(c) __builtin_expect((c), 1)
-#define unlikely(c) __builtin_expect((c), 0)
+#define LIKELY(c) __builtin_expect((c), 1)
+#define UNLIKELY(c) __builtin_expect((c), 0)
+
+#define GET_ALLOC_SIZE(bytes) (sizeof(full_malloc_t) + bytes)
 
 #ifdef _DEBUG
 #define dbgprint(...)  printf(__VA_ARGS__);

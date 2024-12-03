@@ -41,7 +41,6 @@ char *strjoinmany(int numberOfStrings, ...)
     return allocatedBufferOrigin;
 }
 
-
 /*
 TODO, a function that tries using a pre allocated buffer until it maxes out
     - then it counts the size of the remaining strings

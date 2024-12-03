@@ -32,23 +32,25 @@ void __rc_quick_check__()
 void *__rc_allocate__(int size_bytes, int restricted)
 {
     //asm volatile("pusha");
-    // Note, here using malloc which also stores size, maybe switch to mmap2
 
+    // trigger collection on allocation limit (higher than rc_collect limit)
+    // more of a backup system, incase the user is allocating a lot of data inside a loop without any function calls
     if(__rc_total_allocated_bytes__ >= BYTES_FORCE_GC)
     {
         __rc_collect__();
     }
 
-    int actualAllocSize = sizeof(full_malloc_t) + size_bytes;
+    int actualAllocSize = GET_ALLOC_SIZE(size_bytes);
 
     dbgprint(":::: Attempting malloc of with inner data of size %i\n", size_bytes);
 
+    // Note, here using malloc which also stores size, maybe switch to mmap2
     full_malloc_t *allocation = malloc(actualAllocSize);
     assert(allocation != 0);
 
-    //printf("++ : %i => %i\n", actualAllocSize, __rc_total_allocated_bytes__);
     __rc_total_allocated_bytes__ += actualAllocSize;
 
+    // All memory is grouped into one allocation, so split it up into its individual components
     __linked_t *listEntry = (__linked_t*) allocation;
     roster_entry_t *roster_entry = &(allocation->section_rosterEntry);
     described_buffer_t *described_buffer = &(allocation->section_describedBuffer);
@@ -64,6 +66,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     __linked_add(&Roster, roster_entry, listEntry);
 
     //asm volatile("popa");
+
     return roster_entry->pointer;
 }
 
@@ -80,22 +83,27 @@ void __rc_collect__()
     __linked_t *list = Roster;
     __linked_t *previous = (__linked_t*)0;
     
+    // for each item in Roster
     while (list != 0)
     {
         roster_entry_t *roster_entry = list->item;
+
         assert(roster_entry != 0);
 
         int **owner_reference = (int **)roster_entry->owner;
         int *owner_points_to = 0;
 
-        if(likely(owner_reference != 0))
+        if(LIKELY(owner_reference != 0))
         {
             owner_points_to = *((int **)roster_entry->owner);
         }
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
-        dbgprint("|- Checking %p vs %p and %p\n", owner_should_point_to, owner_points_to, __gc_dontClear__);
+        dbgprint("|- Checking %p vs %p (dontClear is %p)\n", owner_should_point_to, owner_points_to, __gc_dontClear__);
+
+        // if the datas owner now points to a different address, this data is considered "lost"
+        // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner
         if ((owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
         {
             dbgprint("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
@@ -112,10 +120,12 @@ void __rc_collect__()
     dbgprint("\\---------------------/\n");
 }
 
+/*
 void __rc_free_all__()
 {
     __linked_t * list;
     
+    // if not empty
     if(Roster == (__linked_t*)0)
         return;
     
@@ -131,6 +141,17 @@ void __rc_free_all__()
     }
 
    // __rc_total_allocated_bytes__ = 0;
+}
+*/
+
+void __rc_free_all__()
+{
+    while(Roster != (__linked_t*)0)
+    {
+        __linked_t * nextPtr = Roster->next;
+        free(Roster);
+        Roster = nextPtr;
+    }
 }
 
 int* __copydata__(int* dest, int* src)

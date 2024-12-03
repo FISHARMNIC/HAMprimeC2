@@ -1,6 +1,12 @@
 /*
 TODO:
 
+    * make sure that creating variables in loop doesnt create a ton of esp garbage
+
+    * maybe just remove the entire "restricted" thing
+        * wastes time in collect, reqOwnership, etc
+
+    * add inserting variables in inline asm like in c
     * [CRUCIAL] see formats.x
 
     * `bob${123}` will join the empty string at the end, wastes time

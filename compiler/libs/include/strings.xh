@@ -1,2 +1,5 @@
 forward strpush function<string:reference src, char letter> -> string;
 forward strpop function<string:reference src> -> char;
+forward strsplitchr function<string str, char delim> -> string:array;
+forward strinsert function<string str, string ins, u32 index> -> string;
+forward strjoin function<string first, string second> -> string;
