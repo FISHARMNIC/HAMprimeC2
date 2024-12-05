@@ -42,18 +42,18 @@ Map format
             return null;
         }
 
-        create reference <- borrow this.head;
+        create node <- borrow this.head;
 
-        while(reference.key != k)
+        while(node.key != k)
         {
-            if(reference.next == 0)
+            if(node.next == 0)
             {
-                this.rlast <- reference; /* won't take ownership since reference is borrowed */
+                this.rlast <- node; /* won't take ownership since node is borrowed */
                 return null;
             }
-            reference <- borrow reference.next;
+            node <- borrow node.next;
         }
-        return reference;
+        return node;
     }
     
     .remove method<string k> -> u32
@@ -69,18 +69,18 @@ Map format
             this.kneErr(k);
         }
 
-        create reference <- borrow this.head;
+        create node <- borrow this.head;
 
-        while(reference.next.key != k)
+        while(node.next.key != k)
         {
-            reference <- borrow reference.next;
-            if(reference.next == 0)
+            node <- borrow node.next;
+            if(node.next == 0)
             {
                 this.kneErr(k);
             }
         }
 
-        reference.next <- reference.next.next;
+        node.next <- node.next.next;
     }
 
     .set method<string k, u32 val> -> u32
@@ -92,15 +92,15 @@ Map format
         }
         else
         {
-            create reference <- this.find(k);
+            create node <- this.find(k);
 
-            if(reference == 0)
+            if(node == 0)
             {
                 this.rlast.next <- MapEntry(k,val);
             }
             else
             {
-                reference.value <- val;
+                node.value <- val;
             }
         }
     }

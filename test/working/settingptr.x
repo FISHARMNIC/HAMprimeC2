@@ -20,7 +20,7 @@ entry function<> -> u32
 
     while(i <: 3)
     {
-        printf("%i\n", @(arr + (i * 4)));
+        print_(@(arr + (i * 4)));
         i <- i + 1;
     }
 

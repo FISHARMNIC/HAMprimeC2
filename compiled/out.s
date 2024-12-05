@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Sun Dec 01 2024 18:19:07 GMT-0800 (Pacific Standard Time)
+Compiled with love on Thu Dec 05 2024 01:54:13 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -22,19 +22,7 @@ Compiled with love on Sun Dec 01 2024 18:19:07 GMT-0800 (Pacific Standard Time)
 ######## user data section ########
 .type	entry, @function
 .global entry
-.4byte 8
-__STRING0__: .asciz "abcdefg"
-.4byte 13
-__STRING1__: .asciz "nico,jon,bob"
-.4byte 13
-__STRING2__: .asciz "Hello World!"
-.4byte 17
-__STRING3__: .asciz "to this amazing "
-.4byte 4
-__STRING4__: .asciz "abc"
-.4byte 4
-__STRING5__: .asciz "123"
-__ALLOCFOR_entry__ = 4
+__ALLOCFOR_entry__ = 8
 ###################################
 .text
 
@@ -58,109 +46,104 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp # total stack allocation
 
-pushl $__STRING0__
-call cptos
-add $4, %esp
+# Allocation for array
+pushl $0
+pushl $12
+call __rc_allocate__
+add $8, %esp
 mov %eax, %ecx
-# Loading local variable "word" @-4(%ebp)
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
-# requesting ownership for word (create)
+# optimized move from 1 to 0(%ecx)
+movl $1, 0(%ecx)
+# optimized move from 2 to 4(%ecx)
+movl $2, 4(%ecx)
+# optimized move from 3 to 8(%ecx)
+movl $3, 8(%ecx)
+mov %ecx, %esi
+# Loading local variable "arr" @-4(%ebp)
+# optimized move from %esi to -4(%ebp)
+mov %esi, -4(%ebp)
+# requesting ownership for arr (create)
 lea -4(%ebp), %eax
 push %eax
-push %ecx
+push %esi
 call __rc_requestOwnership__
 add $8, %esp
-# note, read STACK VAR word -> -4(%ebp)
-# Calling function substr
-pushl $5
-pushl $2
-# TODO optimize if variable just do movl
-mov -4(%ebp), %edx
-push %edx
-call substr
+# Loading local variable "i" @-8(%ebp)
+# optimized move from $0 to -8(%ebp)
+mov $0, %edx
+mov %edx, -8(%ebp)
+# note, read STACK VAR arr -> -4(%ebp)
+# Setting pointer 5 -> -4(%ebp)
+mov -4(%ebp), %eax
+mov $5, %edx
+movl %edx, (%eax)
+
+
+# note, read STACK VAR arr -> -4(%ebp)
+mov -4(%ebp), %eax
+add $4, %eax
 mov %eax, %ecx
-add $12, %esp
-push %ecx
-call puts
-add $4, %esp
-# note, read STACK VAR word -> -4(%ebp)
-# Calling function strpush
-pushl $104
-# TODO optimize if variable just do movl
-lea -4(%ebp), %edx # PASS AS REFERENCE
-push %edx
-call strpush
+# Setting pointer 6 -> %ecx
+mov $6, %edx
+movl %edx, (%ecx)
+
+
+# note, read STACK VAR arr -> -4(%ebp)
+mov -4(%ebp), %eax
+add $8, %eax
 mov %eax, %ecx
+# Setting pointer 7 -> %ecx
+mov $7, %edx
+movl %edx, (%ecx)
+
+
+__LABEL0__:
+# note, read STACK VAR i -> -8(%ebp)
+mov -8(%ebp), %eax
+mov $0, %cl
+cmp $3, %eax
+setl %cl
+# comparison for WHILE loop
+cmpb $1, %cl
+jne __LABEL1__
+# note, read STACK VAR i -> -8(%ebp)
+mov -8(%ebp), %eax
+mov $4, %ebx
+mul %ebx
+mov %eax, %ecx
+# note, read STACK VAR arr -> -4(%ebp)
+mov -4(%ebp), %eax
+add %ecx, %eax
+mov %eax, %esi
+# dereferencing %esi
+movl (%esi), %edi
+push %edi
+pushl $__PRINT_TYPE_INT__
+call printf
 add $8, %esp
-push %ecx
-call puts
-add $4, %esp
-# note, read STACK VAR word -> -4(%ebp)
-# Calling function strpop
-# TODO optimize if variable just do movl
-lea -4(%ebp), %edx # PASS AS REFERENCE
-push %edx
-call strpop
-mov %al, %cl
-add $4, %esp
-push %ecx
-call putchar
-movb $'\n', (%esp)
-call putchar
-add $4, %esp
-# Calling function strsplitchr
-pushl $44
-# converting conststr to string (function call)
-pushl $__STRING1__
-call cptos
-mov %eax, (%esp) # str is alr in stack just overwrite
-call strsplitchr
+# note, read STACK VAR i -> -8(%ebp)
+mov -8(%ebp), %eax
+add $1, %eax
 mov %eax, %ecx
-add $8, %esp
-# printing array (either string or format array)
-mov %ecx, %eax
-push %eax     # load buffer
-mov -4(%eax), %edx
-pushl 8(%edx) # load size
-call print_stringArr
-add $8, %esp
-# Calling function strinsert
-pushl $6
-# converting conststr to string (function call)
-pushl $__STRING3__
-call cptos
-mov %eax, (%esp) # str is alr in stack just overwrite
-# converting conststr to string (function call)
-pushl $__STRING2__
-call cptos
-mov %eax, (%esp) # str is alr in stack just overwrite
-call strinsert
-mov %eax, %ecx
-add $12, %esp
-push %ecx
-call puts
-add $4, %esp
-# Calling function strjoin
-# converting conststr to string (function call)
-pushl $__STRING5__
-call cptos
-mov %eax, (%esp) # str is alr in stack just overwrite
-# converting conststr to string (function call)
-pushl $__STRING4__
-call cptos
-mov %eax, (%esp) # str is alr in stack just overwrite
-call strjoin
-mov %eax, %ecx
-add $8, %esp
-push %ecx
-call puts
-add $4, %esp
+# SETTING i <- %ecx
+# optimized move from %ecx to -8(%ebp)
+mov %ecx, -8(%ebp)
+jmp __LABEL0__
+__LABEL1__:
+mov $0, %eax
+push %eax
+call __rc_free_all__
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
 call __rc_free_all__
 mov  $0, %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
-# word: 4
+# arr: 4
+# i: 8
 

@@ -13,4 +13,6 @@ entry function<> -> u32
     print_(strinsert("Hello World!", "to this amazing ", 6));
 
     print_(strjoin("abc","123"));
+
+    print_(strsplit("rio"));
 }

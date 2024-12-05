@@ -132,9 +132,9 @@ The updated IDE now shows you what each line compiles into assembly. Simply clic
 <p align="center">
 <img width="500" alt="ide_1" src="https://github.com/user-attachments/assets/ad9c5a09-92ae-46dd-967e-efdbef06e778">
 <img width="500" alt="ide_2" src="https://github.com/user-attachments/assets/00797139-0ad3-4eea-a723-a849b0f94eef">
-</p>
-Note: This is still being worked on, and editing still has some issues. This was more of a side project that I will finish when I am done with the compiler.
+</p>  
 
+Note: This is still being worked on, and editing still has some issues. This was more of a side project that I will finish when I am done with the compiler. Unfortunately the assembly tracing and line highlighting are somewhat broken for the moment due to changes that have to do with how lines are counted. Hopefully I will fix this soon. Currently it they only work correctly in simple files like `floats.x`
 
 # Interesting examples
 * [Class](#Formats-as-classes)

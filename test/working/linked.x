@@ -17,30 +17,30 @@ Linked format
     
     .findLast method<> -> Linked:borrowed
     {
-        create reference <- borrow this;
-        while(reference.next != 0)
+        create node <- borrow this;
+        while(node.next != 0)
         {
-            reference <- borrow reference.next;
+            node <- borrow node.next;
         }
         
-        return reference;
+        return node;
     }
     
     .find method<u32 index> -> Linked:borrowed
     {
-        create reference <- borrow this;
+        create node <- borrow this;
         create i <- 0;
         
         while(i <: index)
         {
-            if(reference.next == 0)
+            if(node.next == 0)
             {
                 return null;
             }
-            reference <- borrow reference.next;
+            node <- borrow node.next;
             i <- i + 1;
         }
-        return reference;
+        return node;
     }
     
     .index method<u32 index> -> u32
@@ -94,23 +94,23 @@ Linked format
     
     .replace method<u32 index, u32 value> -> u32
     {
-        create reference <- this.find(index);
-        reference.current <- value;
+        create node <- this.find(index);
+        node.current <- value;
     }
     
     .toString method<> -> string
     {
-        create reference <- borrow this;
+        create node <- borrow this;
         create build <- "[";
-        while(reference.next != 0)
+        while(node.next != 0)
         {
-            //printf("::%p %i %s %p\n", reference, reference.current, build, reference.next);
-            build <- build + reference.current + "->";
+            //printf("::%p %i %s %p\n", node, node.current, build, node.next);
+            build <- build + node.current + "->";
             //printf("---!!\n");
-            reference <- borrow reference.next;
+            node <- borrow node.next;
         }
-        //printf("DONE:: %p %s %i\n", reference, build, reference.current);
-        build <- build + reference.current + "]";
+        //printf("DONE:: %p %s %i\n", node, build, node.current);
+        build <- build + node.current + "]";
         //printf("::FINISHED::\n");
         return build;
     }

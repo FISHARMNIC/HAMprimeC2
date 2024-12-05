@@ -49,12 +49,12 @@ iofile format
         fwrite(buffer, 1, strlen(buffer), this.fptr);
     }
 
-    .getTo method<u8 character> -> string
+    .getTo method<u8 ch> -> string
     {
         create outString <- "";
 
         create curChar <- fgetc(this.fptr);
-        while((curChar != character) && (curChar != -1))
+        while((curChar != ch) && (curChar != -1))
         {
             outString <- outString + curChar;
             curChar <- fgetc(this.fptr);

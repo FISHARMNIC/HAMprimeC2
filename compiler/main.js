@@ -1,6 +1,9 @@
 /*
 TODO:
 
+    * using names like "character" are still broken
+            * once declared, should be fine
+            * but if they are like a new param name it wont work
     * make sure that creating variables in loop doesnt create a ton of esp garbage
 
     * maybe just remove the entire "restricted" thing

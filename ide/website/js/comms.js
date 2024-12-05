@@ -4,6 +4,7 @@ var currentCompiledFile = null;
 var fileIsSaved = false
 var highlightingInfo = {}
 var debugInfoJSON = {}
+var formatted_hg_info = {}
 
 function getTerminal() {
     return document.getElementById("zone_terminal_ta")
@@ -64,6 +65,19 @@ var comms = {
         } else {
             console.log("W")
             highlightingInfo = JSON.parse(get("highlightInfo"))
+
+            formatted_hg_info = []
+            Object.entries(highlightingInfo).forEach(x => {
+                // x = ["kewords", [...]] etc
+                //console.log(x)
+                x[1].forEach(n => {
+                    formatted_hg_info.push({ type: x[0], value: n })
+                })
+            })
+
+            formatted_hg_info.sort((a, b) => b.value.length - a.value.length)
+
+
             debugInfoJSON = comms.getDebugInfo()
 
             editor.setValue(editor.getValue())
@@ -83,10 +97,10 @@ var comms = {
     getFiles: function () {
         return JSON.parse(get("ls")).data
     },
-    setDir: function(dir) {
+    setDir: function (dir) {
         return get(`sd/${dir}`)
     },
-    getDir: function(dir) {
+    getDir: function (dir) {
         return get(`gd`)
     },
     runCompiled: function () {
@@ -113,7 +127,7 @@ var comms = {
         editor.setValue(out)
         document.getElementById("saveIcon").hidden = true
         var clicked = document.getElementById(`__button_${file}__`)
-        if(clicked != undefined)
+        if (clicked != undefined)
             clicked.style.backgroundColor = "#656C70"
     },
     saveFile: function () {
