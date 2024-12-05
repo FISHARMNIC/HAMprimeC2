@@ -562,6 +562,7 @@ function evaluate(line) {
         } else if (word == "import" || word == "importTLS") {
             //throwE(line, offsetWord(1))
             globalVariables[offsetWord(2)] = newGlobalVar(defines.types[offsetWord(1)])
+            __addToAnyVarEverMade(offsetWord(2))
             if (word == "importTLS") {
                 outputCode.data.push(".section .tbss;\n.extern " + offsetWord(2) + ";\n.data")
             }
@@ -793,7 +794,6 @@ function evaluate(line) {
                 //throwE(defines.types)
             } else if (word == "print_" || word == "println_") {
                 //throwE("WIP")
-
                 actions.assembly.pushMLclobbers()
 
                 if (offsetWord(1) != "(") {
@@ -879,17 +879,26 @@ function evaluate(line) {
                 } else {
                     if (dataType.pointer) {
 
-                        if (dataType.size == 8) {
-                            throwE("Print cannot display 8bit buffers yet")
-                        } else if (dataType.size == 16) {
-                            throwE("Print cannot display 16bit buffers yet")
-                        } else if (dataType.size == 32) {
+                        actions.assembly.pushToStack(data, defines.types.u32)
+                        outputCode.autoPush(
+                            `pushl $__PRINT_TYPE_PTR__`,
+                            `call printf`,
+                            `add $8, %esp`
+                        )
 
-                        }
+                        // if (dataType.size == 8) {
+                        //     throwE("Print cannot display 8bit buffers yet")
+                        // } else if (dataType.size == 16) {
+                        //     throwE("Print cannot display 16bit buffers yet")
+                        // } else if (dataType.size == 32) {
+
+                        // }
                     } else {
                         //throwE("The print function is still in development ")
 
+                        // TODO for some reason its not pushl sometimes, just push. Need to make sure its always pushl
                         actions.assembly.pushToStack(data, dataType)
+
                         if (dataType.float) {
                             outputCode.autoPush(
                                 `call print_float_noPromo`,

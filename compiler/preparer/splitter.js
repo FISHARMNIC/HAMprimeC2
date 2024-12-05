@@ -12,7 +12,7 @@ var noExes = [
     "#f",
     "..."
 ];
-noExes.push( ...["dynamic"], ...Object.keys(defines.types), ...defines.conditionals, "<<", ">>") // laod all types into exceptions
+noExes.push(...["dynamic"], ...Object.keys(defines.types), ...defines.conditionals, "<<", ">>") // laod all types into exceptions
 
 var quoteMarks = [
     `"`,
@@ -137,10 +137,16 @@ function split(line) {
                     inquotes = char;
                 }
             } else if ((char == parseInt(char)) != mode) { // if we are going from numbers to letters or vice versa
-                if (build != "")
-                    outBuffer.push(build);
+                if (mode == 0 && (/[a-zA-Z]/).test(prevChar)) // going from numbers to letters without a splitter, like bob123
+                {
+                    build += char;
+                }
+                else {
+                    if (build != "")
+                        outBuffer.push(build);
+                    build = char;
+                }
                 mode = !mode;
-                build = char;
             } else {
                 build += char; // build current char
             }
@@ -158,6 +164,8 @@ function split(line) {
         console.log("[PARSER ERROR] Missing end-quote: " + line)
         process.exit(1)
     }
+
+    //console.log(outBuffer)
     return outBuffer;
 }
 

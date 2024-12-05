@@ -138,6 +138,7 @@ function runDeepestFirst(line) {
         // it then needs to be replaced with a label
         //console.log("COMPILING",aline)
         var output = evaluator(aline)
+        //console.log(aline.join(" "))
         if(output.length ==1)
             output = output[0]
         /////////////////// console.log("++=====COMPILED", aline)

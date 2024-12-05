@@ -154,6 +154,11 @@ char *strinsert(char *dest, char *intermediate, int insertIndex)
     return outbuf;
 }
 
+char *strreplace(char* src, char* find, char* replace)
+{
+    // todo! make it be able to replace substrs
+}
+
 char *strjoin(char *first, char *second)
 {
     assert(first != 0 && second != 0);

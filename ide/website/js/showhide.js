@@ -36,6 +36,8 @@ function show(zone)
 
 function openFileChooser()
 {
+    alert("File chooser is a work in progress")
+    return
     document.getElementById("overlay").hidden = false
     document.getElementById("popup").hidden = false
 }

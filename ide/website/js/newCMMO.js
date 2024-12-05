@@ -55,26 +55,30 @@ CodeMirror.defineMode("HAM", function () {
                 stream.next()
                 return "comment"
             } else if (stream.match("//")) { // comments
-                stream.skipToEnd();
-                return "comment";
+                stream.skipToEnd()
+                return "comment"
             }
             else if (matchAll(stream, brackets)) {
                 return "brack"
             }
             else if (stream.match("#")) {
-                stream.skipToEnd();
-                return "keyword";
+                stream.skipToEnd()
+                return "keyword"
             }
             else if (matchAll(stream, operators)) // ops
             {
                 return "ops"
             } else if (stream.match(/".*?"/) || stream.match(/`.*?`/)) { // strings
-                return "string";
+                return "string"
             } 
 
             smmatch(stream)
             if (_read_type != "none") {
                 return _read_type
+            }
+            else if(stream.match(/\d+/))
+            {
+                return "nhg"
             }
 
                 stream.next();

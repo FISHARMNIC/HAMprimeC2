@@ -1,6 +1,9 @@
 /*
 TODO:
 
+    * not sure if splitter works with something like: `bob${`jon`}`
+    * add "break" and "continue"
+
     * using names like "character" are still broken
             * once declared, should be fine
             * but if they are like a new param name it wont work
@@ -533,7 +536,7 @@ fs.writeFileSync(__dirname + "/../compiled/debugInfo.json", JSON.stringify(lineO
 if (returnHighlight) {
     var rinfo = {
         functions: Object.keys(userFunctions),
-        keywords: ["borrowed", ...defines.keywords, "index_get", "index_set", "add", "sub", "mul", "div", "shl", "shr", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "reference", "forward", "dynamicChildren", "__arguments", "locked"],
+        keywords: ["borrowed", ...defines.keywords, "import", "index_get", "index_set", "add", "sub", "mul", "div", "shl", "shr", "operator", "constructor", "create", "...", "call", ".", "$", "@", "dynamic", "reference", "forward", "dynamicChildren", "__arguments", "locked"],
         types: Object.keys(defines.types),
         ppdirs: ["include", "sys"],
         allVars: [...__anyVarEverMade, "this"]

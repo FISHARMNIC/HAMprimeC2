@@ -1050,6 +1050,8 @@ var allocations = {
     newStringLiteral: function (value) {
 
         //if string already exists
+        // value = value.replace(/\\/g,"\\\\")
+        // console.log(value)
         if (objectIncludes(allStringLiterals, value)) // "string" : "__STRING123__"
         {
             return allStringLiterals[value]
@@ -2105,7 +2107,8 @@ var strings = {
         assembly.disableGC()
         for (var letterNum = 0; letterNum < str.length; letterNum++) {
             var letter = str[letterNum]
-            if (letter == "\\") {
+            // HERE !@# QWE ABC IF BROKEN DEC 5 REMOVE AFTER && JUST KEEP: letter == "\\"
+            if (letter == "\\" && str[letterNum + 1] == "{") {
                 var override = true
             }
             else if (!override && letter == "$") {

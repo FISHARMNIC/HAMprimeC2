@@ -118,6 +118,7 @@ var comms = {
         }
     },
     loadFile: function (file) {
+        formatted_hg_info = []
         highlightingInfo = {}
         var out = get(`read/${file}`)
         if (document.getElementById(`__button_${currentOpenFile}__`) != null) {
