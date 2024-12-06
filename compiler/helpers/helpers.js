@@ -804,6 +804,11 @@ var general = {
             return x.type == keywordTypes.FUNCTION || x.type == keywordTypes.METHOD || x.type == keywordTypes.CONSTRUCTOR || x.type == keywordTypes.OPERATOR
         }))
     },
+    getMostRecentLoop: function() {
+        return (scope.slice().reverse().find(x => {
+            return x.type == keywordTypes.FOREACH || x.type == keywordTypes.WHILE
+        }))
+    },
     scopeHasIterable: function () {
         return scope.some(x => x.type == keywordTypes.WHILE || x.type == keywordTypes.FOREACH)
     },

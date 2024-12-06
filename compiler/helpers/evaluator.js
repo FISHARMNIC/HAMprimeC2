@@ -715,7 +715,7 @@ function evaluate(line) {
                 actions.functions.closeFunction(oldScope, oldStack)
             } else if (oldScope.type == keywordTypes.WHILE || oldScope.type == keywordTypes.FOREACH) {
                 if (oldScope.type == keywordTypes.FOREACH) {
-                    outputCode.autoPush(`incw ${oldScope.data.indexer}`)
+                    outputCode.autoPush(`${oldScope.data.continuer}: # forEach "continue" jumps here`, `incw ${oldScope.data.indexer}`)
                 }
                 outputCode.autoPush(
                     `jmp ${oldScope.data.name}`,
@@ -1072,7 +1072,16 @@ function evaluate(line) {
                     `cmpb $1, ${offsetWord(2)}`,
                     `jne ${requestBracket.data.exit}` // jump out if not equal
                 )
-            } else if (word == "forEach") {
+            }
+            else if(word == "break") {
+                var statement = helpers.general.getMostRecentLoop()
+                outputCode.autoPush(`jmp ${statement.data.exit} # "break" statement in loop`)
+            }
+            else if(word == "continue") {
+                var statement = helpers.general.getMostRecentLoop()
+                outputCode.autoPush(`jmp ${statement.type == keywordTypes.FOREACH? statement.data.continuer : statement.data.name} # "continue" statement in loop`)
+            }
+            else if (word == "forEach") {
                 var element = offsetWord(2)[0]
                 var array = offsetWord(2)[2]
 
@@ -1139,7 +1148,7 @@ function evaluate(line) {
             else if (word == "if") {
                 var localExit = helpers.variables.newUntypedLabel() // jump out of this if, but not out of whole block
                 outputCode.autoPush(
-                    `cmpb $1, ${offsetWord(2)}`, // checks if value = 1
+                    `cmpb $1, ${offsetWord(2)} # comparison for "if" statement`, // checks if value = 1
                     `jne ${localExit}`
                 )
                 requestBracket = {
@@ -1153,7 +1162,7 @@ function evaluate(line) {
             } else if (word == "elif") {
                 var localExit = helpers.variables.newUntypedLabel()// jump out of this if, but not out of whole block
                 outputCode.text.push(
-                    `cmpb $1, ${offsetWord(2)}`, // checks if value = 1
+                    `cmpb $1, ${offsetWord(2)} # comparison for "elif" statement`, // checks if value = 1
                     `jne ${localExit}`
                 )
                 requestBracket = mostRecentIfStatement.pop() // copy final termination
@@ -1201,7 +1210,7 @@ function evaluate(line) {
 
                 //outputCode.autoPush(`${type.float? "movss" : "cvtsi2ss"} ${num}, %xmm2`)
 
-                outputCode.autoPush(`sqrtss ${num}, %xmm1`)
+                outputCode.autoPush(`sqrtss ${num}, %xmm1 # inlined sqrt "root"`)
 
                 var lbl = helpers.variables.newTempLabel(defines.types.f32)
                 outputCode.autoPush(`movss %xmm1, ${lbl}`)
@@ -1348,6 +1357,7 @@ function evaluate(line) {
                         actions.assembly.pushToStack(right, defines.types.string)
 
                         outputCode.autoPush(
+                            `# comparing strings`
                             `call strcmp`,
                             `add $8, %esp`,
                         )

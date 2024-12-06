@@ -40,6 +40,7 @@ var assembly = {
     },
     setRegister: function (value, register, type, low = true) {
         debugPrint("setting", register, value, type)
+        outputCode.autoPush(`# setting register "${register}" to "${value}"`)
         var r = helpers.types.formatRegister(register, type, low)
         var er = helpers.types.formatRegister(register, defines.types.u32)
         if (helpers.types.typeToBits(type) == 32) {
@@ -130,7 +131,7 @@ var assembly = {
         return `-${assembly.getCaptureStackOffset(vname)}(%ecx)`
     },
     pushClobbers: function () {
-
+        outputCode.autoPush(`# pushing clobbers`)
         helpers.registers.clobberOrder.forEach(x => {
             if (helpers.registers.inLineClobbers[x] == 1) {
                 //debugPrint("pushing", x)
@@ -140,6 +141,7 @@ var assembly = {
         })
     },
     popClobbers: function () {
+        outputCode.autoPush(`# popping clobbers`)
         helpers.registers.clobberOrder.slice().reverse().forEach(x => {
             if (helpers.registers.inLineClobbers[x] == 1) {
                 outputCode.autoPush(`pop ${helpers.types.formatRegister(x, defines.types.u32)}`)
@@ -147,11 +149,13 @@ var assembly = {
         })
     },
     pushMLclobbers: function () {
+        outputCode.autoPush(`# pushing multi-line clobbers`)
         helpers.registers.multiLineClobbers.forEach(x => {
             outputCode.autoPush(`push ${helpers.types.formatRegister(x, defines.types.u32)}`)
         })
     },
     popMLclobbers: function () {
+        outputCode.autoPush(`# popping multi-line clobbers`)
         helpers.registers.multiLineClobbers.slice().reverse().forEach(x => {
             outputCode.autoPush(`pop ${helpers.types.formatRegister(x, defines.types.u32)}`)
         })
@@ -317,6 +321,7 @@ var assembly = {
 
 var variables = {
     create: function (vname, type, value, onStack = scope.length != 0) {
+        outputCode.autoPush(`# creating variable "${vname}" of type "${helpers.types.convertTypeObjToName(type)}" stack?=${onStack}`)
         if ("voided" in type) {
             throwE(`Cannot create void variable`)
         }
@@ -359,7 +364,7 @@ var variables = {
             }
             var off = allocations.allocateStack(helpers.types.typeToBytes(type), true, true) // store in stack
             //throwE(value, off)
-            outputCode.autoPush(`# Loading local variable "${vname}" @${off}`)
+            outputCode.autoPush(`# Loading local variable "${vname}" @${off} with "${value}"`)
 
             //console.log(value,defines.types)
             assembly.optimizeMove(value, off, type, type)
@@ -597,7 +602,7 @@ var variables = {
 
         debugPrint(index)
 
-        outputCode.autoPush(`#indexing array`)
+        outputCode.autoPush(`# indexing array`)
 
         if (helpers.types.isLiteral(aname)) {
             baseType = objCopy(defines.types.u8)
@@ -763,6 +768,7 @@ var variables = {
         return out
     },
     readAddress: function (name) {
+        outputCode.autoPush(`# reading address of ${name}`)
         var reg = helpers.registers.getFreeLabelOrRegister(defines.types.p32)
         outputCode.autoPush(
             `lea ${name}, ${reg}`
@@ -837,7 +843,7 @@ var variables = {
 
         var suffix = "";
 
-        outputCode.autoPush("#Array set begin")
+        outputCode.autoPush("# Array set begin")
         //throwE(address, index, value)
 
         if (!helpers.types.stringIsRegister(address)) {
@@ -1069,6 +1075,8 @@ var allocations = {
     allocateArray: function (arr, note = "") {
         // IF ERROR HERE BUG ISSUE CRASH REMOVE REMOVE NEXT UNCOMMENTED LINE AND UNCOMMENT NEXT LINE
         //arr = arr.slice(1, arr.length - 1)
+        outputCode.autoPush(`# Allocating array ${arr.join("")}`)
+        
         arr = arr.slice(1, arr.indexOf("}"))
 
         arrayClamp = objCopy(arrayClamp)
@@ -1339,6 +1347,7 @@ var functions = {
 
         if (scope.data?.name == "entry") {
             hasEntryFunction = true
+            outputCode.autoPush(`# auto-return OK for entry function`)
             if (!asRet) // just fn exit, not explicit return
             {
                 outputCode.text.push(
@@ -1607,6 +1616,7 @@ var functions = {
     readArgument: function (index) {
         var out = helpers.registers.getFreeLabelOrRegister(defines.types.u32)
         var ogout = out
+        outputCode.autoPush(`# reading argument of index ${index}`)
         if (!helpers.types.stringIsRegister(out))
             out = "%edx"
 

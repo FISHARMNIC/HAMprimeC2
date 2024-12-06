@@ -1,19 +1,10 @@
 /*
 Unit test example
 
-Capturing stdout and comments taken from https://stackoverflow.com/questions/11214498/capture-stdout-to-a-string-and-output-it-back-to-stdout-in-c
+Capturing stdout and comments, credit to "tedtanner" on stackoverflow (https://stackoverflow.com/questions/11214498/capture-stdout-to-a-string-and-output-it-back-to-stdout-in-c)
 */
 
-import p32 stdout;
-
-forward fflush function<p32 f> -> none;
-forward fileno function<p32 f> -> u32;
-forward dup    function<u32 fno> -> u32;
-forward dup2   function<u32 a, u32 b> -> u32;
-forward pipe   function<u32:array f> -> u32;
-forward write  function<u32 p, conststr s, u32 i> -> u32;
-forward read   function<u32 fno, p32 b, u32 nb> -> u32;
-forward close  function<u32 fno> -> u32;
+#include sys cpipes;
 
 testOutput function<string testName, any fn, string expected> -> u32
 {
@@ -46,6 +37,7 @@ testOutput function<string testName, any fn, string expected> -> u32
     {
         read(pipes[0], $(c), 1);
         ostr <- ostr + c;
+        break;
     }
 
     if(ostr == expected)
@@ -64,8 +56,6 @@ testOutput function<string testName, any fn, string expected> -> u32
 
 entry function<> -> u32
 {
-
-
     testOutput("first", 
         lambda<> {
             print_("hello");
@@ -77,7 +67,7 @@ entry function<> -> u32
         lambda<> {
             print_("apples");
         },
-        "bannanas\n"
+        "bananas\n"
     );
     
 }

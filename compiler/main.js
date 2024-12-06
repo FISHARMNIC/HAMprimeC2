@@ -1,8 +1,10 @@
 /*
 TODO:
 
+    * I think doing forEach(x in {1,2,3}) might get gc'd
+
     * not sure if splitter works with something like: `bob${`jon`}`
-    * add "break" and "continue"
+
 
     * using names like "character" are still broken
             * once declared, should be fine

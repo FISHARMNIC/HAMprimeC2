@@ -1,0 +1,10 @@
+import p32 stdout;
+
+forward fflush function<p32 f>                    -> none;
+forward fileno function<p32 f>                    -> u32;
+forward dup    function<u32 fno>                  -> u32;
+forward dup2   function<u32 a, u32 b>             -> u32;
+forward pipe   function<u32:array f>              -> u32;
+forward write  function<u32 p, conststr s, u32 i> -> u32;
+forward read   function<u32 fno, p32 b, u32 nb>   -> u32;
+forward close  function<u32 fno>                  -> u32;

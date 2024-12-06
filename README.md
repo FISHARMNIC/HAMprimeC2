@@ -3,7 +3,8 @@
 HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acronym for “Hard as You Make It”, and permits the programmer to pick and choose the complexity of their program in terms of how high-level they may want it to be. With things such as pointers and optional typing, it seeks to provide a similar amount of control that C gives to the user. However, it also comes with more simplified features such as easy string/number concatenation, classes, and automatic memory management.  
 
 ## Recent Update Log
-- added new type `dyna` which is the same as `any:dynamic`
+- Added `break` and `continue` for loops
+- Added new type `dyna` which is the same as `any:dynamic`
 - Array length can be get with `len(arr)`
 - `something function<> -> auto {...}` is no longer needed.
     * Now you can just do `something function<> {...}`

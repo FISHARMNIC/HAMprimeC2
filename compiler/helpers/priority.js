@@ -24,6 +24,7 @@ function prioritizeWord(word, line) {
         var lbl = helpers.variables.newUntypedLabel()
         var exit = helpers.variables.newUntypedLabel()
         var indexer = helpers.variables.newUntypedLabel()
+        var continuer = helpers.variables.newUntypedLabel()
 
         actions.variables.create(indexer, defines.types.u32, "0")
         var indexerStackAddr = actions.assembly.getStackVarAsEbp(indexer)
@@ -33,6 +34,7 @@ function prioritizeWord(word, line) {
             data: {
                 name: lbl, // jump to beginning
                 indexer: indexerStackAddr,
+                continuer,
                 arrLength: actions.assembly.getStackVarAsEbp(actions.variables.create(helpers.variables.newUntypedLabel(), defines.types.u32, "0")),
                 exit       // exit 
             }
