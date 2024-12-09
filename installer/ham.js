@@ -20,7 +20,7 @@ var assemblerArgs = {
             `${__dirname}/../../compiler/libs/gcollect.s`,
         ],
     linkExternals: [],
-
+    dontLink: false,
 }
 
 console.log("┌──── HAM COMPILER ────·")
@@ -33,7 +33,8 @@ function parseCLA() {
         { name: 'ofile', alias: 'o', type: String, description: "Output file directory"},
         { name: 'link',  alias: 'l', type: String, multiple: true, description: "Link with system libs (gmp, m, X11, etc)"},
         { name: 'ifiles', alias: 'i', type: String, multiple: true, defaultOption: true, description: "Input files"},
-        { name: 'help', alias: 'h', type: String, description: "Print this menu"}
+        { name: 'help', alias: 'h', type: String, description: "Print this menu"},
+        { name: 'nolink', alias: 'c', type: Boolean, description: "Compile a single file without linking"}
         // { name: 'asm', alias: 's', type: Boolean, defaultValue: false}
     ]
     
@@ -47,7 +48,7 @@ function parseCLA() {
         defs.forEach(def => {
             console.log("--" + def.name.padEnd(maxLen) + ` -${def.alias} : ` + `<${typeof(def.type())}${def.multiple? ", ..." : ""}>`.padEnd(pad2) + ` : ${def.description}`)
         })
-        console.log("Examples\n", "\tham arrays.x -o out -l gmp\n", "\tham map.x")
+        console.log("Examples\n", "\tham arrays.x -o out -l gmp\n", "\tham map.x", "\tham files.x -c files.o")
         process.exit(0)
     }
     if(!("ifiles" in options))
@@ -59,28 +60,50 @@ function parseCLA() {
     var usesX11 = false
 
     assemblerArgs.linkExternals = (options.link || assemblerArgs.linkExternals).map(x => {
-        if(compatibilityLayers[x] != undefined)
+        if(options.nolink)
+        {
+            console.log("Cannot link when using '-c'")
+        }
+        else if(compatibilityLayers[x] != undefined)
             assemblerArgs.linkLocals.push(compatibilityLayers[x])
+        else
+        {
+            console.log("Unknown library: " + x)
+            process.exit(1)
+        }
         return("-l" + x)
     })
 
-    assemblerArgs.outFile = options.ofile || assemblerArgs.outFile
+    assemblerArgs.outFile  = options.ofile || assemblerArgs.outFile
     assemblerArgs.inFiles  = options.ifiles
+    assemblerArgs.dontLink = options.nolink
 }
 
 function assemble() {
 
     const asmFile = `${__dirname}/../../compiled/out.s`
 
-    var numberOfInFiles = assemblerArgs.inFiles.length
+    var numberOfInFiles = assemblerArgs.inFiles.filter(x => { // keep only files that need to be compiled, not binaries being linked like: "ham files files2.x -o out"
+        return true// x.substring(x.lastIndexOf("/") + 1, x.length).includes(".")
+    }).length
+
     var assemblyOutFiles = []
 
     assemblerArgs.inFiles.forEach((x,i) => {
         try{
-            var out = String(execSync(`node ${__dirname}/../../compiler/main.js __RANOPRINT__ ${x} ${numberOfInFiles == 1 ? "" : `${numberOfInFiles} __ID_${i}`}`)).trim()
-            assemblyOutFiles.push(`${__dirname}/../../compiled/out${numberOfInFiles == 1 ? "" : i}.s`)
-            if(out.length != 0)
-                console.log(out)
+            var justName = x.substring(x.lastIndexOf("/") + 1, x.length)
+            if(justName.includes("."))
+            {
+                var out = String(execSync(`node ${__dirname}/../../compiler/main.js __RANOPRINT__ ${x} ${numberOfInFiles == 1 ? "" : `${numberOfInFiles} __ID_${i}`}`)).trim()
+                assemblyOutFiles.push(`${__dirname}/../../compiled/out${numberOfInFiles == 1 ? "" : i}.s`)
+                if(out.length != 0)
+                    console.log(out)
+            }
+            else
+            {
+                console.log("not compiling binary: " + x, "\n\t> if you did not want this, add an extension to the file")
+                assemblerArgs.linkLocals.push(x)
+            }
         }
         catch(e)
         {
@@ -91,10 +114,25 @@ function assemble() {
     })
     console.log("├ Assembly : " + asmFile)
     
-    var asmPrefix = os.type() == "Darwin" ? "limactl shell debian" : ""
+    var asmPrefix = os.type() == "Darwin" ? "limactl shell debian " : ""
 
     try{
-        var str = `${asmPrefix} gcc ${assemblyOutFiles.join(" ")} ${assemblerArgs.linkLocals.join(" ")} -o ${assemblerArgs.outFile} -g -no-pie -m32 -fno-asynchronous-unwind-tables ${assemblerArgs.linkExternals.join(" ")}`
+        var str;
+        if(assemblerArgs.dontLink)
+        {
+            if(assemblyOutFiles.length != 1)
+            {
+                console.log("Error: cannot use '-c' with multiple input files")
+                process.exit(1)
+            }
+            str = `${asmPrefix}gcc -c ${assemblyOutFiles.join(" ")} -o ${assemblerArgs.outFile} -g -no-pie -m32 -fno-asynchronous-unwind-tables`
+            //console.log(str)
+        }
+        else
+        {
+            str = `${asmPrefix}gcc ${assemblyOutFiles.join(" ")} ${assemblerArgs.linkLocals.join(" ")} -o ${assemblerArgs.outFile} -g -no-pie -m32 -fno-asynchronous-unwind-tables ${assemblerArgs.linkExternals.join(" ")}`
+        }
+
         //console.log("COMPILING\n\n", str, "\n\n")
         var out = String(execSync(str)).trim()
         if(out.length != 0)

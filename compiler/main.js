@@ -1,6 +1,15 @@
 /*
 TODO:
 
+    * add compilation flag -c where no link at all
+
+    * implement something where you can access properties on a dyna
+        * maybe just some sort of hash fn?
+        * but first test if only one struct has that property as a name
+
+    * need to add array push and pop
+        * make sure to differentiate between arrays with statics and dynamics
+
     * I think doing forEach(x in {1,2,3}) might get gc'd
 
     * not sure if splitter works with something like: `bob${`jon`}`

@@ -1357,7 +1357,7 @@ function evaluate(line) {
                         actions.assembly.pushToStack(right, defines.types.string)
 
                         outputCode.autoPush(
-                            `# comparing strings`
+                            `# comparing strings`,
                             `call strcmp`,
                             `add $8, %esp`,
                         )

@@ -358,7 +358,7 @@ var variables = {
         if (onStack) // inside of a function
         {
             //console.log(vname, type, nextThingTakesOwnership)
-            value = helpers.types.formatIfConstant(value)
+            
             if (objectIncludes(getAllStackVariables(), vname)) {
                 throwE(`Variable "${vname}" already defined`)
             }
@@ -369,6 +369,8 @@ var variables = {
             //console.log(value,defines.types)
             assembly.optimizeMove(value, off, type, type)
 
+            value = helpers.types.formatIfConstant(value)
+            
             //console.log("::", doNotInit)
             //console.log(scope, vname)
             if ("hasData" in type && !doNotInit) {

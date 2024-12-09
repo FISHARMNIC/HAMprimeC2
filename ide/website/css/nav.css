@@ -274,3 +274,16 @@ div.saveIcon {
     z-index: 999;
     border-radius: 5px;
 }
+
+#pop2 {
+    position: absolute;
+    width:20%;
+    height: 20%;
+    left: 50%;
+    top: 20%;
+    background-color:#657f89;
+    border: 3px solid var(--env);
+    z-index: 999;
+    border-radius: 5px;
+}
+

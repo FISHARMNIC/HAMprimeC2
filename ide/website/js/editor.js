@@ -242,8 +242,23 @@ function clrset()
 //     highlightLineFromAsm(line)
 // })
 
+// from https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
+function capitalize(s)
+{
+    return s && String(s[0]).toUpperCase() + String(s).slice(1);
+}
+
 document.addEventListener("selectionchange", e => {
     var selectedText = editor.getSelection()
+
+    const cursor = editor.getCursor(); // {line, ch}
+
+    // Get the screen coordinates of the cursor
+    const coords = editor.cursorCoords(cursor, 'page'); // {left, top, bottom}
+
+    console.log('Cursor Position:', cursor);
+    console.log('Screen Coordinates:', coords);
+
 
     // make not for each
     var n = -1
@@ -262,5 +277,6 @@ document.addEventListener("selectionchange", e => {
             n = n.slice(0, n.length - 1)
         }
     selected_info_viewer.setValue(`${selectedText} : "${n}"`)
+    document.getElementById("keywordInfo").src = `https://fisharmnic.github.io/docs/Keywords/${capitalize(selectedText)}.html`
     }
 })

@@ -1,0 +1,29 @@
+#include sys cfiles
+
+iofile format
+{
+    .fptr p32;
+
+    forward .iofile constructor<>;
+    forward .iofile constructor<conststr name>;
+
+    forward .open method<conststr name>;
+    forward .openMode method<conststr name, conststr mode>;
+    forward .isOpen method<> -> u8;
+    forward .close method<> -> none;
+
+    forward .rewind method<> -> none;
+    forward .seekg method<u32 address> -> u32;
+
+    forward .write method<string buffer> -> none;
+
+    forward .getTo method<u8 ch> -> string;
+    forward .getLine method<> -> string;
+
+    forward .iofile operator(shl)<string buffer> -> iofile;
+    forward .iofile operator(shl)<u32 number> -> iofile;
+
+    forward .iofile operator(shr)<string:reference buffer> -> iofile;
+    forward .iofile operator(shr)<u32:reference outnum> -> iofile;
+    forward .iofile operator(shr)<char:reference outch> -> iofile;
+}

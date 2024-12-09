@@ -37,7 +37,6 @@ testOutput function<string testName, any fn, string expected> -> u32
     {
         read(pipes[0], $(c), 1);
         ostr <- ostr + c;
-        break;
     }
 
     if(ostr == expected)
@@ -52,7 +51,6 @@ testOutput function<string testName, any fn, string expected> -> u32
         return 1;
     }
 }
-
 
 entry function<> -> u32
 {

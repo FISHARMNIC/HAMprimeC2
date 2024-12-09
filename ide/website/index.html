@@ -37,12 +37,18 @@
     style="font-family: 'Courier New', monospace;height:100%; overflow: hidden;background-color: #242e32;scrollbar-color: red">
 
     <div hidden id="popup" onmouseleave="closeFileChooser()">
+
     <h2 style="margin-top: 0px;margin-left: 5px;">File Picker</h2>
     
     <p style="margin-left: 5px;margin-bottom: 0px;">Pick folder (located in HAMPRIMEC2/projects) </p>
     <input id="dirsel" style="margin-left: 5px; border-radius: 5px;margin-top: 0px;">
     <button onclick="openDir(document.getElementById('dirsel').value)">select</button>
     </div>
+
+    <div hidden id="pop2" onmouseleave="closeFileChooser()">
+        <iframe id="keywordInfo" style="width: 100%;height: 100%;" sandbox src="https://fisharmnic.github.io/docs/Keywords/Import.html"></iframe>
+    </div>
+
     <ul class="nav">
         <li><i title="options" class="fa fa-folder navli" aria-hidden="true" style="font-size:30px;color:white;"
             onclick="openFileChooser()"></i></li>
@@ -54,8 +60,11 @@
         <li><i title="compile and debug" class="fa fa-bug navli" aria-hidden="true" style="font-size:30px;color:white;"
                 onclick="comms.debug()"></i></li>
         <li class="navli" style="padding-left: 30px"></li>
+
         <li><img src="Ham.svg" width="35px" style="float: right;padding-top: 9px;padding-right: 5px;" class="navli"
                 onclick="window.open('https://github.com/FISHARMNIC', '_blank')"></li>
+                <li><i title="compile and debug" class="fa fa-book navli" aria-hidden="true" style="float: right;padding-right: 5px;font-size:30px;color:white;"
+                    onclick="window.open('https://fisharmnic.github.io/docs/', '_blank')"></i></li>
        
        
                 <!-- <li><label class="checker"><input class="toggler" id="linkGFX" type="checkbox"
@@ -92,6 +101,8 @@
                         onclick="editor.undo()"></i></li>
                     <i title="undo" class="fas fa-redo" aria-hidden="true" style="font-size:20px;color:white;"
                         onclick="editor.redo()"></i></li>
+                    <br>
+                        <!-- <button>?</button> -->
                 </div>
                 <!-- #endregion -->
                 <div class="resizer" data-direction="horizontal"></div>
