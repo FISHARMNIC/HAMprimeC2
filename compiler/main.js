@@ -14,7 +14,6 @@ TODO:
 
     * not sure if splitter works with something like: `bob${`jon`}`
 
-
     * using names like "character" are still broken
             * once declared, should be fine
             * but if they are like a new param name it wont work
@@ -29,7 +28,7 @@ TODO:
     * `bob${123}` will join the empty string at the end, wastes time
 
     * add JS prototypes, like 
-        push prototype<string, char ch> -> string {...}
+        push prototype(string)<char ch> -> string {...}
         * allows "bob".push('h')
         must allow overloads too
 

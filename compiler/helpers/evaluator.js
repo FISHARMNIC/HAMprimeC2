@@ -1047,9 +1047,10 @@ function evaluate(line) {
                 }
 
                 if (fname in userFunctions) {
-                    throwE("overloads WIP. Can be created but not called yet")
                     var newlbl = `${fname}__overload__${helpers.functions.newUniqueStr()}__`
                     userFunctions[fname].overloads.push(data)
+                    data.overloads.push(userFunctions[fname]) // circular so that can read overloads from overloads itself
+                    //throwE("overloads WIP. Can be created but not called yet", userFunctions[fname])
                     fname = newlbl
                     data.name = fname
                     //throwE(`Function "${fname}" already exists, and overloads are not yet implemented`)

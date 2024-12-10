@@ -68,6 +68,26 @@ var types = {
 
         return cheq && this.areEqual(a, b)
     },
+    areSimilarArrayTypesNonStrict: function(a, b) {
+
+        var bothHaveChildren = ("arrayElements" in a) && ("arrayElements" in b)
+
+        //console.log()
+        var cheq = bothHaveChildren ? (
+            a.arrayElements.hasData == b.arrayElements.hasData &&
+            a.arrayElements.elementsHaveData == b.arrayElements.elementsHaveData
+        ) : true
+
+        return cheq && this.areEqualExtraLoose(a, b)
+    },
+    areEqualExtraLoose: function (a, b) {
+        b = objCopy(b)
+        a = objCopy(a)
+        a.size = 8
+        b.size = 8
+        //console.log(a,b)
+        return this.areEqual(a, b) || "acceptsAny" in a || "acceptsAny" in b || (types.isStringOrConststrType(a) && types.isStringOrConststrType(b))
+    },
     areEqualNonStrict: function (a, b) {
         //console.log(a,b)
         //console.log(types.isStringOrConststrType(a), types.isStringOrConststrType(b))
