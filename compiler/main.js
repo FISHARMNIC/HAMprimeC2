@@ -1,6 +1,7 @@
 /*
 TODO:
 
+    * can you create variables from lambdas like: "create jon <- (lambda<> {...})"
     * add compilation flag -c where no link at all
 
     * implement something where you can access properties on a dyna

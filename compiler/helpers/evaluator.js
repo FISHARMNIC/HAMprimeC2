@@ -1002,6 +1002,12 @@ function evaluate(line) {
             }
             else if (word == "function") {
                 var fname = offsetWord(-1)
+
+                // if(offsetWord(-2) == "supportive")
+                //     {
+                //         throwE(line, )
+                //     }
+
                 var params = offsetWord(2)
                 if (typeof (params) == "string")
                     params = [params]

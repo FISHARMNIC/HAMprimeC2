@@ -4,13 +4,12 @@
  * for example, an array of strings
  * or an array of formats
 
-map function supports
+supportive map function
     <any:dynamic:array arr, any operation>
     <any:static:array arr, any operation>
 {
 ...
 }
-
 */
 
 map function<dyna:array arr, p32 operation>
@@ -37,9 +36,12 @@ map function<any:array arr, p32 operation>
     }
 }
 
-bob function<...> 
+map function supports (
+    <any:dynamic:array arr, any operation> -> none,
+    <any:static:array arr, any operation> -> none
+)
 {
-    return 0;
+...
 }
 
 entry function<>

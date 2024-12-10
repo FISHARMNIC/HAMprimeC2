@@ -49,6 +49,7 @@ function treat(instruction) {
 function treatOther(line, raw, rawLineNum) {
 
     var post = () => {}
+
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         var word = line[wordNum]
         var offsetWord = x => wordNum + x >= 0 ? line[wordNum + x] : null;
@@ -146,6 +147,41 @@ function treatOther(line, raw, rawLineNum) {
             }
 
             rawLineNum += 2;
+        }
+        else if(word == "supports")
+        {
+            var groups = []
+            var build = []
+            if(offsetWord(1) != "(")
+            {
+                throwE("Must have parenthesis around supported functions")
+            }
+
+            console.log(line.slice(wordNum + 2))
+            var inDef = false
+            line.slice(wordNum + 2).forEach(token => {
+                if(token == "<")
+                {
+                    inDef = true
+                    build.push(token)
+                }
+                else if(token == ">")
+                {
+                    inDef = false
+                    build.push(token)
+                }
+                else if(token == "," && !inDef)
+                {
+                    groups.push(build.join(" "))
+                    build = []
+                }
+                else
+                {
+                    build.push(token)
+                }
+            })
+            groups.push(build.slice(0, build.length - 1).join(" "))
+            throwE(groups, line.slice(0, wordNum))
         }
     }
     return {data:line, lineNo: rawLineNum, post}
