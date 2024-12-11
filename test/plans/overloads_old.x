@@ -49,7 +49,6 @@ entry function<>
     create family <- {"Dad", "Mom", "Dog", "Cat"};
     create ages <- {1,2,3,4};
 
-    /* issue is that the strings themselves are statics, so strict type checking will throw warn */
     map(family, lambda<string value> {
         return (`I love my ${value}`);
     });

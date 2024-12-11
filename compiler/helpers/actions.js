@@ -835,7 +835,7 @@ var variables = {
                     )
                     value = lbl
                     valueType = objCopy(defines.types.string)
-                } else {
+                } else if(!("unknown" in valueType)) {
                     throwE(`Assigning static "${helpers.types.convertTypeObjToName(valueType)}" to array expecting a "${helpers.types.convertTypeObjToName(arrType)}"`)
                 }
             }

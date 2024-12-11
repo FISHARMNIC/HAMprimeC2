@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Tue Dec 10 2024 13:34:21 GMT-0700 (Mountain Standard Time)
+Compiled with love on Tue Dec 10 2024 17:47:06 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -20,53 +20,35 @@ Compiled with love on Tue Dec 10 2024 13:34:21 GMT-0700 (Mountain Standard Time)
 .extern ___TEMPORARY_OWNER___
 
 ######## user data section ########
-.type	__constructor_Linked_0_, @function
-.global __constructor_Linked_0_
-__ALLOCFOR___constructor_Linked_0___ = 0
-.type	__method_Linked_findLast_, @function
-.global __method_Linked_findLast_
-__ALLOCFOR___method_Linked_findLast___ = 4
-.type	__method_Linked_find_, @function
-.global __method_Linked_find_
-__ALLOCFOR___method_Linked_find___ = 8
-.type	__method_Linked_index_, @function
-.global __method_Linked_index_
-__ALLOCFOR___method_Linked_index___ = 4
-.type	__method_Linked_add_, @function
-.global __method_Linked_add_
-__ALLOCFOR___method_Linked_add___ = 8
-.type	__method_Linked_remove_, @function
-.global __method_Linked_remove_
-.4byte 7
-__STRING0__: .asciz "Index "
-.4byte 19
-__STRING1__: .asciz " does not exist!\n"
-.4byte 17
-__STRING2__: .asciz " out of range!\n"
-__ALLOCFOR___method_Linked_remove___ = 4
-.type	__method_Linked_replace_, @function
-.global __method_Linked_replace_
-__ALLOCFOR___method_Linked_replace___ = 4
-.type	__method_Linked_toString_, @function
-.global __method_Linked_toString_
-.4byte 2
-__STRING3__: .asciz "["
-.4byte 3
-__STRING4__: .asciz "->"
-.4byte 2
-__STRING5__: .asciz "]"
-__ALLOCFOR___method_Linked_toString___ = 8
-__SIZEOF_Linked__ = 8
-# format "Linked" includes:
-#   - PROPERTY (u32) current
-#   - PROPERTY (p0) next
-#   - CNSTRCTR __constructor_Linked_0_ (1 parameters)
+.type	map, @function
+.global map
+__ALLOCFOR_map__ = 8
+.type	map__overload__c__, @function
+.global map__overload__c__
+__ALLOCFOR_map__overload__c____ = 8
 .type	entry, @function
 .global entry
-.4byte 46
-__STRING6__: .asciz "There should be an error below this...\n---> "
-__ALLOCFOR_entry__ = 4
-__TEMP8_0__: .1byte 0
+.4byte 4
+__STRING0__: .asciz "Dad"
+.4byte 4
+__STRING1__: .asciz "Mom"
+.4byte 4
+__STRING2__: .asciz "Dog"
+.4byte 4
+__STRING3__: .asciz "Cat"
+__ALLOCFOR_entry__ = 8
+__anonymous_a__ebpCapture__: .4byte 0 # Capture ebp for anonymous function
+.type	__anonymous_a__, @function
+.global __anonymous_a__
+.4byte 11
+__STRING4__: .asciz "I love my "
+.4byte 1
+__STRING5__: .asciz ""
+__ALLOCFOR___anonymous_a____ = 0
+__anonymous_b__ebpCapture__: .4byte 0 # Capture ebp for anonymous function
+.type	__anonymous_b__, @function
+.global __anonymous_b__
+__ALLOCFOR___anonymous_b____ = 0
 ###################################
 .text
 
@@ -85,829 +67,285 @@ call entry
 ret
 
 ###################################
-__constructor_Linked_0_:
+map:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___constructor_Linked_0___, %esp # total stack allocation
+sub $__ALLOCFOR_map__, %esp # total stack allocation
 
-# pushing clobbers
-# Allocate for THIS
-pushl $0
-# setting register "d" to "$__SIZEOF_Linked__"
-mov $__SIZEOF_Linked__, %edx
-push %edx
-call __rc_allocate__
-add $8, %esp
-# popping clobbers
-mov %eax, __this__
-# requesting ownership for ___TEMPORARY_OWNER___ (set). 
-lea ___TEMPORARY_OWNER___, %eax
-push %eax
-push __this__
-call __rc_requestOwnership__
-add $8, %esp
-# note, read PARAM value -> 8(%ebp)
-# Reading property "current" in "__this__"
-movl __this__, %eax
-# optimized move from 8(%ebp) to 0(%eax)
-# setting register "d" to "8(%ebp)"
-mov 8(%ebp), %edx
-mov %edx, 0(%eax)
-# Reading property "next" in "__this__"
-movl __this__, %eax
-# optimized move from 0 to 4(%eax)
-movl $0, 4(%eax)
-# setting register "a" to "__this__"
-movl __this__, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Linked_findLast_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_findLast___, %esp # total stack allocation
-
-# creating variable "node" of type "Linked:dynamic" stack?=true
-# Loading local variable "node" @-4(%ebp) with "__this__"
-# optimized move from __this__ to -4(%ebp)
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, -4(%ebp)
-__LABEL0__:
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-movb $0, __TEMP8_0__
-cmp $0, %ecx
-setne __TEMP8_0__
-# comparison for WHILE loop
-cmpb $1, __TEMP8_0__
-jne __LABEL1__
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-# SETTING node <- %ecx
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
-jmp __LABEL0__
-__LABEL1__:
-# note, read STACK VAR node -> -4(%ebp)
-# setting register "a" to "-4(%ebp)"
-mov -4(%ebp), %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# note, read STACK VAR node -> -4(%ebp)
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# node: 4
-__method_Linked_find_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_find___, %esp # total stack allocation
-
-# creating variable "node" of type "Linked:dynamic" stack?=true
-# Loading local variable "node" @-4(%ebp) with "__this__"
-# optimized move from __this__ to -4(%ebp)
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, -4(%ebp)
 # creating variable "i" of type "u32:borrowed" stack?=true
-# Loading local variable "i" @-8(%ebp) with "0"
-# optimized move from 0 to -8(%ebp)
-movl $0, -8(%ebp)
-__LABEL2__:
-# note, read STACK VAR i -> -8(%ebp)
-# note, read PARAM index -> 8(%ebp)
-mov -8(%ebp), %eax
-mov 8(%ebp), %edx
+# Loading local variable "i" @-4(%ebp) with "0"
+# optimized move from 0 to -4(%ebp)
+movl $0, -4(%ebp)
+# note, read PARAM arr -> 8(%ebp)
+# Get array size
+mov 8(%ebp), %eax # load arr
+mov -4(%eax), %edx # get entry reference
+mov 8(%edx),  %ecx # get size
+shr $2, %ecx # divide by 4 (bytes to u32 or u16)
+# creating variable "size" of type "u32:borrowed" stack?=true
+# Loading local variable "size" @-8(%ebp) with "%ecx"
+# optimized move from %ecx to -8(%ebp)
+mov %ecx, -8(%ebp)
+__LABEL1__:
+# note, read STACK VAR i -> -4(%ebp)
+# note, read STACK VAR size -> -8(%ebp)
+mov -4(%ebp), %eax
+mov -8(%ebp), %edx
 mov $0, %cl
 cmp %edx, %eax
 setl %cl
 # comparison for WHILE loop
 cmpb $1, %cl
-jne __LABEL3__
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-movb $0, __TEMP8_0__
-cmp $0, %ecx
-sete __TEMP8_0__
-cmpb $1, __TEMP8_0__ # comparison for "if" statement
-jne __LABEL4__
-# setting register "a" to "0"
-mov $0, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-jmp __LABEL5__
-__LABEL4__:
-__LABEL5__:
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-# SETTING node <- %ecx
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
-# note, read STACK VAR i -> -8(%ebp)
-mov -8(%ebp), %eax
-add $1, %eax
-mov %eax, %ecx
-# SETTING i <- %ecx
-# optimized move from %ecx to -8(%ebp)
-mov %ecx, -8(%ebp)
-jmp __LABEL2__
-__LABEL3__:
-# note, read STACK VAR node -> -4(%ebp)
-# setting register "a" to "-4(%ebp)"
-mov -4(%ebp), %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# note, read STACK VAR node -> -4(%ebp)
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# node: 4
-# i: 8
-__method_Linked_index_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_index___, %esp # total stack allocation
-
-# note, read PARAM index -> 8(%ebp)
-pushl __this__
-# optimized move from __this__ to __this__
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_find_
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
-call __method_Linked_find_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-popl __this__
-# creating variable "ref" of type "__Linked__staticdef__:borrowed" stack?=true
-# Loading local variable "ref" @-4(%ebp) with "%ecx"
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
-# note, read STACK VAR ref -> -4(%ebp)
-# Reading property "current" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 0(%eax) to %ecx
-# setting register "d" to "0(%eax)"
-mov 0(%eax), %edx
-mov %edx, %ecx
-# setting register "a" to "%ecx"
-mov %ecx, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# ref: 4
-__method_Linked_add_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_add___, %esp # total stack allocation
-
-pushl __this__
-# optimized move from __this__ to __this__
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_findLast_
-call __method_Linked_findLast_
-mov %eax, %ecx
-# popping clobbers
-popl __this__
-# creating variable "end" of type "__Linked__staticdef__:borrowed" stack?=true
-# Loading local variable "end" @-4(%ebp) with "%ecx"
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
-# note, read PARAM value -> 8(%ebp)
-pushl __this__
-# pushing clobbers
-# Calling function __constructor_Linked_0_
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
-call __constructor_Linked_0_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-popl __this__
-# creating variable "newAddr" of type "Linked:dynamic" stack?=true
-# Loading local variable "newAddr" @-8(%ebp) with "%ecx"
-# optimized move from %ecx to -8(%ebp)
-mov %ecx, -8(%ebp)
-# requesting ownership for newAddr (create)
-lea -8(%ebp), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-# note, read STACK VAR newAddr -> -8(%ebp)
-# note, read STACK VAR end -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from -8(%ebp) to 4(%eax)
-# setting register "d" to "-8(%ebp)"
-mov -8(%ebp), %edx
-mov %edx, 4(%eax)
-# requesting ownership for -4(%ebp) (property)
-lea 4(%eax), %eax
-push %eax
-push -8(%ebp)
-call __rc_requestOwnership__
-add $8, %esp
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# end: 4
-# newAddr: 8
-__method_Linked_remove_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_remove___, %esp # total stack allocation
-
-# note, read PARAM index -> 8(%ebp)
+jne __LABEL2__
+# note, read STACK VAR i -> -4(%ebp)
+# note, read STACK VAR i -> -4(%ebp)
+# note, read PARAM arr -> 8(%ebp)
+# indexing array
 mov 8(%ebp), %eax
-mov $0, %cl
-cmp $1, %eax
-setl %cl
-cmpb $1, %cl # comparison for "if" statement
-jne __LABEL6__
-# Reading property "next" in "__this__"
-movl __this__, %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-# SETTING __this__ <- %ecx
-# requesting ownership for __this__ (set). 
-lea __this__, %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-jmp __LABEL7__
-__LABEL6__:
-# note, read PARAM index -> 8(%ebp)
-mov 8(%ebp), %eax
-sub $1, %eax
-mov %eax, %ecx
-pushl __this__
-# optimized move from __this__ to __this__
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, __this__
+# optimized move from -4(%ebp) to %edx
+# setting register "d" to "-4(%ebp)"
+mov -4(%ebp), %edx
+mov %edx, %edx
+mov (%eax, %edx, 4), %ecx
+# note, read PARAM operation -> 12(%ebp)
 # pushing clobbers
 push %ecx
-# Calling function __method_Linked_find_
+# Calling function __not_a_function__
 push %ecx
-call __method_Linked_find_
+call *12(%ebp)
 mov %eax, %esi
 add $4, %esp
 # popping clobbers
 pop %ecx
-popl __this__
-# creating variable "previous" of type "__Linked__staticdef__:borrowed" stack?=true
-# Loading local variable "previous" @-4(%ebp) with "%esi"
-# optimized move from %esi to -4(%ebp)
-mov %esi, -4(%ebp)
-# note, read STACK VAR previous -> -4(%ebp)
+# note, read PARAM arr -> 8(%ebp)
+# Array set begin
+mov 8(%ebp), %eax
+# array load trash awful. Fix this bad optimize
+push %eax
 mov -4(%ebp), %eax
-mov $0, %cl
-cmp $0, %eax
-sete %cl
-cmpb $1, %cl # comparison for "if" statement
-jne __LABEL9__
-# note, read PARAM index -> 8(%ebp)
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING1__
-push 8(%ebp)
-call itos
+shl $2, %eax
+add (%esp), %eax
 add $4, %esp
-push %eax
-pushl $__STRING0__
-pushl $3
-call strjoinmany
-add $16, %esp
-mov %eax, %ecx
-popw __disable_gc__
-# pushing multi-line clobbers
-push %ecx
-call puts
-add $4, %esp
-# popping multi-line clobbers
-# setting register "a" to "0"
-mov $0, %eax
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-jmp __LABEL10__
-__LABEL9__:
-# note, read STACK VAR previous -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-movb $0, __TEMP8_0__
-cmp $0, %ecx
-sete __TEMP8_0__
-cmpb $1, __TEMP8_0__ # comparison for "elif" statement
-jne __LABEL11__
-# note, read PARAM index -> 8(%ebp)
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING2__
-push 8(%ebp)
-call itos
-add $4, %esp
-push %eax
-pushl $__STRING0__
-pushl $3
-call strjoinmany
-add $16, %esp
-mov %eax, %ecx
-popw __disable_gc__
-# pushing multi-line clobbers
-push %ecx
-call puts
-add $4, %esp
-# popping multi-line clobbers
-jmp __LABEL10__
-__LABEL11__:
-# note, read STACK VAR previous -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-# Reading property "next" in "%ecx"
-# optimized move from 4(%ecx) to %esi
-# setting register "d" to "4(%ecx)"
-mov 4(%ecx), %edx
-mov %edx, %esi
-# note, read STACK VAR previous -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from %esi to 4(%eax)
-mov %esi, 4(%eax)
-# requesting ownership for -4(%ebp) (property)
-lea 4(%eax), %eax
+mov %esi, (%eax)
+# requesting ownership for array index
 push %eax
 push %esi
 call __rc_requestOwnership__
 add $8, %esp
-jmp __LABEL10__
-__LABEL12__:
-__LABEL10__:
-jmp __LABEL7__
-__LABEL8__:
-__LABEL7__:
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-__method_Linked_replace_:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_replace___, %esp # total stack allocation
-
-# note, read PARAM index -> 8(%ebp)
-pushl __this__
-# optimized move from __this__ to __this__
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_find_
-# TODO optimize if variable just do movl
-mov 8(%ebp), %edx
-push %edx
-call __method_Linked_find_
+#Set end
+# note, read STACK VAR i -> -4(%ebp)
+mov -4(%ebp), %eax
+add $1, %eax
 mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-popl __this__
-# creating variable "node" of type "__Linked__staticdef__:borrowed" stack?=true
-# Loading local variable "node" @-4(%ebp) with "%ecx"
+# SETTING i <- %ecx
 # optimized move from %ecx to -4(%ebp)
 mov %ecx, -4(%ebp)
-# note, read PARAM value -> 12(%ebp)
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "current" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 12(%ebp) to 0(%eax)
-# setting register "d" to "12(%ebp)"
-mov 12(%ebp), %edx
-mov %edx, 0(%eax)
+jmp __LABEL1__
+__LABEL2__:
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
-# node: 4
-__method_Linked_toString_:
+# i: 4
+# size: 8
+map__overload__c__:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_Linked_toString___, %esp # total stack allocation
+sub $__ALLOCFOR_map__overload__c____, %esp # total stack allocation
 
-# creating variable "node" of type "Linked:dynamic" stack?=true
-# Loading local variable "node" @-4(%ebp) with "__this__"
-# optimized move from __this__ to -4(%ebp)
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, -4(%ebp)
-# creating variable "build" of type "conststr:borrowed" stack?=true
-pushl $__STRING3__
-call cptos
-add $4, %esp
-mov %eax, %ecx
-# Loading local variable "build" @-8(%ebp) with "%ecx"
+# creating variable "i" of type "u32:borrowed" stack?=true
+# Loading local variable "i" @-4(%ebp) with "0"
+# optimized move from 0 to -4(%ebp)
+movl $0, -4(%ebp)
+# note, read PARAM arr -> 8(%ebp)
+# Get array size
+mov 8(%ebp), %eax # load arr
+mov -4(%eax), %edx # get entry reference
+mov 8(%edx),  %ecx # get size
+shr $2, %ecx # divide by 4 (bytes to u32 or u16)
+# creating variable "size" of type "u32:borrowed" stack?=true
+# Loading local variable "size" @-8(%ebp) with "%ecx"
 # optimized move from %ecx to -8(%ebp)
 mov %ecx, -8(%ebp)
-# requesting ownership for build (create)
-lea -8(%ebp), %eax
-push %eax
-push %ecx
-call __rc_requestOwnership__
-add $8, %esp
-__LABEL13__:
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-movb $0, __TEMP8_0__
-cmp $0, %ecx
-setne __TEMP8_0__
+__LABEL4__:
+# note, read STACK VAR i -> -4(%ebp)
+# note, read STACK VAR size -> -8(%ebp)
+mov -4(%ebp), %eax
+mov -8(%ebp), %edx
+mov $0, %cl
+cmp %edx, %eax
+setl %cl
 # comparison for WHILE loop
-cmpb $1, __TEMP8_0__
-jne __LABEL14__
-# note, read STACK VAR build -> -8(%ebp)
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "current" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 0(%eax) to %ecx
-# setting register "d" to "0(%eax)"
-mov 0(%eax), %edx
-mov %edx, %ecx
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING4__
+cmpb $1, %cl
+jne __LABEL5__
+# note, read STACK VAR i -> -4(%ebp)
+# note, read STACK VAR i -> -4(%ebp)
+# note, read PARAM arr -> 8(%ebp)
+# indexing array
+mov 8(%ebp), %eax
+# optimized move from -4(%ebp) to %edx
+# setting register "d" to "-4(%ebp)"
+mov -4(%ebp), %edx
+mov %edx, %edx
+mov (%eax, %edx, 4), %ecx
+# note, read PARAM operation -> 12(%ebp)
+# pushing clobbers
 push %ecx
-call itos
-add $4, %esp
-push %eax
-push -8(%ebp)
-pushl $3
-call strjoinmany
-add $16, %esp
+# Calling function __not_a_function__
+push %ecx
+call *12(%ebp)
 mov %eax, %esi
-popw __disable_gc__
-# SETTING build <- %esi
-# requesting ownership for build (set). 
-lea -8(%ebp), %eax
+add $4, %esp
+# popping clobbers
+pop %ecx
+# note, read PARAM arr -> 8(%ebp)
+# Array set begin
+mov 8(%ebp), %eax
+# array load trash awful. Fix this bad optimize
 push %eax
-push %esi
-call __rc_requestOwnership__
-add $8, %esp
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "next" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 4(%eax) to %ecx
-# setting register "d" to "4(%eax)"
-mov 4(%eax), %edx
-mov %edx, %ecx
-# SETTING node <- %ecx
+mov -4(%ebp), %eax
+shl $2, %eax
+add (%esp), %eax
+add $4, %esp
+mov %esi, (%eax)
+#Set end
+# note, read STACK VAR i -> -4(%ebp)
+mov -4(%ebp), %eax
+add $1, %eax
+mov %eax, %ecx
+# SETTING i <- %ecx
 # optimized move from %ecx to -4(%ebp)
 mov %ecx, -4(%ebp)
-jmp __LABEL13__
-__LABEL14__:
-# note, read STACK VAR build -> -8(%ebp)
-# note, read STACK VAR node -> -4(%ebp)
-# Reading property "current" in "-4(%ebp)"
-movl -4(%ebp), %eax
-# optimized move from 0(%eax) to %ecx
-# setting register "d" to "0(%eax)"
-mov 0(%eax), %edx
-mov %edx, %ecx
-pushw __disable_gc__; movw $1, __disable_gc__
-pushl $__STRING5__
-push %ecx
-call itos
-add $4, %esp
-push %eax
-push -8(%ebp)
-pushl $3
-call strjoinmany
-add $16, %esp
-mov %eax, %esi
-popw __disable_gc__
-# SETTING build <- %esi
-# requesting ownership for build (set). 
-lea -8(%ebp), %eax
-push %eax
-push %esi
-call __rc_requestOwnership__
-add $8, %esp
-# note, read STACK VAR build -> -8(%ebp)
-# optimized move from -8(%ebp) to __gc_dontClear__
-# setting register "d" to "-8(%ebp)"
-mov -8(%ebp), %edx
-mov %edx, __gc_dontClear__
-# setting register "a" to "-8(%ebp)"
-mov -8(%ebp), %eax
+jmp __LABEL4__
+__LABEL5__:
 call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
 ret
-# note, read STACK VAR build -> -8(%ebp)
-call __rc_quick_check__
-
-mov %ebp, %esp
-pop %ebp
-ret
-# node: 4
-# build: 8
+# i: 4
+# size: 8
 entry:
 push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp # total stack allocation
 
+# Allocating array {__STRING0__,__STRING1__,__STRING2__,__STRING3__}
 # pushing clobbers
-# Calling function __constructor_Linked_0_
-pushl $1
-call __constructor_Linked_0_
-mov %eax, %ecx
-add $4, %esp
+# Allocation for array
+pushl $0
+pushl $16
+call __rc_allocate__
+add $8, %esp
 # popping clobbers
-# creating variable "myList" of type "Linked:dynamic" stack?=true
-# Loading local variable "myList" @-4(%ebp) with "%ecx"
-# optimized move from %ecx to -4(%ebp)
-mov %ecx, -4(%ebp)
-# requesting ownership for myList (create)
+mov %eax, %ecx
+pushl $__STRING0__
+pushl $__STRING1__
+pushl $__STRING2__
+pushl $__STRING3__
+pushl $4
+pushl %ecx
+call __sinc_loadStringArray
+add $24, %esp
+mov %ecx, %esi
+# creating variable "family" of type "array:dynamic" stack?=true
+# Loading local variable "family" @-4(%ebp) with "%esi"
+# optimized move from %esi to -4(%ebp)
+mov %esi, -4(%ebp)
+# requesting ownership for family (create)
 lea -4(%ebp), %eax
 push %eax
-push %ecx
+push %esi
 call __rc_requestOwnership__
 add $8, %esp
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
+# Allocating array {1,2,3,4}
 # pushing clobbers
-# Calling function __method_Linked_add_
-pushl $2
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_add_
-pushl $3
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# pushing multi-line clobbers
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_toString_
-call __method_Linked_toString_
-mov %eax, %ecx
-# popping clobbers
-push %ecx
-call puts
-add $4, %esp
-# popping multi-line clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_remove_
+# Allocation for array
 pushl $0
-call __method_Linked_remove_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# Loading into __this__ because function modified it 
-# optimized move from __this__ to -4(%ebp)
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, -4(%ebp)
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_add_
-pushl $5
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_replace_
-pushl $4
-pushl $2
-call __method_Linked_replace_
-mov %eax, %ecx
+pushl $16
+call __rc_allocate__
 add $8, %esp
 # popping clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# pushing multi-line clobbers
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_toString_
-call __method_Linked_toString_
 mov %eax, %ecx
-# popping clobbers
+# optimized move from 1 to 0(%ecx)
+movl $1, 0(%ecx)
+# optimized move from 2 to 4(%ecx)
+movl $2, 4(%ecx)
+# optimized move from 3 to 8(%ecx)
+movl $3, 8(%ecx)
+# optimized move from 4 to 12(%ecx)
+movl $4, 12(%ecx)
+mov %ecx, %esi
+# creating variable "ages" of type "array:dynamic" stack?=true
+# Loading local variable "ages" @-8(%ebp) with "%esi"
+# optimized move from %esi to -8(%ebp)
+mov %esi, -8(%ebp)
+# requesting ownership for ages (create)
+lea -8(%ebp), %eax
+push %eax
+push %esi
+call __rc_requestOwnership__
+add $8, %esp
+pushl __anonymous_a__ebpCapture__;mov %ebp, __anonymous_a__ebpCapture__
+# note, read STACK VAR family -> -4(%ebp)
+# reading address of __anonymous_a__
+lea __anonymous_a__, %ecx
+# pushing clobbers
 push %ecx
-call puts
-add $4, %esp
-# popping multi-line clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_remove_
-pushl $1
-call __method_Linked_remove_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# Loading into __this__ because function modified it 
-# optimized move from __this__ to -4(%ebp)
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, -4(%ebp)
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_add_
-pushl $8
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_add_
-pushl $16
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_add_
-pushl $32
-call __method_Linked_add_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_remove_
-pushl $4
-call __method_Linked_remove_
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# Loading into __this__ because function modified it 
-# optimized move from __this__ to -4(%ebp)
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, -4(%ebp)
-# note, read STACK VAR myList -> -4(%ebp)
-# pushing multi-line clobbers
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
-mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_toString_
-call __method_Linked_toString_
-mov %eax, %ecx
-# popping clobbers
+# Calling function map
 push %ecx
-call puts
-add $4, %esp
-# popping multi-line clobbers
-# pushing clobbers
-# Calling function printf
-pushl $__STRING6__
-call printf
-mov %eax, %ecx
-add $4, %esp
-# popping clobbers
-# note, read STACK VAR myList -> -4(%ebp)
-# optimized move from -4(%ebp) to __this__
-# setting register "d" to "-4(%ebp)"
+# TODO optimize if variable just do movl
 mov -4(%ebp), %edx
-mov %edx, __this__
-# pushing clobbers
-# Calling function __method_Linked_remove_
-pushl $10
-call __method_Linked_remove_
-mov %eax, %ecx
-add $4, %esp
+push %edx
+call map
+mov %eax, %esi
+add $8, %esp
 # popping clobbers
-# Loading into __this__ because function modified it 
-# optimized move from __this__ to -4(%ebp)
-# setting register "d" to "__this__"
-movl __this__, %edx
-mov %edx, -4(%ebp)
+pop %ecx
+popl __anonymous_a__ebpCapture__
+pushl __anonymous_b__ebpCapture__;mov %ebp, __anonymous_b__ebpCapture__
+# note, read STACK VAR ages -> -8(%ebp)
+# reading address of __anonymous_b__
+lea __anonymous_b__, %ecx
+# pushing clobbers
+push %ecx
+# Calling function map
+push %ecx
+# TODO optimize if variable just do movl
+mov -8(%ebp), %edx
+push %edx
+call map__overload__c__
+mov %eax, %esi
+add $8, %esp
+# popping clobbers
+pop %ecx
+popl __anonymous_b__ebpCapture__
+# pushing clobbers
+# Calling function __rc_collect__
+call __rc_collect__
+mov %eax, %ecx
+# popping clobbers
+# note, read STACK VAR family -> -4(%ebp)
+# pushing multi-line clobbers
+# printing array (either string or format array)
+mov -4(%ebp), %eax
+push %eax     # load buffer
+mov -4(%eax), %edx
+pushl 8(%edx) # load size
+call print_stringArr
+add $8, %esp
+# popping multi-line clobbers
+# note, read STACK VAR ages -> -8(%ebp)
+# pushing multi-line clobbers
+# printing array
+mov -8(%ebp), %eax
+push %eax     # load buffer
+mov -4(%eax), %edx
+pushl 8(%edx) # load size
+call print_arr32
+add $8, %esp
+# popping multi-line clobbers
 # setting register "a" to "0"
 mov $0, %eax
 # auto-return OK for entry function
@@ -924,5 +362,60 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# myList: 4
+# family: 4
+# ages: 8
+__anonymous_a__:
+mov __anonymous_a__ebpCapture__, %ecx
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___anonymous_a____, %esp # total stack allocation
+
+pushw __disable_gc__; movw $1, __disable_gc__
+# note, read PARAM value -> 8(%ebp)
+pushl $__STRING5__
+push 8(%ebp)
+pushl $__STRING4__
+pushl $3
+call strjoinmany
+add $16, %esp
+mov %eax, %esi
+popw __disable_gc__
+# optimized move from %esi to __gc_dontClear__
+mov %esi, __gc_dontClear__
+# setting register "a" to "%esi"
+mov %esi, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+__anonymous_b__:
+mov __anonymous_b__ebpCapture__, %ecx
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___anonymous_b____, %esp # total stack allocation
+
+# note, read PARAM value -> 8(%ebp)
+# note, read PARAM value -> 8(%ebp)
+mov 8(%ebp), %eax
+mov 8(%ebp), %ebx
+mul %ebx
+mov %eax, %esi
+# setting register "a" to "%esi"
+mov %esi, %eax
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
 

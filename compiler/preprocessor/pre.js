@@ -14,11 +14,13 @@ module.exports = function (code) {
 
             out.post()
 
-           // console.log(i)
+            //console.log(code, i)
+            //console.log(code[i], i)
             //process.exit(0)
         }
     }
     //throwE(code)
+    //throwE(code.join("\n"))
 }
 
 function treat(instruction) {
@@ -48,7 +50,7 @@ function treat(instruction) {
 
 function treatOther(line, raw, rawLineNum) {
 
-    var post = () => {}
+    var post = () => { }
 
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         var word = line[wordNum]
@@ -63,13 +65,11 @@ function treatOther(line, raw, rawLineNum) {
                 noReturnType = false
 
             var num = 0
-            while(offsetWord(num) != "{" && offsetWord(num) != undefined)
-            {
+            while (offsetWord(num) != "{" && offsetWord(num) != undefined) {
                 num++
             }
 
-            if(offsetWord(num) == undefined)
-            {
+            if (offsetWord(num) == undefined) {
                 throwE("No function statement provided in lambda")
             }
 
@@ -108,16 +108,13 @@ function treatOther(line, raw, rawLineNum) {
 
             var build = []
             var out = []
-            for(var i = 0; i < t.length; i++)
-            {
+            for (var i = 0; i < t.length; i++) {
                 var letter = t[i]
-                if(letter == ";")
-                {
+                if (letter == ";") {
                     out.push(build.join(" "))
                     build = []
                 }
-                else
-                {
+                else {
                     build.push(letter)
                 }
             }
@@ -127,9 +124,9 @@ function treatOther(line, raw, rawLineNum) {
             var lbname = helpers.functions.newAnonFunctionLabel()
 
             var newLam = {
-                name: lbname, 
-                code: out, 
-                def:line.slice(wordNum + 1, numStart - 1).join(" "), 
+                name: lbname,
+                code: out,
+                def: line.slice(wordNum + 1, numStart - 1).join(" "),
                 ready: false
             }
 
@@ -148,41 +145,102 @@ function treatOther(line, raw, rawLineNum) {
 
             rawLineNum += 2;
         }
-        else if(word == "supports")
-        {
+        else if (word == "supports") {
             var groups = []
             var build = []
-            if(offsetWord(1) != "(")
-            {
+            if (offsetWord(1) != "(") {
                 throwE("Must have parenthesis around supported functions")
             }
 
-            console.log(line.slice(wordNum + 2))
+            if (line[line.length - 2] == "{") {
+                throwE("When using a supportive overload, please add a newline between the closing parenthesis and opening function bracket")
+            }
+
+            //console.log(line.slice(wordNum + 2))
             var inDef = false
             line.slice(wordNum + 2).forEach(token => {
-                if(token == "<")
-                {
+                if (token == "<") {
                     inDef = true
                     build.push(token)
                 }
-                else if(token == ">")
-                {
+                else if (token == ">") {
                     inDef = false
                     build.push(token)
                 }
-                else if(token == "," && !inDef)
-                {
+                else if (token == "," && !inDef) {
                     groups.push(build.join(" "))
                     build = []
                 }
-                else
-                {
+                else {
                     build.push(token)
                 }
             })
+
+            var defFirstPart = line.slice(0, wordNum)
             groups.push(build.slice(0, build.length - 1).join(" "))
-            throwE(groups, line.slice(0, wordNum))
+            line = [...defFirstPart, groups[0]]
+            groups.splice(0, 1)
+
+            var depth = 1000
+            var lno = 1
+            var build = []
+            var innerBuild = []
+            var notFirst = false
+            var functionContents = []
+
+            while (depth != 0 && raw[rawLineNum + lno] != undefined) {
+                var parsed = parser.split(raw[rawLineNum + lno])
+                //console.log(parsed)
+                innerBuild = []
+                var rcode = parsed.every(x => {
+                    innerBuild.push(x)
+                    //console.log(x, ": ", depth)
+                    if (x == "{") {
+                        if (!notFirst) {
+                            depth = 0
+                            notFirst = true
+                        }
+                        depth++
+                    }
+                    else if (x == "}") {
+                        depth--
+                    }
+                    if (depth == 0 && notFirst) {
+                        return false
+                    }
+                    return true
+                })
+                // if (innerBuild[innerBuild.length - 1] != ";") {
+                //     innerBuild.push(";")
+                // }
+                build.push(innerBuild.join(" "))
+                if (!rcode) {
+                    functionContents = build
+                    break
+                }
+                lno++
+            }
+            if (raw[rawLineNum + lno] == undefined) {
+                throwE("Unclosed function bracket after supportive overload")
+            }
+
+            //throwE(groups, line.slice(0, wordNum))
+            //throwE("t", build)
+
+            post = () => {
+                groups.forEach(x =>
+                {
+                    var o = [defFirstPart.join(" ") + x]
+                    build.forEach(e => {
+                        o.push(e)
+                    })
+                    raw.splice(rawLineNum, 0, ...o)
+                }
+                )
+                //raw.splice(rawLineNum - 2, 0, `__asm__ "pushl ${lbname}ebpCapture__;mov %ebp, ${lbname}ebpCapture__"`)
+                //raw.splice(rawLineNum, 0, `__asm__ "popl ${lbname}ebpCapture__"`)
+            }
         }
     }
-    return {data:line, lineNo: rawLineNum, post}
+    return { data: line, lineNo: rawLineNum, post }
 }
