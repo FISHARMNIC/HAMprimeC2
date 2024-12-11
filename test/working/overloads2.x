@@ -16,8 +16,8 @@ a function several times, but with different parameter and return types
 */
 
 map function supports (
-    <any:array arr, any operation> -> none,
-    <dyna:array arr, any operation> -> none
+    <any:array arr, any operation>,
+    <dyna:array arr, any operation>
 )
 {
     create i <- 0;
@@ -25,7 +25,7 @@ map function supports (
 
     while(i <: size)
     {
-        arr[i] <- (call operation(arr[i]) -> auto);
+        arr[i] <- call operation(arr[i]);
         i <- i + 1;
     }
 }

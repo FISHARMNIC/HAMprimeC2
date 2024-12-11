@@ -114,7 +114,7 @@ function evaluate(line) {
         // #region modifications
         if (word == '(' || word == ')') {
             if (offsetWord(-2) == "call") {
-                var returnType = defines.types.u32
+                var returnType = defines.types.auto
 
                 var hasRet = false
                 if (offsetWord(3) == "->") // if next word is a type
