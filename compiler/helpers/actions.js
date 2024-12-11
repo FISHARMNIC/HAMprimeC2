@@ -1521,6 +1521,7 @@ var functions = {
                 }
 
                 if (!matchesWithOverload) {
+                    variadics.sort((a,b) => b.parameters.length - a.parameters.length)
                     var variadicFound = variadics.find(variadic => {
                         return variadic.parameters.every((param,i) => {
                             return helpers.types.areSimilarArrayTypesNonStrict(param.type, givenTypes[i])
