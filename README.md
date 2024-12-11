@@ -146,6 +146,7 @@ Note: This is still being worked on, and editing still has some issues. This was
 * [Type Inference](#Type-inference-example)
 * [Overloads](#Operator-Overloads)
 * [Overloads(2)](#More-Overloads)
+* [Supportive Overloads](#Supportive-Overloads)
 * [Lambdas](#Lambdas)
 * [Lambdas(2)](#Lambda-Captures)
 * [Strings](#Strings)
@@ -718,6 +719,44 @@ entry function<> -> u32
     print_(myFile.getLine());
 
     myFile.close();
+
+    return 0;
+}
+```
+
+### Supportive Overloads
+```Dart
+/* See "test/working/overloads2.x" for an explanation on why this is needed */
+map function supports (
+    <any:array arr, any operation> -> none,
+    <dyna:array arr, any operation> -> none
+)
+{
+    create i <- 0;
+    create size <- len(arr);
+
+    while(i <: size)
+    {
+        arr[i] <- (call operation(arr[i]) -> auto);
+        i <- i + 1;
+    }
+}
+
+entry function<>
+{
+    create family <- {"Dad", "Mom", "Dog", "Cat"};
+    create ages <- {1,2,3,4};
+
+    map(family, lambda<string value> {
+        return (`I love my ${value}`);
+    });
+
+    map(ages, lambda<u32 value> {
+        return (value * value);
+    });
+
+    print_(family);
+    print_(ages);
 
     return 0;
 }
