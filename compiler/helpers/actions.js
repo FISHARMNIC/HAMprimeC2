@@ -1523,7 +1523,7 @@ var functions = {
                 if (!matchesWithOverload) {
                     var variadicFound = variadics.find(variadic => {
                         return variadic.parameters.every((param,i) => {
-                            return param.type == givenTypes[i]
+                            return helpers.types.areSimilarArrayTypesNonStrict(param.type, givenTypes[i])
                         })
                     })
 

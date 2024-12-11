@@ -1,7 +1,15 @@
 /*
 TODO:
 
-    * can you create variables from lambdas like: "create jon <- (lambda<> {...})"
+    * duplicate wont duplicate its pointers and declare ownership
+        * like duplicating a fmt with strings wont dupe the string, so if original is lost, gc destroys name of other
+        * either make it that you can create your own duplicate fn
+        * OR if duplicating a fmt it knows what needs to be duped
+            * but just know that if that for example has 2x nested structs
+            * needs to be recursive
+            * probably easier for now to do the first method
+
+* can you create variables from lambdas like: "create jon <- (lambda<> {...})"
     * add compilation flag -c where no link at all
 
     * implement something where you can access properties on a dyna
