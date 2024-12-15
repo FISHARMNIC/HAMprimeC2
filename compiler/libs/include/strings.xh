@@ -4,3 +4,4 @@ forward strsplitchr function<string str, char delim>            -> string:array;
 forward strinsert   function<string str, string ins, u32 index> -> string;
 forward strjoin     function<string first, string second>       -> string;
 forward strsplit    function<string str>                        -> string:array;
+forward strincludes function<string str, u8 ch>                 -> u8;

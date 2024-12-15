@@ -392,6 +392,8 @@ var variables = {
             }
             nextThingTakesOwnership = defaultAutomaticOwnership
             createStackVariableListOnly(vname, newStackVar(vname, type))
+            //if(vname == "sub")
+                //throwE(getAllStackVariables())
             //throwE(stackVariables)
         } else { // outside of function, global variable
 
@@ -1084,8 +1086,10 @@ var allocations = {
         arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var oldAllocLabel = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
-        var allocLbl = helpers.registers.getFreeLabelOrRegister(defines.types.dyna)
-        outputCode.autoPush(`mov ${oldAllocLabel}, ${allocLbl}`)
+        var allocLbl = "%eax" 
+        // HERE IF BROKEN DEC 15 2024 FIX 123 ABC, then remove "%eax", and replace with next line. Then uncomment one after that
+        // helpers.registers.getFreeLabelOrRegister(defines.types.dyna)
+        //outputCode.autoPush(`mov ${oldAllocLabel}, ${allocLbl}`)
 
         //throwE(helpers.types.guessType(allocLbl))
         if ("hasData" in arrayClamp) {
@@ -1109,10 +1113,19 @@ var allocations = {
         var index = 0
 
         var allElementTypes = []
+        var additionalRemoved = 0
+        arr = arr.filter(x => {
+            if(x == ";")
+            {
+                additionalRemoved++
+                return false
+            }
+            return true
+        })
         arr.every((x) => {
             if (onComma) {
                 if (x != ",") {
-                    throwE(`Expected comma in array allocation: [${arr.join(",")}]`)
+                    throwE(`Expected comma but got "${x}" in array allocation: [${arr.join(",")}]`)
                 }
             } else {
                 var elementType = helpers.types.guessType(x)
@@ -1155,7 +1168,15 @@ var allocations = {
                 var dest;
 
                 if (globalAlloc) {
+                    if(helpers.types.stringIsRegister(allocLbl))
+                    {
                     dest = `${index * elementSize}(${allocLbl})`
+                    }
+                    else
+                    {
+                        throwE("No. Shouldnt get here")
+                        dest = `(${allocLbl}) + ${index * elementSize}`
+                    }
                 } else {
                     dest = `-${ebpOff - (index * elementSize)}(%ebp)`
                 }
@@ -1172,6 +1193,7 @@ var allocations = {
                 else {
                     assembly.optimizeMove(x, dest, elementType, arrayClamp)
                 }
+                nextThingTakesOwnership = defaultAutomaticOwnership
                 index++
             }
             onComma = !onComma
@@ -1198,9 +1220,8 @@ var allocations = {
 
         var out = helpers.registers.getFreeLabelOrRegister(ref)
         if (globalAlloc) {
-            outputCode.autoPush(
-                `mov ${allocLbl}, ${out}`
-            )
+            outputCode.autoPush(`# Moving arr to out`)
+            assembly.optimizeMove(allocLbl, out, ref, ref)
         } else {
             outputCode.autoPush(
                 `lea -${ebpOff}(%ebp), ${out} # load array base into variable`
@@ -1211,9 +1232,8 @@ var allocations = {
             //     `mov %eax, ${out}`
             // )
         }
-
         //console.log(ref)
-        return { out, len: arr.length, arrayType: ref }
+        return { out, len: arr.length + additionalRemoved, arrayType: ref }
     }
     // deallocStack: function () {
     //     outputCode.autoPush(`add \$${Object.entries(stackVariables[stackVariables.length - 1]).length}, %esp`)

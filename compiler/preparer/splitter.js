@@ -28,6 +28,7 @@ var nesters = {
 }
 
 var inComment = false;
+var protected = false
 
 // computes the sum of the outputs of a function expecting an offset
 // ex. returns char + nextChar + secNextChar
@@ -72,50 +73,55 @@ function split(line) {
             }
 
             var noExe = noExes.every(x => {
-                // NEW
+                    // NEW
 
-                var revbuild = line.slice(charNum)
-                var index = revbuild.length - 1
+                    var revbuild = line.slice(charNum)
+                    var index = revbuild.length - 1
 
-                //console.log("INDEX", index, revbuild, x)
-                while (index >= 0) {
-                    if (x == revbuild) {
-                        //console.log("READING", x)
+                    //console.log("INDEX", index, revbuild, x)
+                    while (index >= 0) {
+                        if (x == revbuild) {
+                            //console.log("READING", x, build)
+                            if (build != "")
+                                outBuffer.push(build) // push current
+                            outBuffer.push(x) // push sequence
+                            build = "" // clear current
+                            charNum += x.length - 1; //offset by length of sequence
+                            //console.log("FOUND", x)
+                            return false;
+                        }
+                        //console.log(revbuild)
+                        revbuild = revbuild.slice(0, revbuild.length - 1)
+                        index--
+                    }
+                    return true
+
+
+                    // OLD
+
+                    /*
+                    // if length = 2, then sum up the current and the next
+                    // if length = 3, current + next + second next
+                    if (cascade(x.length, charOffset) == x) {
+                        console.log("READING", x)
                         if (build != "")
                             outBuffer.push(build) // push current
                         outBuffer.push(x) // push sequence
                         build = "" // clear current
                         charNum += x.length - 1; //offset by length of sequence
-                        //console.log("FOUND", x)
                         return false;
                     }
-                    //console.log(revbuild)
-                    revbuild = revbuild.slice(0, revbuild.length - 1)
-                    index--
-                }
-                return true
+                    return true
+                    */
 
-                // OLD
+                })
 
-                // if length = 2, then sum up the current and the next
-                // if length = 3, current + next + second next
-                if (cascade(x.length, charOffset) == x) {
-                    console.log("READING", x)
-                    if (build != "")
-                        outBuffer.push(build) // push current
-                    outBuffer.push(x) // push sequence
-                    build = "" // clear current
-                    charNum += x.length - 1; //offset by length of sequence
-                    return false;
-                }
-                return true
-
-            })
+            
 
             if (!noExe) continue; // there was a resevered sequence, dont split and skip
 
             if (symbols.includes(char)) { // splitting character
-
+                protected = false
                 if (build != "")
                     outBuffer.push(build); // push current
 
@@ -124,7 +130,30 @@ function split(line) {
                     mode = 1
                 } else {
                     if (char != " ")
+                    {
                         outBuffer.push(char);
+                    }
+                    else
+                    {
+                        if(nextChar != undefined && /[a-zA-Z]/.test(nextChar))
+                        {
+                            //console.log("string start", nextChar)
+                            build = nextChar
+                            charNum += 2
+                            while(charNum < line.length && !symbols.includes(line[charNum]))
+                            {
+                                build += line[charNum]
+                                charNum++
+                            }
+                            if(build.length != 0)
+                                outBuffer.push(build)
+
+                            //console.log("FINISH:", build)
+                            build = ""
+                            charNum--
+                            continue
+                        }
+                    }
                     build = ""; // clear buffer
                 }
             } else if (quoteMarks.includes(char)) { // enter special non-splitting mode in quotes
@@ -137,11 +166,14 @@ function split(line) {
                     inquotes = char;
                 }
             } else if ((char == parseInt(char)) != mode) { // if we are going from numbers to letters or vice versa
-                if (mode == 0 && (/[a-zA-Z]/).test(prevChar)) // going from numbers to letters without a splitter, like bob123
+                if (mode == 0 && (/[a-zA-Z]/).test(prevChar)) // going from letters to numbers without a splitter, like bob123
                 {
+                    protected = true
                     build += char;
                 }
                 else {
+                    protected = false
+                    //console.log("STARTING", char)
                     if (build != "")
                         outBuffer.push(build);
                     build = char;

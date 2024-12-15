@@ -1,9 +1,16 @@
 /*
 TODO:
 
-    * duplicate wont duplicate its pointers and declare ownership
+
+CRUCIAL
+* for each in nested arr will take ownership!
+
+
+* create an auto "toString" generator that just does property: name, property: name, ...
+
+    * duplicate wont duplicate its pointers and declare ownership (its a shallow clone)
         * like duplicating a fmt with strings wont dupe the string, so if original is lost, gc destroys name of other
-        * either make it that you can create your own duplicate fn
+        * either make it that you can create your own duplicate fn, like how toString works
         * OR if duplicating a fmt it knows what needs to be duped
             * but just know that if that for example has 2x nested structs
             * needs to be recursive
@@ -470,6 +477,7 @@ for(var lineNo = 0; lineNo < inputCode.length; lineNo++)
     globalLine = lineNo
     globalLineConts = line
 
+    //console.log("LINE::", line, line.length)
     var lsplit = parser.split(line);
     var io = lsplit.indexOf("//")
     if (io != -1) {

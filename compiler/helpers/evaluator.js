@@ -750,7 +750,7 @@ function evaluate(line) {
 
                 line[begin] = output.out
                 line.splice(begin + 1, output.len + 1) //HERE IF BUG MAKE output.len + 2
-                //throwE(line)
+                //console.log("----> ", line)
                 wordNum = begin
             } else if (oldScope.type == keywordTypes.CONSTRUCTOR) {
                 //throwE(oldScope.data.cons)
@@ -806,8 +806,8 @@ function evaluate(line) {
                 var dataType = helpers.types.guessType(data)
 
                 //throwE(dataType)
-                //console.log(dataType)
                 if (helpers.types.checkIfElementsHaveData(dataType)) {
+
                     //throwE("Printing format arrays are still WIP", dataType.arrayElements)
 
                     outputCode.autoPush(
@@ -820,7 +820,6 @@ function evaluate(line) {
 
                     // IMPORTANT need to save and restore "this" before and after
                     if (helpers.types.isStringOrConststrType(dataType.arrayElements)) {
-
                         outputCode.autoPush(
                             `call print_stringArr`,
                             `add $8, %esp`
@@ -857,7 +856,7 @@ function evaluate(line) {
                     //actions.assembly.popClobbers();
                 }
 
-                else if ("hasData" in dataType) {
+                else if ("arrayElements" in dataType) {
                     var arr_type = dataType.size;
                     var printFn = `print_arr${arr_type}`
 
@@ -1119,7 +1118,9 @@ function evaluate(line) {
                 )
 
                 //throwE(elementType)
+                nextThingTakesOwnership = false
                 var elementVariable = actions.variables.create(element, elementType, regA)
+                //throwE(getAllStackVariables())
 
                 outputCode.autoPush( // todo, need to get len and see when done
                     `${requestBracket.data.name}:`,

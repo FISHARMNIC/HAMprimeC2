@@ -19,7 +19,6 @@ module.exports = function (code) {
             //process.exit(0)
         }
     }
-    //throwE(code)
     //throwE(code.join("\n"))
 }
 
@@ -45,6 +44,10 @@ function treat(instruction) {
         //console.log("sum", -sum+11)
         includeFileOff += likeText.length + (-sum + 11)//+ sum//.filter(x=> x.trim().length != 0).length
         return newCode
+    }
+    else
+    {
+        throwE("Unknown directive: ", instruction[0])
     }
 }
 

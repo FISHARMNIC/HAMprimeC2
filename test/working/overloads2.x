@@ -16,7 +16,7 @@ a function several times, but with different parameter and return types
 */
 
 map function supports (
-    <any:array arr, any operation>,
+    <any:array arr,  any operation>,
     <dyna:array arr, any operation>
 )
 {
@@ -30,23 +30,52 @@ map function supports (
     }
 }
 
+Person format
+{
+    .name string;
+    .age u32
+    
+    .toString method<>
+    {
+        return(`name: ${this.name}, age: ${this.age}`);
+    }
+}
+
 entry function<>
 {
     create family <- {"Dad", "Mom", "Dog", "Cat"};
-    create ages <- {1,2,3,4};
-
+    create ages   <- {1,2,3,4,5,6,7,8};
+    
+    create people <- Person[3];
+    people[0] <- Person<name:"Bob",  age: 1>;
+    people[1] <- Person<name:"Joe",  age: 2>;
+    people[2] <- Person<name:"Phil", age: 3>;
+    
+    /* strings are dynamics */
     map(family, lambda<string value> {
         return (`I love my ${value}`);
     });
 
+    /* integers are statics */
     map(ages, lambda<u32 value> {
         return (value * value);
     });
+    
+    /* formats are dynamics */
+    map(people, lambda<Person value> {
+        value.age <- value.age + 1;
+        value.name <- value.name + " Jackson";
+        return value;
+    })
 
+    /*
+    Just a test. This will result in seeing garbage data if ownership is not working correctly
+    */
     __rc_collect__();
 
     print_(family);
     print_(ages);
+    print_(people);
 
     return 0;
 }

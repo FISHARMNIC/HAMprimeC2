@@ -173,3 +173,9 @@ char *strjoin(char *first, char *second)
 
     return outbuf;
 }
+
+int strincludes(char *str, int ch)
+{
+    assert(str != 0);
+    return strchr((const char *) str, ch) != (char*) 0;
+}

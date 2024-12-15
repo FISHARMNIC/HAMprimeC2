@@ -170,7 +170,7 @@ function getLineFromAsm(asmLine){
         var tline = __getTrueLine(execFileLikeTrue, info[0].line)
         if(tline == -1)
         {
-            getTerminal().value += "\n[IDE ERROR] Unable to track assembly"
+            //getTerminal().value += "\n[IDE ERROR] Unable to track assembly"
         }
         return tline
     }
