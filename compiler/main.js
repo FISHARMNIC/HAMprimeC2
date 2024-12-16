@@ -3,8 +3,12 @@ TODO:
 
 
 CRUCIAL
-* for each in nested arr will take ownership!
+# Allocation for array
+pushl $0
+pushl $28
+call __rc_allocate__
 
+^^^ allocates wayyy to much memory, should be 3 * 4 (in issue2.x)
 
 * create an auto "toString" generator that just does property: name, property: name, ...
 

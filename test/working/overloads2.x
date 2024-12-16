@@ -63,6 +63,8 @@ entry function<>
     
     /* formats are dynamics */
     map(people, lambda<Person value> {
+        /* keep in mind that "value" is a reference */
+        /* you could use "duplicate" if you dont like that */
         value.age <- value.age + 1;
         value.name <- value.name + " Jackson";
         return value;

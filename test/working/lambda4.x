@@ -6,6 +6,4 @@ entry function<> -> u32
     });
 
     call bob(123, 456);
-
-    create jonchar <- 123;
 }
