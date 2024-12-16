@@ -152,8 +152,6 @@ Note: This is still being worked on, and editing still has some issues. This was
 
 </details>
 
-<details>
-<summary><b>Examples</b></summary>
 
 # Interesting examples
 * [Class](#Formats-as-classes)
@@ -1013,5 +1011,3 @@ entry function<> -> u32
     return 0;
 }
 ```
-
-</details>
