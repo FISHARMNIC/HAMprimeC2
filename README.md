@@ -64,6 +64,9 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
 
 </details>
 
+<details>
+<summary><b>Whats new/works so far?</b></summary>
+
 # What is working so far?
 All of the things below work. Scroll down for examples or click [here](https://github.com/FISHARMNIC/HAMprimeC2/tree/main/test/working).
 **Detailed documentation can be viewed [here](https://fisharmnic.github.io/docs)**
@@ -146,6 +149,11 @@ The updated IDE now shows you what each line compiles into assembly. Simply clic
 </p>  
 
 Note: This is still being worked on, and editing still has some issues. This was more of a side project that I will finish when I am done with the compiler. Unfortunately the assembly tracing and line highlighting are somewhat broken for the moment due to changes that have to do with how lines are counted. Hopefully I will fix this soon. Currently it they only work correctly in simple files like `floats.x`
+
+</details>
+
+<details>
+<summary><b>Examples</b></summary>
 
 # Interesting examples
 * [Class](#Formats-as-classes)
@@ -1005,3 +1013,5 @@ entry function<> -> u32
     return 0;
 }
 ```
+
+</details>
