@@ -10,16 +10,16 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
 ## Recent Update Log
 - Added function overloads! 
     - And added supportive overloads for functions only currently
-    - see `test/working/supports_simple.x` or `test/working/overloads2.x` for an explanation
+    - see `test/working/functions-supports.x` or `test/working/functions-support2.x` for an explanation
 - Added `break` and `continue` for loops
 - Added new type `dyna` which is the same as `any:dynamic`
 - Array length can be get with `len(arr)`
 - `something function<> -> auto {...}` is no longer needed.
     * Now you can just do `something function<> {...}`
     * Works for lambdas, methods, and operators too
-- `print_` now supports arrays of formats (see `test/working/print_.x`)
+- `print_` now supports arrays of formats (see `test/working/uses-print_.x`)
 - **Big Update**
-    * Added lambdas! see `test/working/lambda.x`
+    * Added lambdas! see `test/working/lambda-simple.x`
     * Must be passed as type `any`
     * Must be called using `call` keyword
 - Added `JS_EVAL "any javascript code to be run at compile time"` (for debug)
@@ -42,11 +42,11 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
     - see `test/working/link-example/howto.txt`
 - Added reference type annexing
     - Similar to c++ pass by reference
-    - see `test/working/files.x` shr overloads
+    - see `test/working/classes-fileIO.x` shr overloads
 - Added multiple overloads per operator per class
     - Ex. now the same class can have 2 overloads for "+", one accepts a string and one accepts an int
-- Added string interpolation! See strings example below or `test/working/stringInterpolation.x`
-- Added `forEach` (See `test/working/feach.x`. Basic support, more coming soon) 
+- Added string interpolation! See strings example below or `test/working/strings-interpolation.x`
+- Added `forEach` (See `test/working/loops-forEach.x`. Basic support, more coming soon) 
 - Added writing into memory address specified by pointer (still WIP, many cases don't work)
 - Operator overloads addded!
     - Currently only support the four main math functions (+-/*), shifting, and array set/get
@@ -739,7 +739,7 @@ entry function<> -> u32
 
 ### Supportive Overloads
 ```Dart
-/* See "test/working/overloads2.x" for an explanation on why this is needed */
+/* See "test/working/functions-supports2.x" for an explanation on why this is needed */
 map function supports (
     <any:array arr, any operation> -> none,
     <dyna:array arr, any operation> -> none

@@ -1085,7 +1085,7 @@ var allocations = {
 
         arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
-        var oldAllocLabel = allocations.allocateAuto(arr.filter(x => x != ",").length * elementSize, false, note)
+        var oldAllocLabel = allocations.allocateAuto(arr.filter(x => x != "," && x != ";").length * elementSize, false, note)
         var allocLbl = "%eax" 
         // HERE IF BROKEN DEC 15 2024 FIX 123 ABC, then remove "%eax", and replace with next line. Then uncomment one after that
         // helpers.registers.getFreeLabelOrRegister(defines.types.dyna)
