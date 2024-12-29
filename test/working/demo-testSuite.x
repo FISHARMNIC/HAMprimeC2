@@ -6,7 +6,7 @@ Capturing stdout and comments, credit to "tedtanner" on stackoverflow (https://s
 
 #include sys cpipes;
 
-testOutput function<string testName, any fn, string expected> -> u32
+testOutput function<string testName, fn func, string expected> -> u32
 {
     print_(`[ RUN      ] : ${testName} `);
 
@@ -22,7 +22,7 @@ testOutput function<string testName, any fn, string expected> -> u32
     dup2(pipes[1], fileno(stdout));
     
     /* This part is captured, and make sure to terminate with 0 */
-    call fn();
+    func();
     printf("%c", 0);
     
     /* Restore stdout */

@@ -773,7 +773,10 @@ var variables = {
     },
     readAddress: function (name) {
         outputCode.autoPush(`# reading address of ${name}`)
-        var reg = helpers.registers.getFreeLabelOrRegister(defines.types.p32)
+
+        //var reg = helpers.registers.getFreeLabelOrRegister(lambdaQueue.find(x => x.name == name) == undefined ? defines.types.p32 : defines.types.fn)
+        var reg = helpers.registers.getFreeLabelOrRegister(lambdaQueue.find(x => x.name == name) == undefined ? defines.types.p32 : defines.types.fn)
+        //console.log(reg)
         outputCode.autoPush(
             `lea ${name}, ${reg}`
         )
@@ -821,7 +824,7 @@ var variables = {
 
         if (("hasData" in valueType || helpers.types.checkIfElementsHaveData(arrType)) && nextThingTakesOwnership) {
             if (!helpers.types.checkIfElementsHaveData(arrType)) {
-                throwE(valueType, arrType, elementType)
+                //throwE(valueType, arrType, elementType)
                 throwE(`Assigning "${helpers.types.convertTypeObjToName(valueType)}" to an array expecting static "${helpers.types.convertTypeObjToName(arrType)}"`)
             } else if (!("hasData" in valueType)) {
                 if (helpers.types.isStringOrConststrType(valueType) && helpers.types.isStringOrConststrType(arrType)) // if conststr

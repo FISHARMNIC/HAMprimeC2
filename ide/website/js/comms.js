@@ -23,7 +23,7 @@ function get(command) {
         window.alert("Server Crashed")
     }
     if (xhr.status != 200) {
-        window.alert("Server failed to process request")
+        window.alert("Server failed to process request, try clicking the button again.\n\nIf this happened while opening a file, ignore it.\n\nIf this persists, check the terminal to see the error message.")
         return 0
     }
     return xhr.responseText
@@ -130,6 +130,8 @@ var comms = {
         var clicked = document.getElementById(`__button_${file}__`)
         if (clicked != undefined)
             clicked.style.backgroundColor = "#656C70"
+
+        setTimeout(this.compile, 100)
     },
     saveFile: function () {
         var textContent = editor.doc.getValue()

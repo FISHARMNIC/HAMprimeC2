@@ -1,6 +1,6 @@
-doOperation function<u32 a, u32 b, any operation> -> auto
+doOperation function<u32 a, u32 b, fn operation> -> auto
 {
-    call operation(a,b) -> none;
+    operation(a,b) -> none;
 }
 
 entry function<> -> u32

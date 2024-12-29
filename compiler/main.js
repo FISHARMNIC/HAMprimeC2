@@ -1,16 +1,11 @@
 /*
 TODO:
+    * change gc to have another property in each allocation, "immortal", if immortal, it isn't gcd
 
+    * fix array allocation MANUALLY LOADING EVERYTHING FOR SIMPLE TYPES
+        * if its a constant, like just numbers, then alloc compiletime and run memcpy or something
 
-CRUCIAL
-# Allocation for array
-pushl $0
-pushl $28
-call __rc_allocate__
-
-^^^ allocates wayyy to much memory, should be 3 * 4 (in issue2.x)
-
-* create an auto "toString" generator that just does property: name, property: name, ...
+    * create an auto "toString" generator that just does property: name, property: name, ...
 
     * duplicate wont duplicate its pointers and declare ownership (its a shallow clone)
         * like duplicating a fmt with strings wont dupe the string, so if original is lost, gc destroys name of other
@@ -19,13 +14,15 @@ call __rc_allocate__
             * but just know that if that for example has 2x nested structs
             * needs to be recursive
             * probably easier for now to do the first method
+        * maybe call it like .clone
 
-* can you create variables from lambdas like: "create jon <- (lambda<> {...})"
     * add compilation flag -c where no link at all
 
     * implement something where you can access properties on a dyna
         * maybe just some sort of hash fn?
         * but first test if only one struct has that property as a name
+        * Maybe some type of lookup table?
+            * with a c function that finds addresses
 
     * need to add array push and pop
         * make sure to differentiate between arrays with statics and dynamics
@@ -65,23 +62,7 @@ call __rc_allocate__
             * do first dec is "function"
             * then next do "function_b" etc
         * Maybe do special property like .overloads
-    
-    * simplifying overloads:
-        * something like: 
-            map function supports
-                <any:dynamic:array arr, any operation>
-                <any:static:array arr, any operation>
-            {
-            ...
-            }
-        * basically duplicates the function, one for each param type
-        * done in pre proc
 
-    * type "smart" which can be split into:
-        * smart:dynamic
-        * smart:static
-        * The dynamic type can be used for all dynamics
-        * see plans/lambdaSmart.x
     
     * make new type "fn" that can be called without "call" 
         * can specify ret type by doing "bob() -> u32"
@@ -90,8 +71,6 @@ call __rc_allocate__
     * add way to get arr len
 
     * add check for print_formatArr to check if toString for format actually exists
-
-    * not sure if {Person<...>, Person<...>} works due to GC?
 
     HIGH PRIORITY
     * maybe merge all getCapture... with the normal functions   
@@ -154,11 +133,7 @@ call __rc_allocate__
         - Just have a global variable called nextIsForward that is triggered whenever the line has the word "forward" in
             - removes word and sets flag to true which each function should manually read
 
-    HOW TO REWORK SPLITTER FOR MULTILINE THINGS LIKE LAMBDAS
-        - Simple, forget line breaks! just use semi-colon as splitter
-        - Line breaks are all deleted
-        - make sure to fix issue with elif not working first
-
+    * elif doest like bracket on same line
 
     - ADD REFERENCE TYPE PARAMETERS
         - special parameter property "isReference" which forces lea then push
@@ -183,16 +158,8 @@ call __rc_allocate__
         DO ESP ALLOCATION DELETE AFTER CLOSING WHILE/FEACH LOOP???
     
 
-    !! CRUCIAL !!
-        - for some reason you cant have fn name like "substring" bc splitter turns into ["sub","string"]
-
     Add destructors for things like GMP
         - for compatibility with C
-
-
-    How does duplicate work for items with dynamic children?
-    Do the thing that brackets can open onto new line
-        - will completely break line tracking (maybe?)
 
     WHY NOT JUST HAVE ALL ALLOCATIONS SAVED IN TEMPOWNER????
         - removes need for return_new

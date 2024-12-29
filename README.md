@@ -8,6 +8,9 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
 <summary><b>Recent Update Log</b></summary>
 
 ## Recent Update Log
+- Lambdas and certain types not longer need to be called using the `call` keyword
+    - Only works for params/variables of type: `any` and the a new type: `fn`
+- Added new type
 - Added function overloads! 
     - And added supportive overloads for functions only currently
     - see `test/working/functions-supports.x` or `test/working/functions-support2.x` for an explanation

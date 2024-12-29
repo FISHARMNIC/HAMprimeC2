@@ -9,9 +9,9 @@ Person format
     }
 }
 
-testLam function<any lam> -> none
+testLam function<fn lam> -> none
 {
-    call lam();
+    lam();
 }
 
 entry function<> -> u32

@@ -3,10 +3,9 @@
     
     NOTE: if this doesnt work make sure compiling with -lpthread
 */
-forward pthread_create function<u32 a, u32 b, u32 c, u32 d>;
+forward pthread_create function<p32 a, u32 b, fn c, u32 d>;
 forward pthread_exit function<u32 a>;
-forward sleep function<u32 a>;
-forward write function<u32 a, p8 b, u32 c>;
+forward write function<u32 a, conststr b, u32 c>;
 
 thread function<> -> u32
 {
@@ -23,7 +22,7 @@ thread function<> -> u32
 entry function<> -> u32
 {
     create tid <- 0;
-    pthread_create($tid, 0, thread, 0);
+    pthread_create($(tid), 0, $thread, 0);
     
     create i <- 0;
     while(i <: 10)

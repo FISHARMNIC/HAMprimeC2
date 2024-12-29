@@ -1,4 +1,4 @@
-// I THINK its fixed
+/* Pretty sure its fixed, issue was "sub" was taking ownership */
 
 entry function<> -> u32
 {
@@ -8,5 +8,5 @@ entry function<> -> u32
     {
         print_(sub);
     }
-    
+
 }

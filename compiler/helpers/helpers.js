@@ -374,7 +374,7 @@ var types = {
         } else if (this.stringIsRegister(word)) {
             return objCopy(this.getRegisterType(word))
         } else if (variables.checkIfParameter(word)) {
-            return objCopy(functions.getParameterType(word))
+            return objCopy(functions.getParameterType(word).type)
         } else if (variables.checkIfOnCaptureStack(word)) {
             return objCopy(getCaptureStackVars()[word].type)
         } else if (variables.checkIfCaptureParam(word)) {

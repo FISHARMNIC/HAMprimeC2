@@ -91,7 +91,11 @@ function evaluate(line) {
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
 
         var word = line[wordNum]
+        //console.log(word + " :: " + helpers.types.guessType(word).canBeCalled)
+
         var offsetWord = x => wordNum + x >= 0 ? line[wordNum + x] : null;
+
+        //console.log(word, helpers.types.guessType(offsetWord(-1)).canBeCalled)
 
         // #region comments
         if (inComment) {
@@ -113,6 +117,7 @@ function evaluate(line) {
 
         // #region modifications
         if (word == '(' || word == ')') {
+
             if (offsetWord(-2) == "call") {
                 var returnType = defines.types.auto
 
@@ -140,7 +145,41 @@ function evaluate(line) {
                 //throwE(line, wordNum)
 
             }
+            else if (word == '(' && helpers.types.guessType(offsetWord(-1)).canBeCalled) {
+                var fname = offsetWord(-1)
+                var args = offsetWord(1)
+                var hasRet = false
+                var returnType = defines.types.auto
+
+                if (typeof (args) == "string") {
+                    if (args == ")")
+                        args = []
+                    else
+                        args = [args]
+                }
+
+                if (offsetWord(3) == "->") // if next word is a type
+                {
+                    hasRet = true
+                    //throwE("ya")
+                    returnType = defines.types[offsetWord(4)]
+                }
+                //throwE(offsetWord(-1), line)
+
+                // call as address
+                if (hasRet) {
+                    line[wordNum - 1] = actions.functions.callFunction(fname, args, false, null, returnType)
+                    line.splice(wordNum, 5)
+                } else {
+                    //console.log(fname, args, line)
+                    line[wordNum - 1] = actions.functions.callFunction(fname, args, false, null, returnType)
+                    line.splice(wordNum, 3)
+                }
+
+                //console.log("bah", line)
+            }
             else {
+                //if(word == '(' && !helpers.types.guessType(offsetWord(-1)).canBeCalled)
                 line.splice(wordNum, 1)
                 wordNum--;
             }
@@ -1010,6 +1049,10 @@ function evaluate(line) {
                 var params = offsetWord(2)
                 if (typeof (params) == "string")
                     params = [params]
+                //console.log("::::", params, line)
+                if (params == undefined) {
+                    throwE("Parameters is undefined, there is probably a syntax error.\n** Did you add a trailing comma by accident?")
+                }
                 var params_obj = actions.functions.createParams(params)
                 var returnType = objCopy(defines.types.unknown)
                 var noReturnType = true
@@ -1051,8 +1094,14 @@ function evaluate(line) {
                     throwE(`Do not declare a function named "__not_a_function__"`)
                 }
 
+                //console.log(fname)
+
                 if (fname in userFunctions) {
                     var newlbl = `${fname}__overload__${helpers.functions.newUniqueStr()}__`
+                    if(!("overloads" in userFunctions[fname]))
+                    {
+                        throwE(`Cannot overload "${fname}". It might be an internal function.`)
+                    }
                     userFunctions[fname].overloads.push(data)
                     data.overloads.push(userFunctions[fname]) // circular so that can read overloads from overloads itself
                     //throwE("overloads WIP. Can be created but not called yet", userFunctions[fname])
@@ -1079,13 +1128,13 @@ function evaluate(line) {
                     `jne ${requestBracket.data.exit}` // jump out if not equal
                 )
             }
-            else if(word == "break") {
+            else if (word == "break") {
                 var statement = helpers.general.getMostRecentLoop()
                 outputCode.autoPush(`jmp ${statement.data.exit} # "break" statement in loop`)
             }
-            else if(word == "continue") {
+            else if (word == "continue") {
                 var statement = helpers.general.getMostRecentLoop()
-                outputCode.autoPush(`jmp ${statement.type == keywordTypes.FOREACH? statement.data.continuer : statement.data.name} # "continue" statement in loop`)
+                outputCode.autoPush(`jmp ${statement.type == keywordTypes.FOREACH ? statement.data.continuer : statement.data.name} # "continue" statement in loop`)
             }
             else if (word == "forEach") {
                 var element = offsetWord(2)[0]
@@ -1258,10 +1307,10 @@ function evaluate(line) {
             }
             //debugPrint("1232323", line)
             line.splice(wordNum + 1, 3)
+            //console.log(line)
         }
         // #endregion
     }
-
 
     // EVERYTHING MUST BE ABOVE THIS
 

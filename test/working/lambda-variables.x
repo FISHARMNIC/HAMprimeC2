@@ -4,6 +4,8 @@ entry function<> -> u32
     create bob <- (lambda<u32 a, u32 b> {
         print_(`${a} + ${b} = ${a + b}`);
     });
+    
+    //JS_EVAL "throwE(globalVariables)";
 
-    call bob(123, 456);
+    bob(123, 456);
 }

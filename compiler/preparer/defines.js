@@ -118,7 +118,17 @@ module.exports = {
             pointer: false,
             special: false,
             dblRef: false,
-            acceptsAny: true
+            acceptsAny: true,
+            canBeCalled: true
+        },
+        "fn": {
+            size: 32,
+            float: false,
+            pointer: false,
+            special: false,
+            dblRef: false,
+            acceptsAny: true,
+            canBeCalled: true
         },
         "dyna": {
             size: 32,
@@ -188,7 +198,8 @@ module.exports = {
             pointer: false,
             special: false,
             dblRef: false,
-            unknown: true
+            unknown: true,
+            canBeCalled: true
         },
         "char": {
             size: 8,

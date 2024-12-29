@@ -54,12 +54,12 @@ List format {
         return retValue;
     }
 
-    .every method<any iterator> -> u32 
+    .every method<fn iterator> -> u32 
     {
         create i <- 0;
         while(i <: this.length)
         {
-            call iterator(this.buffer[i]);
+            iterator(this.buffer[i], i);
             i <- (i + 1);
         }
     }
@@ -100,7 +100,10 @@ entry function<> -> u32
     myList.push(456);
     printf("[%i,%i]\n", myList.buffer[0], myList.pop());
     myList.push(321);
-    myList.every($putint);
+    myList.every(lambda<u32 i, u32 n> {
+        // "n" is optional
+        printf("At [%i] is %i\n", n, i);
+    });
     
     create secondList <- List(3, 1, 2, 3);
     //print_(secondList);

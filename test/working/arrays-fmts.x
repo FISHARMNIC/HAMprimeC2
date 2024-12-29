@@ -20,6 +20,8 @@ entry function<>
         Person<name:"pqr", age: 6>,
         Person<name:"stu", age: 7>,
     });
+    
+    __rc_collect__(); // testing to make sure gc is working correct
 
     print_(people);
 }

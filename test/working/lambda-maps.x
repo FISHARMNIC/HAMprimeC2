@@ -5,14 +5,14 @@
  * or an array of formats
 */
 
-map function<dyna:array arr, p32 operation>
+map function<dyna:array arr, fn operation>
 {
     create i <- 0;
     create size <- len(arr);
 
     while(i <: size)
     {
-        arr[i] <- (call operation(arr[i]) -> dyna);
+        arr[i] <- operation(arr[i]);
         i <- i + 1;
     }
 }
