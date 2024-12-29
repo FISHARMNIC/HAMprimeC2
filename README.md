@@ -163,8 +163,7 @@ Note: This is still being worked on, and editing still has some issues. This was
 * [Overloads](#Operator-Overloads)
 * [Overloads(2)](#More-Overloads)
 * [Supportive Overloads](#Supportive-Overloads)
-* [Lambdas](#Lambdas)
-* [Lambdas(2)](#Lambda-Captures)
+* [Lambdas](#Lambda-Captures)
 * [Strings](#Strings)
 * [Variadics](#Variadics)
 * [C Inclusion](#C-Inclusion)
@@ -367,12 +366,12 @@ List format {
         return retValue;
     }
 
-    .every method<any iterator> -> u32 
+    .every method<fn iterator> -> u32 
     {
         create i <- 0;
         while(i <: this.length)
         {
-            call iterator(this.buffer[i]);
+            iterator(this.buffer[i]);
             i <- (i + 1);
         }
     }
@@ -744,8 +743,8 @@ entry function<> -> u32
 ```Dart
 /* See "test/working/functions-supports2.x" for an explanation on why this is needed */
 map function supports (
-    <any:array arr, any operation> -> none,
-    <dyna:array arr, any operation> -> none
+    <any:array arr, fn operation> -> none,
+    <dyna:array arr, fn operation> -> none
 )
 {
     create i <- 0;
@@ -753,7 +752,7 @@ map function supports (
 
     while(i <: size)
     {
-        arr[i] <- (call operation(arr[i]) -> auto);
+        arr[i] <- operation(arr[i]);
         i <- i + 1;
     }
 }
@@ -778,46 +777,11 @@ entry function<>
 }
 ```
 
-### Lambdas
-```Dart
-/* 
-* For now, lambdas must be passed as "any"
-* if no return type is specified, functions default to "auto" 
-* the "dyna" type is identical to any:dynamic, so "dyna:array" will accept any array that holds dynamics */
-map function<dyna:array arr, any operation>
-{
-    create i <- 0;
-    create size <- len(arr);
-
-    while(i <: size)
-    {
-        arr[i] <- (call operation(arr[i]) -> dyna);
-        i <- i + 1;
-    }
-}
-
-entry function<>
-{
-    create family <- {"Dad", "Mom", "Dog", "Cat"};
-
-    map(family, lambda<string value> {
-        return (`I love my ${value}`);
-    });
-
-    forEach(person in family)
-    {
-        print_(person);
-    }
-
-    return 0;
-}
-```
-
 ### Lambda Captures
 ```Dart
-doOperation function<u32 a, u32 b, any operation> -> auto
+doOperation function<u32 a, u32 b, fn operation> -> auto
 {
-    call operation(a,b) -> none;
+    operation(a,b);
 }
 
 entry function<> -> u32
@@ -917,11 +881,10 @@ entry function<> -> u32
 
 ### C inclusion
 ```Dart
-// make sure to assemble with -lpthread
-forward pthread_create function<u32 a, u32 b, u32 c, u32 d>;
+/* make sure compiling with -lpthread */
+forward pthread_create function<p32 a, u32 b, fn c, u32 d>;
 forward pthread_exit function<u32 a>;
-forward sleep function<u32 a>;
-forward write function<u32 a, p8 b, u32 c>;
+forward write function<u32 a, conststr b, u32 c>;
 
 thread function<> -> u32
 {
@@ -938,7 +901,7 @@ thread function<> -> u32
 entry function<> -> u32
 {
     create tid <- 0;
-    pthread_create($tid, 0, thread, 0);
+    pthread_create($(tid), 0, $thread, 0);
     
     create i <- 0;
     while(i <: 10)

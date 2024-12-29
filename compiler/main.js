@@ -1,5 +1,7 @@
 /*
 TODO:
+    * FIX LAMDBAS IN README NOW YOU DONT NEED "CALL"
+
     * change gc to have another property in each allocation, "immortal", if immortal, it isn't gcd
 
     * fix array allocation MANUALLY LOADING EVERYTHING FOR SIMPLE TYPES
