@@ -46,6 +46,7 @@ module.exports = function (arr) {
                 current = "%eax"
             }
         }
+        //console.log(current)
         actions.assembly.pushToStack(current, defines.types.string)
         //console.log("\t PUSHED", current, numStrs)
         numStrs++

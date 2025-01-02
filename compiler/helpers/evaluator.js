@@ -444,7 +444,12 @@ function evaluate(line) {
 
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, intype, dest.type)
 
+                        //console.log(dest.type)
                         if ("hasData" in intype && nextThingTakesOwnership) {
+                            if(!("hasData" in dest.type))
+                            {
+                                throwE(`Assigning dynamic of type ${helpers.types.convertTypeObjToName(intype)} to static of type ${helpers.types.convertTypeObjToName(dest.type)}\n\t[FIX] Use borrow`)
+                            }
                             outputCode.autoPush(
                                 `# requesting ownership for ${base} (property)`,
                                 `lea ${dest.ptr}, %eax`,

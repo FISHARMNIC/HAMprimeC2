@@ -179,6 +179,7 @@ entry function<> -> u32
     food <- Food();
 
     gfx_setup(480, 360);
+
     gfx_begin($render);
 
     gfx_end();

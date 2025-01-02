@@ -65,6 +65,7 @@ var assembly = {
     },
     optimizeMove: function (source, destination, sType, dType) {
         outputCode.autoPush(`# optimized move from ${source} to ${destination}`)
+        //console.log(source, destination, helpers.types.convertTypeObjToName(sType), "->", helpers.types.convertTypeObjToName(dType))
         debugPrint(" reoifjeorjferiojerf", source)
         debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
         debugPrint(source)
@@ -103,7 +104,7 @@ var assembly = {
         if (type == undefined) {
             throwE("Unknown type of", value)
         }
-        if (helpers.types.isConstant(value) || (objectIncludes(globalVariables, value) && type.pointer)) {
+        if (helpers.types.isConstant(value) || (objectIncludes(globalVariables, value) && type.pointer && !("hasData" in type))) {
             outputCode.autoPush(`pushl \$${value}`)
         } else if (helpers.types.stringIsRegister(value) || helpers.types.stringIsEbpOffset(value)) {
             outputCode.autoPush(`push ${helpers.types.conformRegisterIfIs(value, defines.types.u32)}`)
@@ -334,6 +335,7 @@ var variables = {
         __addToAnyVarEverMade(vname)
         if (helpers.types.isLiteral(value)) {
             outputCode.autoPush(
+                `# converting conststr "${value}" to dynamic string`,
                 `pushl \$${value}`,
                 `call cptos`,
                 `add $4, %esp`
@@ -355,6 +357,9 @@ var variables = {
         if (helpers.general.isReserved(vname)) {
             throwE(`Cannot create variable named "${vname}" as it is a reserved word`)
         }
+
+        //console.log(type, onStack)
+
         if (onStack) // inside of a function
         {
             //console.log(vname, type, nextThingTakesOwnership)
@@ -401,6 +406,7 @@ var variables = {
             if (objectIncludes(globalVariables, vname)) {
                 throwE(`Variable "${vname}" already defined`)
             }
+
             globalVariables[vname] = newGlobalVar(type)
 
             if (helpers.types.isConstant(value)) {

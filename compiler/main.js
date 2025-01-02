@@ -1,6 +1,9 @@
 /*
 TODO:
-    * FIX LAMDBAS IN README NOW YOU DONT NEED "CALL"
+
+    * make sure that doing "create bob <- borrow jon" makes it a staic, same for implicit format types
+    * FIXED make sure that doing "Rail<a:jon>", where "a" is supposed to be borrowed, actually borrows, not owns
+    * gfx_draw_rect(train.x - 5, train.y - 5, 10, 10); has parser error i think
 
     * change gc to have another property in each allocation, "immortal", if immortal, it isn't gcd
 
