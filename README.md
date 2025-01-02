@@ -157,16 +157,18 @@ Note: This is still being worked on, and editing still has some issues. This was
 
 <details>
 <summary><b>How to install?</b></summary>
+
 Open `install.md` for information
+
 </details>
 
 # Interesting examples
+* [Supportive Overloads](#Supportive-Overloads)
 * [Class](#Formats-as-classes)
 * [Class(2)](#Class-Example-2)
 * [Type Inference](#Type-inference-example)
 * [Overloads](#Operator-Overloads)
 * [Overloads(2)](#More-Overloads)
-* [Supportive Overloads](#Supportive-Overloads)
 * [Lambdas](#Lambda-Captures)
 * [Strings](#Strings)
 * [Variadics](#Variadics)
@@ -175,6 +177,44 @@ Open `install.md` for information
 * [Floats](#Floats)
 
 (excuse the poor highlighting)
+
+### Supportive Overloads
+```Dart
+/* See "test/working/functions-supports2.x" for an explanation on why this is needed */
+map function supports (
+    <any:array arr, fn operation> -> none,
+    <dyna:array arr, fn operation> -> none
+)
+{
+    create i <- 0;
+    create size <- len(arr);
+
+    while(i <: size)
+    {
+        arr[i] <- operation(arr[i]);
+        i <- i + 1;
+    }
+}
+
+entry function<>
+{
+    create family <- {"Dad", "Mom", "Dog", "Cat"};
+    create ages <- {1,2,3,4};
+
+    map(family, lambda<string value> {
+        return (`I love my ${value}`);
+    });
+
+    map(ages, lambda<u32 value> {
+        return (value * value);
+    });
+
+    print_(family);
+    print_(ages);
+
+    return 0;
+}
+```
 
 ### Formats as classes
 ```Dart
@@ -739,44 +779,6 @@ entry function<> -> u32
     print_(myFile.getLine());
 
     myFile.close();
-
-    return 0;
-}
-```
-
-### Supportive Overloads
-```Dart
-/* See "test/working/functions-supports2.x" for an explanation on why this is needed */
-map function supports (
-    <any:array arr, fn operation> -> none,
-    <dyna:array arr, fn operation> -> none
-)
-{
-    create i <- 0;
-    create size <- len(arr);
-
-    while(i <: size)
-    {
-        arr[i] <- operation(arr[i]);
-        i <- i + 1;
-    }
-}
-
-entry function<>
-{
-    create family <- {"Dad", "Mom", "Dog", "Cat"};
-    create ages <- {1,2,3,4};
-
-    map(family, lambda<string value> {
-        return (`I love my ${value}`);
-    });
-
-    map(ages, lambda<u32 value> {
-        return (value * value);
-    });
-
-    print_(family);
-    print_(ages);
 
     return 0;
 }
