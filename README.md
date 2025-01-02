@@ -155,6 +155,10 @@ Note: This is still being worked on, and editing still has some issues. This was
 
 </details>
 
+<details>
+<summary><b>How to install?</b></summary>
+Open `install.md` for information
+</details>
 
 # Interesting examples
 * [Class](#Formats-as-classes)
@@ -193,30 +197,30 @@ Linked format
     
     .findLast method<> -> Linked:borrowed
     {
-        create reference <- borrow this;
-        while(reference.next != 0)
+        create node <- borrow this;
+        while(node.next != 0)
         {
-            reference <- borrow reference.next;
+            node <- borrow node.next;
         }
         
-        return reference;
+        return node;
     }
     
     .find method<u32 index> -> Linked:borrowed
     {
-        create reference <- borrow this;
+        create node <- borrow this;
         create i <- 0;
         
         while(i <: index)
         {
-            if(reference.next == 0)
+            if(node.next == 0)
             {
                 return null;
             }
-            reference <- borrow reference.next;
+            node <- borrow node.next;
             i <- i + 1;
         }
-        return reference;
+        return node;
     }
     
     .index method<u32 index> -> u32
@@ -227,7 +231,7 @@ Linked format
     
     .add method<u32 value> -> u32
     {
-        create end <- borrow this.findLast();
+        create end <- this.findLast();
         
         create newAddr <- Linked(value);
         end.next <- newAddr;
@@ -245,12 +249,12 @@ Linked format
             
             if(previous == 0) /* could not find */
             {
-                print_("Index " + index + " does not exist!\n");
+                print_(`Index ${index} does not exist!`);
                 return 0;
             } 
             elif(previous.next == 0) /* Last item */
             {
-                print_("Index " + index + " out of range!\n");
+                print_(`Index ${index} is out of range!`);
             }
             else
             {
@@ -261,20 +265,21 @@ Linked format
     
     .replace method<u32 index, u32 value> -> u32
     {
-        create reference <- this.find(index);
-        reference.current <- value;
+        create node <- this.find(index);
+        node.current <- value;
     }
     
     .toString method<> -> string
     {
-        create reference <- borrow this;
+        create node <- borrow this;
         create build <- "[";
-        while(reference.next != 0)
+        while(node.next != 0)
         {
-            build <- build + reference.current + "->";
-            reference <- borrow reference.next;
+            build <- build + node.current + "->";
+            node <- borrow node.next;
         }
-        build <- build + reference.current + "]";
+
+        build <- build + node.current + "]";
         return build;
     }
 }

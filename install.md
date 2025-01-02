@@ -22,11 +22,11 @@
 * run `./install.sh` (runs BUILD.sh, moves compiler to path, and lets you use any file)
 
 ## Compiling and Running
-* Compiling can be done with `ham <out> -o <out> -l <link>`
+* Compiling can be done with `ham <file> -o <out> -l <link>`
     * Example 1: `ham file.x -o a`
     * Example 2: `ham file2.x -o bob -l gmp` (links with gmp. Can do pthread, x11, etc)
 * The binary can then be run normally (via Lima if on Mac)
-* Binary will be in `./compiled/out.s`
+* Assembly file is stored in `./compiled/out.s`
 * *You can still use method-2 for compiling and running if you installed using method-1* 
 
 # Method 2
@@ -38,7 +38,7 @@
 ## Compiling
 * Cd into `compiler`
 * Run `node main.js <file name in test/working directory>`
-    * For example: `node main.js arrays.x`
+    * For example: `node main.js arrays-2d.x`
     * This creates an assembly file in `../compiled/out.s`
 
 ## Running (no graphics)

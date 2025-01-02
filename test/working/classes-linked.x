@@ -51,7 +51,7 @@ Linked format
     
     .add method<u32 value> -> u32
     {
-        create end <- borrow this.findLast();
+        create end <- this.findLast();
         
         create newAddr <- Linked(value);
         end.next <- newAddr;
@@ -69,12 +69,12 @@ Linked format
             
             if(previous == 0) /* could not find */
             {
-                print_("Index " + index + " does not exist!\n");
+                print_(`Index ${index} does not exist!`);
                 return 0;
             } 
             elif(previous.next == 0) /* Last item */
             {
-                print_("Index " + index + " out of range!\n");
+                print_(`Index ${index} is out of range!`);
             }
             else
             {
