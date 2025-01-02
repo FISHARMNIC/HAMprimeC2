@@ -354,6 +354,45 @@ entry function<> -> u32
 }
 ```
 
+### Type inference example
+```dart
+/*
+Showcase for inherited typing
+Rules
+    - No auto parameters
+    - Cannot pass uninitialized untyped variables to functions
+    - Once on an untype variable has been initialized, if it assumes another type a warning will be thrown 
+        - the variable will then be converted to that type
+        - plans to maybe remove this warning for untyped variables
+*/
+
+Person format
+{
+    .name;
+    .age;
+
+    .Person constructor<string n, u32 age>
+    {
+        this.name <- n;
+        this.age  <- age;
+    }
+
+    /* Same as saying ".toString method<> -> auto" */
+    .toString method<>
+    {
+        return(`${this.name} is ${this.age} years old`);
+    }
+}
+
+entry function<>
+{
+    create me <- Person("Nico", 18);
+    print_(me);
+
+    return 0;
+}
+```
+
 ### Class Example 2
 ```Dart
 /*
@@ -466,45 +505,6 @@ entry function<> -> u32
     create thirdList <- (secondList + 4 + 5);
     print_(thirdList);
     
-    return 0;
-}
-```
-
-### Type inference example
-```dart
-/*
-Showcase for inherited typing
-Rules
-    - No auto parameters
-    - Cannot pass uninitialized untyped variables to functions
-    - Once on an untype variable has been initialized, if it assumes another type a warning will be thrown 
-        - the variable will then be converted to that type
-        - plans to maybe remove this warning for untyped variables
-*/
-
-Person format
-{
-    .name;
-    .age;
-
-    .Person constructor<string n, u32 age>
-    {
-        this.name <- n;
-        this.age  <- age;
-    }
-
-    /* Same as saying ".toString method<> -> auto" */
-    .toString method<>
-    {
-        return(`${this.name} is ${this.age} years old`);
-    }
-}
-
-entry function<>
-{
-    create me <- Person("Nico", 18);
-    print_(me);
-
     return 0;
 }
 ```
@@ -829,7 +829,7 @@ entry function<> -> u32
 {
     create me <- User<name:"Nico",age:18>;
 
-    create awesomePerson <- "Nina";
+    create awesomePerson <- "Rio";
     create age <- 123.456;
 
     print_("Hello " + me + " and " + awesomePerson + "! I am " + age + " years old");
