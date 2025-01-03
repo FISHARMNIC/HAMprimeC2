@@ -419,6 +419,12 @@ function evaluate(line) {
                         throwE("Cannot create void property")
                     }
 
+                    // console.log("COPIED REF", offsetWord(1), "of (", scope[scope.length - 1].data.name," ) ==> ", helpers.types.convertTypeObjToName(type))
+                    // if(offsetWord(1) == "connections")
+                    // {
+                    //     console.log(type.formatPtr.properties[0].type)
+                    // }
+                    
                     scope[scope.length - 1].data.properties.push({
                         name: offsetWord(1),
                         type,
@@ -765,7 +771,8 @@ function evaluate(line) {
                 //     size: helpers.formats.getFormatSize(oldScope.data.properties)
                 // }
 
-                userFormats[oldScope.data.name] = objCopy(oldScope.data)
+                userFormats[oldScope.data.name] = oldScope.data
+                //console.log("------", userFormats[oldScope.data.name])
                 userFormats[oldScope.data.name].size = helpers.formats.getFormatSize(oldScope.data.properties)
 
                 var nobj = objCopy(defines.types.___format_template_dynamic___)
@@ -860,15 +867,31 @@ function evaluate(line) {
                     operators: {},
                     size: 0
                 }
+
                 if (!nextIsForward) {
                     requestBracket = {
                         type: keywordTypes.FORMAT,
                         data: d
                     }
-                    userFormats[kname] = d
-                    inPublicMode = true;
                 }
-                userFormats[kname] = d
+
+                if(kname in userFormats)
+                {
+                    // need to copy by value to update existing refrences
+                    Object.entries(d).forEach(e => {
+                        if(!(e[0] in userFormats[kname]))
+                        {
+                            throwW(`[INTERNAL] property ${e[0]} was not in original object`)
+                        }
+                        userFormats[kname][e[0]] = e[1]
+                    })
+                    //userFormats[kname].properties = d.properties;
+                    //userFormats[kname].properties = d.properties;
+                }
+                else
+                {    
+                    userFormats[kname] = d
+                }
                 nextIsForward = false
 
 

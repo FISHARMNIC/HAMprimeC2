@@ -2010,10 +2010,11 @@ var formats = {
         // should NOT be a normal type!!! TODO HERE SEP 11
         var baseTypeName = helpers.types.convertTypeObjToName(baseType)
 
+
         if(baseType.formatPtr.properties[i] == undefined)
-            {
-                throwE(`Couldn't find property "${propertyName}" in ${base}`)
-            }
+        {
+            throwE(`Couldn't find property "${propertyName}" in ${base}`, defines.types)
+        }
 
         while (baseType.formatPtr.properties[i].name != propertyName) {
 

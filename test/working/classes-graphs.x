@@ -44,6 +44,12 @@ GraphNode format
             this.connections.add_brwd(GraphNode:borrowed:(node));
         }
     }
+
+    .addTwoWayConnection method<GraphNode node>
+    {
+        this.addConnection(node);
+        node.addConnection(this);
+    }
 }
 
 LLGraphNode format
@@ -126,12 +132,6 @@ LLGraphNode format
     }
 }
 
-Queue format
-{
-
-}
-
-
 
 Graph format
 {
@@ -154,14 +154,15 @@ Graph format
         }
     }
 
-    .bft method<>
+    /*
+    .bft method<GraphNode node>
     {
-        /* queue is of type GraphNode*/
+        create queue <- LLGraphNode(GraphNode:borrowed:(node));
+        
+        create readHead <- borrow queue;
+        create writeHead <- borrow queue;
 
-        create startNode <- borrow this.allNodes.node;
-
-        this.queue.push(startNode);
-        startNode.visited <- 0;
+        node.visited <- 0;
 
         while(this.queue.size != 0)
         {
@@ -171,21 +172,78 @@ Graph format
             create walker <- borrow current.connections;
             while(walker != 0)
             {
-                if(walker.visited == 0)
+                if(walker.node.visited == 0)
                 {
                     this.queue.push(walker);
+                    walker.node.visited <- 1;
                 }
                 walker <- borrow walker.next;
             }
+        }
+    }
+    */
+    
+    .dft method<GraphNode current>
+    {
+         
+        // segfaults 
+        /*
+        forEach(nodeLL in (this.allNodes))
+        {
+            nodeLL.node.visited <- 0;
+        }
+        */
+        
+
+        current.visited <- 1;
+        print_(current.value);
+
+        create walker <- borrow current.connections;
+        while(walker != 0)
+        {
+            //JS_EVAL "throwE(defines.types.GraphNode.formatPtr.properties[2].type.formatPtr.properties[0].type.formatPtr)";
+            //JS_EVAL "throwE(scope[1].data.parameters[0].type.formatPtr.properties[2].type.formatPtr.properties[0].type)"; 
+            //print_(`Checking ${walker.node.value}: ${walker.node.visited}`);
+            if(walker.node.visited == 0)
+            {
+                this.dft(walker.node);
+            }
+            walker <- borrow walker.next;
         }
     }
 }
 
 entry function<>
 {
-    /* testing with this gif: https://miro.medium.com/v2/resize:fit:1200/1*KAZbkOGxRrmTokzX6af2vA.gif */
+    /* using this gif: https://miro.medium.com/v2/resize:fit:1248/0*r5blxPoPZaX1OkGr.gif */
     create graph <- Graph();
 
+    create node1 <- GraphNode(1);
+    create node2 <- GraphNode(2);
+    create node3 <- GraphNode(3);
+    create node4 <- GraphNode(4);
+    create node5 <- GraphNode(5);
+    create node6 <- GraphNode(6);
+    create node7 <- GraphNode(7);
+
+    node1.addTwoWayConnection(node2);
+    node1.addTwoWayConnection(node5);
+    node1.addTwoWayConnection(node3);
+
+    node2.addTwoWayConnection(node6);
+    node2.addTwoWayConnection(node4);
+
+    node3.addTwoWayConnection(node4);
+    node3.addTwoWayConnection(node7);
+
+    node4.addTwoWayConnection(node5);
+
+    graph.dft(node1);
+
+    /*
+    
+    // BFT WIP
+    // testing with this gif: https://miro.medium.com/v2/resize:fit:1200/1*KAZbkOGxRrmTokzX6af2vA.gif
     create node0 <- GraphNode(0);
     create node1 <- GraphNode(1);
     create node2 <- GraphNode(2);
@@ -193,8 +251,6 @@ entry function<>
     create node4 <- GraphNode(4);
     create node5 <- GraphNode(5);
 
-    //printf("--%p--\n\t%p\n\t%p\n\t%p\n\t%p\n\n", graph.allNodes, node0.connections,node1.connections,node2.connections,node3.connections);
-    
     graph.addNode(node0);
     graph.addNode(node1);
     graph.addNode(node2);
@@ -202,15 +258,9 @@ entry function<>
     graph.addNode(node4);
     graph.addNode(node5);
 
-    //__rc_collect__();
-
-    //printf("--%p--\n\t%p\n\t%p\n\t%p\n\t%p\n\n", graph.allNodes, node0.connections,node1.connections,node2.connections,node3.connections);
-    
-    //print_("NODE 0:");
     node0.addConnection(node1);
     node0.addConnection(node2);
     
-    //print_("NODE 1:");
     node1.addConnection(node2);
     node1.addConnection(node3);
 
@@ -221,8 +271,7 @@ entry function<>
     node4.addConnection(node0);
     node4.addConnection(node1);
     node4.addConnection(node5);
-    
-    //graph.allNodes.printAll();
 
-    //JS_EVAL "console.log(userFormats)"
+    graph.bft(node0);
+    */
 }
