@@ -24,7 +24,7 @@ var counters = {
             this.tempLabels.current[key] = 0;
         })
     },
-    constructors: 0, // make better later, one for each format
+    constructors: {}, // make better later, one for each format
     operators: 0
 }
 
@@ -424,7 +424,7 @@ var formatters = {
         return `__SIZEOF_${format}__`
     },
     formatConstructorName: function (formatName) {
-        return `__constructor_${formatName}_${counters.constructors++}_`
+        return `__constructor_${formatName}_${counters.constructors[formatName]++}_`
     },
     formatNewOperatorName: function (formatName, operator) {
         return `__operator_${formatName}_${operator}_${counters.operators++}__`

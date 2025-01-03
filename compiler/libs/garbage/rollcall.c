@@ -40,6 +40,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
         __rc_collect__();
     }
 
+    //size_bytes += 32;
     int actualAllocSize = GET_ALLOC_SIZE(size_bytes);
 
     dbgprint(":::: Attempting malloc of with inner data of size %i\n", size_bytes);

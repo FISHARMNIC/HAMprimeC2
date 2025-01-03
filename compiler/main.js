@@ -1,5 +1,15 @@
 /*
 TODO:
+    * make it so that you can modify "this", currently just doenst do anything. Need to load like a reference to this or smth
+
+    * graph.addNode(GraphNode(0));
+        * Make sure passing something like that doesn't get GC'd in event of function call before first read
+    
+    * add way of doing: forward Person.add method<u32 a, u32b> -> u32
+        * make sure it supports overloads
+        * 
+    
+    * add keyword "omnipotent" that adds extra flag to type that makes it be able to read privates in formats
 
     * make sure that doing "create bob <- borrow jon" makes it a staic, same for implicit format types
     * FIXED make sure that doing "Rail<a:jon>", where "a" is supposed to be borrowed, actually borrows, not owns

@@ -13,7 +13,7 @@ function evaluate(line) {
     // }).filter(x => x)
 
     //throwE(line, typeStack)
-
+    //if(line.includes("format")) console.log(":::", line)
     // just for macros
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         // HERE is where forced dynamic should be like "Linked:dynamic"
@@ -87,6 +87,9 @@ function evaluate(line) {
             //throwE("WIP dynamic buffering")
         }
     }
+
+    //if(line.includes("format")) console.log("YUP ", line)
+
 
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
 
@@ -183,7 +186,7 @@ function evaluate(line) {
                 line.splice(wordNum, 1)
                 wordNum--;
             }
-        } else if (objectIncludes(defines.types, word)) { // types. Lazy code,  fix later
+        } else if (objectIncludes(defines.types, word) && !line.includes("format")) { // types. Lazy code,  fix later
             if (offsetWord(1) == "(") {
                 if (defines.types[word]?.formatPtr != null)
                     //throwE("EEEEEEE", userFormats)
@@ -271,6 +274,8 @@ function evaluate(line) {
                 line.splice(wordNum, 1)
                 wordNum--;
             }
+
+            //console.log("YUPS", word, line)
         } else if (objectIncludes(userFormats, word)) {
             //throwE("~~~", word)
         } else if (word == "@") {
@@ -334,6 +339,12 @@ function evaluate(line) {
             //console.log("Prop", line)
             if ((getLastScopeType() == keywordTypes.FORMAT) && (offsetWord(-1) == null)) { // just creating a property
                 if (offsetWord(2) == "constructor") {
+
+                    if(offsetWord(3) == "(")
+                    {
+                        throwE("Use angle brackets instead of parenthesis for function declarations")
+                    }
+
                     var nobj = objCopy(defines.types.___format_template_dynamic___)
                     nobj.formatPtr = scope[scope.length - 1].data
                     nobj = helpers.types.convertTypeToHasData(nobj)
@@ -342,6 +353,12 @@ function evaluate(line) {
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatConstructorName(scope[scope.length - 1].data.name), offsetWord(4))
                     // HERE AUGUST 5 2024
                 } else if (offsetWord(2) == "method") {
+
+                    if(offsetWord(3) == "(")
+                        {
+                            throwE("Use angle brackets instead of parenthesis for function declarations")
+                        }
+
                     // yes this is repeated.
                     var nobj = objCopy(defines.types.___format_template_dynamic___)
                     nobj.formatPtr = scope[scope.length - 1].data
@@ -350,12 +367,26 @@ function evaluate(line) {
 
 
                     __addToAnyVarEverMade(offsetWord(1))
-                    var retType = objCopy(offsetWord(6) == "->" ? defines.types[offsetWord(7)] : defines.types.unknown) // default return if none given. Note: prob don't need objcopy for this
+                    var retType;
+                    if(offsetWord(6) == "->")
+                    {
+                        if(offsetWord(7) == undefined)
+                        {
+                            throwE("Arrow given but no return type specified.\n\t[FIX] Remove the arrow or add a type.")
+                        }
+                        retType = defines.types[offsetWord(7)]
+                    }
+                    else
+                    {
+                        retType = defines.types.unknown
+                    }
+                    //= objCopy(offsetWord(6) == "->" ? defines.types[offsetWord(7)] : defines.types.unknown) // default return if none given. Note: prob don't need objcopy for this
                     //throwE(retType)
                     actions.formats.createMethodOrConstructor(scope[scope.length - 1].data, helpers.formatters.formatMethodName(scope[scope.length - 1].data.name, offsetWord(1)), offsetWord(4), retType)
 
                     //throwE(line)
                 } else if (offsetWord(2) == "operator") {
+
                     // just make this a function...
                     var nobj = objCopy(defines.types.___format_template_dynamic___)
                     nobj.formatPtr = scope[scope.length - 1].data
@@ -441,13 +472,16 @@ function evaluate(line) {
                         }
 
                         //throwE(ptype.formatPtr.properties)
+                        if(offsetWord(3) == undefined || offsetWord(3).length == 0)
+                        {
+                            throwE("Missing righthand expression")
+                        }
 
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, intype, dest.type)
 
                         //console.log(dest.type)
                         if ("hasData" in intype && nextThingTakesOwnership) {
-                            if(!("hasData" in dest.type))
-                            {
+                            if (!("hasData" in dest.type)) {
                                 throwE(`Assigning dynamic of type ${helpers.types.convertTypeObjToName(intype)} to static of type ${helpers.types.convertTypeObjToName(dest.type)}\n\t[FIX] Use borrow`)
                             }
                             outputCode.autoPush(
@@ -815,6 +849,8 @@ function evaluate(line) {
             var kname = offsetWord(-1)
             if (word == "format") {
                 // IF BROKEN FIX HERE TODO BUG CRASH SEP 11
+                //console.log("YAY", line, nextIsForward)
+                helpers.counters.constructors[kname] = 0
                 var d = {
                     name: kname,
                     properties: [],
@@ -824,17 +860,22 @@ function evaluate(line) {
                     operators: {},
                     size: 0
                 }
-                requestBracket = {
-                    type: keywordTypes.FORMAT,
-                    data: d
+                if (!nextIsForward) {
+                    requestBracket = {
+                        type: keywordTypes.FORMAT,
+                        data: d
+                    }
+                    userFormats[kname] = d
+                    inPublicMode = true;
                 }
                 userFormats[kname] = d
-                inPublicMode = true;
+                nextIsForward = false
 
 
                 var nobj = objCopy(defines.types.___format_template_dynamic___)
                 nobj.formatPtr = d
                 defines.types[kname] = nobj
+                //console.log(kname, line)
                 //throwE(defines.types)
             } else if (word == "print_" || word == "println_") {
                 //throwE("WIP")
@@ -1103,8 +1144,7 @@ function evaluate(line) {
 
                 if (fname in userFunctions) {
                     var newlbl = `${fname}__overload__${helpers.functions.newUniqueStr()}__`
-                    if(!("overloads" in userFunctions[fname]))
-                    {
+                    if (!("overloads" in userFunctions[fname])) {
                         throwE(`Cannot overload "${fname}". It might be an internal function.`)
                     }
                     userFunctions[fname].overloads.push(data)
@@ -1316,6 +1356,9 @@ function evaluate(line) {
         }
         // #endregion
     }
+
+
+    //if(line.includes("format")) console.log("YUP ", line)
 
     // EVERYTHING MUST BE ABOVE THIS
 

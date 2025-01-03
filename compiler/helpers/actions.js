@@ -68,7 +68,6 @@ var assembly = {
         //console.log(source, destination, helpers.types.convertTypeObjToName(sType), "->", helpers.types.convertTypeObjToName(dType))
         debugPrint(" reoifjeorjferiojerf", source)
         debugPrint(helpers.types.stringIsRegister(destination) && objectIncludes(globalVariables, source))
-        debugPrint(source)
         if (helpers.types.isConstOrLit(source)) {
             if (helpers.types.isLiteral(source)) {
                 if (helpers.types.stringIsRegister(destination)) {
@@ -1327,6 +1326,10 @@ var functions = {
             if (!("name" in scope && scope.name.includes("__constructor_"))) {
                 // TODO HERE
                 var givenRetType = helpers.types.guessType(rVal)
+                if(!nextThingTakesOwnership && "hasData" in givenRetType)
+                {
+                    delete givenRetType.hasData
+                }
                 var scopeRetType = scope.data.returnType
 
                 if ("unknown" in scopeRetType) {
@@ -1510,6 +1513,13 @@ var functions = {
         var matchesWithOverload = false
         var matchesWithNormal = false
 
+        if(fname.includes("__constructor_"))
+        {
+            //throwE(userFunctions)
+            matched = userFunctions[fname]
+        }
+        else
+        {
         if(userFunctions[fname].variadic)
         {
             variadics.push(userFunctions[fname])
@@ -1578,6 +1588,7 @@ var functions = {
             callAddress = matched.name
         }
 
+    }
         //throwW(matchesWithNormal, matchesWithOverload, fname, matched.name)
 
         fname = matched.name
@@ -1613,7 +1624,8 @@ var functions = {
                             skip = true
                         }
                         else {
-                            throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}". If those types seem identical, one of the parameter's may be an array holding dynamic data and the other not`)
+                            throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}" when calling "${fname}". If those types seem identical, one of the parameter's may be an array holding dynamic data and the other not`)
+                            throwE(Object.entries(userFunctions).filter(x=>x[0].includes("__constructor_LL")).map(x=> x[0] + " :: " + helpers.types.convertTypeObjToName(x[1].parameters[0].type)))
                         }
                     }
 
@@ -1998,8 +2010,13 @@ var formats = {
         // should NOT be a normal type!!! TODO HERE SEP 11
         var baseTypeName = helpers.types.convertTypeObjToName(baseType)
 
-        //console.log(":::", base)
+        if(baseType.formatPtr.properties[i] == undefined)
+            {
+                throwE(`Couldn't find property "${propertyName}" in ${base}`)
+            }
+
         while (baseType.formatPtr.properties[i].name != propertyName) {
+
             //console.log(baseType.formatPtr.properties[i], i, propertyName)
             offset += helpers.types.typeToBytes(baseType.formatPtr.properties[i].type)
             if (baseType.formatPtr.properties[i + 1] == undefined) {
@@ -2164,7 +2181,8 @@ var formats = {
         var bestFit = null
         if (typeof params == "string")
             params = [params]
-        var numberOfParams = params.filter(x => x != ",").length
+        var paramsNoComma = params.filter(x => x != ",")
+        var numberOfParams = paramsNoComma.length
 
         // overloading
         // awful code. so many ideas going through my head. fix later
@@ -2173,7 +2191,14 @@ var formats = {
                 variadicConstructor = e[0]
             } else {
                 if (numberOfParams == e[1].parameters.length) {
-                    bestFit = e[0]
+                    //console.log("RESET")
+                    var yes = e[1].parameters.every((param,n) => {
+                        //console.log("COMPING", helpers.types.convertTypeObjToName(param.type), helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[n])), helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n])))
+                        return helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n]))
+                    })
+
+                    if(yes)
+                        bestFit = e[0]
                 }
             }
         })
@@ -2201,6 +2226,7 @@ var formats = {
         globalVariables.__this__ = helpers.types.convertTypeToHasData(defines.types[className])
         var rval = functions.callFunction(bestFit, params, true, globalVariables.__this__)
 
+       // console.log(className, params, helpers.types.convertTypeObjToName(helpers.types.guessType(rval)))
         if (sr_this) {
             outputCode.autoPush(`popl __this__`)
         }
