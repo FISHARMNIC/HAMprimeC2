@@ -265,6 +265,16 @@ global.userFunctions = {           // Object : {function name: {func name, param
         ],
         variadic: false,
         returnType: defines.types.string
+    },
+    "memcpy": {
+        name: "memcpy",
+        parameters: [
+            { name: "start", type: defines.types.p8 },
+            { name: "end", type: defines.types.p8 },
+            { name: "bytes", type: defines.types.u32 }
+        ],
+        variadic: false,
+        returnType: defines.types.p32
     }
 }
 global.specialFunctions = {

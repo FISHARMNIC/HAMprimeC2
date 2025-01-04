@@ -1,3 +1,5 @@
+/* ISSUE IS THAT ITS NOT ACTUALLY CREATING CONSTRUCTOR 2 */
+
 forward GraphNode format;
 
 /* temp solution until I implement forward methods */

@@ -424,7 +424,7 @@ function evaluate(line) {
                     // {
                     //     console.log(type.formatPtr.properties[0].type)
                     // }
-                    
+
                     scope[scope.length - 1].data.properties.push({
                         name: offsetWord(1),
                         type,
@@ -478,11 +478,12 @@ function evaluate(line) {
                         }
 
                         //throwE(ptype.formatPtr.properties)
-                        if(offsetWord(3) == undefined || offsetWord(3).length == 0)
+                        if(offsetWord(3) == undefined || typeof offsetWord(3) == "object")
                         {
-                            throwE("Missing righthand expression")
+                            throwE("Righthand expression is either missing or does not make sense")
                         }
 
+                        //console.log(line)
                         actions.assembly.optimizeMove(offsetWord(3), dest.ptr, intype, dest.type)
 
                         //console.log(dest.type)
@@ -504,7 +505,7 @@ function evaluate(line) {
 
                         return [""]
                     } else {
-                        //console.log("#####", ptype)
+                        //console.log("#####", base, offsetWord(1))
                         var out = actions.formats.readProperty(base, ptype, offsetWord(1), false)
                         line[wordNum - 1] = out
                         line.splice(wordNum, 2)

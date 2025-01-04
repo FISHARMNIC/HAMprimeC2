@@ -1,0 +1,115 @@
+DynamicLLNode format
+{
+    .value dyna;
+    .next  DynamicLLNode;
+
+    .DynamicLLNode constructor<dyna value>
+    {
+        this.value <- value;
+        this.next  <- DynamicLLNode:(0);
+    }
+}
+
+DynamicLL format
+{
+    .start DynamicLLNode;
+    .end   DynamicLLNode:borrowed;
+
+    .secondLast DynamicLLNode:borrowed;
+
+    .DynamicLL constructor<>
+    {
+        this.start <- DynamicLLNode:(0);
+        this.end   <- borrow DynamicLLNode:(0);
+    }
+
+    .empty method<> -> u32
+    {
+        /* for some reason can't return in one line yet */
+        if(this.start == this.end)
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+    .push method<dyna value>
+    {
+        if(this.start == 0)
+        {
+            this.start <- DynamicLLNode(value);
+            this.end   <- borrow this.start;
+        }
+        else
+        {
+            create newEnd <- DynamicLLNode(value);
+
+            this.secondLast <- this.end;
+
+            this.end.next <- newEnd;
+            this.end      <- borrow newEnd;
+        }
+    }
+
+    .pushFront method<dyna value>
+    {
+        create newNode <- DynamicLLNode(value);
+        newNode.next <- this.start;
+
+        if(this.end == 0)
+        {
+            this.end <- borrow newNode;
+        }
+
+        this.start <- newNode;
+    }
+
+    .pop method<> -> dyna
+    {
+        create walker <- borrow this.start;
+
+        if(walker == 0)
+        {
+            print_(`[LL ERROR] Cannot pop, list is empty`);
+            quit(1);
+        }
+
+        if(walker.next == 0)
+        {
+            create rval <- walker.value;
+
+            this.start <- 0;
+            this.end   <- 0;
+
+            return rval;
+        }
+        else
+        {
+            while(walker.next.next != 0)
+            {
+                walker <- borrow walker.next;
+            }
+
+            create rval <- walker.next.value;
+
+            walker.next <- 0;
+
+            return rval;
+        }
+    }
+
+    .popFront method<> -> dyna
+    {
+        create rval <- this.start;
+
+        if(rval == 0)
+        {
+            print_(`[LL ERROR] Cannot pop, list is empty`);
+            quit(1);
+        }
+
+        this.start <- this.start.next;
+
+        return(rval.value);
+    }
+}

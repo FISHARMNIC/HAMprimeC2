@@ -1,5 +1,24 @@
 /*
 TODO:
+
+    * FIX CLASSES GRAPHS
+
+    * make sure that the compiler can actually see the diff between dyna and any
+        * since "acceptsAny" might be throwing it off
+
+    * ADD TYPE CHECKING FOR ANY: SHOULD ONLY ACCEPT STATICS
+        * BUT ADD EXCEPTION FOR STRINGS SO THEY CAN BE AUTOCASTED
+        * maybe just new type "stat"
+
+
+    * cant do: $(this.buffer[index])
+    * add something that stored common member access multi-line so that it doesnt access it every single time
+        * make sure to reset if modified
+
+    * [low priority] allow something like bob[jon <- jon + 1]
+    * [low priority] cant: return(123 == 456)
+    * add ++ and --, and += and -= (maybe just like macros somehow)
+
     * make it so that you can modify "this", currently just doenst do anything. Need to load like a reference to this or smth
 
     * graph.addNode(GraphNode(0));
@@ -439,8 +458,10 @@ catch(e)
 global.inputCodeLikeTrue = inputCode.split("\n")
 inputCode = quickSplit(inputCode)
 
-preprocess(inputCode)
-//console.log(inputCode)
+while(inputCode.some(x=>x.includes("#")))
+    preprocess(inputCode)
+
+//throwE(inputCode.join("\n"))
 //console.log(helpers.registers)
 
 global.previewNextLine = function () {

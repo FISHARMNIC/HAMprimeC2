@@ -1,0 +1,116 @@
+StaticLLNode format
+{
+    .value any;
+    .next  StaticLLNode;
+
+    .StaticLLNode constructor<any value>
+    {
+        this.value <- value;
+        this.next  <- StaticLLNode:(0);
+    }
+}
+
+StaticLL format
+{
+    .start StaticLLNode;
+    .end   StaticLLNode:borrowed;
+
+    .secondLast StaticLLNode:borrowed;
+
+    .StaticLL constructor<>
+    {
+        this.start <- StaticLLNode:(0);
+        this.end   <- borrow StaticLLNode:(0);
+    }
+
+    .empty method<> -> u32
+    {
+        /* for some reason can't return in one line yet */
+        if(this.start == this.end)
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+    .push method<any value>
+    {
+        if(this.start == 0)
+        {
+            this.start <- StaticLLNode(value);
+            this.end   <- borrow this.start;
+        }
+        else
+        {
+            create newEnd <- StaticLLNode(value);
+
+            this.secondLast <- this.end;
+
+            this.end.next <- newEnd;
+            this.end      <- borrow newEnd;
+        }
+    }
+
+    .pushFront method<any value>
+    {
+        create newNode <- StaticLLNode(value);
+        newNode.next <- this.start;
+
+        if(this.end == 0)
+        {
+            this.end <- borrow newNode;
+        }
+
+        this.start <- newNode;
+    }
+
+    .pop method<> -> unknown
+    {
+        create walker <- borrow this.start;
+
+        if(walker == 0)
+        {
+            print_(`[LL ERROR] Cannot pop, list is empty`);
+            quit(1);
+        }
+
+        if(walker.next == 0)
+        {
+            create rval <- walker.value;
+
+            this.start <- 0;
+            this.end   <- 0;
+
+            return rval;
+        }
+        else
+        {
+            while(walker.next.next != 0)
+            {
+                //printf("%i -> %i\n", walker.value, walker.next.value);
+                walker <- borrow walker.next;
+            }
+
+            create rval <- walker.next.value;
+
+            walker.next <- 0;
+
+            return rval;
+        }
+    }
+
+    .popFront method<> -> unknown
+    {
+        create rval <- this.start;
+
+        if(rval == 0)
+        {
+            print_(`[LL ERROR] Cannot pop, list is empty`);
+            quit(1);
+        }
+
+        this.start <- this.start.next;
+
+        return(rval.value);
+    }
+}

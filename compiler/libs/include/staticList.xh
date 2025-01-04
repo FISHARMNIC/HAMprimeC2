@@ -1,0 +1,75 @@
+__define LIST_INITSIZE 10
+
+StaticList format
+{
+    .occupied u32;
+    .maxSize  u32;
+
+    .buffer   any:array;
+
+    .StaticList constructor<>
+    {
+        this.buffer <- any[LIST_INITSIZE];
+
+        this.occupied <- 0;
+        this.maxSize  <- LIST_INITSIZE;
+    }
+
+    .push method<any value> -> StaticList
+    {
+        create oldSize <- this.occupied;
+        create newSize <- oldSize + 1;
+
+        this.buffer[oldSize] <- value;
+
+        create max <- this.maxSize;
+        
+        if(newSize :> max)
+        {
+            this.maxSize <- max * 2;
+            this.buffer  <- copy(any[max], this.buffer);
+        }
+        else
+        {
+            this.occupied <- newSize;
+        }
+
+        return this;
+    }
+
+    .pop method<> -> unknown
+    {
+        create currentSize <- this.occupied;
+        create smallerSize <- currentSize - 1;
+
+        if(currentSize == 0)
+        {
+            print_("[LIST ERROR] list is empty");
+            quit(1);
+        }
+        else
+        {
+            this.occupied <- smallerSize;
+            return(this.buffer[smallerSize]);
+        }
+    }
+
+    .delete method<u32 index>
+    {
+        if((index >= 0) && (index <: this.occupied))
+        {
+            create p8 memoryAddress <- this.buffer + index * 4;
+            create difference <- (this.occupied - index - 1) * 4;
+            memcpy(memoryAddress, p8:(memoryAddress + 4), difference);
+
+            this.occupied <- this.occupied - 1;
+
+            /* in dynamic one, make sure that each indexes owner is substracted by 4 */
+        }
+        else
+        {
+            print_("[LIST ERROR] index is out of range");
+            quit(1);
+        }
+    }
+}

@@ -1,0 +1,26 @@
+#include sys staticLL
+
+StaticQueue format
+{
+    .queue StaticLL;
+
+    .StaticQueue constructor<>
+    {
+        this.queue <- StaticLL();
+    }
+
+    .empty method<> -> u32
+    {
+        return(this.queue.empty());
+    }
+
+    .push method<any item>
+    {
+        this.queue.push(item);
+    }
+
+    .pop method<> -> unknown
+    {
+        return(this.queue.popFront());
+    }
+}

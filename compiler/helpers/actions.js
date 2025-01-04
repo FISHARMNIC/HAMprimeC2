@@ -331,6 +331,7 @@ var variables = {
             value = "0"
         }
 
+        //console.log("CREATING", vname, value)
         __addToAnyVarEverMade(vname)
         if (helpers.types.isLiteral(value)) {
             outputCode.autoPush(
@@ -1452,7 +1453,7 @@ var functions = {
         var onCom = false
         var callAddress = fname
 
-        //console.log(`Calling ${fname} with ${args.join(" ")}, ${typeIfFromAddress}`)
+        //console.log(`\tCalling ${fname} with ${args}, ${typeIfFromAddress}`)
         //console.log(args.filter(x => x != ","))
         if (typeof args != "string") {
             var filtered = args.filter(x => x != ",")
@@ -1608,13 +1609,20 @@ var functions = {
 
                     var as = expectedType == undefined? true : helpers.types.areSimilarArrayTypes(expectedType, givenType)
 
+                    //console.log(`\t${as} : ${helpers.types.convertTypeObjToName(expectedType)}`)
                     // if broken, before all "as" was (et_s != gt_s)
+                    if((expectedType != undefined) && ("hasData" in givenType && !("hasData" in expectedType)))
+                    {
+                        throwW(`Passing a dynamic of type "${gt_s}" to a function expecting a static of type "${et_s}"`)
+                    }
+
                     if (
-                        !(expectedType == undefined ? false : "acceptsAny" in expectedType) && 
+                        (!(expectedType == undefined ? false : "acceptsAny" in expectedType) || (("acceptsAny" in expectedType) && ("hasData" in expectedType) && !("hasData" in givenType))) && 
                         !helpers.types.isConstant(x) && 
                         ((variadic && ((expectedType != undefined) && (!as))) || (!variadic && (!as)))) 
                         {
-                        if ("hasData" in expectedType && helpers.types.isStringOrConststrType(expectedType) && helpers.types.isStringOrConststrType(givenType)) {
+                            //console.log("\t-----Farting----")
+                        if ("hasData" in expectedType && (helpers.types.isStringOrConststrType(expectedType) || ("acceptsAny" in expectedType)) && helpers.types.isStringOrConststrType(givenType)) {
                             tbuff.push([
                                 `# converting conststr to string (function call)`,
                                 `pushl ${helpers.types.formatIfConstOrLit(x)}`,
@@ -2057,6 +2065,7 @@ var formats = {
 
         if (ret == null) // constructor
         {
+            console.log("----- CONSTRUCTOR", fname)
             var _data = {
                 name: fname,
                 parameters: params_obj.params,
@@ -2192,9 +2201,9 @@ var formats = {
                 variadicConstructor = e[0]
             } else {
                 if (numberOfParams == e[1].parameters.length) {
-                    //console.log("RESET")
+                    console.log("RESET")
                     var yes = e[1].parameters.every((param,n) => {
-                        //console.log("COMPING", helpers.types.convertTypeObjToName(param.type), helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[n])), helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n])))
+                        console.log("COMPING", helpers.types.convertTypeObjToName(param.type), helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[n])), helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n])))
                         return helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n]))
                     })
 
@@ -2206,7 +2215,7 @@ var formats = {
 
         if (bestFit == null) {
             if (variadicConstructor == null) {
-                throwE(`No constructor exists for "${className}" that takes "${numberOfParams}" parameters. Either make a variadic constructor, or add one that takes this number of parameters.`)
+                throwE(`No constructor exists for "${className}" that takes the given parameters.`, userFormats[className])
             }
             bestFit = variadicConstructor
         }

@@ -1,6 +1,6 @@
 const fs = require("fs")
 
-module.exports = function (code) {
+const prep = function (code) {
     for (i = 0; i < code.length; i++) {
         var x = code[i]
         if (x[0] == "#") {
@@ -20,7 +20,10 @@ module.exports = function (code) {
         }
     }
     //throwE(code.join("\n"))
+    //console.log("\n\n\n----------------\n\n\n"code.join("\n"))
 }
+
+module.exports = prep
 
 function treat(instruction) {
     if (instruction[0] == "include") {
@@ -43,6 +46,8 @@ function treat(instruction) {
         likeText.forEach(x => { if (x.trim().length == 0) sum++ })
         //console.log("sum", -sum+11)
         includeFileOff += likeText.length + (-sum + 11)//+ sum//.filter(x=> x.trim().length != 0).length
+        //prep(newCode)
+        //console.log(newCode)
         return newCode
     }
     else
