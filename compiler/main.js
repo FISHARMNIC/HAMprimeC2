@@ -1,7 +1,7 @@
 /*
 TODO:
 
-    * FIX CLASSES GRAPHS
+    * search for HERE in this file. See the issue there
 
     * make sure that the compiler can actually see the diff between dyna and any
         * since "acceptsAny" might be throwing it off
@@ -388,7 +388,7 @@ TODO:
 // });
 
 
-const fs = require("fs");
+global.fs = require("fs");
 const exec = require('child_process').exec;
 // All required libs
 global.defines = require("./preparer/defines.js");
@@ -458,7 +458,10 @@ catch(e)
 global.inputCodeLikeTrue = inputCode.split("\n")
 inputCode = quickSplit(inputCode)
 
-while(inputCode.some(x=>x.includes("#")))
+//while(inputCode.some(x=>x.includes("#")))
+// HERE actually terrible. Fix this. cant just search for hashtag since words like "support" or "lambda"
+// just check until no more diffs
+for(var i = 0; i < 10; i++)
     preprocess(inputCode)
 
 //throwE(inputCode.join("\n"))

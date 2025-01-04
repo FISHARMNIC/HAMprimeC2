@@ -687,6 +687,8 @@ global.throwE = function (x) {
 
     }
 
+    fs.writeFileSync(mainDir + `/../compiled/FAILED.s`, outputCode.text.join("\n"))
+    console.log("Assembly dump in", mainDir + `/../compiled/FAILED.s`)
     process.exit(126)
     //console.log(lineE)
 }

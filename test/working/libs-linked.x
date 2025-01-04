@@ -1,3 +1,5 @@
+// there seems to be leaks, not sure how yet
+
 #include sys staticLL
 #include sys dynamicLL
 
@@ -19,7 +21,7 @@ entry function<>
     linkedList.pop();
     linkedList.pop();
 
-    print_(`Empty? ${linkedList.empty()}`);
+    print_(`Empty? ${linkedList.empty()}\n`);
 
     linkedList <- DynamicLL(); 
 
@@ -27,14 +29,15 @@ entry function<>
     linkedList.push("oranges");
     linkedList.push("peaches");
 
-    //print_(linkedList.pop());
-    //print_(linkedList.popFront());
-    //print_(linkedList.popFront());
+    print_(string:(linkedList.pop()));
+    print_(string:(linkedList.popFront()));
+    print_(string:(linkedList.popFront()));
 
-    /* 
+    
     //Un comment to check leaks with valgrind
     linkedList <- 0;
+    __asm__ "movw $0, ___TEMPORARY_OWNER___"; // can't modify the var normally since the compiler treats sets to it differently
     __rc_collect__();
     exit(0);
-    */
+    
 }

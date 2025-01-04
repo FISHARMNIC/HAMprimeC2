@@ -1611,14 +1611,17 @@ var functions = {
 
                     //console.log(`\t${as} : ${helpers.types.convertTypeObjToName(expectedType)}`)
                     // if broken, before all "as" was (et_s != gt_s)
+                    
                     if((expectedType != undefined) && ("hasData" in givenType && !("hasData" in expectedType)))
                     {
                         throwW(`Passing a dynamic of type "${gt_s}" to a function expecting a static of type "${et_s}"`)
                     }
 
+                    //console.log(fname, !helpers.types.isConstant(x))
+
                     if (
                         (!(expectedType == undefined ? false : "acceptsAny" in expectedType) || (("acceptsAny" in expectedType) && ("hasData" in expectedType) && !("hasData" in givenType))) && 
-                        !helpers.types.isConstant(x) && 
+                        /* !helpers.types.isConstant(x) && */
                         ((variadic && ((expectedType != undefined) && (!as))) || (!variadic && (!as)))) 
                         {
                             //console.log("\t-----Farting----")
@@ -1633,7 +1636,7 @@ var functions = {
                         }
                         else {
                             throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}" when calling "${fname}". If those types seem identical, one of the parameter's may be an array holding dynamic data and the other not`)
-                            throwE(Object.entries(userFunctions).filter(x=>x[0].includes("__constructor_LL")).map(x=> x[0] + " :: " + helpers.types.convertTypeObjToName(x[1].parameters[0].type)))
+                            //throwE(Object.entries(userFunctions).filter(x=>x[0].includes("__constructor_LL")).map(x=> x[0] + " :: " + helpers.types.convertTypeObjToName(x[1].parameters[0].type)))
                         }
                     }
 
@@ -2065,7 +2068,7 @@ var formats = {
 
         if (ret == null) // constructor
         {
-            console.log("----- CONSTRUCTOR", fname)
+            //console.log("----- CONSTRUCTOR", fname)
             var _data = {
                 name: fname,
                 parameters: params_obj.params,
@@ -2201,9 +2204,9 @@ var formats = {
                 variadicConstructor = e[0]
             } else {
                 if (numberOfParams == e[1].parameters.length) {
-                    console.log("RESET")
+                    //console.log("RESET")
                     var yes = e[1].parameters.every((param,n) => {
-                        console.log("COMPING", helpers.types.convertTypeObjToName(param.type), helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[n])), helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n])))
+                        //console.log("COMPING", helpers.types.convertTypeObjToName(param.type), helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[n])), helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n])))
                         return helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n]))
                     })
 
@@ -2215,7 +2218,7 @@ var formats = {
 
         if (bestFit == null) {
             if (variadicConstructor == null) {
-                throwE(`No constructor exists for "${className}" that takes the given parameters.`, userFormats[className])
+                throwE(`No constructor exists for "${className}" that takes the given parameters.`)
             }
             bestFit = variadicConstructor
         }

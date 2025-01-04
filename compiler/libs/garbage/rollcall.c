@@ -75,6 +75,7 @@ void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
 {
     void* allocation = __rc_allocate__(size_bytes, restricted);
     __rc_requestOwnership__(allocation, &___TEMPORARY_OWNER___);
+    // need to add maybe ___TEMPORARY_OWNER___ = allocation
     return allocation;
 }
 
