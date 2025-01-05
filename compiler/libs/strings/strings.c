@@ -123,9 +123,6 @@ char *cptos(const char *str)
     return o;
 }
 
-// First there are X number of sources
-// Then there are X numbero of destinations
-// TODO
 char *__sinc_loadStringArray(char* destArr, int numberOfStrings, ...)
 {
     asm volatile("pusha");

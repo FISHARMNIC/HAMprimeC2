@@ -72,4 +72,24 @@ StaticList format
             quit(1);
         }
     }
+
+    .set method<u32 index, any value>
+    {
+        this.buffer[index] <- value;
+    }
+
+    .get method<u32 index> -> unknown
+    {
+        return(this.buffer[index]);
+    }
+
+    .StaticList operator(index_set)<u32 index, any value>
+    {
+        this.buffer[index] <- value;
+    }
+
+    .StaticList operator(index_get)<u32 index> -> unknown
+    {
+        return(this.buffer[index]);
+    }
 }

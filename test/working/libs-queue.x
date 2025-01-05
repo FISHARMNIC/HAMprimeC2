@@ -1,5 +1,9 @@
 #include sys staticQueue
 
+/* can also use
+    #include sys dynamicQueue
+*/
+
 entry function<>
 {
     /* issue is that it wont let you import from an imported file */

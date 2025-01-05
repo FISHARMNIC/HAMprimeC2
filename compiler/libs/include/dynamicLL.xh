@@ -26,7 +26,7 @@ DynamicLL format
     .empty method<> -> u32
     {
         /* for some reason can't return in one line yet */
-        if(this.start == this.end)
+        if(this.start == 0)
         {
             return 1;
         }
@@ -108,7 +108,12 @@ DynamicLL format
             quit(1);
         }
 
-        this.start <- this.start.next;
+        if(rval == this.end)
+        {
+            this.end <- 0;
+        }
+        
+        this.start <- rval.next;
 
         return(rval.value);
     }

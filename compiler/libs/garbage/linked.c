@@ -37,6 +37,19 @@ __linked_t* __linked_remove(__linked_t **list_db, __linked_t *previous, __linked
     __linked_t *nextPtr = curr->next;
     
     int allocated_bytes = curr->item->size;
+
+
+    //full_malloc_t* fm = (full_malloc_t*) curr;
+    //void* tbfree = fm->section_rosterEntry.pointer;
+
+    // printf("\t ^- Clearing %i bytes from %p\n", allocated_bytes, curr->item->pointer); //tbfree);
+    
+    // for(int i = 0; i < allocated_bytes; i++)
+    // {
+    //     printf("\t\t: [%i] is %c\n", i, i[(char*)curr->item->pointer]);
+    // }
+
+
     memset(curr->item->pointer, 0, allocated_bytes);
     __rc_total_allocated_bytes__ -= GET_ALLOC_SIZE(allocated_bytes);
     //printf("-- : %i => %i\n", sizeof(full_malloc_t) + allocated_bytes, __rc_total_allocated_bytes__);

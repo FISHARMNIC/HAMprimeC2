@@ -1953,7 +1953,18 @@ var formats = {
                         throwE(`Property ${p} not given`);
                     }
 
-                    assembly.optimizeMove(value, `-${allocOffset - off}(%ebp)`, helpers.types.guessType(value), p.type)
+                    var valueType = helpers.types.guessType(value)
+
+                    if (helpers.types.isStringOrConststrType(valueType) && !("hasData" in valueType) && ("hasData" in p.type) && helpers.types.isStringOrConststrType(p.type)) {
+                        outputCode.autoPush(
+                            `# char lit to string (explicit format init)`,
+                            `pushl ${helpers.types.formatIfConstOrLit(value)}`,
+                            `call cptos`,
+                            `add $4, %esp`,
+                        )
+                        value = "%eax"
+                        helpers.registers.extendedTypes["a"] = defines.types.string
+                    }
 
                     if ("hasData" in helpers.types.guessType(value) && nextThingTakesOwnership) {
                         outputCode.autoPush(
@@ -1963,6 +1974,10 @@ var formats = {
                             `push ${value}`,
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
+                    }
+                    else
+                    {
+                        assembly.optimizeMove(value, `-${allocOffset - off}(%ebp)`, helpers.types.guessType(value), p.type)
                     }
                     nextThingTakesOwnership = defaultAutomaticOwnership
 
@@ -1986,17 +2001,34 @@ var formats = {
                     if (value == undefined) {
                         throwE(`Property ${p} not given`);
                     }
-                    assembly.optimizeMove(value, `${off}(%eax)`, helpers.types.guessType(value), p.type)
+
+                    var valueType = helpers.types.guessType(value)
+
+                    if (helpers.types.isStringOrConststrType(valueType) && !("hasData" in valueType) && ("hasData" in p.type) && helpers.types.isStringOrConststrType(p.type)) {
+                        outputCode.autoPush(
+                            `# char lit to string (explicit format init)`,
+                            `pushl ${helpers.types.formatIfConstOrLit(value)}`,
+                            `call cptos`,
+                            `add $4, %esp`,
+                        )
+                        value = "%eax"
+                        helpers.registers.extendedTypes["a"] = defines.types.string
+                    }
 
                     if ("hasData" in helpers.types.guessType(value) && nextThingTakesOwnership) {
                         outputCode.autoPush(
                             `# requesting ownership (setting sub property)`,
-                            `lea ${off}(%eax), %edx`,
+                            `lea ${off}(${saveLbl}), %edx`,
                             `push %edx`,
                             `push ${value}`,
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
                     }
+                    else
+                    {
+                        assembly.optimizeMove(value, `${off}(%eax)`, helpers.types.guessType(value), p.type)
+                    }
+                    
                     nextThingTakesOwnership = defaultAutomaticOwnership
 
                     off += helpers.types.typeToBytes(p.type)

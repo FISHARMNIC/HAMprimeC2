@@ -1,0 +1,26 @@
+#include sys dynamicLL
+
+DynamicQueue format
+{
+    .queue DynamicLL;
+
+    .DynamicQueue constructor<>
+    {
+        this.queue <- DynamicLL();
+    }
+
+    .empty method<> -> u32
+    {
+        return(this.queue.empty());
+    }
+
+    .push method<dyna item>
+    {
+        this.queue.push(item);
+    }
+
+    .pop method<> -> dyna
+    {
+        return(this.queue.popFront());
+    }
+}

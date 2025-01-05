@@ -29,15 +29,17 @@ entry function<>
     linkedList.push("oranges");
     linkedList.push("peaches");
 
+    print_(string:(linkedList.popFront()));
     print_(string:(linkedList.pop()));
-    print_(string:(linkedList.popFront()));
-    print_(string:(linkedList.popFront()));
+    print_(string:(linkedList.pop()));
 
-    
+    /*
     //Un comment to check leaks with valgrind
     linkedList <- 0;
     __asm__ "movw $0, ___TEMPORARY_OWNER___"; // can't modify the var normally since the compiler treats sets to it differently
+    __asm__ "movw $0, __gc_dontClear__";
     __rc_collect__();
+    __rc_collect__(); // First time also clears data, so second pass to collect those whos owner is now null
     exit(0);
-    
+    */
 }

@@ -1,4 +1,8 @@
-/* ISSUE IS THAT ITS NOT ACTUALLY CREATING CONSTRUCTOR 2 */
+/* 
+this works, but is currently being rewritten using the new builtin libs
+*/
+
+#include sys staticQueue;
 
 forward GraphNode format;
 
@@ -36,13 +40,10 @@ GraphNode format
     {
         if(this.connections == 0)
         {
-            //print_(`NEW from ${this.value} to ${node.value}`);
             this.connections <- LLGraphNode(GraphNode:borrowed:(node));
         }
         else
         {
-            //print_(`SEC from ${this.value} to ${node.value}`);
-            //printf("\t%p\n", this.connections);
             this.connections.add_brwd(GraphNode:borrowed:(node));
         }
     }
@@ -112,7 +113,6 @@ LLGraphNode format
         last.next <- LLGraphNode(node);
         
         /* omg why does this not throw Error! node is not an LLGraphNode: last.next <- node; */
-
     }
     
     /* TODO implement method overloads and make this supportive!!! */
@@ -138,7 +138,6 @@ LLGraphNode format
 Graph format
 {
     .allNodes LLGraphNode;
-    .queue    Queue;
 
     .Graph constructor<>
     {
@@ -156,34 +155,30 @@ Graph format
         }
     }
 
-    /*
     .bft method<GraphNode node>
     {
-        create queue <- LLGraphNode(GraphNode:borrowed:(node));
+        create queue <- StaticQueue();
         
-        create readHead <- borrow queue;
-        create writeHead <- borrow queue;
+        queue.push(GraphNode:borrowed:(node));
 
-        node.visited <- 0;
+        node.visited <- 1;
 
-        while(this.queue.size != 0)
+        while(queue.empty() == 0)
         {
-            create current <- this.queue.pop();
-            print_(current.value);
-            
+            create GraphNode current <- queue.pop();
+
             create walker <- borrow current.connections;
             while(walker != 0)
             {
                 if(walker.node.visited == 0)
                 {
-                    this.queue.push(walker);
+                    queue.push(GraphNode:borrowed:(walker.node));
                     walker.node.visited <- 1;
                 }
                 walker <- borrow walker.next;
             }
         }
     }
-    */
     
     .dft method<GraphNode current>
     {
@@ -196,7 +191,6 @@ Graph format
         }
         */
         
-
         current.visited <- 1;
         print_(current.value);
 
@@ -217,8 +211,10 @@ Graph format
 
 entry function<>
 {
-    /* using this gif: https://miro.medium.com/v2/resize:fit:1248/0*r5blxPoPZaX1OkGr.gif */
+
     create graph <- Graph();
+
+    /* using this gif: https://miro.medium.com/v2/resize:fit:1248/0*r5blxPoPZaX1OkGr.gif */
 
     create node1 <- GraphNode(1);
     create node2 <- GraphNode(2);
@@ -241,11 +237,11 @@ entry function<>
     node4.addTwoWayConnection(node5);
 
     graph.dft(node1);
-
-    /*
+    
     
     // BFT WIP
     // testing with this gif: https://miro.medium.com/v2/resize:fit:1200/1*KAZbkOGxRrmTokzX6af2vA.gif
+    /*
     create node0 <- GraphNode(0);
     create node1 <- GraphNode(1);
     create node2 <- GraphNode(2);

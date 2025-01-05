@@ -15,6 +15,6 @@ entry function<>
     list.delete(1);
 
     print_(f32:(list.pop()));
-    print_(f32:(list.pop()));
+    print_(f32:(list[0]));
 
 }

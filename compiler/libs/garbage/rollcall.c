@@ -1,3 +1,5 @@
+//#define _DEBUG
+
 #include "rollcall.h"
 #include "linked.h"
 
@@ -43,16 +45,17 @@ void *__rc_allocate__(int size_bytes, int restricted)
     //size_bytes += 32;
     int actualAllocSize = GET_ALLOC_SIZE(size_bytes);
 
-    dbgprint(":::: Attempting malloc of with inner data of size %i\n", size_bytes);
+    dbgprint("|- Attempting malloc of with inner data of size %i\n", size_bytes);
 
     // Note, here using malloc which also stores size, maybe switch to mmap2
     full_malloc_t *allocation = malloc(actualAllocSize);
     assert(allocation != 0);
 
+    dbgprint(" \\- Allocated address at %p\n", allocation);
+
     __rc_total_allocated_bytes__ += actualAllocSize;
 
     // All memory is grouped into one allocation, so split it up into its individual components
-    __linked_t *listEntry = (__linked_t*) allocation;
     roster_entry_t *roster_entry = &(allocation->section_rosterEntry);
     described_buffer_t *described_buffer = &(allocation->section_describedBuffer);
 
@@ -63,8 +66,8 @@ void *__rc_allocate__(int size_bytes, int restricted)
     roster_entry->size = size_bytes;
     roster_entry->pointer = &(described_buffer->data);
 
-    dbgprint("ATTEMPTING ADD TO ROSTER\n");
-    __linked_add(&Roster, roster_entry, listEntry);
+    //dbgprint("ATTEMPTING ADD TO ROSTER\n");
+    __linked_add(&Roster, roster_entry, (__linked_t*) allocation);
 
     //asm volatile("popa");
 
@@ -75,7 +78,7 @@ void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
 {
     void* allocation = __rc_allocate__(size_bytes, restricted);
     __rc_requestOwnership__(allocation, &___TEMPORARY_OWNER___);
-    // need to add maybe ___TEMPORARY_OWNER___ = allocation
+
     return allocation;
 }
 
@@ -102,7 +105,7 @@ void __rc_collect__()
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
-        dbgprint("|- Checking %p vs %p (dontClear is %p)\n", owner_should_point_to, owner_points_to, __gc_dontClear__);
+        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p]\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list);
 
         // if the datas owner now points to a different address, this data is considered "lost"
         // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner

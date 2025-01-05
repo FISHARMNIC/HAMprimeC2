@@ -275,6 +275,16 @@ global.userFunctions = {           // Object : {function name: {func name, param
         ],
         variadic: false,
         returnType: defines.types.p32
+    },
+    "memset": {
+        name: "memset",
+        parameters: [
+            { name: "start", type: defines.types.p8 },
+            { name: "size", type: defines.types.u32 },
+            { name: "bytes", type: defines.types.u32 }
+        ],
+        variadic: false,
+        returnType: defines.types.p32
     }
 }
 global.specialFunctions = {
