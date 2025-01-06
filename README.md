@@ -8,6 +8,12 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
 <summary><b>Recent Update Log</b></summary>
 
 ## Recent Update Log
+- Added some builting libraries which can now be used with `#include`
+    - See examples under `libs-xxx`
+    - New libraries are:
+        - linked lists
+        - queues
+        - flexible arrays (like cpp vectors)
 - Lambdas and certain types not longer need to be called using the `call` keyword
     - Only works for params/variables of type: `any` and the a new type: `fn`
 - Added new type
