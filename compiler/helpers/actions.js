@@ -601,8 +601,15 @@ var variables = {
 
         //console.log("----- EEEEEEE", helpers.formats.seeIfIncludesOperator(aType, "index_get", indexTypeGuess))
 
-        if ("formatPtr" in aType && helpers.formats.seeIfIncludesOperator(aType, "index_get", indexTypeGuess)) {
-            return formats.callOperator(aname, "index_get", index)
+        if ("formatPtr" in aType) {
+            if(helpers.formats.seeIfIncludesOperator(aType, "index_get", indexTypeGuess))
+            {
+                return formats.callOperator(aname, "index_get", index)
+            }
+            else
+            {
+                throwW(`Attempting to index format instance as an array since no overload for "index_get" was given.`)
+            }
         }
 
         var baseRegister = "%eax"
@@ -822,9 +829,16 @@ var variables = {
         var valueType = helpers.types.guessType(value)
 
         //console.log(arrType.formatPtr?.operators)
-        if ("formatPtr" in arrType && helpers.formats.seeIfIncludesOperator(arrType, "index_set", indexType)) {
+        if ("formatPtr" in arrType) {
             //throwE(address, index, value, globalLineConts)
-            return actions.formats.callOperator(address, "index_set", [index, ",", value])
+            if(helpers.formats.seeIfIncludesOperator(arrType, "index_set", indexType))
+            {
+                return actions.formats.callOperator(address, "index_set", [index, ",", value])
+            }
+            else
+            {
+                throwW('Attempting to index format instance as an array since no overload for "index_set" was given.')
+            }
             //throwE(arrType.formatPtr.operators)
         }
 
@@ -2360,6 +2374,7 @@ var formats = {
             params = [params]
             //throwE("[INTERNAL] Operators cannot be called with multiple parameters")
         }
+        var paramsNoComma = params.filter(x => x != ",")
 
         thisStack.save();
 
@@ -2369,18 +2384,21 @@ var formats = {
             throwE(`"${parent}" is not a format instance or does not exist`)
         }
 
-        var paramType = helpers.types.guessType(params[0])
+        var paramType = helpers.types.guessType(paramsNoComma[0])
         var operator = helpers.formats.convertOperatorToString(operator)
 
 
         var foundOperatorFn = parentType.formatPtr.operators[operator].find(e => {
             return e.parameters.every((p, i) => {
-                return helpers.types.areEqualNonStrict(p.type, helpers.types.guessType(params[i]))
+                if(!helpers.types.areEqualExtraLoose(p.type, helpers.types.guessType(paramsNoComma[i])))
+                    console.log(helpers.types.convertTypeObjToName(p.type), " but given ", helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[i])), `(${paramsNoComma[i]})`)
+                return helpers.types.areEqualExtraLoose(p.type, helpers.types.guessType(paramsNoComma[i]))
             })
         })
 
         if (foundOperatorFn == undefined) {
-            throwE(`Unable to find an overload for "${operator}" in type "${parentType.formatPtr.name}" that accepts type "${helpers.types.convertTypeObjToName(paramType)}"`)
+            throwE(`Unable to find an overload for "${operator}" in type "${parentType.formatPtr.name}" that accepts the given parameters`, paramsNoComma, parentType.formatPtr.operators[operator][0].parameters)
+    
         }
 
         var formattedName = foundOperatorFn.name

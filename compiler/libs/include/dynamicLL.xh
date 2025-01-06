@@ -117,4 +117,67 @@ DynamicLL format
 
         return(rval.value);
     }
+
+     .get method<u32 index> -> dyna
+    {
+        create walker <- borrow this.start;
+        create i <- 0;
+
+        while(walker != 0)
+        {
+            if(i == index)
+            {
+                return(walker.value);
+            }
+            i <- i + 1;
+            walker <- borrow walker.next;
+        }
+
+        print_(`[LL ERROR] Index out of range`);
+        quit(1);
+    }
+
+    .set method<u32 index, dyna value>
+    {
+        create walker <- borrow this.start;
+        create i <- 0;
+
+        while(walker != 0)
+        {
+            if(i == index)
+            {
+                walker.value <- value;
+                return;
+            }
+            i <- i + 1;
+            walker <- borrow walker.next;
+        }
+
+        print_(`[LL ERROR] Index out of range`);
+        quit(1);
+    }
+
+    .DynamicLL operator(index_get)<u32 index> -> dyna
+    {
+        return(this.get(index));
+    }
+
+    .DynamicLL operator(index_set)<u32 index, dyna value>
+    {
+        this.set(index, value);
+    }
+
+    .forEach method<fn func>
+    {
+        create walker <- borrow this.start;
+        create i <- 0;
+
+        while(walker != 0)
+        {
+            func(walker.value, i);
+            i <- i + 1;
+            walker <- borrow walker.next;
+        }
+    }
+
 }

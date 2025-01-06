@@ -1005,6 +1005,10 @@ function evaluate(line) {
                         //throwE("The print function is still in development ")
 
                         // TODO for some reason its not pushl sometimes, just push. Need to make sure its always pushl
+                        if(data == undefined || data.length == 0)
+                        {
+                            throwE("Got undefined. Did you forget something?")
+                        }
                         actions.assembly.pushToStack(data, dataType)
 
                         if (dataType.float) {
