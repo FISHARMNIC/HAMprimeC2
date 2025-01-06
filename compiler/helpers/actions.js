@@ -457,6 +457,7 @@ var variables = {
 
         if ("unknown" in type) {
             type = valueType
+            helpers.variables.setVariableType(vname, type)
         }
 
         if (!helpers.types.areEqual(valueType, type) && vname != "___TEMPORARY_OWNER___" && vname != "__this__") {

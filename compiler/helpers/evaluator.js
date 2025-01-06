@@ -15,6 +15,8 @@ function evaluate(line) {
     //throwE(line, typeStack)
     //if(line.includes("format")) console.log(":::", line)
     // just for macros
+
+    outputCode.autoPush(`#//------- line: ${line.join(" ")} ------- #`)
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         // HERE is where forced dynamic should be like "Linked:dynamic"
         var word = line[wordNum]
@@ -744,6 +746,8 @@ function evaluate(line) {
         // #endregion
         // #region Brackets
         else if (word == "{") {
+            outputCode.autoPush("# {")
+            asmTabs++
             if (requestBracket != 0) {
                 newScope(requestBracket)
                 debugPrint("ENTERTING", requestBracket)
@@ -758,6 +762,8 @@ function evaluate(line) {
 
             }
         } else if (word == "}") {
+            asmTabs--
+            outputCode.autoPush("# }")
             var oldScope = scope.popScope()
             debugPrint("EXITING", oldScope)
             var oldStack = stackVariables.pop()

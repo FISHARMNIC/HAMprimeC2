@@ -27,6 +27,7 @@ global.__addToAnyVarEverMade = function (x) {
     if (!__anyVarEverMade.includes(x))
         __anyVarEverMade.push(x)
 }
+global.asmTabs = 0
 
 global.thisStack = []
 
@@ -308,9 +309,9 @@ global.outputCode = { // object with out data
     text: [],
     autoPush: function () {
         if (scope.length == 0)
-            this.init.push(...arguments)
+            this.init.push(...(Array.from(arguments).map(x=>"\t".repeat(asmTabs) + x)))
         else
-            this.text.push(...arguments)
+            this.text.push(...(Array.from(arguments).map(x=>"\t".repeat(asmTabs) + x)))
 
         var outGoing = { line: globalLine, caller: (new Error()).stack } //caller: arguments.callee.caller.name || "*unkown caller*"}
         if (lineOwners[this.text.length] == undefined) {

@@ -93,6 +93,7 @@ DynamicLL format
             create rval <- walker.next.value;
 
             walker.next <- 0;
+            this.end <- walker;
 
             return rval;
         }
@@ -118,7 +119,7 @@ DynamicLL format
         return(rval.value);
     }
 
-     .get method<u32 index> -> dyna
+    .get method<u32 index> -> dyna
     {
         create walker <- borrow this.start;
         create i <- 0;
@@ -180,4 +181,38 @@ DynamicLL format
         }
     }
 
+    .delete method<u32 index>
+    {
+        if(index <= 0)
+        {
+            this.start <- this.start.next;
+        }
+        else
+        {
+            create walker <- borrow this.start;
+            create i <- 0;
+            index <- index - 1;
+
+            create next;
+
+            while(walker != 0)
+            {
+                next <- borrow walker.next;
+
+                if(i == index)
+                {
+                    if(next == this.end)
+                    {
+                        this.end <- walker;
+                    }
+                    walker.next <- walker.next.next;
+                    return;
+                }
+                i <- i + 1;
+                walker <- borrow next;
+            }
+            print_(`[LL ERROR] Index out of range`);
+            quit(1);
+        }
+    }
 }

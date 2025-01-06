@@ -1,6 +1,8 @@
 /*
 TODO:
 
+    * make arrow functions lambdas
+
     * search for HERE in this file. See the issue there
 
     * make sure that the compiler can actually see the diff between dyna and any

@@ -1,5 +1,3 @@
-// there seems to be leaks, not sure how yet
-
 #include sys staticLL
 #include sys dynamicLL
 
@@ -18,7 +16,15 @@ entry function<>
 
     print_(`Empty? ${linkedList.empty()}`);
 
-    print_("Removing 2 elements...");
+    linkedList.push(4);
+
+    linkedList.delete(2);
+    linkedList.push(5);
+
+    linkedList.forEach(lambda<u32 item>{print_(item);});
+
+    print_("Removing 3 elements...");
+    linkedList.pop();
     linkedList.pop();
     linkedList.pop();
 
@@ -45,7 +51,7 @@ entry function<>
     linkedList.forEach(lambda<string:borrowed item>
     {
         print_(item);
-    })
+    });
 
     print_("----");
 
