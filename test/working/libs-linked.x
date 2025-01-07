@@ -21,14 +21,18 @@ entry function<>
     linkedList.delete(2);
     linkedList.push(5);
 
-    linkedList.forEach(lambda<u32 item>{print_(item);});
+    linkedList.forEach(
+        lambda<u32 item>{
+            print_(item);
+        }
+    );
 
     print_("Removing 3 elements...");
     linkedList.pop();
     linkedList.pop();
     linkedList.pop();
 
-    print_(`Empty? ${linkedList.empty()}\n`);
+    print_(`Empty? ${linkedList.empty()}\n----`);
 
     /* for use with strings, formats, arrays, etc */
     /* note that all methods and features shown below also work for StaticLL */
@@ -38,20 +42,22 @@ entry function<>
     linkedList.push("oranges");
     linkedList.push("peaches");
 
-    linkedList[1] <- "blueberries";
-
     print_(string:(linkedList[0]));
     print_(string:(linkedList[1]));
     print_(string:(linkedList[2]));
 
     print_("----");
 
+    linkedList[1] <- "blueberries";
+        
     /* can also do lambda<string item, u32 index> if you want */
     /* just make sure to borrow it so you dont accidentally take ownership */
-    linkedList.forEach(lambda<string:borrowed item>
-    {
-        print_(item);
-    });
+    linkedList.forEach(
+        lambda<string:borrowed item>
+        {
+            print_(item);
+        }
+    );
 
     print_("----");
 

@@ -168,7 +168,15 @@ Open `install.md` for information
 
 </details>
 
-# Interesting examples
+<details>
+<summary><b>Documentation</b></summary>
+
+[documentation](https://fisharmnic.github.io/docs)
+
+Please note that it may be outdated, as I have not been focusing on the documentation recently
+</details>
+
+# Examples
 * [Supportive Overloads](#Supportive-Overloads)
 * [Class](#Formats-as-classes)
 * [Class(2)](#Class-Example-2)

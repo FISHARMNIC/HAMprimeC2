@@ -53,7 +53,7 @@ function parseCLA() {
     }
     if(!("ifiles" in options))
     {
-        console.log("Error: no input file")
+        console.log("Error: no input file. Use 'ham --help' for instructions")
         process.exit(1)
     }
 

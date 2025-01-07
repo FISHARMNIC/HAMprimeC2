@@ -1,6 +1,8 @@
 /*
 TODO:
 
+    * FIX GRAPHS.X
+
     * make arrow functions lambdas
 
     * search for HERE in this file. See the issue there
@@ -389,6 +391,13 @@ TODO:
 //   };
 // });
 
+
+var nodeVersion = parseInt(process.version.slice(1,process.version.indexOf(".")))
+if(nodeVersion < 17)
+{
+    console.log("Error: NodeJS must be version 17 or higher")
+    process.exit(1)
+}
 
 global.fs = require("fs");
 const exec = require('child_process').exec;

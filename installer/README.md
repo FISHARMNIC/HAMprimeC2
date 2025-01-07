@@ -1,1 +1,0 @@
-This installer is still being worked on!

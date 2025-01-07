@@ -1585,7 +1585,7 @@ var functions = {
 
                     if(variadicFound == undefined)
                     {
-                        throwE(variadics, `Unable to find an overload for "${fname}" that accepts the given parameters`)
+                        throwE(`Unable to find an overload for "${fname}" that accepts the given parameters`)
                     }
                     else
                     {

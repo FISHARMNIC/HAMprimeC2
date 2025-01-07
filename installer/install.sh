@@ -59,24 +59,32 @@ else
 fi
 
 echo "║ : Checking if nodejs exists"
+command -v node >/dev/null
 if [[ $? -ne 0 ]]; then
-    echo -e "║ : \033[1;31m Nodejs isn't installed! Please install it\033[0m"
-    echo -e "║ : \033[1;31m The compiler has been installed, but it won't work until nodejs is too\033[0m"
-    echo -e "║ : \033[1;31m NOTE: after installing you will need to use npm to install command-line-args\033[0m"
+    echo -e "║ : \033[1;31mNodejs isn't installed! Please install it\033[0m"
+    echo -e "║ : \033[1;31mThe compiler has been installed, but it won't work until nodejs is too\033[0m"
+    echo -e "║ : \033[1;31mNOTE: after installing you will need to use npm to install command-line-args\033[0m"
 else
-    package_name='command-line-args'
-    echo "║ : Checking if $package_name exists"
-    if [[ "$(npm list -g $package_name)" =~ "empty" ]]; then
-        echo "║ : Installing $package_name ..."
-        npm install -g $package_name
+    echo "║ : Checking if npm exists"
+    command -v npm >/dev/null
+    if [[ $? -ne 0 ]]; then
+        echo -e "║ : \033[1;31mNPM isn't installed! Please install it\033[0m"
+        echo -e "║ : \033[1;31mNOTE: after installing you will need to run 'npm i command-line-args' \033[0m"
     else
-        echo "║ : $package_name is already installed"
+        package_name='command-line-args'
+        echo "║ : Checking if $package_name exists"
+        if [[ "$(npm list -g $package_name)" =~ "empty" ]]; then
+            echo "║ : Installing $package_name ..."
+            npm install -g $package_name
+        else
+            echo "║ : $package_name is already installed"
+        fi
     fi
 fi
 
 echo "╚ Installation succesfull! Restart bash"
 echo ""
 echo "| Compiler commands:"
-echo "|     ham:  Compile and run ham program"
+echo "|     ham:  Compile ham program"
 # echo "|     hamc: Compile program"
 echo ""
