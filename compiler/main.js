@@ -1,7 +1,9 @@
 /*
 TODO:
 
-    * FIX GRAPHS.X
+    * see about threading collect
+
+    * make marching squares (see bookmarks)
 
     * make arrow functions lambdas
 

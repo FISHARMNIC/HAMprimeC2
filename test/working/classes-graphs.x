@@ -167,6 +167,8 @@ Graph format
         {
             create GraphNode current <- queue.pop();
 
+            print_(current.value);
+
             create walker <- borrow current.connections;
             while(walker != 0)
             {

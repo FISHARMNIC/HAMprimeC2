@@ -5,8 +5,8 @@
 
 GraphNode format
 {
-    .visited  u32;
-    .value u32;
+    .visited u32;
+    .value   u32;
 
     .connections StaticLL;
 
