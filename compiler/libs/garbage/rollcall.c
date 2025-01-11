@@ -9,28 +9,6 @@ int __rc_total_allocated_bytes__ = 0;
 int __disable_gc__ = 0;
 void* __gc_dontClear__ = (void*)-1;
 
-/*
-// int bob = 0;
-// moved to assembly in gcollect.s, no idea what was going on AT ALL
-// Switch to asm seemed to work
-void __rc_quick_check__()
-{
-    asm volatile("pusha");
-
-    if((__rc_total_allocated_bytes__ > BYTES_PER_GC) && (__disable_gc__ == 0))
-    {
-        //dbgprint("trigger\n");
-        //printf("hi\n");
-        __rc_collect__();
-        // Commenting this breaks it
-        // Why???????????
-        bob = 100;
-    }
-
-    asm volatile("popa");
-}
-*/
-
 void *__rc_allocate__(int size_bytes, int restricted)
 {
     //asm volatile("pusha");
@@ -124,30 +102,6 @@ void __rc_collect__()
 
     dbgprint("\\---------------------/\n");
 }
-
-/*
-void __rc_free_all__()
-{
-    __linked_t * list;
-    
-    // if not empty
-    if(Roster == (__linked_t*)0)
-        return;
-    
-    list = Roster->next;
-
-    free(Roster);
-
-    while(list != (__linked_t*)0)
-    {
-        __linked_t * nextPtr = list->next;
-        free(list);
-        list = nextPtr;
-    }
-
-   // __rc_total_allocated_bytes__ = 0;
-}
-*/
 
 void __rc_free_all__()
 {
