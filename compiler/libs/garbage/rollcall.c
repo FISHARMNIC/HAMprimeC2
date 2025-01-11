@@ -1,3 +1,13 @@
+/*
+https://stackoverflow.com/questions/5092134/whats-the-difference-between-generational-and-incremental-garbage-collection
+Look at answer by Bernd Elkemann
+
+Plans:
+    create a defragger: https://www.cs.cornell.edu/courses/cs312/2003fa/lectures/sec24.htm
+
+
+*/
+
 //#define _DEBUG
 
 #include "rollcall.h"
