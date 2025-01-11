@@ -7,6 +7,7 @@
 
 Possible ways of checking for leaked data
 * Just check for 0 refs in all allocations
+OR
 * Each scope open creates a new allocation "frame"
-    * The end of the scope just destroyed everything with 0 refs
+    * The end of the scope just destroy everything with 0 refs
     * Obviously need "dontFree" and temp owners
