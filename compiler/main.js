@@ -1,6 +1,27 @@
 /*
 TODO:
 
+    NEW IDEAS
+    | ----
+        stack chunking:
+            * New scopes push the current LL end pointer to a stack (data struct, not memory stack)
+                * new scope means "{"
+                * stack can just be a second linked list?
+            * On scope exit, pop from that stack
+                * gets the start of the portion of everything that was allocated in that scope 
+                * and start GC from that point
+            * It's OK if everything isn't freed, since the next stopper will still look over that area
+
+        Quick collection:
+            * Do not allow retyiping dynamics to statics AT ALL
+            * At the end of each function, check every local variable
+                * Check its entry reference, and see if it DOES own it
+                * Then if it does, just throw it away
+            * This is on top of the GC, just a backup
+    | ----
+
+
+
     * see about threading collect
 
     * make marching squares (see bookmarks)
