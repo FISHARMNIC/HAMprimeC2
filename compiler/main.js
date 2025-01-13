@@ -2,10 +2,11 @@
 TODO:
 
     need to test backup gc trigger on x amount of bytes alloced
+
+    need to have quick collection on assigned to params
     
     do some speed comps between the old version and this
 
-    graphs.x segfaults 
 
     NEW IDEAS
     | ----

@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Mon Jan 13 2025 00:13:31 GMT-0700 (Mountain Standard Time)
+Compiled with love on Mon Jan 13 2025 12:00:56 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -168,11 +168,11 @@ call __rc_enterChunk__
 	# optimized move from 0 to -8(%ebp)
 	movl $0, -8(%ebp)
 	__LABEL0__:
-	#//------- line: i <: 10000000 ------- #
+	#//------- line: i <: 100000 ------- #
 	# note, read STACK VAR i -> -8(%ebp)
 	mov -8(%ebp), %eax
 	mov $0, %cl
-	cmp $10000000, %eax
+	cmp $100000, %eax
 	setl %cl
 	#//------- line: while ( %cl ) ------- #
 	# comparison for WHILE loop
