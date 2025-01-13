@@ -12,8 +12,9 @@ Plans:
 
 #include "rollcall.h"
 #include "linked.h"
+#include "chunks.h"
 
-__linked_t *Roster = 0;
+linked_t *Roster = 0;
 int __rc_total_allocated_bytes__ = 0;
  
 int __disable_gc__ = 0;
@@ -55,7 +56,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     roster_entry->pointer = &(described_buffer->data);
 
     //dbgprint("ATTEMPTING ADD TO ROSTER\n");
-    __linked_add(&Roster, roster_entry, (__linked_t*) allocation);
+    __roster_add(allocation);
 
     //asm volatile("popa");
 
@@ -72,9 +73,14 @@ void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
 
 void __rc_collect__()
 {
+    __rc_exitChunk__();
+    return; 
+
+    /*
     dbgprint("------Collecting-----\n");
-    __linked_t *list = Roster;
-    __linked_t *previous = (__linked_t*)0;
+
+    linked_t *list = Roster;
+    linked_t *previous = (linked_t*)0;
     
     // for each item in Roster
     while (list != 0)
@@ -100,7 +106,7 @@ void __rc_collect__()
         if ((owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
         {
             dbgprint("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
-            list = __linked_remove(&Roster, previous, list);
+            list = __roster_remove(previous, list);
         }
         else
         {
@@ -111,13 +117,15 @@ void __rc_collect__()
     }
 
     dbgprint("\\---------------------/\n");
+
+    */
 }
 
 void __rc_free_all__()
 {
-    while(Roster != (__linked_t*)0)
+    while(Roster != (linked_t*)0)
     {
-        __linked_t * nextPtr = Roster->next;
+        linked_t * nextPtr = Roster->next;
         free(Roster);
         Roster = nextPtr;
     }

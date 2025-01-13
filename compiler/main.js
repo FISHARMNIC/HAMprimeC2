@@ -1,6 +1,8 @@
 /*
 TODO:
 
+    SWITCH LL TO USING FRONT, LIKE HOW ITS DONE FOR CHUNKS
+
     NEW IDEAS
     | ----
         stack chunking:
