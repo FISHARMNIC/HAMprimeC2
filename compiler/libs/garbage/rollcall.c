@@ -14,8 +14,9 @@ Plans:
 #include "linked.h"
 #include "chunks.h"
 
-linked_t *Roster = 0;
+linked_t *__Roster = 0;
 int __rc_total_allocated_bytes__ = 0;
+extern linked_chunks_t* __ChunkStack;
  
 int __disable_gc__ = 0;
 void* __gc_dontClear__ = (void*)-1;
@@ -78,10 +79,10 @@ void __rc_collect__()
 
     dbgprint("------Collecting-----\n");
 
-    linked_t *list = Roster;
+    linked_t *list = __Roster;
     linked_t *previous = (linked_t*)0;
     
-    // for each item in Roster
+    // for each item in __Roster
     while (list != 0)
     {
         roster_entry_t *roster_entry = list->item;
@@ -121,11 +122,18 @@ void __rc_collect__()
 void __rc_free_all__()
 {
     //__rc_exitChunk__(); // remove when done testing
-    while(Roster != (linked_t*)0)
+
+    while(__ChunkStack != (linked_chunks_t*)0)
     {
-        linked_t * nextPtr = Roster->next;
-        free(Roster);
-        Roster = nextPtr;
+        linked_chunks_t * nextPtr = __ChunkStack->next;
+        free(__ChunkStack);
+        __ChunkStack = nextPtr;
+    }
+    while(__Roster != (linked_t*)0)
+    {
+        linked_t * nextPtr = __Roster->next;
+        free(__Roster);
+        __Roster = nextPtr;
     }
 }
 

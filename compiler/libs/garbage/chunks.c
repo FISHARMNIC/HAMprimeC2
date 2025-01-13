@@ -10,25 +10,25 @@ __rc_exitChunk__, see if anything is owned by the stack
 
 // pointer to chunk pointers, which are just LL ptrs
 // so really an array where each item points to a part of the LL  
-linked_chunks_t* __chunkStack = (linked_chunks_t*) 0;
+linked_chunks_t* __ChunkStack = (linked_chunks_t*) 0;
 
-extern linked_t *Roster;
+extern linked_t *__Roster;
 extern void* __gc_dontClear__;
 
 void __rc_enterChunk__()
 {
     linked_chunks_t* newItem = malloc(sizeof(linked_chunks_t));
 
-    newItem->address = Roster;
+    newItem->address = __Roster;
     newItem->size = 0;
-    newItem->next = __chunkStack;
+    newItem->next = __ChunkStack;
 
-    __chunkStack = newItem;
+    __ChunkStack = newItem;
 }
 
 void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 {
-    linked_chunks_t* save = __chunkStack;
+    linked_chunks_t* save = __ChunkStack;
 
     if(UNLIKELY(save == 0))
     {
@@ -46,7 +46,7 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
     assert(old_frame_esp <= old_frame_ebp);
     
     linked_t* end = save->address;
-    linked_t* list = Roster;
+    linked_t* list = __Roster;
     linked_t *previous = (linked_t*)0;
 
     dbgprint("Chunk has %d bytes\n", save->size);
@@ -85,6 +85,6 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
         }
     }
 
-    __chunkStack = __chunkStack->next;
+    __ChunkStack = __ChunkStack->next;
     free(save);
 }

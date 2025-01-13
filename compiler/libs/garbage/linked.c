@@ -2,8 +2,8 @@
 #include "linked.h"
 
 #include "chunks.h"
-extern linked_chunks_t* __chunkStack;
-extern linked_t *Roster;
+extern linked_chunks_t* __ChunkStack;
+extern linked_t *__Roster;
 
 // #include <stdio.h>
 // #include <string.h>
@@ -13,14 +13,14 @@ void __roster_add(full_malloc_t* allocation)
     linked_t* link = (linked_t*) allocation; //link is first part of alloc
     roster_entry_t* roster_entry = &(allocation->section_rosterEntry);
 
-    link->next = Roster;
+    link->next = __Roster;
     link->item = roster_entry;
     
-    Roster = link;
+    __Roster = link;
 
-    if(LIKELY(__chunkStack != 0))
+    if(LIKELY(__ChunkStack != 0))
     {
-        (__chunkStack->size) += roster_entry->size;
+        (__ChunkStack->size) += roster_entry->size;
     }
 }
 
@@ -35,15 +35,15 @@ linked_t* __roster_remove(linked_t *previous, linked_t *curr)
 
     free(curr);
 
-    if(LIKELY(__chunkStack != 0))
+    if(LIKELY(__ChunkStack != 0))
     {
-        (__chunkStack->size) -= allocated_bytes;
+        (__ChunkStack->size) -= allocated_bytes;
     }
 
     if (UNLIKELY(previous == (linked_t*)0)) // if the beginning
     {   
-        assert(Roster != 0);
-        Roster = nextPtr;
+        assert(__Roster != 0);
+        __Roster = nextPtr;
     }
     else // if not the beginning
     {
