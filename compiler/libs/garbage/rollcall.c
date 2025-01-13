@@ -8,7 +8,7 @@ Plans:
 
 */
 
-//#define _DEBUG
+#define _DEBUG
 
 #include "rollcall.h"
 #include "linked.h"
@@ -73,10 +73,9 @@ void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
 
 void __rc_collect__()
 {
-    __rc_exitChunk__();
-    return; 
+    //__rc_exitChunk__();
+    //return; 
 
-    /*
     dbgprint("------Collecting-----\n");
 
     linked_t *list = Roster;
@@ -117,12 +116,11 @@ void __rc_collect__()
     }
 
     dbgprint("\\---------------------/\n");
-
-    */
 }
 
 void __rc_free_all__()
 {
+    //__rc_exitChunk__(); // remove when done testing
     while(Roster != (linked_t*)0)
     {
         linked_t * nextPtr = Roster->next;

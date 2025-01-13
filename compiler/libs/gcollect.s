@@ -10,6 +10,8 @@ BYTES_PER_GC = 4096 # For testing use like 32
 .globl __rc_requestOwnership__
 .globl __rc_quick_check__
 
+.globl __rc_exitChunk__
+
 .extern __disable_gc__
 .extern __rc_collect__
 
@@ -25,7 +27,11 @@ entry_reference struct
 }
 */
 
-__rc_quick_check__:                   
+__rc_quick_check__:
+    call __rc_exitChunk__
+    ret
+
+//__rc_quick_check__:                   
     cmpl $BYTES_PER_GC, __rc_total_allocated_bytes__       
     jl 0f                
     cmpl $0, __disable_gc__          
@@ -34,7 +40,7 @@ __rc_quick_check__:
     call __rc_collect__ 
     popa 
     0:                                                   
-    ret                  
+    ret                 
 
 // I forgot why I wrote this in assembly
 __rc_requestOwnership__:

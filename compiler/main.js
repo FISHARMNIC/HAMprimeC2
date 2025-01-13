@@ -1,7 +1,7 @@
 /*
 TODO:
 
-    SWITCH LL TO USING FRONT, LIKE HOW ITS DONE FOR CHUNKS
+    graphs.x segfaults 
 
     NEW IDEAS
     | ----

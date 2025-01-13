@@ -1,4 +1,12 @@
+#define _DEBUG
+
 #include "chunks.h"
+
+
+/*
+__rc_exitChunk__, see if anything is owned by the stack
+
+*/
 
 // pointer to chunk pointers, which are just LL ptrs
 // so really an array where each item points to a part of the LL  
@@ -18,13 +26,26 @@ void __rc_enterChunk__()
     __chunkStack = newItem;
 }
 
-void __rc_exitChunk__()
+void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 {
     linked_chunks_t* save = __chunkStack;
+
+    if(UNLIKELY(save == 0))
+    {
+        printf("Empty chunk\n");
+        return;
+    }
+
+    assert(old_frame_esp < old_frame_ebp);
+    
     linked_t* end = save->address;
 
     linked_t* list = Roster;
     linked_t *previous = (linked_t*)0;
+
+    printf("Chunk has %d bytes\n", save->size);
+
+    dbgprint("||| - Old frame is between %p -> %p [%i?]\n", old_frame_esp, old_frame_ebp, old_frame_esp < old_frame_ebp)
 
     while(list != end && list != 0)
     {
@@ -37,16 +58,17 @@ void __rc_exitChunk__()
 
         if(LIKELY(owner_reference != 0))
         {
-            owner_points_to = *((int **)roster_entry->owner);
+            owner_points_to = *owner_reference;
         }
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
-        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p]\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list);
+        dbgprint("|- Checking %p vs %p\n\t> dontClear is %p)\n\t> Allocation is %p\n\t> Going to GC because in scope?: %d\n\t> Owner's address is %p\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list, owner_reference <= old_frame_ebp && owner_reference >= old_frame_esp, owner_reference);
 
         // if the datas owner now points to a different address, this data is considered "lost"
         // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner
-        if ((owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
+        
+        if (((owner_points_to != owner_should_point_to) || (owner_reference <= old_frame_ebp && owner_reference >= old_frame_esp)) && (__gc_dontClear__ != owner_should_point_to))
         {
             dbgprint("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
             list = __roster_remove(previous, list);
