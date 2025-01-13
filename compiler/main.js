@@ -1,6 +1,10 @@
 /*
 TODO:
 
+    need to test backup gc trigger on x amount of bytes alloced
+    
+    do some speed comps between the old version and this
+
     graphs.x segfaults 
 
     NEW IDEAS
