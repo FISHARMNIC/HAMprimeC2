@@ -1421,10 +1421,12 @@ var functions = {
         // } 
         else {
             outputCode.text.push(
+                `push %eax`,
                 `push %esp`,
                 `push %ebp`,
                 `call __rc_exitChunk__`,
-                `add $8, %esp`
+                `add $8, %esp`,
+                `pop %eax`
             )
         }
         outputCode.text.push(

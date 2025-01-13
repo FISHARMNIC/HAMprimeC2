@@ -52,30 +52,14 @@ __rc_enterChunk__:
 	.size	__rc_enterChunk__, .-__rc_enterChunk__
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
-	.string	"Empty chunk"
-.LC1:
 	.string	"./chunks.c"
-.LC2:
-	.string	"old_frame_esp < old_frame_ebp"
-.LC3:
-	.string	"Chunk has %d bytes\n"
 	.section	.rodata.str1.4,"aMS",@progbits,1
 	.align 4
-.LC4:
-	.string	"||| - Old frame is between %p -> %p [%i?]\n"
+.LC1:
+	.string	"old_frame_esp <= old_frame_ebp"
 	.section	.rodata.str1.1
-.LC5:
+.LC2:
 	.string	"roster_entry != 0"
-	.section	.rodata.str1.4
-	.align 4
-.LC6:
-	.string	"|- Checking %p vs %p\n\t> dontClear is %p)\n\t> Allocation is %p\n\t> Going to GC because in scope?: %d\n\t> Owner's address is %p\n"
-	.align 4
-.LC7:
-	.string	"\t ^- Discarding item was %p now %p\n"
-	.section	.rodata.str1.1
-.LC8:
-	.string	"\t ^- Skipped "
 	.text
 	.p2align 4
 	.globl	__rc_exitChunk__
@@ -101,254 +85,165 @@ __rc_exitChunk__:
 	.cfi_offset 3, -20
 	call	__x86.get_pc_thunk.bx
 	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
-	subl	$44, %esp
-	.cfi_def_cfa_offset 64
+	subl	$28, %esp
+	.cfi_def_cfa_offset 48
 	.loc 1 31 22 view .LVU18
 	movl	__chunkStack@GOTOFF(%ebx), %eax
-	movl	%eax, 28(%esp)
+	movl	%eax, 12(%esp)
 .LVL2:
 	.loc 1 33 5 is_stmt 1 view .LVU19
 	.loc 1 33 7 is_stmt 0 view .LVU20
 	testl	%eax, %eax
-	je	.L32
-	.loc 1 39 5 is_stmt 1 view .LVU21
-	movl	64(%esp), %eax
+	je	.L4
+	.loc 1 38 10 is_stmt 1 view .LVU21
+	.loc 1 38 12 is_stmt 0 view .LVU22
+	movl	8(%eax), %eax
 .LVL3:
-	.loc 1 39 5 is_stmt 0 view .LVU22
-	cmpl	%eax, 68(%esp)
-	jnb	.L33
-	.loc 1 41 5 is_stmt 1 view .LVU23
-	.loc 1 41 15 is_stmt 0 view .LVU24
-	movl	28(%esp), %edi
-	.loc 1 43 15 view .LVU25
-	movl	Roster@GOT(%ebx), %eax
-	.loc 1 46 5 view .LVU26
-	subl	$8, %esp
-	.cfi_def_cfa_offset 72
-	.loc 1 41 15 view .LVU27
-	movl	(%edi), %ebp
-	.loc 1 43 15 view .LVU28
+	.loc 1 38 12 view .LVU23
+	testl	%eax, %eax
+	je	.L4
+	.loc 1 46 5 is_stmt 1 view .LVU24
+	movl	48(%esp), %eax
+	cmpl	%eax, 52(%esp)
+	ja	.L39
+	.loc 1 48 5 view .LVU25
+	.loc 1 48 15 is_stmt 0 view .LVU26
+	movl	12(%esp), %eax
 	movl	(%eax), %esi
-	.loc 1 46 5 view .LVU29
-	leal	.LC3@GOTOFF(%ebx), %eax
-	.loc 1 41 15 view .LVU30
-	movl	%ebp, 24(%esp)
 .LVL4:
-	.loc 1 43 5 is_stmt 1 view .LVU31
-	.loc 1 44 5 view .LVU32
-	.loc 1 46 5 view .LVU33
-	pushl	8(%edi)
-	.cfi_def_cfa_offset 76
-	pushl	%eax
-	.cfi_def_cfa_offset 80
-	call	printf@PLT
+	.loc 1 49 5 is_stmt 1 view .LVU27
+	.loc 1 49 15 is_stmt 0 view .LVU28
+	movl	Roster@GOT(%ebx), %eax
+	movl	(%eax), %eax
 .LVL5:
-	.loc 1 48 5 view .LVU34
-	leal	.LC4@GOTOFF(%ebx), %eax
-	pushl	$1
-	.cfi_def_cfa_offset 84
-	pushl	84(%esp)
-	.cfi_def_cfa_offset 88
-	pushl	92(%esp)
-	.cfi_def_cfa_offset 92
-	pushl	%eax
-	.cfi_def_cfa_offset 96
-	call	printf@PLT
-.LVL6:
-	.loc 1 50 5 view .LVU35
-	.loc 1 50 10 view .LVU36
-	.loc 1 50 31 is_stmt 0 view .LVU37
-	addl	$32, %esp
-	.cfi_def_cfa_offset 64
-	.loc 1 50 10 view .LVU38
-	testl	%esi, %esi
-	je	.L8
-	cmpl	%esi, %ebp
-	je	.L8
+	.loc 1 50 5 is_stmt 1 view .LVU29
+	.loc 1 52 49 view .LVU30
+	.loc 1 54 5 view .LVU31
+	.loc 1 54 10 view .LVU32
+	cmpl	%eax, %esi
+	je	.L15
+	testl	%eax, %eax
+	je	.L15
 .LBB2:
-	.loc 1 66 9 view .LVU39
-	movl	__gc_dontClear__@GOT(%ebx), %eax
+	.loc 1 75 153 is_stmt 0 view .LVU33
+	movl	__gc_dontClear__@GOT(%ebx), %ecx
 .LBE2:
-	.loc 1 44 15 view .LVU40
-	movl	$0, 20(%esp)
+	.loc 1 50 15 view .LVU34
+	xorl	%edi, %edi
 .LBB3:
-	.loc 1 66 9 view .LVU41
-	movl	%eax, 12(%esp)
-	leal	.LC6@GOTOFF(%ebx), %eax
-	movl	%eax, 24(%esp)
-	jmp	.L14
-.LVL7:
+	.loc 1 75 153 view .LVU35
+	movl	%ecx, 8(%esp)
+	jmp	.L13
+.LVL6:
 	.p2align 4,,10
 	.p2align 3
-.L35:
-	.loc 1 73 13 is_stmt 1 view .LVU42
-	subl	$4, %esp
-	.cfi_def_cfa_offset 68
-	leal	.LC7@GOTOFF(%ebx), %eax
-	pushl	%edx
-	.cfi_def_cfa_offset 72
-	pushl	%ebp
-	.cfi_def_cfa_offset 76
+.L42:
+	.loc 1 77 102 is_stmt 1 view .LVU36
+	.loc 1 78 13 view .LVU37
+	.loc 1 78 20 is_stmt 0 view .LVU38
+	subl	$8, %esp
+	.cfi_def_cfa_offset 56
 	pushl	%eax
-	.cfi_def_cfa_offset 80
-	call	printf@PLT
-.LVL8:
-	.loc 1 73 102 view .LVU43
-	.loc 1 74 13 view .LVU44
-	.loc 1 74 20 is_stmt 0 view .LVU45
-	popl	%eax
-	.cfi_def_cfa_offset 76
-	popl	%edx
-	.cfi_def_cfa_offset 72
-	pushl	%esi
-	.cfi_def_cfa_offset 76
-	pushl	32(%esp)
-	.cfi_def_cfa_offset 80
+	.cfi_def_cfa_offset 60
+.LVL7:
+	.loc 1 78 20 view .LVU39
+	pushl	%edi
+	.cfi_def_cfa_offset 64
 	call	__roster_remove@PLT
-.LVL9:
-	.loc 1 74 18 view .LVU46
+.LVL8:
+	.loc 1 78 18 view .LVU40
 	addl	$16, %esp
-	.cfi_def_cfa_offset 64
-	.loc 1 74 20 view .LVU47
-	movl	%eax, %esi
-.LVL10:
-	.loc 1 74 20 view .LVU48
+	.cfi_def_cfa_offset 48
+	.loc 1 78 18 view .LVU41
 .LBE3:
-	.loc 1 50 10 is_stmt 1 view .LVU49
-	cmpl	16(%esp), %esi
-	je	.L8
-.LVL11:
-.L36:
-	.loc 1 50 10 is_stmt 0 view .LVU50
-	testl	%esi, %esi
-	je	.L8
-.LVL12:
-.L14:
-.LBB4:
-	.loc 1 52 9 is_stmt 1 view .LVU51
-	.loc 1 52 25 is_stmt 0 view .LVU52
-	movl	(%esi), %ecx
-.LVL13:
-	.loc 1 54 9 is_stmt 1 view .LVU53
-	testl	%ecx, %ecx
-	je	.L34
-	.loc 1 56 9 view .LVU54
-	.loc 1 56 15 is_stmt 0 view .LVU55
-	movl	(%ecx), %eax
-.LVL14:
-	.loc 1 57 9 is_stmt 1 view .LVU56
-	.loc 1 59 9 view .LVU57
-	.loc 1 59 11 is_stmt 0 view .LVU58
+	.loc 1 54 10 is_stmt 1 view .LVU42
+	cmpl	%eax, %esi
+	je	.L17
+.L43:
+	.loc 1 54 10 is_stmt 0 view .LVU43
 	testl	%eax, %eax
-	je	.L16
-	.loc 1 61 13 is_stmt 1 view .LVU59
-	.loc 1 61 29 is_stmt 0 view .LVU60
+	je	.L17
+.LVL9:
+.L13:
+.LBB4:
+	.loc 1 56 9 is_stmt 1 view .LVU44
+	.loc 1 56 25 is_stmt 0 view .LVU45
 	movl	(%eax), %edx
-.LVL15:
+.LVL10:
+	.loc 1 58 9 is_stmt 1 view .LVU46
+	testl	%edx, %edx
+	je	.L40
+	.loc 1 60 9 view .LVU47
+	.loc 1 60 15 is_stmt 0 view .LVU48
+	movl	(%edx), %ecx
+.LVL11:
+	.loc 1 61 9 is_stmt 1 view .LVU49
+	.loc 1 63 9 view .LVU50
+	.loc 1 63 11 is_stmt 0 view .LVU51
+	testl	%ecx, %ecx
+	je	.L16
+	.loc 1 65 13 is_stmt 1 view .LVU52
+	.loc 1 65 29 is_stmt 0 view .LVU53
+	movl	(%ecx), %ebp
+.LVL12:
+.L9:
+	.loc 1 68 9 is_stmt 1 view .LVU54
+	.loc 1 68 14 is_stmt 0 view .LVU55
+	movl	12(%edx), %edx
+.LVL13:
+	.loc 1 70 304 is_stmt 1 view .LVU56
+	.loc 1 75 9 view .LVU57
+	.loc 1 75 12 is_stmt 0 view .LVU58
+	cmpl	%edx, %ebp
+	je	.L41
 .L10:
-	.loc 1 64 9 is_stmt 1 view .LVU61
-	.loc 1 66 9 is_stmt 0 view .LVU62
-	cmpl	%eax, 64(%esp)
-	.loc 1 64 14 view .LVU63
-	movl	12(%ecx), %ebp
-.LVL16:
-	.loc 1 66 9 is_stmt 1 view .LVU64
-	setnb	%cl
-.LVL17:
-	.loc 1 66 9 is_stmt 0 view .LVU65
-	cmpl	%eax, 68(%esp)
-	movl	%ecx, %edi
-	setbe	%cl
-	subl	$4, %esp
-	.cfi_def_cfa_offset 68
-	andl	%ecx, %edi
-	pushl	%eax
-	.cfi_def_cfa_offset 72
-.LVL18:
-	.loc 1 66 9 view .LVU66
-	movl	%edi, %eax
-.LVL19:
-	.loc 1 66 9 view .LVU67
-	movzbl	%al, %eax
-	pushl	%eax
-	.cfi_def_cfa_offset 76
-	pushl	%esi
-	.cfi_def_cfa_offset 80
-	movl	28(%esp), %eax
-	pushl	(%eax)
-	.cfi_def_cfa_offset 84
-	pushl	%edx
-	.cfi_def_cfa_offset 88
-	movl	%edx, 32(%esp)
-	pushl	%ebp
-	.cfi_def_cfa_offset 92
-	pushl	52(%esp)
-	.cfi_def_cfa_offset 96
-	call	printf@PLT
-.LVL20:
-	.loc 1 66 304 is_stmt 1 view .LVU68
-	.loc 1 71 9 view .LVU69
-	.loc 1 71 57 is_stmt 0 view .LVU70
-	movl	40(%esp), %edx
-	.loc 1 71 12 view .LVU71
-	addl	$32, %esp
-	.cfi_def_cfa_offset 64
-	.loc 1 71 57 view .LVU72
-	cmpl	%ebp, %edx
-	jne	.L17
-	movl	%edi, %eax
-	testb	%al, %al
-	je	.L11
-.L17:
-	.loc 1 71 132 discriminator 3 view .LVU73
-	movl	12(%esp), %eax
-	cmpl	%ebp, (%eax)
-	jne	.L35
+	.loc 1 75 132 discriminator 3 view .LVU59
+	movl	8(%esp), %ecx
+.LVL14:
+	.loc 1 75 132 discriminator 3 view .LVU60
+	cmpl	%edx, (%ecx)
+	jne	.L42
 .L11:
-	.loc 1 78 13 is_stmt 1 view .LVU74
-	subl	$12, %esp
-	.cfi_def_cfa_offset 76
-	leal	.LC8@GOTOFF(%ebx), %eax
-	pushl	%eax
-	.cfi_def_cfa_offset 80
-	call	puts@PLT
-.LVL21:
-	.loc 1 78 41 view .LVU75
-	.loc 1 79 13 view .LVU76
-	.loc 1 80 13 view .LVU77
-	.loc 1 80 18 is_stmt 0 view .LVU78
-	addl	$16, %esp
-	.cfi_def_cfa_offset 64
-	movl	%esi, 20(%esp)
-	movl	4(%esi), %esi
-.LVL22:
-	.loc 1 80 18 view .LVU79
-.LBE4:
-	.loc 1 50 10 is_stmt 1 view .LVU80
-	cmpl	16(%esp), %esi
-	jne	.L36
-.LVL23:
-.L8:
-	.loc 1 84 5 view .LVU81
-	.loc 1 84 32 is_stmt 0 view .LVU82
-	movl	__chunkStack@GOTOFF(%ebx), %eax
-	.loc 1 85 5 view .LVU83
-	subl	$12, %esp
-	.cfi_def_cfa_offset 76
-	.loc 1 84 18 view .LVU84
+	.loc 1 82 41 is_stmt 1 view .LVU61
+	.loc 1 83 13 view .LVU62
+.LVL15:
+	.loc 1 84 13 view .LVU63
+	.loc 1 84 18 is_stmt 0 view .LVU64
+	movl	%eax, %edi
 	movl	4(%eax), %eax
-	.loc 1 85 5 view .LVU85
-	pushl	40(%esp)
-	.cfi_def_cfa_offset 80
-	.loc 1 84 18 view .LVU86
-	movl	%eax, __chunkStack@GOTOFF(%ebx)
-	.loc 1 85 5 is_stmt 1 view .LVU87
-	call	free@PLT
-.LVL24:
-	addl	$16, %esp
+.LVL16:
+.L44:
+	.loc 1 84 18 view .LVU65
+.LBE4:
+	.loc 1 54 10 is_stmt 1 view .LVU66
+	cmpl	%eax, %esi
+	jne	.L43
+.LVL17:
+.L17:
+	.loc 1 88 32 is_stmt 0 view .LVU67
+	movl	__chunkStack@GOTOFF(%ebx), %eax
+.LVL18:
+.L7:
+	.loc 1 88 5 is_stmt 1 view .LVU68
+	.loc 1 89 5 is_stmt 0 view .LVU69
+	subl	$12, %esp
+	.cfi_def_cfa_offset 60
+	.loc 1 88 18 view .LVU70
+	movl	4(%eax), %eax
+	.loc 1 89 5 view .LVU71
+	pushl	24(%esp)
 	.cfi_def_cfa_offset 64
-	.loc 1 86 1 is_stmt 0 view .LVU88
-	addl	$44, %esp
+	.loc 1 88 18 view .LVU72
+	movl	%eax, __chunkStack@GOTOFF(%ebx)
+	.loc 1 89 5 is_stmt 1 view .LVU73
+	call	free@PLT
+.LVL19:
+	addl	$16, %esp
+	.cfi_def_cfa_offset 48
+.LVL20:
+.L4:
+	.loc 1 90 1 is_stmt 0 view .LVU74
+	addl	$28, %esp
 	.cfi_remember_state
 	.cfi_def_cfa_offset 20
 	popl	%ebx
@@ -357,8 +252,6 @@ __rc_exitChunk__:
 	popl	%esi
 	.cfi_restore 6
 	.cfi_def_cfa_offset 12
-.LVL25:
-	.loc 1 86 1 view .LVU89
 	popl	%edi
 	.cfi_restore 7
 	.cfi_def_cfa_offset 8
@@ -366,87 +259,82 @@ __rc_exitChunk__:
 	.cfi_restore 5
 	.cfi_def_cfa_offset 4
 	ret
-.LVL26:
+.LVL21:
+	.p2align 4,,10
+	.p2align 3
+.L41:
+	.cfi_restore_state
+.LBB5:
+	.loc 1 75 57 discriminator 2 view .LVU75
+	cmpl	%ecx, 48(%esp)
+	jb	.L11
+	cmpl	%ecx, 52(%esp)
+	jbe	.L10
+	.loc 1 82 41 is_stmt 1 view .LVU76
+	.loc 1 83 13 view .LVU77
+.LVL22:
+	.loc 1 84 13 view .LVU78
+	.loc 1 84 18 is_stmt 0 view .LVU79
+	movl	%eax, %edi
+	movl	4(%eax), %eax
+.LVL23:
+	.loc 1 84 18 view .LVU80
+	jmp	.L44
+.LVL24:
 	.p2align 4,,10
 	.p2align 3
 .L16:
-	.cfi_restore_state
-.LBB5:
-	.loc 1 57 14 view .LVU90
-	xorl	%edx, %edx
-	jmp	.L10
-.LVL27:
-.L32:
-	.loc 1 57 14 view .LVU91
+	.loc 1 61 14 view .LVU81
+	xorl	%ebp, %ebp
+	jmp	.L9
+.LVL25:
+.L15:
+	.loc 1 61 14 view .LVU82
 .LBE5:
-	.loc 1 35 9 is_stmt 1 view .LVU92
-	subl	$12, %esp
-	.cfi_def_cfa_offset 76
-	leal	.LC0@GOTOFF(%ebx), %eax
-.LVL28:
-	.loc 1 35 9 is_stmt 0 view .LVU93
-	pushl	%eax
-	.cfi_def_cfa_offset 80
-	call	puts@PLT
-.LVL29:
-	.loc 1 36 9 is_stmt 1 view .LVU94
-	addl	$16, %esp
-	.cfi_def_cfa_offset 64
-	.loc 1 86 1 is_stmt 0 view .LVU95
-	addl	$44, %esp
-	.cfi_remember_state
-	.cfi_def_cfa_offset 20
-	popl	%ebx
-	.cfi_restore 3
-	.cfi_def_cfa_offset 16
-	popl	%esi
-	.cfi_restore 6
-	.cfi_def_cfa_offset 12
-	popl	%edi
-	.cfi_restore 7
-	.cfi_def_cfa_offset 8
-	popl	%ebp
-	.cfi_restore 5
-	.cfi_def_cfa_offset 4
-	ret
-.LVL30:
-.L34:
-	.cfi_restore_state
+	.loc 1 54 10 view .LVU83
+	movl	12(%esp), %eax
+.LVL26:
+	.loc 1 54 10 view .LVU84
+	jmp	.L7
+.LVL27:
+.L40:
 .LBB6:
-	.loc 1 54 9 is_stmt 1 discriminator 1 view .LVU96
+	.loc 1 58 9 is_stmt 1 discriminator 1 view .LVU85
 	leal	__PRETTY_FUNCTION__.0@GOTOFF(%ebx), %eax
+.LVL28:
+	.loc 1 58 9 is_stmt 0 discriminator 1 view .LVU86
 	pushl	%eax
 	.cfi_remember_state
-	.cfi_def_cfa_offset 68
-	leal	.LC1@GOTOFF(%ebx), %eax
-	pushl	$54
-	.cfi_def_cfa_offset 72
+	.cfi_def_cfa_offset 52
+	leal	.LC0@GOTOFF(%ebx), %eax
+	pushl	$58
+	.cfi_def_cfa_offset 56
 	pushl	%eax
-	.cfi_def_cfa_offset 76
-	leal	.LC5@GOTOFF(%ebx), %eax
-	pushl	%eax
-	.cfi_def_cfa_offset 80
-	call	__assert_fail@PLT
-.LVL31:
-.L33:
-	.cfi_restore_state
-	.loc 1 54 9 is_stmt 0 discriminator 1 view .LVU97
-.LBE6:
-	.loc 1 39 5 is_stmt 1 discriminator 1 view .LVU98
-	leal	__PRETTY_FUNCTION__.0@GOTOFF(%ebx), %eax
-	pushl	%eax
-	.cfi_def_cfa_offset 68
-	leal	.LC1@GOTOFF(%ebx), %eax
-	pushl	$39
-	.cfi_def_cfa_offset 72
-	pushl	%eax
-	.cfi_def_cfa_offset 76
+	.cfi_def_cfa_offset 60
 	leal	.LC2@GOTOFF(%ebx), %eax
 	pushl	%eax
-	.cfi_def_cfa_offset 80
+	.cfi_def_cfa_offset 64
 	call	__assert_fail@PLT
-.LVL32:
-	.loc 1 39 5 is_stmt 0 discriminator 1 view .LVU99
+.LVL29:
+.L39:
+	.cfi_restore_state
+	.loc 1 58 9 discriminator 1 view .LVU87
+.LBE6:
+	.loc 1 46 5 is_stmt 1 discriminator 1 view .LVU88
+	leal	__PRETTY_FUNCTION__.0@GOTOFF(%ebx), %eax
+	pushl	%eax
+	.cfi_def_cfa_offset 52
+	leal	.LC0@GOTOFF(%ebx), %eax
+	pushl	$46
+	.cfi_def_cfa_offset 56
+	pushl	%eax
+	.cfi_def_cfa_offset 60
+	leal	.LC1@GOTOFF(%ebx), %eax
+	pushl	%eax
+	.cfi_def_cfa_offset 64
+	call	__assert_fail@PLT
+.LVL30:
+	.loc 1 46 5 is_stmt 0 discriminator 1 view .LVU89
 	.cfi_endproc
 .LFE23:
 	.size	__rc_exitChunk__, .-__rc_exitChunk__
@@ -478,21 +366,19 @@ __x86.get_pc_thunk.bx:
 .Letext0:
 	.file 2 "./rollcall.h"
 	.file 3 "./linked.h"
-	.file 4 "/usr/include/stdio.h"
-	.file 5 "/usr/include/assert.h"
-	.file 6 "/usr/include/stdlib.h"
-	.file 7 "<built-in>"
+	.file 4 "/usr/include/assert.h"
+	.file 5 "/usr/include/stdlib.h"
 	.section	.debug_info,"",@progbits
 .Ldebug_info0:
-	.long	0x368
+	.long	0x31a
 	.value	0x4
 	.long	.Ldebug_abbrev0
 	.byte	0x4
 	.uleb128 0x1
-	.long	.LASF38
+	.long	.LASF37
 	.byte	0xc
+	.long	.LASF38
 	.long	.LASF39
-	.long	.LASF40
 	.long	.Ltext0
 	.long	.Letext0-.Ltext0
 	.long	.Ldebug_line0
@@ -686,7 +572,7 @@ __x86.get_pc_thunk.bx:
 	.byte	0xe
 	.long	0x6b
 	.uleb128 0xc
-	.long	.LASF41
+	.long	.LASF40
 	.byte	0x1
 	.byte	0x1d
 	.byte	0x6
@@ -694,13 +580,13 @@ __x86.get_pc_thunk.bx:
 	.long	.LFE23-.LFB23
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x2cc
+	.long	0x296
 	.uleb128 0xd
 	.long	.LASF23
 	.byte	0x1
 	.byte	0x1d
 	.byte	0x1e
-	.long	0x2cc
+	.long	0x296
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 0
@@ -709,7 +595,7 @@ __x86.get_pc_thunk.bx:
 	.byte	0x1
 	.byte	0x1d
 	.byte	0x34
-	.long	0x2cc
+	.long	0x296
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 4
@@ -722,15 +608,15 @@ __x86.get_pc_thunk.bx:
 	.long	.LLST1
 	.long	.LVUS1
 	.uleb128 0xf
-	.long	.LASF42
-	.long	0x2e8
+	.long	.LASF41
+	.long	0x2b2
 	.uleb128 0x5
 	.byte	0x3
 	.long	__PRETTY_FUNCTION__.0
 	.uleb128 0x10
 	.string	"end"
 	.byte	0x1
-	.byte	0x29
+	.byte	0x30
 	.byte	0xf
 	.long	0x13c
 	.long	.LLST2
@@ -738,7 +624,7 @@ __x86.get_pc_thunk.bx:
 	.uleb128 0xe
 	.long	.LASF26
 	.byte	0x1
-	.byte	0x2b
+	.byte	0x31
 	.byte	0xf
 	.long	0x13c
 	.long	.LLST3
@@ -746,18 +632,18 @@ __x86.get_pc_thunk.bx:
 	.uleb128 0xe
 	.long	.LASF27
 	.byte	0x1
-	.byte	0x2c
+	.byte	0x32
 	.byte	0xf
 	.long	0x13c
 	.long	.LLST4
 	.long	.LVUS4
 	.uleb128 0x11
 	.long	.Ldebug_ranges0+0
-	.long	0x29e
+	.long	0x283
 	.uleb128 0xe
 	.long	.LASF28
 	.byte	0x1
-	.byte	0x34
+	.byte	0x38
 	.byte	0x19
 	.long	0xc7
 	.long	.LLST5
@@ -765,76 +651,58 @@ __x86.get_pc_thunk.bx:
 	.uleb128 0xe
 	.long	.LASF29
 	.byte	0x1
-	.byte	0x38
+	.byte	0x3c
 	.byte	0xf
-	.long	0x2cc
+	.long	0x296
 	.long	.LLST6
 	.long	.LVUS6
 	.uleb128 0xe
 	.long	.LASF30
 	.byte	0x1
-	.byte	0x39
+	.byte	0x3d
 	.byte	0xe
-	.long	0x2d2
+	.long	0x29c
 	.long	.LLST7
 	.long	.LVUS7
 	.uleb128 0xe
 	.long	.LASF31
 	.byte	0x1
-	.byte	0x40
+	.byte	0x44
 	.byte	0xe
-	.long	0x2d2
+	.long	0x29c
 	.long	.LLST8
 	.long	.LVUS8
 	.uleb128 0x12
 	.long	.LVL8
-	.long	0x321
-	.uleb128 0x12
-	.long	.LVL9
-	.long	0x32e
-	.uleb128 0x12
-	.long	.LVL20
-	.long	0x321
-	.uleb128 0x12
-	.long	.LVL21
-	.long	0x33a
-	.uleb128 0x12
-	.long	.LVL31
-	.long	0x345
-	.byte	0
-	.uleb128 0x12
-	.long	.LVL5
-	.long	0x321
-	.uleb128 0x12
-	.long	.LVL6
-	.long	0x321
-	.uleb128 0x12
-	.long	.LVL24
-	.long	0x351
+	.long	0x2eb
 	.uleb128 0x12
 	.long	.LVL29
-	.long	0x33a
+	.long	0x2f7
+	.byte	0
 	.uleb128 0x12
-	.long	.LVL32
-	.long	0x345
+	.long	.LVL19
+	.long	0x303
+	.uleb128 0x12
+	.long	.LVL30
+	.long	0x2f7
 	.byte	0
 	.uleb128 0x9
 	.byte	0x4
-	.long	0x2d2
+	.long	0x29c
 	.uleb128 0x9
 	.byte	0x4
 	.long	0x33
 	.uleb128 0x13
 	.long	0x74
-	.long	0x2e8
+	.long	0x2b2
 	.uleb128 0x14
 	.long	0x25
 	.byte	0x10
 	.byte	0
 	.uleb128 0x5
-	.long	0x2d8
+	.long	0x2a2
 	.uleb128 0x15
-	.long	.LASF43
+	.long	.LASF42
 	.byte	0x1
 	.byte	0x12
 	.byte	0x6
@@ -842,7 +710,7 @@ __x86.get_pc_thunk.bx:
 	.long	.LFE22-.LFB22
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x321
+	.long	0x2eb
 	.uleb128 0xe
 	.long	.LASF32
 	.byte	0x1
@@ -853,41 +721,30 @@ __x86.get_pc_thunk.bx:
 	.long	.LVUS0
 	.uleb128 0x12
 	.long	.LVL0
-	.long	0x35e
+	.long	0x310
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF33
 	.long	.LASF33
-	.byte	0x4
-	.value	0x14c
-	.byte	0xc
-	.uleb128 0x17
-	.long	.LASF34
-	.long	.LASF34
 	.byte	0x3
 	.byte	0x25
 	.byte	0xb
-	.uleb128 0x18
-	.long	.LASF44
-	.long	.LASF45
-	.byte	0x7
-	.byte	0
+	.uleb128 0x16
+	.long	.LASF34
+	.long	.LASF34
+	.byte	0x4
+	.byte	0x45
+	.byte	0xd
 	.uleb128 0x17
 	.long	.LASF35
 	.long	.LASF35
 	.byte	0x5
-	.byte	0x45
-	.byte	0xd
-	.uleb128 0x16
-	.long	.LASF36
-	.long	.LASF36
-	.byte	0x6
 	.value	0x235
 	.byte	0xd
-	.uleb128 0x16
-	.long	.LASF37
-	.long	.LASF37
-	.byte	0x6
+	.uleb128 0x17
+	.long	.LASF36
+	.long	.LASF36
+	.byte	0x5
 	.value	0x21b
 	.byte	0xe
 	.byte	0
@@ -1214,7 +1071,7 @@ __x86.get_pc_thunk.bx:
 	.uleb128 0x3a
 	.uleb128 0xb
 	.uleb128 0x3b
-	.uleb128 0x5
+	.uleb128 0xb
 	.uleb128 0x39
 	.uleb128 0xb
 	.byte	0
@@ -1233,25 +1090,8 @@ __x86.get_pc_thunk.bx:
 	.uleb128 0x3a
 	.uleb128 0xb
 	.uleb128 0x3b
-	.uleb128 0xb
+	.uleb128 0x5
 	.uleb128 0x39
-	.uleb128 0xb
-	.byte	0
-	.byte	0
-	.uleb128 0x18
-	.uleb128 0x2e
-	.byte	0
-	.uleb128 0x3f
-	.uleb128 0x19
-	.uleb128 0x3c
-	.uleb128 0x19
-	.uleb128 0x6e
-	.uleb128 0xe
-	.uleb128 0x3
-	.uleb128 0xe
-	.uleb128 0x3a
-	.uleb128 0xb
-	.uleb128 0x3b
 	.uleb128 0xb
 	.byte	0
 	.byte	0
@@ -1260,22 +1100,18 @@ __x86.get_pc_thunk.bx:
 .Ldebug_loc0:
 .LVUS1:
 	.uleb128 .LVU19
-	.uleb128 .LVU22
-	.uleb128 .LVU22
-	.uleb128 .LVU34
-	.uleb128 .LVU34
-	.uleb128 .LVU42
-	.uleb128 .LVU42
-	.uleb128 .LVU91
-	.uleb128 .LVU91
-	.uleb128 .LVU93
-	.uleb128 .LVU93
-	.uleb128 .LVU94
-	.uleb128 .LVU94
-	.uleb128 .LVU97
-	.uleb128 .LVU97
-	.uleb128 .LVU99
-	.uleb128 .LVU99
+	.uleb128 .LVU23
+	.uleb128 .LVU23
+	.uleb128 .LVU36
+	.uleb128 .LVU36
+	.uleb128 .LVU82
+	.uleb128 .LVU82
+	.uleb128 .LVU85
+	.uleb128 .LVU85
+	.uleb128 .LVU87
+	.uleb128 .LVU87
+	.uleb128 .LVU89
+	.uleb128 .LVU89
 	.uleb128 0
 .LLST1:
 	.long	.LVL2-.Ltext0
@@ -1283,39 +1119,31 @@ __x86.get_pc_thunk.bx:
 	.value	0x1
 	.byte	0x50
 	.long	.LVL3-.Ltext0
-	.long	.LVL5-1-.Ltext0
+	.long	.LVL6-.Ltext0
 	.value	0x5
 	.byte	0x3
 	.long	__chunkStack
-	.long	.LVL5-1-.Ltext0
-	.long	.LVL7-.Ltext0
-	.value	0x1
-	.byte	0x57
-	.long	.LVL7-.Ltext0
-	.long	.LVL27-.Ltext0
+	.long	.LVL6-.Ltext0
+	.long	.LVL25-.Ltext0
 	.value	0x2
 	.byte	0x91
 	.sleb128 -36
+	.long	.LVL25-.Ltext0
 	.long	.LVL27-.Ltext0
-	.long	.LVL28-.Ltext0
-	.value	0x1
-	.byte	0x50
-	.long	.LVL28-.Ltext0
-	.long	.LVL29-1-.Ltext0
 	.value	0x5
 	.byte	0x3
 	.long	__chunkStack
-	.long	.LVL29-1-.Ltext0
-	.long	.LVL31-.Ltext0
+	.long	.LVL27-.Ltext0
+	.long	.LVL29-.Ltext0
 	.value	0x2
 	.byte	0x91
 	.sleb128 -36
-	.long	.LVL31-.Ltext0
-	.long	.LVL32-1-.Ltext0
+	.long	.LVL29-.Ltext0
+	.long	.LVL30-1-.Ltext0
 	.value	0x5
 	.byte	0x3
 	.long	__chunkStack
-	.long	.LVL32-1-.Ltext0
+	.long	.LVL30-1-.Ltext0
 	.long	.LFE23-.Ltext0
 	.value	0x2
 	.byte	0x91
@@ -1323,225 +1151,288 @@ __x86.get_pc_thunk.bx:
 	.long	0
 	.long	0
 .LVUS2:
-	.uleb128 .LVU31
-	.uleb128 .LVU42
-	.uleb128 .LVU42
-	.uleb128 .LVU91
-	.uleb128 .LVU96
-	.uleb128 .LVU97
+	.uleb128 .LVU27
+	.uleb128 .LVU74
+	.uleb128 .LVU75
+	.uleb128 .LVU87
 .LLST2:
 	.long	.LVL4-.Ltext0
-	.long	.LVL7-.Ltext0
+	.long	.LVL20-.Ltext0
 	.value	0x1
-	.byte	0x55
-	.long	.LVL7-.Ltext0
-	.long	.LVL27-.Ltext0
-	.value	0x2
-	.byte	0x91
-	.sleb128 -48
-	.long	.LVL30-.Ltext0
-	.long	.LVL31-.Ltext0
-	.value	0x2
-	.byte	0x91
-	.sleb128 -48
+	.byte	0x56
+	.long	.LVL21-.Ltext0
+	.long	.LVL29-.Ltext0
+	.value	0x1
+	.byte	0x56
 	.long	0
 	.long	0
 .LVUS3:
-	.uleb128 .LVU32
-	.uleb128 .LVU48
-	.uleb128 .LVU48
-	.uleb128 .LVU50
-	.uleb128 .LVU50
-	.uleb128 .LVU78
-	.uleb128 .LVU78
+	.uleb128 .LVU29
+	.uleb128 .LVU40
+	.uleb128 .LVU40
+	.uleb128 .LVU64
+	.uleb128 .LVU64
+	.uleb128 .LVU65
+	.uleb128 .LVU65
+	.uleb128 .LVU68
+	.uleb128 .LVU75
 	.uleb128 .LVU79
 	.uleb128 .LVU79
-	.uleb128 .LVU89
-	.uleb128 .LVU90
-	.uleb128 .LVU91
-	.uleb128 .LVU96
-	.uleb128 .LVU97
+	.uleb128 .LVU80
+	.uleb128 .LVU80
+	.uleb128 .LVU84
+	.uleb128 .LVU85
+	.uleb128 .LVU86
 .LLST3:
-	.long	.LVL4-.Ltext0
-	.long	.LVL10-.Ltext0
-	.value	0x1
-	.byte	0x56
-	.long	.LVL10-.Ltext0
-	.long	.LVL11-.Ltext0
+	.long	.LVL5-.Ltext0
+	.long	.LVL8-1-.Ltext0
 	.value	0x1
 	.byte	0x50
-	.long	.LVL11-.Ltext0
-	.long	.LVL21-.Ltext0
+	.long	.LVL8-.Ltext0
+	.long	.LVL15-.Ltext0
 	.value	0x1
-	.byte	0x56
-	.long	.LVL21-.Ltext0
-	.long	.LVL22-.Ltext0
+	.byte	0x50
+	.long	.LVL15-.Ltext0
+	.long	.LVL16-.Ltext0
 	.value	0x2
-	.byte	0x76
+	.byte	0x70
 	.sleb128 4
+	.long	.LVL16-.Ltext0
+	.long	.LVL18-.Ltext0
+	.value	0x1
+	.byte	0x50
+	.long	.LVL21-.Ltext0
 	.long	.LVL22-.Ltext0
-	.long	.LVL25-.Ltext0
 	.value	0x1
-	.byte	0x56
+	.byte	0x50
+	.long	.LVL22-.Ltext0
+	.long	.LVL23-.Ltext0
+	.value	0x2
+	.byte	0x70
+	.sleb128 4
+	.long	.LVL23-.Ltext0
 	.long	.LVL26-.Ltext0
+	.value	0x1
+	.byte	0x50
 	.long	.LVL27-.Ltext0
+	.long	.LVL28-.Ltext0
 	.value	0x1
-	.byte	0x56
-	.long	.LVL30-.Ltext0
-	.long	.LVL31-.Ltext0
-	.value	0x1
-	.byte	0x56
+	.byte	0x50
 	.long	0
 	.long	0
 .LVUS4:
-	.uleb128 .LVU33
-	.uleb128 .LVU42
-	.uleb128 .LVU42
-	.uleb128 .LVU77
-	.uleb128 .LVU77
-	.uleb128 .LVU79
-	.uleb128 .LVU79
-	.uleb128 .LVU81
-	.uleb128 .LVU90
-	.uleb128 .LVU91
-	.uleb128 .LVU96
-	.uleb128 .LVU97
+	.uleb128 .LVU30
+	.uleb128 .LVU36
+	.uleb128 .LVU36
+	.uleb128 .LVU63
+	.uleb128 .LVU63
+	.uleb128 .LVU65
+	.uleb128 .LVU65
+	.uleb128 .LVU68
+	.uleb128 .LVU75
+	.uleb128 .LVU78
+	.uleb128 .LVU78
+	.uleb128 .LVU80
+	.uleb128 .LVU80
+	.uleb128 .LVU82
+	.uleb128 .LVU82
+	.uleb128 .LVU85
+	.uleb128 .LVU85
+	.uleb128 .LVU87
 .LLST4:
-	.long	.LVL4-.Ltext0
-	.long	.LVL7-.Ltext0
+	.long	.LVL5-.Ltext0
+	.long	.LVL6-.Ltext0
 	.value	0x2
 	.byte	0x30
 	.byte	0x9f
-	.long	.LVL7-.Ltext0
-	.long	.LVL21-.Ltext0
-	.value	0x2
-	.byte	0x91
-	.sleb128 -44
+	.long	.LVL6-.Ltext0
+	.long	.LVL15-.Ltext0
+	.value	0x1
+	.byte	0x57
+	.long	.LVL15-.Ltext0
+	.long	.LVL16-.Ltext0
+	.value	0x1
+	.byte	0x50
+	.long	.LVL16-.Ltext0
+	.long	.LVL18-.Ltext0
+	.value	0x1
+	.byte	0x57
 	.long	.LVL21-.Ltext0
 	.long	.LVL22-.Ltext0
 	.value	0x1
-	.byte	0x56
+	.byte	0x57
 	.long	.LVL22-.Ltext0
 	.long	.LVL23-.Ltext0
-	.value	0x2
-	.byte	0x91
-	.sleb128 -44
-	.long	.LVL26-.Ltext0
+	.value	0x1
+	.byte	0x50
+	.long	.LVL23-.Ltext0
+	.long	.LVL25-.Ltext0
+	.value	0x1
+	.byte	0x57
+	.long	.LVL25-.Ltext0
 	.long	.LVL27-.Ltext0
 	.value	0x2
-	.byte	0x91
-	.sleb128 -44
-	.long	.LVL30-.Ltext0
-	.long	.LVL31-.Ltext0
-	.value	0x2
-	.byte	0x91
-	.sleb128 -44
+	.byte	0x30
+	.byte	0x9f
+	.long	.LVL27-.Ltext0
+	.long	.LVL29-.Ltext0
+	.value	0x1
+	.byte	0x57
 	.long	0
 	.long	0
 .LVUS5:
-	.uleb128 .LVU53
+	.uleb128 .LVU36
+	.uleb128 .LVU39
+	.uleb128 .LVU46
+	.uleb128 .LVU56
+	.uleb128 .LVU56
 	.uleb128 .LVU65
 	.uleb128 .LVU65
-	.uleb128 .LVU66
-	.uleb128 .LVU90
-	.uleb128 .LVU91
-	.uleb128 .LVU96
-	.uleb128 .LVU97
+	.uleb128 .LVU67
+	.uleb128 .LVU75
+	.uleb128 .LVU80
+	.uleb128 .LVU80
+	.uleb128 .LVU81
+	.uleb128 .LVU81
+	.uleb128 .LVU82
+	.uleb128 .LVU85
+	.uleb128 .LVU87
 .LLST5:
-	.long	.LVL13-.Ltext0
-	.long	.LVL17-.Ltext0
-	.value	0x1
-	.byte	0x51
-	.long	.LVL17-.Ltext0
-	.long	.LVL18-.Ltext0
+	.long	.LVL6-.Ltext0
+	.long	.LVL7-.Ltext0
 	.value	0x2
-	.byte	0x76
+	.byte	0x70
 	.sleb128 0
-	.long	.LVL26-.Ltext0
+	.long	.LVL10-.Ltext0
+	.long	.LVL13-.Ltext0
+	.value	0x1
+	.byte	0x52
+	.long	.LVL13-.Ltext0
+	.long	.LVL16-.Ltext0
+	.value	0x2
+	.byte	0x70
+	.sleb128 0
+	.long	.LVL16-.Ltext0
+	.long	.LVL17-.Ltext0
+	.value	0x2
+	.byte	0x77
+	.sleb128 0
+	.long	.LVL21-.Ltext0
+	.long	.LVL23-.Ltext0
+	.value	0x2
+	.byte	0x70
+	.sleb128 0
+	.long	.LVL23-.Ltext0
+	.long	.LVL24-.Ltext0
+	.value	0x2
+	.byte	0x77
+	.sleb128 0
+	.long	.LVL24-.Ltext0
+	.long	.LVL25-.Ltext0
+	.value	0x1
+	.byte	0x52
 	.long	.LVL27-.Ltext0
+	.long	.LVL29-1-.Ltext0
 	.value	0x1
-	.byte	0x51
-	.long	.LVL30-.Ltext0
-	.long	.LVL31-1-.Ltext0
-	.value	0x1
-	.byte	0x51
+	.byte	0x52
 	.long	0
 	.long	0
 .LVUS6:
-	.uleb128 .LVU56
+	.uleb128 .LVU36
+	.uleb128 .LVU39
+	.uleb128 .LVU49
+	.uleb128 .LVU60
+	.uleb128 .LVU60
+	.uleb128 .LVU65
+	.uleb128 .LVU65
 	.uleb128 .LVU67
-	.uleb128 .LVU67
-	.uleb128 .LVU68
-	.uleb128 .LVU90
-	.uleb128 .LVU91
+	.uleb128 .LVU75
+	.uleb128 .LVU82
 .LLST6:
-	.long	.LVL14-.Ltext0
-	.long	.LVL19-.Ltext0
-	.value	0x1
-	.byte	0x50
-	.long	.LVL19-.Ltext0
-	.long	.LVL20-1-.Ltext0
+	.long	.LVL6-.Ltext0
+	.long	.LVL7-.Ltext0
 	.value	0x3
-	.byte	0x91
-	.sleb128 -72
-	.long	.LVL26-.Ltext0
-	.long	.LVL27-.Ltext0
+	.byte	0x70
+	.sleb128 0
+	.byte	0x6
+	.long	.LVL11-.Ltext0
+	.long	.LVL14-.Ltext0
 	.value	0x1
-	.byte	0x50
+	.byte	0x51
+	.long	.LVL14-.Ltext0
+	.long	.LVL16-.Ltext0
+	.value	0x3
+	.byte	0x70
+	.sleb128 0
+	.byte	0x6
+	.long	.LVL16-.Ltext0
+	.long	.LVL17-.Ltext0
+	.value	0x3
+	.byte	0x77
+	.sleb128 0
+	.byte	0x6
+	.long	.LVL21-.Ltext0
+	.long	.LVL25-.Ltext0
+	.value	0x1
+	.byte	0x51
 	.long	0
 	.long	0
 .LVUS7:
-	.uleb128 .LVU42
-	.uleb128 .LVU51
-	.uleb128 .LVU57
-	.uleb128 .LVU61
-	.uleb128 .LVU61
+	.uleb128 .LVU36
+	.uleb128 .LVU44
+	.uleb128 .LVU50
+	.uleb128 .LVU54
+	.uleb128 .LVU54
 	.uleb128 .LVU68
-	.uleb128 .LVU68
+	.uleb128 .LVU75
 	.uleb128 .LVU81
-	.uleb128 .LVU90
-	.uleb128 .LVU91
+	.uleb128 .LVU81
+	.uleb128 .LVU82
 .LLST7:
-	.long	.LVL7-.Ltext0
+	.long	.LVL6-.Ltext0
+	.long	.LVL9-.Ltext0
+	.value	0x1
+	.byte	0x55
+	.long	.LVL11-.Ltext0
 	.long	.LVL12-.Ltext0
-	.value	0x2
-	.byte	0x91
-	.sleb128 -56
-	.long	.LVL14-.Ltext0
-	.long	.LVL15-.Ltext0
 	.value	0x2
 	.byte	0x30
 	.byte	0x9f
-	.long	.LVL15-.Ltext0
-	.long	.LVL20-1-.Ltext0
+	.long	.LVL12-.Ltext0
+	.long	.LVL18-.Ltext0
 	.value	0x1
-	.byte	0x52
-	.long	.LVL20-1-.Ltext0
-	.long	.LVL23-.Ltext0
-	.value	0x2
-	.byte	0x91
-	.sleb128 -56
-	.long	.LVL26-.Ltext0
-	.long	.LVL27-.Ltext0
+	.byte	0x55
+	.long	.LVL21-.Ltext0
+	.long	.LVL24-.Ltext0
+	.value	0x1
+	.byte	0x55
+	.long	.LVL24-.Ltext0
+	.long	.LVL25-.Ltext0
 	.value	0x2
 	.byte	0x30
 	.byte	0x9f
 	.long	0
 	.long	0
 .LVUS8:
-	.uleb128 .LVU42
-	.uleb128 .LVU51
-	.uleb128 .LVU64
+	.uleb128 .LVU36
+	.uleb128 .LVU40
+	.uleb128 .LVU56
+	.uleb128 .LVU67
+	.uleb128 .LVU75
 	.uleb128 .LVU81
 .LLST8:
-	.long	.LVL7-.Ltext0
-	.long	.LVL12-.Ltext0
+	.long	.LVL6-.Ltext0
+	.long	.LVL8-1-.Ltext0
 	.value	0x1
-	.byte	0x55
-	.long	.LVL16-.Ltext0
-	.long	.LVL23-.Ltext0
+	.byte	0x52
+	.long	.LVL13-.Ltext0
+	.long	.LVL17-.Ltext0
 	.value	0x1
-	.byte	0x55
+	.byte	0x52
+	.long	.LVL21-.Ltext0
+	.long	.LVL24-.Ltext0
+	.value	0x1
+	.byte	0x52
 	.long	0
 	.long	0
 .LVUS0:
@@ -1585,7 +1476,7 @@ __x86.get_pc_thunk.bx:
 	.section	.debug_str,"MS",@progbits,1
 .LASF26:
 	.string	"list"
-.LASF35:
+.LASF34:
 	.string	"__assert_fail"
 .LASF17:
 	.string	"next"
@@ -1597,7 +1488,7 @@ __x86.get_pc_thunk.bx:
 	.string	"linked_t"
 .LASF16:
 	.string	"item"
-.LASF34:
+.LASF33:
 	.string	"__roster_remove"
 .LASF7:
 	.string	"short int"
@@ -1605,19 +1496,17 @@ __x86.get_pc_thunk.bx:
 	.string	"owner_reference"
 .LASF11:
 	.string	"restricted"
-.LASF40:
+.LASF39:
 	.string	"/Users/squijano/Documents/HAMprimeC2/compiler/libs/garbage"
 .LASF22:
 	.string	"__gc_dontClear__"
-.LASF42:
+.LASF41:
 	.string	"__PRETTY_FUNCTION__"
-.LASF39:
+.LASF38:
 	.string	"./chunks.c"
-.LASF45:
-	.string	"__builtin_puts"
 .LASF12:
 	.string	"size"
-.LASF43:
+.LASF42:
 	.string	"__rc_enterChunk__"
 .LASF5:
 	.string	"long unsigned int"
@@ -1633,7 +1522,7 @@ __x86.get_pc_thunk.bx:
 	.string	"pointer"
 .LASF27:
 	.string	"previous"
-.LASF38:
+.LASF37:
 	.string	"GNU C17 10.2.1 20210110 -m32 -mtune=generic -march=i686 -g -O2 -fasynchronous-unwind-tables"
 .LASF20:
 	.string	"__chunkStack"
@@ -1647,9 +1536,9 @@ __x86.get_pc_thunk.bx:
 	.string	"long long unsigned int"
 .LASF32:
 	.string	"newItem"
-.LASF41:
+.LASF40:
 	.string	"__rc_exitChunk__"
-.LASF36:
+.LASF35:
 	.string	"free"
 .LASF2:
 	.string	"long long int"
@@ -1657,14 +1546,10 @@ __x86.get_pc_thunk.bx:
 	.string	"char"
 .LASF18:
 	.string	"linked_chunks_t"
-.LASF33:
-	.string	"printf"
 .LASF28:
 	.string	"roster_entry"
 .LASF1:
 	.string	"long int"
-.LASF44:
-	.string	"puts"
 .LASF6:
 	.string	"signed char"
 .LASF21:
@@ -1673,7 +1558,7 @@ __x86.get_pc_thunk.bx:
 	.string	"roster_entry_t"
 .LASF30:
 	.string	"owner_points_to"
-.LASF37:
+.LASF36:
 	.string	"malloc"
 	.ident	"GCC: (Debian 10.2.1-6) 10.2.1 20210110"
 	.section	.note.GNU-stack,"",@progbits

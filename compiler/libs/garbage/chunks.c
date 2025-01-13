@@ -1,4 +1,4 @@
-#define _DEBUG
+// #define _DEBUG
 
 #include "chunks.h"
 
@@ -32,20 +32,24 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 
     if(UNLIKELY(save == 0))
     {
-        printf("Empty chunk\n");
+        dbgprint("Null chunk\n");
+        return;
+    }
+    else if(save->size == 0)
+    {
+        dbgprint("Empty chunk\n");
         return;
     }
 
-    assert(old_frame_esp < old_frame_ebp);
+    dbgprint("||| - Old frame is between %p -> %p [%i?]\n", old_frame_esp, old_frame_ebp, old_frame_esp <= old_frame_ebp)
+    
+    assert(old_frame_esp <= old_frame_ebp);
     
     linked_t* end = save->address;
-
     linked_t* list = Roster;
     linked_t *previous = (linked_t*)0;
 
-    printf("Chunk has %d bytes\n", save->size);
-
-    dbgprint("||| - Old frame is between %p -> %p [%i?]\n", old_frame_esp, old_frame_ebp, old_frame_esp < old_frame_ebp)
+    dbgprint("Chunk has %d bytes\n", save->size);
 
     while(list != end && list != 0)
     {
