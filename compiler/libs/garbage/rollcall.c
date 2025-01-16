@@ -92,10 +92,8 @@ void __rc_collect__()
         int **owner_reference = (int **)roster_entry->owner;
         int *owner_points_to = 0;
 
-        if(LIKELY(owner_reference != 0))
-        {
-            owner_points_to = *((int **)roster_entry->owner);
-        }
+        // only deref if not null
+        owner_points_to = (int*)(owner_reference && *((int **)owner_reference));
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
