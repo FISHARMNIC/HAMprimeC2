@@ -30,14 +30,9 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 {
     linked_chunks_t* save = __ChunkStack;
 
-    if(UNLIKELY(save == 0))
+    if(save == 0 || save->size == 0)
     {
-        dbgprint("Null chunk\n");
-        return;
-    }
-    else if(save->size == 0)
-    {
-        dbgprint("Empty chunk\n");
+        dbgprint("Empty or null chunk\n");
         return;
     }
 
@@ -54,16 +49,10 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
     while(list != end && list != 0)
     {
         roster_entry_t *roster_entry = list->item;
-
-        assert(roster_entry != 0);
+        //assert(roster_entry != 0);
 
         int **owner_reference = (int **)roster_entry->owner;
-        int *owner_points_to = 0;
-
-        if(LIKELY(owner_reference != 0))
-        {
-            owner_points_to = *owner_reference;
-        }
+        int *owner_points_to = owner_reference && *owner_reference;
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
