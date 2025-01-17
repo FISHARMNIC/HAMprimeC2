@@ -24,6 +24,7 @@
 
 extern int ___TEMPORARY_OWNER___;
 extern int __rc_total_allocated_bytes__;
+extern int chunk_index;
 
 typedef struct roster_entry_t
 {

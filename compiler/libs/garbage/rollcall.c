@@ -121,11 +121,14 @@ void __rc_free_all__()
 {
     //__rc_exitChunk__(); // remove when done testing
 
-    while(__ChunkStack != (linked_chunks_t*)0)
+    chunk_index -= MAX_PREALLOCED_CHUNKS;
+
+    while(chunk_index > 0 && __ChunkStack != (linked_chunks_t*)0)
     {
         linked_chunks_t * nextPtr = __ChunkStack->next;
         free(__ChunkStack);
         __ChunkStack = nextPtr;
+        chunk_index--;
     }
     while(__Roster != (linked_t*)0)
     {

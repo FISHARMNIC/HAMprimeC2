@@ -4,8 +4,7 @@
 
 
 /*
-__rc_exitChunk__, see if anything is owned by the stack
-
+Malloc on enter chunk is super expensive. Maybe pre-alloc circular or smth??
 */
 
 // pointer to chunk pointers, which are just LL ptrs
@@ -15,9 +14,24 @@ linked_chunks_t* __ChunkStack = (linked_chunks_t*) 0;
 extern linked_t *__Roster;
 extern void* __gc_dontClear__;
 
+int chunk_index = 0;
+
+static linked_chunks_t linked_chunks_prealloc[MAX_PREALLOCED_CHUNKS];
+
 void __rc_enterChunk__()
 {
-    linked_chunks_t* newItem = malloc(sizeof(linked_chunks_t));
+    linked_chunks_t* newItem;
+    
+    if(LIKELY(chunk_index < MAX_PREALLOCED_CHUNKS))
+    {
+        newItem = &linked_chunks_prealloc[chunk_index];
+    }
+    else
+    {
+        newItem = malloc(sizeof(linked_chunks_t));
+    }
+
+    chunk_index++;
 
     newItem->address = __Roster;
     newItem->size = 0;
@@ -29,6 +43,8 @@ void __rc_enterChunk__()
 void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 {
     linked_chunks_t* save = __ChunkStack;
+
+    chunk_index--;
 
     if(save == 0 || save->size == 0)
     {
@@ -52,7 +68,7 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
         //assert(roster_entry != 0);
 
         int **owner_reference = (int **)roster_entry->owner;
-        int *owner_points_to = owner_reference && *owner_reference;
+        int *owner_points_to = (int*)(owner_reference && *owner_reference);
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
@@ -75,5 +91,9 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
     }
 
     __ChunkStack = __ChunkStack->next;
-    free(save);
+
+    if(UNLIKELY(chunk_index > MAX_PREALLOCED_CHUNKS))
+    {
+        free(save);
+    }
 }

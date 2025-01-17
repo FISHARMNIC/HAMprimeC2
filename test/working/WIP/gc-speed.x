@@ -14,7 +14,7 @@ entry function<>
     create bob;
 
     create i <- 0;
-    while(i <: 100000)
+    while(i <: 1000000)
     {
         bob <- u32[1];
         medium();
