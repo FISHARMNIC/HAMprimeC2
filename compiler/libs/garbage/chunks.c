@@ -1,4 +1,4 @@
-// #define _DEBUG
+#define _DEBUG
 
 #include "chunks.h"
 
@@ -54,7 +54,7 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 
     dbgprint("||| - Old frame is between %p -> %p [%i?]\n", old_frame_esp, old_frame_ebp, old_frame_esp <= old_frame_ebp)
     
-    //assert(old_frame_esp <= old_frame_ebp);
+    ///assert(old_frame_esp <= old_frame_ebp);
     
     linked_t* end = save->address;
     linked_t* list = __Roster;

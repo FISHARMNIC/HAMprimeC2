@@ -8,7 +8,7 @@ Plans:
 
 */
 
-// #define _DEBUG
+#define _DEBUG
 
 #include "rollcall.h"
 #include "linked.h"
@@ -93,7 +93,10 @@ void __rc_collect__()
         int *owner_points_to = 0;
 
         // only deref if not null
-        owner_points_to = (int*)(owner_reference && *((int **)owner_reference));
+        if(owner_reference != 0)
+        {
+            owner_points_to = *owner_reference;
+        }
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 

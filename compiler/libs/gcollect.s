@@ -3,6 +3,7 @@
 
 __rc_transfer_error__: .asciz "** [Roll-Call Error] Could not transfer locked reference %p\n"
 __rc_transfer_nullOwnership__: .asciz "** [Roll-Call Warning] Attempting to own null pointer\n   ** Most likely attempting to set a dynamic to value 0\n"
+__rc_dbg__: .asciz "** owner is %p of %p\n"
 
 BYTES_PER_GC = 4096 # For testing use like 32
 
@@ -46,6 +47,13 @@ __rc_quick_check__:
 __rc_requestOwnership__:
     push %ebp
     mov %esp, %ebp
+
+    pushl 8(%ebp)
+    pushl 12(%ebp)
+    pushl $__rc_dbg__
+    call printf;
+    add $12, %esp
+
     pusha
     /*
     @8:  buffer
