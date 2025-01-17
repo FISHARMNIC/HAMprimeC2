@@ -3,7 +3,7 @@
 #include "rollcall.h"
 #include "linked.h"
 
-__linked_t *Roster = 0;
+linked_t *__Roster = 0;
 int __rc_total_allocated_bytes__ = 0;
  
 int __disable_gc__ = 0;
@@ -45,12 +45,58 @@ void *__rc_allocate__(int size_bytes, int restricted)
     roster_entry->pointer = &(described_buffer->data);
 
     //dbgprint("ATTEMPTING ADD TO ROSTER\n");
-    __linked_add(&Roster, roster_entry, (__linked_t*) allocation);
+    __roster_add(allocation);
 
     //asm volatile("popa");
 
     return roster_entry->pointer;
 }
+
+
+/*
+void *__rc_allocate__(int size_bytes, int restricted)
+{
+    //asm volatile("pusha");
+
+    // trigger collection on allocation limit (higher than rc_collect limit)
+    // more of a backup system, incase the user is allocating a lot of data inside a loop without any function calls
+    if(__rc_total_allocated_bytes__ >= BYTES_FORCE_GC)
+    {
+        __rc_collect__();
+    }
+
+    //size_bytes += 32;
+    int actualAllocSize = GET_ALLOC_SIZE(size_bytes);
+
+    dbgprint("|- Attempting malloc of with inner data of size %i\n", size_bytes);
+
+    // Note, here using malloc which also stores size, maybe switch to mmap2
+    full_malloc_t *allocation = malloc(actualAllocSize);
+    assert(allocation != 0);
+
+    dbgprint(" \\- Allocated address at %p\n", allocation);
+
+    __rc_total_allocated_bytes__ += actualAllocSize;
+
+    // All memory is grouped into one allocation, so split it up into its individual components
+    roster_entry_t *roster_entry = &(allocation->section_rosterEntry);
+    described_buffer_t *described_buffer = &(allocation->section_describedBuffer);
+
+    described_buffer->entry_reference = roster_entry;
+
+    roster_entry->owner = 0;
+    roster_entry->restricted = restricted;
+    roster_entry->size = size_bytes;
+    roster_entry->pointer = &(described_buffer->data);
+
+    //dbgprint("ATTEMPTING ADD TO ROSTER\n");
+    __linked_add(&Roster, roster_entry, (linked_t*) allocation);
+
+    //asm volatile("popa");
+
+    return roster_entry->pointer;
+}
+*/
 
 void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
 {
@@ -62,9 +108,57 @@ void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
 
 void __rc_collect__()
 {
+    //__rc_exitChunk__();
+    //return; 
+
     dbgprint("------Collecting-----\n");
-    __linked_t *list = Roster;
-    __linked_t *previous = (__linked_t*)0;
+
+    linked_t *list = __Roster;
+    linked_t *previous = (linked_t*)0;
+    
+    // for each item in __Roster
+    while (list != 0)
+    {
+        roster_entry_t *roster_entry = list->item;
+
+        assert(roster_entry != 0);
+
+        int **owner_reference = (int **)roster_entry->owner;
+        int *owner_points_to = 0;
+
+        // only deref if not null
+        if(owner_reference != 0)
+        {
+            owner_points_to = *owner_reference;
+        }
+
+        int *owner_should_point_to = (int *)roster_entry->pointer;
+
+        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p]\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list);
+
+        // if the datas owner now points to a different address, this data is considered "lost"
+        // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner
+        if ((owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
+        {
+            dbgprint("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
+            list = __roster_remove(previous, list);
+        }
+        else
+        {
+            dbgprint("\t ^- Skipped \n");
+            previous = list;
+            list = list->next;
+        }
+    }
+
+    dbgprint("\\---------------------/\n");
+}
+/*
+void __rc_collect__()
+{
+    dbgprint("------Collecting-----\n");
+    linked_t *list = Roster;
+    linked_t *previous = (linked_t*)0;
     
     // for each item in Roster
     while (list != 0)
@@ -103,13 +197,14 @@ void __rc_collect__()
     dbgprint("\\---------------------/\n");
 }
 
+*/
 void __rc_free_all__()
 {
-    while(Roster != (__linked_t*)0)
+    while(__Roster != (linked_t*)0)
     {
-        __linked_t * nextPtr = Roster->next;
-        free(Roster);
-        Roster = nextPtr;
+        linked_t * nextPtr = __Roster->next;
+        free(__Roster);
+        __Roster = nextPtr;
     }
 }
 
