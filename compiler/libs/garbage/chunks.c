@@ -16,12 +16,15 @@ extern void* __gc_dontClear__;
 
 int chunk_index = 0;
 
-static linked_chunks_t linked_chunks_prealloc[MAX_PREALLOCED_CHUNKS];
+//static linked_chunks_t linked_chunks_prealloc[MAX_PREALLOCED_CHUNKS];
 
 void __rc_enterChunk__()
 {
     linked_chunks_t* newItem;
 
+    //newItem = &linked_chunks_prealloc[chunk_index];
+    newItem = malloc(sizeof(linked_chunks_t));
+    /*
     if(LIKELY(chunk_index < MAX_PREALLOCED_CHUNKS))
     {
         newItem = &linked_chunks_prealloc[chunk_index];
@@ -30,6 +33,7 @@ void __rc_enterChunk__()
     {
         newItem = malloc(sizeof(linked_chunks_t));
     }
+    */
 
     chunk_index++;
 

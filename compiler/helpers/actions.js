@@ -1317,8 +1317,7 @@ var functions = {
             `mov %esp, %ebp`,
             `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp # total stack allocation`,
             `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
-            `call __rc_enterChunk__`
-
+            `call __rc_enterChunk__`,
         )
 
     },

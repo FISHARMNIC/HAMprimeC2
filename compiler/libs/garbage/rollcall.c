@@ -41,8 +41,6 @@ void *__rc_allocate__(int size_bytes, int restricted)
     full_malloc_t *allocation = malloc(actualAllocSize);
     assert(allocation != 0);
 
-    dbgprint(" \\- Allocated address at %p\n", allocation);
-
     __rc_total_allocated_bytes__ += actualAllocSize;
 
     // All memory is grouped into one allocation, so split it up into its individual components
@@ -55,6 +53,9 @@ void *__rc_allocate__(int size_bytes, int restricted)
     roster_entry->restricted = restricted;
     roster_entry->size = size_bytes;
     roster_entry->pointer = &(described_buffer->data);
+
+
+    dbgprint(" \\- Allocated address at %p, data is at %p\n", allocation, roster_entry->pointer);
 
     //dbgprint("ATTEMPTING ADD TO ROSTER\n");
     __roster_add(allocation);
@@ -100,7 +101,7 @@ void __rc_collect__()
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
-        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p]\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list);
+        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p], owner is %p\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list, owner_reference);
 
         // if the datas owner now points to a different address, this data is considered "lost"
         // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner

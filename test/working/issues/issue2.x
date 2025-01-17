@@ -1,14 +1,3 @@
-Person format
-{
-    .name string;
-    .age u32;
-
-    .toString method<> -> auto
-    {
-        return(`name: ${this.name}, age: ${this.age}`);
-    }
-}
-
 testLam function<fn lam> -> none
 {
     lam();

@@ -1,6 +1,8 @@
 /*
 TODO:
 
+    right a progam that visualizes memory writes by pointer, shows whats overriding stuff
+
     SEGFAULTS ON A LOT, see issue2
 
     need to test backup gc trigger on x amount of bytes alloced
