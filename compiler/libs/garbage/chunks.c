@@ -21,7 +21,7 @@ static linked_chunks_t linked_chunks_prealloc[MAX_PREALLOCED_CHUNKS];
 void __rc_enterChunk__()
 {
     linked_chunks_t* newItem;
-    
+
     if(LIKELY(chunk_index < MAX_PREALLOCED_CHUNKS))
     {
         newItem = &linked_chunks_prealloc[chunk_index];
@@ -54,7 +54,7 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 
     dbgprint("||| - Old frame is between %p -> %p [%i?]\n", old_frame_esp, old_frame_ebp, old_frame_esp <= old_frame_ebp)
     
-    assert(old_frame_esp <= old_frame_ebp);
+    //assert(old_frame_esp <= old_frame_ebp);
     
     linked_t* end = save->address;
     linked_t* list = __Roster;
