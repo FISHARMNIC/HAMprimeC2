@@ -2041,7 +2041,7 @@ var formats = {
                     }
                     else
                     {
-                        assembly.optimizeMove(value, `${off}(%eax)`, helpers.types.guessType(value), p.type)
+                        assembly.optimizeMove(value, `${off}(${saveLbl})`, helpers.types.guessType(value), p.type)
                     }
                     
                     nextThingTakesOwnership = defaultAutomaticOwnership
