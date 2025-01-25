@@ -111,6 +111,11 @@ void __rc_collect__()
     //__rc_exitChunk__();
     //return; 
 
+    if(UNLIKELY(__disable_gc__))
+    {
+        return;
+    }
+
     dbgprint("------Collecting-----\n");
 
     linked_t *list = __Roster;
