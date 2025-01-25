@@ -76,6 +76,10 @@ void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
 void __rc_collect__()
 {
     //__rc_exitChunk__();
+    if(UNLIKELY(__disable_gc__))
+    {
+        return;
+    }
     //return; 
 
     dbgprint("------Collecting-----\n");

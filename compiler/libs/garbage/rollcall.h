@@ -9,7 +9,7 @@
 #define TRUE (1)
 
 // #define BYTES_PER_GC   4096 // MOVED TO gcollect.s
-#define BYTES_FORCE_GC 65536
+#define BYTES_FORCE_GC 512
 
 #define LIKELY(c) __builtin_expect((c), 1)
 #define UNLIKELY(c) __builtin_expect((c), 0)
