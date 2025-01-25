@@ -1,6 +1,8 @@
 /*
 TODO:
 
+    Actually do signed and unsigned
+    
     right a progam that visualizes memory writes by pointer, shows whats overriding stuff
 
     SEGFAULTS ON A LOT, see issue2

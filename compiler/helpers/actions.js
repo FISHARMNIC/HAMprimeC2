@@ -148,16 +148,18 @@ var assembly = {
             }
         })
     },
-    pushMLclobbers: function () {
-        outputCode.autoPush(`# pushing multi-line clobbers`)
+    pushMLclobbers: function (t = false) {
+        var fn = t? ((n) => outputCode.text.push(n)) : ((n) => outputCode.autoPush(n))
+        fn(`# pushing multi-line clobbers`)
         helpers.registers.multiLineClobbers.forEach(x => {
-            outputCode.autoPush(`push ${helpers.types.formatRegister(x, defines.types.u32)}`)
+            fn(`push ${helpers.types.formatRegister(x, defines.types.u32)}`)
         })
     },
-    popMLclobbers: function () {
-        outputCode.autoPush(`# popping multi-line clobbers`)
+    popMLclobbers: function (t = false) {
+        var fn = t? ((n) => outputCode.text.push(n)) : ((n) => outputCode.autoPush(n))
+        fn(`# popping multi-line clobbers`)
         helpers.registers.multiLineClobbers.slice().reverse().forEach(x => {
-            outputCode.autoPush(`pop ${helpers.types.formatRegister(x, defines.types.u32)}`)
+            fn(`pop ${helpers.types.formatRegister(x, defines.types.u32)}`)
         })
     },
     copyData: function (source) {
@@ -398,7 +400,7 @@ var variables = {
             nextThingTakesOwnership = defaultAutomaticOwnership
             createStackVariableListOnly(vname, newStackVar(vname, type))
             //if(vname == "sub")
-                //throwE(getAllStackVariables())
+            //throwE(getAllStackVariables())
             //throwE(stackVariables)
         } else { // outside of function, global variable
 
@@ -603,12 +605,10 @@ var variables = {
         //console.log("----- EEEEEEE", helpers.formats.seeIfIncludesOperator(aType, "index_get", indexTypeGuess))
 
         if ("formatPtr" in aType) {
-            if(helpers.formats.seeIfIncludesOperator(aType, "index_get", indexTypeGuess))
-            {
+            if (helpers.formats.seeIfIncludesOperator(aType, "index_get", indexTypeGuess)) {
                 return formats.callOperator(aname, "index_get", index)
             }
-            else
-            {
+            else {
                 throwW(`Attempting to index format instance as an array since no overload for "index_get" was given.`)
             }
         }
@@ -832,12 +832,10 @@ var variables = {
         //console.log(arrType.formatPtr?.operators)
         if ("formatPtr" in arrType) {
             //throwE(address, index, value, globalLineConts)
-            if(helpers.formats.seeIfIncludesOperator(arrType, "index_set", indexType))
-            {
+            if (helpers.formats.seeIfIncludesOperator(arrType, "index_set", indexType)) {
                 return actions.formats.callOperator(address, "index_set", [index, ",", value])
             }
-            else
-            {
+            else {
                 throwW('Attempting to index format instance as an array since no overload for "index_set" was given.')
             }
             //throwE(arrType.formatPtr.operators)
@@ -861,7 +859,7 @@ var variables = {
                     )
                     value = lbl
                     valueType = objCopy(defines.types.string)
-                } else if(!("unknown" in valueType)) {
+                } else if (!("unknown" in valueType)) {
                     throwE(`Assigning static "${helpers.types.convertTypeObjToName(valueType)}" to array expecting a "${helpers.types.convertTypeObjToName(arrType)}"`)
                 }
             }
@@ -1110,7 +1108,7 @@ var allocations = {
         arrayClamp = objCopy(arrayClamp)
         var elementSize = helpers.types.typeToBytes(arrayClamp)
         var oldAllocLabel = allocations.allocateAuto(arr.filter(x => x != "," && x != ";").length * elementSize, false, note)
-        var allocLbl = "%eax" 
+        var allocLbl = "%eax"
         // HERE IF BROKEN DEC 15 2024 FIX 123 ABC, then remove "%eax", and replace with next line. Then uncomment one after that
         // helpers.registers.getFreeLabelOrRegister(defines.types.dyna)
         //outputCode.autoPush(`mov ${oldAllocLabel}, ${allocLbl}`)
@@ -1139,8 +1137,7 @@ var allocations = {
         var allElementTypes = []
         var additionalRemoved = 0
         arr = arr.filter(x => {
-            if(x == ";")
-            {
+            if (x == ";") {
                 additionalRemoved++
                 return false
             }
@@ -1192,12 +1189,10 @@ var allocations = {
                 var dest;
 
                 if (globalAlloc) {
-                    if(helpers.types.stringIsRegister(allocLbl))
-                    {
-                    dest = `${index * elementSize}(${allocLbl})`
+                    if (helpers.types.stringIsRegister(allocLbl)) {
+                        dest = `${index * elementSize}(${allocLbl})`
                     }
-                    else
-                    {
+                    else {
                         throwE("No. Shouldnt get here")
                         dest = `(${allocLbl}) + ${index * elementSize}`
                     }
@@ -1317,8 +1312,15 @@ var functions = {
             `mov %esp, %ebp`,
             `sub \$${helpers.formatters.fnAllocMacro(fname)}, %esp # total stack allocation`,
             `${userFunctions[fname].saveRegs ? "pusha" : ""}`,
+        )
+
+        assembly.pushMLclobbers(true)
+
+        outputCode.text.push(
             `call __rc_enterChunk__`,
         )
+
+        assembly.popMLclobbers(true);
 
     },
     closeFunction: function (scope, stack, asRet = false, rVal = null, forceOwnNew = false) {
@@ -1342,8 +1344,7 @@ var functions = {
             if (!("name" in scope && scope.name.includes("__constructor_"))) {
                 // TODO HERE
                 var givenRetType = helpers.types.guessType(rVal)
-                if(!nextThingTakesOwnership && "hasData" in givenRetType)
-                {
+                if (!nextThingTakesOwnership && "hasData" in givenRetType) {
                     delete givenRetType.hasData
                 }
                 var scopeRetType = scope.data.returnType
@@ -1534,209 +1535,201 @@ var functions = {
         var matchesWithOverload = false
         var matchesWithNormal = false
 
-        if(fname.includes("__constructor_"))
-        {
+        if (fname.includes("__constructor_")) {
             //throwE(userFunctions)
             matched = userFunctions[fname]
         }
-        else
-        {
-        if(userFunctions[fname].variadic)
-        {
-            variadics.push(userFunctions[fname])
-        }
-        if ("overloads" in userFunctions[fname]) {
-            var allOverloads = userFunctions[fname].overloads
-            allOverloads.find((overload) => {
-                    variadics.push(overload)
-            })
-        }
-        
-            
-        if (fname == "__not_a_function__") {
-            matchesWithNormal = true
-            matched = userFunctions[fname]
-        }
         else {
-            if (userFunctions[fname].parameters.length == givenTypes.length) {
-                matchesWithNormal = userFunctions[fname].parameters.every((param, i) => {
-                    // console.log(expectedType, givenTypes[i])
-
-                    return helpers.types.areSimilarArrayTypesNonStrict(param.type, givenTypes[i])
+            if (userFunctions[fname].variadic) {
+                variadics.push(userFunctions[fname])
+            }
+            if ("overloads" in userFunctions[fname]) {
+                var allOverloads = userFunctions[fname].overloads
+                allOverloads.find((overload) => {
+                    variadics.push(overload)
                 })
             }
 
-            if (!matchesWithNormal) {
-                if ("overloads" in userFunctions[fname]) {
-                    var allOverloads = userFunctions[fname].overloads
-                    matched = allOverloads.find((overload) => {
-                        if (overload.variadic) {
-                            variadics.push(overload)
-                        }
-                        return (overload.parameters.length == givenTypes.length) && overload.parameters.every((param, i) => {
-                            return helpers.types.areSimilarArrayTypesNonStrict(param.type, givenTypes[i])
-                        })
-                    })
-                    matchesWithOverload = matched != undefined
-                }
 
-                if (!matchesWithOverload) {
-                    variadics.sort((a,b) => b.parameters.length - a.parameters.length)
-                    var variadicFound = variadics.find(variadic => {
-                        return variadic.parameters.every((param,i) => {
-                            return helpers.types.areSimilarArrayTypesNonStrict(param.type, givenTypes[i])
-                        })
-                    })
-
-                    if(variadicFound == undefined)
-                    {
-                        throwE(`Unable to find an overload for "${fname}" that accepts the given parameters`)
-                    }
-                    else
-                    {
-                        matched = variadicFound
-                        matchesWithOverload = true
-                    }
-                }
-            }
-            else
-            {
+            if (fname == "__not_a_function__") {
+                matchesWithNormal = true
                 matched = userFunctions[fname]
             }
-        }
+            else {
+                if (userFunctions[fname].parameters.length == givenTypes.length) {
+                    matchesWithNormal = userFunctions[fname].parameters.every((param, i) => {
+                        // console.log(expectedType, givenTypes[i])
 
-        if (fname != "__not_a_function__") {
-            callAddress = matched.name
-        }
+                        return helpers.types.areSimilarArrayTypesNonStrict(param.type, givenTypes[i])
+                    })
+                }
 
-    }
+                if (!matchesWithNormal) {
+                    if ("overloads" in userFunctions[fname]) {
+                        var allOverloads = userFunctions[fname].overloads
+                        matched = allOverloads.find((overload) => {
+                            if (overload.variadic) {
+                                variadics.push(overload)
+                            }
+                            return (overload.parameters.length == givenTypes.length) && overload.parameters.every((param, i) => {
+                                return helpers.types.areSimilarArrayTypesNonStrict(param.type, givenTypes[i])
+                            })
+                        })
+                        matchesWithOverload = matched != undefined
+                    }
+
+                    if (!matchesWithOverload) {
+                        variadics.sort((a, b) => b.parameters.length - a.parameters.length)
+                        var variadicFound = variadics.find(variadic => {
+                            return variadic.parameters.every((param, i) => {
+                                return helpers.types.areSimilarArrayTypesNonStrict(param.type, givenTypes[i])
+                            })
+                        })
+
+                        if (variadicFound == undefined) {
+                            throwE(`Unable to find an overload for "${fname}" that accepts the given parameters`)
+                        }
+                        else {
+                            matched = variadicFound
+                            matchesWithOverload = true
+                        }
+                    }
+                }
+                else {
+                    matched = userFunctions[fname]
+                }
+            }
+
+            if (fname != "__not_a_function__") {
+                callAddress = matched.name
+            }
+
+        }
         //throwW(matchesWithNormal, matchesWithOverload, fname, matched.name)
 
         fname = matched.name
         if (args.length != 0) {
             var ind = 0;
-            argsNoComma.forEach((x,ind) => {
-                    var skip = false
-                    var expectedType = matched.parameters[ind]?.type
-                    var givenType = givenTypes[ind]
+            argsNoComma.forEach((x, ind) => {
+                var skip = false
+                var expectedType = matched.parameters[ind]?.type
+                var givenType = givenTypes[ind]
 
-                    if (expectedType == undefined && !variadic) {
-                        throwE(`Function '${fname}' given too many arguments: [${matched.parameters}]`)
+                if (expectedType == undefined && !variadic) {
+                    throwE(`Function '${fname}' given too many arguments: [${matched.parameters}]`)
+                }
+
+                var et_s = expectedType == undefined ? "" : helpers.types.convertTypeObjToName(expectedType)
+                var gt_s = helpers.types.convertTypeObjToName(givenType)
+
+                var as = expectedType == undefined ? true : helpers.types.areSimilarArrayTypes(expectedType, givenType)
+
+                //console.log(`\t${as} : ${helpers.types.convertTypeObjToName(expectedType)}`)
+                // if broken, before all "as" was (et_s != gt_s)
+
+                if ((expectedType != undefined) && ("hasData" in givenType && !("hasData" in expectedType))) {
+                    throwW(`Passing a dynamic of type "${gt_s}" to a function expecting a static of type "${et_s}"`)
+                }
+
+                //console.log(fname, !helpers.types.isConstant(x))
+
+                if (
+                    (!(expectedType == undefined ? false : "acceptsAny" in expectedType) || (("acceptsAny" in expectedType) && ("hasData" in expectedType) && !("hasData" in givenType))) &&
+                    /* !helpers.types.isConstant(x) && */
+                    ((variadic && ((expectedType != undefined) && (!as))) || (!variadic && (!as)))) {
+                    //console.log("\t-----Farting----")
+                    if ("hasData" in expectedType && (helpers.types.isStringOrConststrType(expectedType) || ("acceptsAny" in expectedType)) && helpers.types.isStringOrConststrType(givenType)) {
+                        tbuff.push([
+                            `# converting conststr to string (function call)`,
+                            `pushl ${helpers.types.formatIfConstOrLit(x)}`,
+                            `call cptos`,
+                            `mov %eax, (%esp) # str is alr in stack just overwrite`,
+                        ])
+                        skip = true
                     }
-
-                    var et_s = expectedType == undefined ? "" : helpers.types.convertTypeObjToName(expectedType)
-                    var gt_s = helpers.types.convertTypeObjToName(givenType)
-
-                    var as = expectedType == undefined? true : helpers.types.areSimilarArrayTypes(expectedType, givenType)
-
-                    //console.log(`\t${as} : ${helpers.types.convertTypeObjToName(expectedType)}`)
-                    // if broken, before all "as" was (et_s != gt_s)
-                    
-                    if((expectedType != undefined) && ("hasData" in givenType && !("hasData" in expectedType)))
-                    {
-                        throwW(`Passing a dynamic of type "${gt_s}" to a function expecting a static of type "${et_s}"`)
+                    else {
+                        throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}" when calling "${fname}". If those types seem identical, one of the parameter's may be an array holding dynamic data and the other not`)
+                        //throwE(Object.entries(userFunctions).filter(x=>x[0].includes("__constructor_LL")).map(x=> x[0] + " :: " + helpers.types.convertTypeObjToName(x[1].parameters[0].type)))
                     }
+                }
 
-                    //console.log(fname, !helpers.types.isConstant(x))
+                if (expectedType != undefined && "isReference" in expectedType && helpers.types.stringIsRegister(x)) {
+                    throwE("Unable to get reference of register, most likely a static value")
+                }
 
-                    if (
-                        (!(expectedType == undefined ? false : "acceptsAny" in expectedType) || (("acceptsAny" in expectedType) && ("hasData" in expectedType) && !("hasData" in givenType))) && 
-                        /* !helpers.types.isConstant(x) && */
-                        ((variadic && ((expectedType != undefined) && (!as))) || (!variadic && (!as)))) 
-                        {
-                            //console.log("\t-----Farting----")
-                        if ("hasData" in expectedType && (helpers.types.isStringOrConststrType(expectedType) || ("acceptsAny" in expectedType)) && helpers.types.isStringOrConststrType(givenType)) {
+                if (!skip) {
+                    if (helpers.types.isConstOrLit(x)) {
+                        if (givenType.float && fname == "printf") {
+                            throwE("No printf float literal for now... Needs optimization")
                             tbuff.push([
-                                `# converting conststr to string (function call)`,
-                                `pushl ${helpers.types.formatIfConstOrLit(x)}`,
-                                `call cptos`,
-                                `mov %eax, (%esp) # str is alr in stack just overwrite`,
+                                "",
+                                "cvtss2sd %xmm0, %xmm2",
+                                "sub $8, %esp",
+                                "movq %xmm2, (%esp)"
                             ])
-                            skip = true
+                            bytes += 4
+                        } else {
+                            tbuff.push(`pushl \$${x}`)
                         }
-                        else {
-                            throwW(`Argument '${x}' does not match expected type "${et_s}", got "${gt_s}" when calling "${fname}". If those types seem identical, one of the parameter's may be an array holding dynamic data and the other not`)
-                            //throwE(Object.entries(userFunctions).filter(x=>x[0].includes("__constructor_LL")).map(x=> x[0] + " :: " + helpers.types.convertTypeObjToName(x[1].parameters[0].type)))
-                        }
-                    }
-
-                    if (expectedType != undefined && "isReference" in expectedType && helpers.types.stringIsRegister(x)) {
-                        throwE("Unable to get reference of register, most likely a static value")
-                    }
-
-                    if (!skip) {
-                        if (helpers.types.isConstOrLit(x)) {
-                            if (givenType.float && fname == "printf") {
-                                throwE("No printf float literal for now... Needs optimization")
-                                tbuff.push([
-                                    "",
-                                    "cvtss2sd %xmm0, %xmm2",
-                                    "sub $8, %esp",
-                                    "movq %xmm2, (%esp)"
-                                ])
-                                bytes += 4
-                            } else {
-                                tbuff.push(`pushl \$${x}`)
-                            }
-                        } else if (helpers.types.stringIsRegister(x)) {
-                            if (givenType.float && fname == "printf") {
-                                tbuff.push([
-                                    "# awful optimization. do later. sorry",
-                                    `mov ${x}, __xmm_sse_temp__`,
-                                    `movss __xmm_sse_temp__, %xmm0`,
-                                    "cvtss2sd %xmm0, %xmm2",
-                                    "sub $8, %esp",
-                                    "movq %xmm2, (%esp)"
-                                ])
-                                bytes += 4
-                            } else {
-                                tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
-                            }
-                        }
-                        else {
-                            if (givenType.float && fname == "printf") {
-                                tbuff.push([
-                                    `movss ${x}, %xmm0`,
-                                    "cvtss2sd %xmm0, %xmm2",
-                                    "sub $8, %esp",
-                                    "movq %xmm2, (%esp)"
-                                ])
-                                bytes += 4
-                            } else {
-                                var r = helpers.types.formatRegister('d', givenType)
-                                var bbuff = []
-                                if (r != "%edx")
-                                    bbuff.push("xor %edx, %edx")
-
-                                // if(helpers.types.stringIsRegister(x))
-                                // {
-                                //     throwE(x, r, fname, args, givenType)
-                                // }
-                                if (expectedType != undefined && ("isReference" in expectedType)) {
-                                    bbuff.push(
-                                        `# TODO optimize if variable just do movl`,
-                                        `lea ${x}, %edx # PASS AS REFERENCE`,
-                                        `push %edx`
-                                    )
-                                }
-                                else {
-                                    bbuff.push(
-                                        `# TODO optimize if variable just do movl`,
-                                        `mov ${x}, ${r}`,
-                                        `push %edx`
-                                    )
-                                }
-                                tbuff.push(bbuff)
-                            }
+                    } else if (helpers.types.stringIsRegister(x)) {
+                        if (givenType.float && fname == "printf") {
+                            tbuff.push([
+                                "# awful optimization. do later. sorry",
+                                `mov ${x}, __xmm_sse_temp__`,
+                                `movss __xmm_sse_temp__, %xmm0`,
+                                "cvtss2sd %xmm0, %xmm2",
+                                "sub $8, %esp",
+                                "movq %xmm2, (%esp)"
+                            ])
+                            bytes += 4
+                        } else {
+                            tbuff.push(`push ${helpers.types.conformRegisterIfIs(x, defines.types.u32)}`)
                         }
                     }
-                    bytes += 4
-                    ind++
+                    else {
+                        if (givenType.float && fname == "printf") {
+                            tbuff.push([
+                                `movss ${x}, %xmm0`,
+                                "cvtss2sd %xmm0, %xmm2",
+                                "sub $8, %esp",
+                                "movq %xmm2, (%esp)"
+                            ])
+                            bytes += 4
+                        } else {
+                            var r = helpers.types.formatRegister('d', givenType)
+                            var bbuff = []
+                            if (r != "%edx")
+                                bbuff.push("xor %edx, %edx")
 
-                    //oldtypes.push(givenType)
+                            // if(helpers.types.stringIsRegister(x))
+                            // {
+                            //     throwE(x, r, fname, args, givenType)
+                            // }
+                            if (expectedType != undefined && ("isReference" in expectedType)) {
+                                bbuff.push(
+                                    `# TODO optimize if variable just do movl`,
+                                    `lea ${x}, %edx # PASS AS REFERENCE`,
+                                    `push %edx`
+                                )
+                            }
+                            else {
+                                bbuff.push(
+                                    `# TODO optimize if variable just do movl`,
+                                    `mov ${x}, ${r}`,
+                                    `push %edx`
+                                )
+                            }
+                            tbuff.push(bbuff)
+                        }
+                    }
+                }
+                bytes += 4
+                ind++
+
+                //oldtypes.push(givenType)
             })
         }
-        
+
         /*
         if (args.length != 0) {
             var ind = 0;
@@ -1995,8 +1988,7 @@ var formats = {
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
                     }
-                    else
-                    {
+                    else {
                         assembly.optimizeMove(value, `-${allocOffset - off}(%ebp)`, helpers.types.guessType(value), p.type)
                     }
                     nextThingTakesOwnership = defaultAutomaticOwnership
@@ -2044,11 +2036,10 @@ var formats = {
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
                     }
-                    else
-                    {
-                        assembly.optimizeMove(value, `${off}(%eax)`, helpers.types.guessType(value), p.type)
+                    else {
+                        assembly.optimizeMove(value, `${off}(${saveLbl})`, helpers.types.guessType(value), p.type)
                     }
-                    
+
                     nextThingTakesOwnership = defaultAutomaticOwnership
 
                     off += helpers.types.typeToBytes(p.type)
@@ -2074,8 +2065,7 @@ var formats = {
         var baseTypeName = helpers.types.convertTypeObjToName(baseType)
 
 
-        if(baseType.formatPtr.properties[i] == undefined)
-        {
+        if (baseType.formatPtr.properties[i] == undefined) {
             throwE(`Couldn't find property "${propertyName}" in ${base}`, defines.types)
         }
 
@@ -2257,12 +2247,12 @@ var formats = {
             } else {
                 if (numberOfParams == e[1].parameters.length) {
                     //console.log("RESET")
-                    var yes = e[1].parameters.every((param,n) => {
+                    var yes = e[1].parameters.every((param, n) => {
                         //console.log("COMPING", helpers.types.convertTypeObjToName(param.type), helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[n])), helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n])))
                         return helpers.types.areSimilarArrayTypesNonStrict(param.type, helpers.types.guessType(paramsNoComma[n]))
                     })
 
-                    if(yes)
+                    if (yes)
                         bestFit = e[0]
                 }
             }
@@ -2291,7 +2281,7 @@ var formats = {
         globalVariables.__this__ = helpers.types.convertTypeToHasData(defines.types[className])
         var rval = functions.callFunction(bestFit, params, true, globalVariables.__this__)
 
-       // console.log(className, params, helpers.types.convertTypeObjToName(helpers.types.guessType(rval)))
+        // console.log(className, params, helpers.types.convertTypeObjToName(helpers.types.guessType(rval)))
         if (sr_this) {
             outputCode.autoPush(`popl __this__`)
         }
@@ -2396,7 +2386,7 @@ var formats = {
 
         var foundOperatorFn = parentType.formatPtr.operators[operator].find(e => {
             return e.parameters.every((p, i) => {
-                if(!helpers.types.areEqualExtraLoose(p.type, helpers.types.guessType(paramsNoComma[i])))
+                if (!helpers.types.areEqualExtraLoose(p.type, helpers.types.guessType(paramsNoComma[i])))
                     console.log(helpers.types.convertTypeObjToName(p.type), " but given ", helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[i])), `(${paramsNoComma[i]})`)
                 return helpers.types.areEqualExtraLoose(p.type, helpers.types.guessType(paramsNoComma[i]))
             })
@@ -2404,7 +2394,7 @@ var formats = {
 
         if (foundOperatorFn == undefined) {
             throwE(`Unable to find an overload for "${operator}" in type "${parentType.formatPtr.name}" that accepts the given parameters`, paramsNoComma, parentType.formatPtr.operators[operator][0].parameters)
-    
+
         }
 
         var formattedName = foundOperatorFn.name
