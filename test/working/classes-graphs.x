@@ -165,7 +165,7 @@ Graph format
 
         while(queue.empty() == 0)
         {
-            create GraphNode current <- queue.pop();
+            create GraphNode:borrowed current <- queue.pop();
 
             print_(current.value);
 
