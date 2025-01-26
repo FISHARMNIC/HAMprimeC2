@@ -360,6 +360,8 @@ var variables = {
             throwE(`Cannot create variable named "${vname}" as it is a reserved word`)
         }
 
+        //console.log(vname, type)
+
         //console.log(type, onStack)
 
         if (onStack) // inside of a function
