@@ -2038,12 +2038,7 @@ var formats = {
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
                     }
-<<<<<<< HEAD
-                    else
-                    {
-=======
                     else {
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
                         assembly.optimizeMove(value, `${off}(${saveLbl})`, helpers.types.guessType(value), p.type)
                     }
 

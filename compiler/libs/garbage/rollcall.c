@@ -27,57 +27,8 @@ void *__rc_allocate__(int size_bytes, int restricted)
     // more of a backup system, incase the user is allocating a lot of data inside a loop without any function calls
     if(__rc_total_allocated_bytes__ >= BYTES_FORCE_GC)
     {
-<<<<<<< HEAD
-        __rc_collect_overflow__();
-    }
-
-    //size_bytes += 32;
-    int actualAllocSize = GET_ALLOC_SIZE(size_bytes);
-
-    dbgprint("|- Attempting malloc of with inner data of size %i\n", size_bytes);
-
-    // Note, here using malloc which also stores size, maybe switch to mmap2
-    full_malloc_t *allocation = malloc(actualAllocSize);
-    assert(allocation != 0);
-
-    dbgprint(" \\- Allocated address at %p\n", allocation);
-
-    __rc_total_allocated_bytes__ += actualAllocSize;
-
-    // All memory is grouped into one allocation, so split it up into its individual components
-    roster_entry_t *roster_entry = &(allocation->section_rosterEntry);
-    described_buffer_t *described_buffer = &(allocation->section_describedBuffer);
-
-    described_buffer->entry_reference = roster_entry;
-
-    roster_entry->owner = 0;
-    roster_entry->restricted = restricted;
-    roster_entry->size = size_bytes;
-    roster_entry->pointer = &(described_buffer->data);
-
-    //dbgprint("ATTEMPTING ADD TO ROSTER\n");
-    __roster_add(allocation);
-
-    //asm volatile("popa");
-
-    return roster_entry->pointer;
-}
-
-
-/*
-void *__rc_allocate__(int size_bytes, int restricted)
-{
-    //asm volatile("pusha");
-
-    // trigger collection on allocation limit (higher than rc_collect limit)
-    // more of a backup system, incase the user is allocating a lot of data inside a loop without any function calls
-    if(__rc_total_allocated_bytes__ >= BYTES_FORCE_GC)
-    {
-        __rc_collect__();
-=======
         //printf("overflow\n");
         __rc_collect_overflow__();
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
     }
 
     //size_bytes += 32;
@@ -102,11 +53,6 @@ void *__rc_allocate__(int size_bytes, int restricted)
     roster_entry->size = size_bytes;
     roster_entry->pointer = &(described_buffer->data);
 
-<<<<<<< HEAD
-    //dbgprint("ATTEMPTING ADD TO ROSTER\n");
-    __linked_add(&Roster, roster_entry, (linked_t*) allocation);
-=======
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 
     dbgprint(" \\- Allocated address at %p, data is at %p\n", allocation, roster_entry->pointer);
 
@@ -246,12 +192,8 @@ void __rc_collect__()
     //return; 
 
     dbgprint("------Collecting-----\n");
-<<<<<<< HEAD
-    linked_t *list = Roster;
-=======
 
     linked_t *list = __Roster;
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
     linked_t *previous = (linked_t*)0;
     
     // for each item in __Roster
@@ -292,11 +234,6 @@ void __rc_collect__()
     dbgprint("\\---------------------/\n");
 }
 
-<<<<<<< HEAD
-*/
-void __rc_free_all__()
-{
-=======
 void __rc_collect_overflow__()
 {
     //__rc_exitChunk__();
@@ -368,7 +305,6 @@ void __rc_free_all__()
         __ChunkStack = nextPtr;
         chunk_index--;
     }
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
     while(__Roster != (linked_t*)0)
     {
         linked_t * nextPtr = __Roster->next;
