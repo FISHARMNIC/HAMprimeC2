@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Sat Jan 25 2025 20:08:05 GMT-0700 (Mountain Standard Time)
+Compiled with love on Sat Jan 25 2025 20:10:57 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -177,7 +177,7 @@ __ALLOCFOR_testBFT__ = 28
 .global entry
 .4byte 3
 __STRING8__: .asciz "\n"
-__ALLOCFOR_entry__ = 0
+__ALLOCFOR_entry__ = 4
 __TEMP8_0__: .1byte 0
 ###################################
 .text
@@ -4374,27 +4374,59 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
-	#//------- line:  ------- #
-	#//------- line: testBFT (  ) ------- #
-	# pushing clobbers
-	# Calling function testBFT
-	call testBFT
-	mov %eax, %ecx
-	# popping clobbers
-	#//------- line: "\n" ------- #
-	#//------- line: print_ ( __STRING8__ ) ------- #
-	# pushing multi-line clobbers
-	pushl $__STRING8__
-	call puts
-	add $4, %esp
-	# popping multi-line clobbers
-	#//------- line:  ------- #
-	#//------- line: testDFT (  ) ------- #
-	# pushing clobbers
-	# Calling function testDFT
-	call testDFT
-	mov %eax, %ecx
-	# popping clobbers
+	#//------- line: 0 ------- #
+	#//------- line: create i <- 0 ------- #
+	# creating variable "i" of type "u32:borrowed" stack?=true
+	# Loading local variable "i" @-4(%ebp) with "0"
+	# optimized move from 0 to -4(%ebp)
+	movl $0, -4(%ebp)
+	__LABEL63__:
+	#//------- line: i <: 500 ------- #
+	# note, read STACK VAR i -> -4(%ebp)
+	mov -4(%ebp), %eax
+	mov $0, %cl
+	cmp $500, %eax
+	setl %cl
+	#//------- line: while ( %cl ) ------- #
+	# comparison for WHILE loop
+	cmpb $1, %cl
+	jne __LABEL64__
+	#//------- line: { ; ------- #
+	# {
+		#//------- line:  ------- #
+		#//------- line: testBFT (  ) ------- #
+		# pushing clobbers
+		# Calling function testBFT
+		call testBFT
+		mov %eax, %ecx
+		# popping clobbers
+		#//------- line: "\n" ------- #
+		#//------- line: print_ ( __STRING8__ ) ------- #
+		# pushing multi-line clobbers
+		pushl $__STRING8__
+		call puts
+		add $4, %esp
+		# popping multi-line clobbers
+		#//------- line:  ------- #
+		#//------- line: testDFT (  ) ------- #
+		# pushing clobbers
+		# Calling function testDFT
+		call testDFT
+		mov %eax, %ecx
+		# popping clobbers
+		#//------- line: i + 1 ------- #
+		# note, read STACK VAR i -> -4(%ebp)
+		mov -4(%ebp), %eax
+		add $1, %eax
+		mov %eax, %ecx
+		#//------- line: i <- %ecx ------- #
+		# SETTING i <- %ecx
+		# optimized move from %ecx to -4(%ebp)
+		mov %ecx, -4(%ebp)
+		#//------- line: } ------- #
+	# }
+	jmp __LABEL63__
+	__LABEL64__:
 	#//------- line: } ------- #
 # }
 call __rc_free_all__
@@ -4403,4 +4435,5 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
+# i: 4
 
