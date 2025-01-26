@@ -16,6 +16,7 @@ var assemblerArgs = {
             `${__dirname}/../../compiler/libs/strings/bin/strings.o`,
             `${__dirname}/../../compiler/libs/garbage/bin/garbage_linked.o`,
             `${__dirname}/../../compiler/libs/garbage/bin/garbage_rollcall.o`,
+            `${__dirname}/../../compiler/libs/garbage/bin/garbage_chunks.o`,
             `${__dirname}/../../compiler/libs/globals.s`,
             `${__dirname}/../../compiler/libs/gcollect.s`,
         ],

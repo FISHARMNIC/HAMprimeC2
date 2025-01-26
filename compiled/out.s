@@ -1,7 +1,11 @@
 
 /*
 ********HAM PRIME**********
+<<<<<<< HEAD
 Compiled with love on Sat Jan 25 2025 20:11:43 GMT-0700 (Mountain Standard Time)
+=======
+Compiled with love on Sat Jan 25 2025 20:12:27 GMT-0700 (Mountain Standard Time)
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 **************************
 */
 
@@ -244,6 +248,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___constructor_StaticLLNode_0___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	# pushing clobbers
 	# Allocate for THIS
 	pushl $0
@@ -290,7 +297,12 @@ sub $__ALLOCFOR___constructor_StaticLLNode_0___, %esp # total stack allocation
 	# }
 	# setting register "a" to "__this__"
 	movl __this__, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -307,6 +319,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___constructor_StaticLL_0___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	# pushing clobbers
 	# Allocate for THIS
 	pushl $0
@@ -353,7 +368,12 @@ sub $__ALLOCFOR___constructor_StaticLL_0___, %esp # total stack allocation
 	# }
 	# setting register "a" to "__this__"
 	movl __this__, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -365,6 +385,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_empty___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line:  ------- #
@@ -387,7 +410,12 @@ sub $__ALLOCFOR___method_StaticLL_empty___, %esp # total stack allocation
 			#//------- line: 1 ------- #
 			# setting register "a" to "1"
 			mov $1, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -401,14 +429,24 @@ __LABEL0__:
 		#//------- line: 0 ------- #
 		# setting register "a" to "0"
 		mov $0, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -420,6 +458,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_push___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: this . start == 0 ------- #
@@ -554,7 +595,12 @@ __LABEL4__:
 		__LABEL3__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -566,6 +612,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_pushFront___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: value ------- #
@@ -658,7 +707,12 @@ __LABEL5__:
 		add $8, %esp
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -671,6 +725,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_pop___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: borrow this . start ------- #
@@ -773,7 +830,12 @@ __LABEL7__:
 			# note, read STACK VAR rval -> -8(%ebp)
 			# setting register "a" to "-8(%ebp)"
 			mov -8(%ebp), %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -864,7 +926,12 @@ __LABEL9__:
 			# note, read STACK VAR rval -> -12(%ebp)
 			# setting register "a" to "-12(%ebp)"
 			mov -12(%ebp), %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -877,7 +944,12 @@ __LABEL11__:
 		__LABEL10__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -890,6 +962,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_popFront___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: this . start ------- #
@@ -1011,14 +1086,24 @@ __LABEL16__:
 		#//------- line: return ( %ecx ) ------- #
 		# setting register "a" to "%ecx"
 		mov %ecx, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1031,6 +1116,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_get___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: borrow this . start ------- #
@@ -1088,7 +1176,12 @@ sub $__ALLOCFOR___method_StaticLL_get___, %esp # total stack allocation
 				#//------- line: return ( %ecx ) ------- #
 				# setting register "a" to "%ecx"
 				mov %ecx, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1151,7 +1244,12 @@ __LABEL20__:
 		# popping clobbers
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1165,6 +1263,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_set___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: borrow this . start ------- #
@@ -1222,7 +1323,12 @@ sub $__ALLOCFOR___method_StaticLL_set___, %esp # total stack allocation
 				mov 12(%ebp), %edx
 				mov %edx, 0(%eax)
 				#//------- line: return ------- #
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1285,7 +1391,12 @@ __LABEL24__:
 		# popping clobbers
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1300,6 +1411,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___operator_StaticLL_index_get_0____, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: index ------- #
@@ -1323,14 +1437,24 @@ sub $__ALLOCFOR___operator_StaticLL_index_get_0____, %esp # total stack allocati
 		#//------- line: return ( %ecx ) ------- #
 		# setting register "a" to "%ecx"
 		mov %ecx, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1343,6 +1467,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___operator_StaticLL_index_set_1____, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: index , value ------- #
@@ -1369,7 +1496,12 @@ sub $__ALLOCFOR___operator_StaticLL_index_set_1____, %esp # total stack allocati
 		popl __this__
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1381,6 +1513,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_forEach___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: borrow this . start ------- #
@@ -1464,7 +1599,12 @@ sub $__ALLOCFOR___method_StaticLL_forEach___, %esp # total stack allocation
 		__LABEL27__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1478,6 +1618,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticLL_delete___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: index <= 0 ------- #
@@ -1648,7 +1791,12 @@ __LABEL35__:
 					call __rc_requestOwnership__
 					add $8, %esp
 					#//------- line: return ------- #
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1712,7 +1860,12 @@ __LABEL30__:
 		__LABEL29__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1728,6 +1881,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___constructor_StaticQueue_0___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	# pushing clobbers
 	# Allocate for THIS
 	pushl $0
@@ -1770,7 +1926,12 @@ sub $__ALLOCFOR___constructor_StaticQueue_0___, %esp # total stack allocation
 	# }
 	# setting register "a" to "__this__"
 	movl __this__, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1782,6 +1943,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticQueue_empty___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line:  ------- #
@@ -1806,14 +1970,24 @@ sub $__ALLOCFOR___method_StaticQueue_empty___, %esp # total stack allocation
 		#//------- line: return ( %esi ) ------- #
 		# setting register "a" to "%esi"
 		mov %esi, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1825,6 +1999,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticQueue_push___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: item ------- #
@@ -1853,7 +2030,12 @@ sub $__ALLOCFOR___method_StaticQueue_push___, %esp # total stack allocation
 		popl __this__
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1865,6 +2047,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_StaticQueue_pop___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line:  ------- #
@@ -1889,14 +2074,24 @@ sub $__ALLOCFOR___method_StaticQueue_pop___, %esp # total stack allocation
 		#//------- line: return ( %esi ) ------- #
 		# setting register "a" to "%esi"
 		mov %esi, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
 ret
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1930,6 +2125,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___constructor_GraphNode_0___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	# pushing clobbers
 	# Allocate for THIS
 	pushl $0
@@ -1982,7 +2180,12 @@ sub $__ALLOCFOR___constructor_GraphNode_0___, %esp # total stack allocation
 	# }
 	# setting register "a" to "__this__"
 	movl __this__, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -1995,6 +2198,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_GraphNode_addConnection___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: this . connections == 0 ------- #
@@ -2081,7 +2287,12 @@ __LABEL39__:
 		__LABEL38__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2093,6 +2304,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_GraphNode_addTwoWayConnection___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: node ------- #
@@ -2133,7 +2347,12 @@ sub $__ALLOCFOR___method_GraphNode_addTwoWayConnection___, %esp # total stack al
 		popl __this__
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2149,6 +2368,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___constructor_LLGraphNode_0___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	# pushing clobbers
 	# Allocate for THIS
 	pushl $0
@@ -2195,7 +2417,12 @@ sub $__ALLOCFOR___constructor_LLGraphNode_0___, %esp # total stack allocation
 	# }
 	# setting register "a" to "__this__"
 	movl __this__, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2207,6 +2434,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___constructor_LLGraphNode_1___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	# pushing clobbers
 	# Allocate for THIS
 	pushl $0
@@ -2259,7 +2489,12 @@ sub $__ALLOCFOR___constructor_LLGraphNode_1___, %esp # total stack allocation
 	# }
 	# setting register "a" to "__this__"
 	movl __this__, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2273,6 +2508,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___operator_LLGraphNode_index_get_2____, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: 0 ------- #
@@ -2329,7 +2567,12 @@ sub $__ALLOCFOR___operator_LLGraphNode_index_get_2____, %esp # total stack alloc
 				mov %ecx, __gc_dontClear__
 				# setting register "a" to "%ecx"
 				mov %ecx, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2403,7 +2646,12 @@ __LABEL42__:
 		# popping clobbers
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2417,6 +2665,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_LLGraphNode_findLast___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: borrow this ------- #
@@ -2509,7 +2760,12 @@ __LABEL44__:
 		# note, read STACK VAR walker -> -4(%ebp)
 		# setting register "a" to "-4(%ebp)"
 		mov -4(%ebp), %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2517,7 +2773,12 @@ ret
 		# note, read STACK VAR walker -> -4(%ebp)
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2531,6 +2792,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_LLGraphNode_add___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line:  ------- #
@@ -2582,7 +2846,12 @@ sub $__ALLOCFOR___method_LLGraphNode_add___, %esp # total stack allocation
 		#//------- line:  ------- #
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2597,6 +2866,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_LLGraphNode_add_brwd___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line:  ------- #
@@ -2645,7 +2917,12 @@ sub $__ALLOCFOR___method_LLGraphNode_add_brwd___, %esp # total stack allocation
 		add $8, %esp
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2659,6 +2936,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_LLGraphNode_printAll___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: borrow this ------- #
@@ -2733,7 +3013,12 @@ sub $__ALLOCFOR___method_LLGraphNode_printAll___, %esp # total stack allocation
 		__LABEL49__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2749,6 +3034,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___constructor_Graph_0___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	# pushing clobbers
 	# Allocate for THIS
 	pushl $0
@@ -2771,7 +3059,12 @@ sub $__ALLOCFOR___constructor_Graph_0___, %esp # total stack allocation
 	# }
 	# setting register "a" to "__this__"
 	movl __this__, %eax
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2783,6 +3076,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_Graph_addNode___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line: this . allNodes == 0 ------- #
@@ -2863,7 +3159,12 @@ __LABEL52__:
 		__LABEL51__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -2875,6 +3176,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_Graph_bft___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line:  ------- #
@@ -3101,7 +3405,12 @@ __LABEL57__:
 		__LABEL54__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -3115,6 +3424,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR___method_Graph_dft___, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line: { ; ------- #
 	# {
 		#//------- line:  ------- #
@@ -3264,7 +3576,12 @@ __LABEL61__:
 		__LABEL60__:
 		#//------- line: } ------- #
 	# }
-call __rc_quick_check__
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
 
 mov %ebp, %esp
 pop %ebp
@@ -3277,6 +3594,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_testDFT__, %esp # total stack allocation
 
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	#//------- line:  ------- #
 	#//------- line: Graph (  ) ------- #
 	# pushing clobbers
@@ -3591,7 +3911,16 @@ sub $__ALLOCFOR_testDFT__, %esp # total stack allocation
 	# popping clobbers
 	#//------- line: } ------- #
 # }
+<<<<<<< HEAD
 call __rc_quick_check__
+=======
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 
 mov %ebp, %esp
 pop %ebp
@@ -3609,6 +3938,12 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_testBFT__, %esp # total stack allocation
 
+<<<<<<< HEAD
+=======
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 	#//------- line:  ------- #
 	#//------- line:  ------- #
 	#//------- line:  ------- #
@@ -4025,7 +4360,16 @@ sub $__ALLOCFOR_testBFT__, %esp # total stack allocation
 	# popping clobbers
 	#//------- line: } ------- #
 # }
+<<<<<<< HEAD
 call __rc_quick_check__
+=======
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 
 mov %ebp, %esp
 pop %ebp
@@ -4042,6 +4386,12 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp # total stack allocation
 
+<<<<<<< HEAD
+=======
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 	#//------- line: 0 ------- #
 	#//------- line: create i <- 0 ------- #
 	# creating variable "i" of type "u32:borrowed" stack?=true

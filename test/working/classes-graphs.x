@@ -194,7 +194,7 @@ Graph format
         */
         
         current.visited <- 1;
-        print_(current.value);
+        print_(`reading: ${current.value}`);
 
         create walker <- borrow current.connections;
         while(walker != 0)
@@ -211,13 +211,12 @@ Graph format
     }
 }
 
-entry function<>
+testDFT function<>
 {
-
     create graph <- Graph();
 
     /* using this gif: https://miro.medium.com/v2/resize:fit:1248/0*r5blxPoPZaX1OkGr.gif */
-    /*
+
     create node1 <- GraphNode(1);
     create node2 <- GraphNode(2);
     create node3 <- GraphNode(3);
@@ -239,12 +238,14 @@ entry function<>
     node4.addTwoWayConnection(node5);
 
     graph.dft(node1);
-    */
-    
-    
-    // BFT WIP
+}
+
+testBFT function<>
+{
     // testing with this gif: https://miro.medium.com/v2/resize:fit:1200/1*KAZbkOGxRrmTokzX6af2vA.gif
     
+    create graph <- Graph();
+
     create node0 <- GraphNode(0);
     create node1 <- GraphNode(1);
     create node2 <- GraphNode(2);
@@ -261,7 +262,7 @@ entry function<>
 
     node0.addConnection(node1);
     node0.addConnection(node2);
-    
+
     node1.addConnection(node2);
     node1.addConnection(node3);
 
@@ -274,5 +275,11 @@ entry function<>
     node4.addConnection(node5);
 
     graph.bft(node0);
-    
+}
+
+entry function<>
+{
+    testBFT();
+    print_("\n");
+    testDFT();
 }

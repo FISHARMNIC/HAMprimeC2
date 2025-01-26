@@ -1,22 +1,33 @@
+/*
+https://stackoverflow.com/questions/5092134/whats-the-difference-between-generational-and-incremental-garbage-collection
+Look at answer by Bernd Elkemann
+
+Plans:
+    create a defragger: https://www.cs.cornell.edu/courses/cs312/2003fa/lectures/sec24.htm
+
+
+*/
+
 //#define _DEBUG
 
 #include "rollcall.h"
 #include "linked.h"
+#include "chunks.h"
 
 linked_t *__Roster = 0;
 int __rc_total_allocated_bytes__ = 0;
+extern linked_chunks_t* __ChunkStack;
  
 int __disable_gc__ = 0;
 void* __gc_dontClear__ = (void*)-1;
 
 void *__rc_allocate__(int size_bytes, int restricted)
 {
-    //asm volatile("pusha");
-
     // trigger collection on allocation limit (higher than rc_collect limit)
     // more of a backup system, incase the user is allocating a lot of data inside a loop without any function calls
     if(__rc_total_allocated_bytes__ >= BYTES_FORCE_GC)
     {
+<<<<<<< HEAD
         __rc_collect_overflow__();
     }
 
@@ -63,6 +74,10 @@ void *__rc_allocate__(int size_bytes, int restricted)
     if(__rc_total_allocated_bytes__ >= BYTES_FORCE_GC)
     {
         __rc_collect__();
+=======
+        //printf("overflow\n");
+        __rc_collect_overflow__();
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
     }
 
     //size_bytes += 32;
@@ -73,8 +88,6 @@ void *__rc_allocate__(int size_bytes, int restricted)
     // Note, here using malloc which also stores size, maybe switch to mmap2
     full_malloc_t *allocation = malloc(actualAllocSize);
     assert(allocation != 0);
-
-    dbgprint(" \\- Allocated address at %p\n", allocation);
 
     __rc_total_allocated_bytes__ += actualAllocSize;
 
@@ -89,10 +102,16 @@ void *__rc_allocate__(int size_bytes, int restricted)
     roster_entry->size = size_bytes;
     roster_entry->pointer = &(described_buffer->data);
 
+<<<<<<< HEAD
     //dbgprint("ATTEMPTING ADD TO ROSTER\n");
     __linked_add(&Roster, roster_entry, (linked_t*) allocation);
+=======
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 
-    //asm volatile("popa");
+    dbgprint(" \\- Allocated address at %p, data is at %p\n", allocation, roster_entry->pointer);
+
+    //dbgprint("ATTEMPTING ADD TO ROSTER\n");
+    __roster_add(allocation);
 
     return roster_entry->pointer;
 }
@@ -219,11 +238,23 @@ void __rc_collect__()
 /*
 void __rc_collect__()
 {
+    //__rc_exitChunk__();
+    if(UNLIKELY(__disable_gc__))
+    {
+        return;
+    }
+    //return; 
+
     dbgprint("------Collecting-----\n");
+<<<<<<< HEAD
     linked_t *list = Roster;
+=======
+
+    linked_t *list = __Roster;
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
     linked_t *previous = (linked_t*)0;
     
-    // for each item in Roster
+    // for each item in __Roster
     while (list != 0)
     {
         roster_entry_t *roster_entry = list->item;
@@ -233,21 +264,22 @@ void __rc_collect__()
         int **owner_reference = (int **)roster_entry->owner;
         int *owner_points_to = 0;
 
-        if(LIKELY(owner_reference != 0))
+        // only deref if not null
+        if(owner_reference != 0)
         {
-            owner_points_to = *((int **)roster_entry->owner);
+            owner_points_to = *owner_reference;
         }
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
 
-        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p]\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list);
+        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p], owner is %p\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list, owner_reference);
 
         // if the datas owner now points to a different address, this data is considered "lost"
         // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner
         if ((owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
         {
             dbgprint("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
-            list = __linked_remove(&Roster, previous, list);
+            list = __roster_remove(previous, list);
         }
         else
         {
@@ -260,9 +292,83 @@ void __rc_collect__()
     dbgprint("\\---------------------/\n");
 }
 
+<<<<<<< HEAD
 */
 void __rc_free_all__()
 {
+=======
+void __rc_collect_overflow__()
+{
+    //__rc_exitChunk__();
+    if(UNLIKELY(__disable_gc__))
+    {
+        return;
+    }
+    //return; 
+
+    dbgprint("------Collecting-----\n");
+
+    linked_t *list = __Roster;
+    linked_t *previous = (linked_t*)0;
+    
+    // for each item in __Roster
+    while (list != 0)
+    {
+        roster_entry_t *roster_entry = list->item;
+
+        assert(roster_entry != 0);
+
+        int **owner_reference = (int **)roster_entry->owner;
+        int *owner_points_to = 0;
+
+        // only deref if not null
+        if(owner_reference != 0)
+        {
+            owner_points_to = *owner_reference;
+        }
+        else
+        {
+            //printf("SKIP\n");
+            goto skip;
+        }
+
+        int *owner_should_point_to = (int *)roster_entry->pointer;
+
+        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p], owner is %p\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list, owner_reference);
+
+        // if the datas owner now points to a different address, this data is considered "lost"
+        // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner
+        if ((owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
+        {
+            dbgprint("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
+            list = __roster_remove(previous, list);
+        }
+        else
+        {
+            skip:
+            dbgprint("\t ^- Skipped \n");
+            previous = list;
+            list = list->next;
+        }
+    }
+
+    dbgprint("\\---------------------/\n");
+}
+
+void __rc_free_all__()
+{
+    //__rc_exitChunk__(); // remove when done testing
+
+    chunk_index -= MAX_PREALLOCED_CHUNKS;
+
+    while(chunk_index > 0 && __ChunkStack != (linked_chunks_t*)0)
+    {
+        linked_chunks_t * nextPtr = __ChunkStack->next;
+        free(__ChunkStack);
+        __ChunkStack = nextPtr;
+        chunk_index--;
+    }
+>>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
     while(__Roster != (linked_t*)0)
     {
         linked_t * nextPtr = __Roster->next;

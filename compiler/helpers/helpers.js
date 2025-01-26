@@ -80,6 +80,10 @@ var types = {
 
         return cheq && this.areEqualExtraLoose(a, b)
     },
+    areBothStaticOrDynamic: function(a, b)
+    {
+        return ("hasData" in a && "hasData" in b) || (!("hasData" in a) && !("hasData" in b))
+    },
     areEqualExtraLoose: function (a, b) {
         b = objCopy(b)
         a = objCopy(a)

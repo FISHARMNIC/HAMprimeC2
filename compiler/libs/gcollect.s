@@ -3,12 +3,15 @@
 
 __rc_transfer_error__: .asciz "** [Roll-Call Error] Could not transfer locked reference %p\n"
 __rc_transfer_nullOwnership__: .asciz "** [Roll-Call Warning] Attempting to own null pointer\n   ** Most likely attempting to set a dynamic to value 0\n"
+__rc_dbg__: .asciz "** owner is %p of %p [ENTRY IS %p]\n"
 
 BYTES_PER_GC = 4096 # For testing use like 32
 
 //_e_: .asciz "Setting ownership @%p: %i\n"
 .globl __rc_requestOwnership__
 .globl __rc_quick_check__
+
+.globl __rc_exitChunk__
 
 .extern __disable_gc__
 .extern __rc_collect__
@@ -25,7 +28,11 @@ entry_reference struct
 }
 */
 
-__rc_quick_check__:                   
+__rc_quick_check__:
+    call __rc_exitChunk__
+    ret
+
+//__rc_quick_check__:                   
     cmpl $BYTES_PER_GC, __rc_total_allocated_bytes__       
     jl 0f                
     cmpl $0, __disable_gc__          
@@ -34,13 +41,15 @@ __rc_quick_check__:
     call __rc_collect__ 
     popa 
     0:                                                   
-    ret                  
+    ret                 
 
 // I forgot why I wrote this in assembly
 __rc_requestOwnership__:
     push %ebp
     mov %esp, %ebp
+
     pusha
+
     /*
     @8:  buffer
     @12: address of owner
@@ -76,9 +85,19 @@ __rc_requestOwnership__:
         1:
     0:
 
+
     mov 12(%ebp), %ecx           # get address of owner
     mov %ebx, (%ecx)             # load owner with data
     mov %ecx, (%eax)             # set .owner
+
+    // pusha
+    // pushl %eax
+    // pushl 8(%ebp)
+    // pushl 12(%ebp)
+    // pushl $__rc_dbg__
+    // call printf
+    // add $16, %esp
+    // popa
 
     // pusha
     // push %eax

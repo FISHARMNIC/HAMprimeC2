@@ -631,6 +631,15 @@ function evaluate(line) {
                 // get type and remove
                 vtype = defines.types[offsetWord(1)]
                 line.splice(wordNum + 1, 1)
+
+                if(offsetWord(2) == '<-')
+                {
+                    var givenType = helpers.types.guessType(offsetWord(3))
+                    if(!helpers.types.areBothStaticOrDynamic(vtype, givenType) || !helpers.types.areSimilarArrayTypesNonStrict(vtype, givenType))
+                    {
+                        throwW(`Creating variable "${offsetWord(1)}" is taking type "${helpers.types.convertTypeObjToName(vtype)}" but was specified as a "${helpers.types.convertTypeObjToName(givenType)}"`)
+                    }
+                }
             } else if (offsetWord(2) == '<-') {
                 //console.log("______", line)
                 vtype = helpers.types.guessType(offsetWord(3))
@@ -641,6 +650,7 @@ function evaluate(line) {
             //console.log(line)
             //throwW("%%%%", vtype)
             if (offsetWord(2) == '<-') {
+                //console.log(offsetWord(1), vtype)
                 return actions.variables.create(offsetWord(1), vtype, offsetWord(3))
             } else {
                 //console.log("yuh")
