@@ -128,7 +128,6 @@ All of the things below work. Scroll down for examples or click [here](https://g
     - Capture scoped variables by reference (very much WIP, may be buggy!)
 
 Currently working on / roadmap / issues:
-- Testing a new, more incremental, GC which can be see in `collector.c` 
 - **Global arrays are broken**
     - if you wish to use a global array, create a typed variable on a global scope, and allocate data for it in a function
 - Supportive overloads for methods, constructors, etc

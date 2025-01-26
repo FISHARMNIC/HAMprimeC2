@@ -59,7 +59,6 @@ void *__rc_allocate_with_tempowner__(int size_bytes, int restricted);
 /// @brief Free all garbage data
 void __rc_collect_overflow__();
 void __rc_collect__();
-void __rc_collect_overflow__();
 
 /// @brief Free all allocated data regardless of if it's garbage or not
 void __rc_free_all__();
