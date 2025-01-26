@@ -23,13 +23,12 @@ void* __gc_dontClear__ = (void*)-1;
 
 void *__rc_allocate__(int size_bytes, int restricted)
 {
-    //asm volatile("pusha");
-
     // trigger collection on allocation limit (higher than rc_collect limit)
     // more of a backup system, incase the user is allocating a lot of data inside a loop without any function calls
     if(__rc_total_allocated_bytes__ >= BYTES_FORCE_GC)
     {
-        __rc_collect__();
+        //printf("overflow\n");
+        __rc_collect_overflow__();
     }
 
     //size_bytes += 32;
@@ -59,8 +58,6 @@ void *__rc_allocate__(int size_bytes, int restricted)
 
     //dbgprint("ATTEMPTING ADD TO ROSTER\n");
     __roster_add(allocation);
-
-    //asm volatile("popa");
 
     return roster_entry->pointer;
 }
@@ -116,6 +113,64 @@ void __rc_collect__()
         }
         else
         {
+            dbgprint("\t ^- Skipped \n");
+            previous = list;
+            list = list->next;
+        }
+    }
+
+    dbgprint("\\---------------------/\n");
+}
+
+void __rc_collect_overflow__()
+{
+    //__rc_exitChunk__();
+    if(UNLIKELY(__disable_gc__))
+    {
+        return;
+    }
+    //return; 
+
+    dbgprint("------Collecting-----\n");
+
+    linked_t *list = __Roster;
+    linked_t *previous = (linked_t*)0;
+    
+    // for each item in __Roster
+    while (list != 0)
+    {
+        roster_entry_t *roster_entry = list->item;
+
+        assert(roster_entry != 0);
+
+        int **owner_reference = (int **)roster_entry->owner;
+        int *owner_points_to = 0;
+
+        // only deref if not null
+        if(owner_reference != 0)
+        {
+            owner_points_to = *owner_reference;
+        }
+        else
+        {
+            //printf("SKIP\n");
+            goto skip;
+        }
+
+        int *owner_should_point_to = (int *)roster_entry->pointer;
+
+        dbgprint("|- Checking %p vs %p (dontClear is %p) [Allocation is %p], owner is %p\n", owner_should_point_to, owner_points_to, __gc_dontClear__, list, owner_reference);
+
+        // if the datas owner now points to a different address, this data is considered "lost"
+        // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner
+        if ((owner_points_to != owner_should_point_to) && (__gc_dontClear__ != owner_should_point_to))
+        {
+            dbgprint("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
+            list = __roster_remove(previous, list);
+        }
+        else
+        {
+            skip:
             dbgprint("\t ^- Skipped \n");
             previous = list;
             list = list->next;

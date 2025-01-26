@@ -165,7 +165,7 @@ Graph format
 
         while(queue.empty() == 0)
         {
-            create GraphNode current <- queue.pop();
+            create GraphNode:borrowed current <- queue.pop();
 
             print_(current.value);
 
@@ -194,7 +194,7 @@ Graph format
         */
         
         current.visited <- 1;
-        print_(current.value);
+        print_(`reading: ${current.value}`);
 
         create walker <- borrow current.connections;
         while(walker != 0)
@@ -262,7 +262,7 @@ testBFT function<>
 
     node0.addConnection(node1);
     node0.addConnection(node2);
-    
+
     node1.addConnection(node2);
     node1.addConnection(node3);
 
@@ -279,39 +279,7 @@ testBFT function<>
 
 entry function<>
 {
-    create graph <- Graph();
-
-    create node0 <- GraphNode(0);
-    create node1 <- GraphNode(1);
-    create node2 <- GraphNode(2);
-    create node3 <- GraphNode(3);
-    create node4 <- GraphNode(4);
-    create node5 <- GraphNode(5);
-
-    graph.addNode(node0);
-    graph.addNode(node1);
-    graph.addNode(node2);
-    graph.addNode(node3);
-    graph.addNode(node4);
-    graph.addNode(node5);
-
-    node0.addConnection(node1);
-    node0.addConnection(node2);
-    
-    node1.addConnection(node2);
-    node1.addConnection(node3);
-
-    node2.addConnection(node3);
-    
-    node3.addConnection(node4);
-    
-    node4.addConnection(node0);
-    node4.addConnection(node1);
-    node4.addConnection(node5);
-
-    graph.bft(node0);
-    
-    //testBFT();
-    //print_("\n");
-    //testDFT();
+    testBFT();
+    print_("\n");
+    testDFT();
 }

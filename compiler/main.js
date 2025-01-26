@@ -1,6 +1,12 @@
 /*
 TODO:
 
+    [CRITICAL]
+        Overflow might clear allocated data on the same line
+        As seen in graphs test
+        How to fix?????
+
+
     Actually do signed and unsigned
     
     right a progam that visualizes memory writes by pointer, shows whats overriding stuff

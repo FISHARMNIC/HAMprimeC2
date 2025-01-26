@@ -9,7 +9,7 @@
 #define TRUE (1)
 
 // #define BYTES_PER_GC   4096 // MOVED TO gcollect.s
-#define BYTES_FORCE_GC 512
+#define BYTES_FORCE_GC 1028
 
 #define LIKELY(c) __builtin_expect((c), 1)
 #define UNLIKELY(c) __builtin_expect((c), 0)
@@ -57,6 +57,7 @@ void *__rc_allocate__(int size_bytes, int restricted);
 void *__rc_allocate_with_tempowner__(int size_bytes, int restricted);
 
 /// @brief Free all garbage data
+void __rc_collect_overflow__();
 void __rc_collect__();
 
 /// @brief Free all allocated data regardless of if it's garbage or not
