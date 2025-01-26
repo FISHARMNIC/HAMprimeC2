@@ -211,13 +211,12 @@ Graph format
     }
 }
 
-entry function<>
+testDFT function<>
 {
-
     create graph <- Graph();
 
     /* using this gif: https://miro.medium.com/v2/resize:fit:1248/0*r5blxPoPZaX1OkGr.gif */
-    /*
+
     create node1 <- GraphNode(1);
     create node2 <- GraphNode(2);
     create node3 <- GraphNode(3);
@@ -239,12 +238,49 @@ entry function<>
     node4.addTwoWayConnection(node5);
 
     graph.dft(node1);
-    */
-    
-    
-    // BFT WIP
+}
+
+testBFT function<>
+{
     // testing with this gif: https://miro.medium.com/v2/resize:fit:1200/1*KAZbkOGxRrmTokzX6af2vA.gif
     
+    create graph <- Graph();
+
+    create node0 <- GraphNode(0);
+    create node1 <- GraphNode(1);
+    create node2 <- GraphNode(2);
+    create node3 <- GraphNode(3);
+    create node4 <- GraphNode(4);
+    create node5 <- GraphNode(5);
+
+    graph.addNode(node0);
+    graph.addNode(node1);
+    graph.addNode(node2);
+    graph.addNode(node3);
+    graph.addNode(node4);
+    graph.addNode(node5);
+
+    node0.addConnection(node1);
+    node0.addConnection(node2);
+    
+    node1.addConnection(node2);
+    node1.addConnection(node3);
+
+    node2.addConnection(node3);
+    
+    node3.addConnection(node4);
+    
+    node4.addConnection(node0);
+    node4.addConnection(node1);
+    node4.addConnection(node5);
+
+    graph.bft(node0);
+}
+
+entry function<>
+{
+    create graph <- Graph();
+
     create node0 <- GraphNode(0);
     create node1 <- GraphNode(1);
     create node2 <- GraphNode(2);
@@ -275,4 +311,7 @@ entry function<>
 
     graph.bft(node0);
     
+    //testBFT();
+    //print_("\n");
+    //testDFT();
 }
