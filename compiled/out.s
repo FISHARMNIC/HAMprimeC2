@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Sat Jan 25 2025 19:49:25 GMT-0700 (Mountain Standard Time)
+Compiled with love on Sat Jan 25 2025 20:11:43 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -158,14 +158,26 @@ __ALLOCFOR___method_Graph_addNode___ = 0
 __ALLOCFOR___method_Graph_bft___ = 12
 .type	__method_Graph_dft_, @function
 .global __method_Graph_dft_
+.4byte 10
+__STRING6__: .asciz "reading: "
+.4byte 1
+__STRING7__: .asciz ""
 __ALLOCFOR___method_Graph_dft___ = 4
 __SIZEOF_Graph__ = 4
 # format "Graph" includes:
 #   - PROPERTY (p0) allNodes
 #   - CNSTRCTR __constructor_Graph_0_ (0 parameters)
+.type	testDFT, @function
+.global testDFT
+__ALLOCFOR_testDFT__ = 32
+.type	testBFT, @function
+.global testBFT
+__ALLOCFOR_testBFT__ = 28
 .type	entry, @function
 .global entry
-__ALLOCFOR_entry__ = 28
+.4byte 3
+__STRING8__: .asciz "\n"
+__ALLOCFOR_entry__ = 4
 __TEMP8_0__: .1byte 0
 ###################################
 .text
@@ -197,6 +209,14 @@ __init_for_out__:
 #//------- line: { ; ------- #
 # {
 #//------- line: Graph format ------- #
+#//------- line: { ; ------- #
+# {
+#//------- line:  ------- #
+#//------- line: testDFT function <  > ------- #
+#//------- line: { ; ------- #
+# {
+#//------- line:  ------- #
+#//------- line: testBFT function <  > ------- #
 #//------- line: { ; ------- #
 # {
 #//------- line:  ------- #
@@ -2945,17 +2965,11 @@ sub $__ALLOCFOR___method_Graph_bft___, %esp # total stack allocation
 			mov %eax, %ecx
 			# popping clobbers
 			popl __this__
-			#//------- line: create GraphNode current <- %ecx ------- #
-			# creating variable "current" of type "GraphNode:dynamic" stack?=true
+			#//------- line: create GraphNode : borrowed current <- %ecx ------- #
+			# creating variable "current" of type "__GraphNode__staticdef__:borrowed" stack?=true
 			# Loading local variable "current" @-8(%ebp) with "%ecx"
 			# optimized move from %ecx to -8(%ebp)
 			mov %ecx, -8(%ebp)
-			# requesting ownership for current (create)
-			lea -8(%ebp), %eax
-			push %eax
-			push %ecx
-			call __rc_requestOwnership__
-			add $8, %esp
 			#//------- line: current . value ------- #
 			# note, read STACK VAR current -> -8(%ebp)
 			# Reading property "value" in "-8(%ebp)"
@@ -3119,6 +3133,8 @@ sub $__ALLOCFOR___method_Graph_dft___, %esp # total stack allocation
 		movl 8(%ebp), %eax
 		# optimized move from 1 to 4(%eax)
 		movl $1, 4(%eax)
+		#//------- line: `reading: ${current.value}` ------- #
+		pushw __disable_gc__; movw $1, __disable_gc__
 		#//------- line: current . value ------- #
 		# note, read PARAM current -> 8(%ebp)
 		# Reading property "value" in "8(%ebp)"
@@ -3127,12 +3143,28 @@ sub $__ALLOCFOR___method_Graph_dft___, %esp # total stack allocation
 		# setting register "d" to "12(%eax)"
 		mov 12(%eax), %edx
 		mov %edx, %ecx
-		#//------- line: print_ ( %ecx ) ------- #
-		# pushing multi-line clobbers
+		#//------- line: "reading: " ------- #
+		#//------- line: "" ------- #
+		# setting register "d" to "__STRING7__"
+		movl $__STRING7__, %edx
+		push %edx
 		push %ecx
-		pushl $__PRINT_TYPE_INT__
-		call printf
-		add $8, %esp
+		call itos
+		add $4, %esp
+		push %eax
+		# setting register "d" to "__STRING6__"
+		movl $__STRING6__, %edx
+		push %edx
+		pushl $3
+		call strjoinmany
+		add $16, %esp
+		mov %eax, %esi
+		popw __disable_gc__
+		#//------- line: print_ ( %esi ) ------- #
+		# pushing multi-line clobbers
+		push %esi
+		call puts
+		add $4, %esp
 		# popping multi-line clobbers
 		#//------- line: borrow current . connections ------- #
 		# note, read PARAM current -> 8(%ebp)
@@ -3240,10 +3272,10 @@ ret
 # walker: 4
 	#//------- line: } ------- #
 # }
-entry:
+testDFT:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_entry__, %esp # total stack allocation
+sub $__ALLOCFOR_testDFT__, %esp # total stack allocation
 
 	#//------- line:  ------- #
 	#//------- line: Graph (  ) ------- #
@@ -3264,29 +3296,339 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 	call __rc_requestOwnership__
 	add $8, %esp
 	#//------- line:  ------- #
+	#//------- line: 1 ------- #
+	#//------- line: GraphNode ( 1 ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_GraphNode_0_
+	pushl $1
+	call __constructor_GraphNode_0_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: create node1 <- %ecx ------- #
+	# creating variable "node1" of type "GraphNode:dynamic" stack?=true
+	# Loading local variable "node1" @-8(%ebp) with "%ecx"
+	# optimized move from %ecx to -8(%ebp)
+	mov %ecx, -8(%ebp)
+	# requesting ownership for node1 (create)
+	lea -8(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: 2 ------- #
+	#//------- line: GraphNode ( 2 ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_GraphNode_0_
+	pushl $2
+	call __constructor_GraphNode_0_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: create node2 <- %ecx ------- #
+	# creating variable "node2" of type "GraphNode:dynamic" stack?=true
+	# Loading local variable "node2" @-12(%ebp) with "%ecx"
+	# optimized move from %ecx to -12(%ebp)
+	mov %ecx, -12(%ebp)
+	# requesting ownership for node2 (create)
+	lea -12(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: 3 ------- #
+	#//------- line: GraphNode ( 3 ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_GraphNode_0_
+	pushl $3
+	call __constructor_GraphNode_0_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: create node3 <- %ecx ------- #
+	# creating variable "node3" of type "GraphNode:dynamic" stack?=true
+	# Loading local variable "node3" @-16(%ebp) with "%ecx"
+	# optimized move from %ecx to -16(%ebp)
+	mov %ecx, -16(%ebp)
+	# requesting ownership for node3 (create)
+	lea -16(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: 4 ------- #
+	#//------- line: GraphNode ( 4 ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_GraphNode_0_
+	pushl $4
+	call __constructor_GraphNode_0_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: create node4 <- %ecx ------- #
+	# creating variable "node4" of type "GraphNode:dynamic" stack?=true
+	# Loading local variable "node4" @-20(%ebp) with "%ecx"
+	# optimized move from %ecx to -20(%ebp)
+	mov %ecx, -20(%ebp)
+	# requesting ownership for node4 (create)
+	lea -20(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: 5 ------- #
+	#//------- line: GraphNode ( 5 ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_GraphNode_0_
+	pushl $5
+	call __constructor_GraphNode_0_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: create node5 <- %ecx ------- #
+	# creating variable "node5" of type "GraphNode:dynamic" stack?=true
+	# Loading local variable "node5" @-24(%ebp) with "%ecx"
+	# optimized move from %ecx to -24(%ebp)
+	mov %ecx, -24(%ebp)
+	# requesting ownership for node5 (create)
+	lea -24(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: 6 ------- #
+	#//------- line: GraphNode ( 6 ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_GraphNode_0_
+	pushl $6
+	call __constructor_GraphNode_0_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: create node6 <- %ecx ------- #
+	# creating variable "node6" of type "GraphNode:dynamic" stack?=true
+	# Loading local variable "node6" @-28(%ebp) with "%ecx"
+	# optimized move from %ecx to -28(%ebp)
+	mov %ecx, -28(%ebp)
+	# requesting ownership for node6 (create)
+	lea -28(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: 7 ------- #
+	#//------- line: GraphNode ( 7 ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_GraphNode_0_
+	pushl $7
+	call __constructor_GraphNode_0_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: create node7 <- %ecx ------- #
+	# creating variable "node7" of type "GraphNode:dynamic" stack?=true
+	# Loading local variable "node7" @-32(%ebp) with "%ecx"
+	# optimized move from %ecx to -32(%ebp)
+	mov %ecx, -32(%ebp)
+	# requesting ownership for node7 (create)
+	lea -32(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: node2 ------- #
+	# note, read STACK VAR node2 -> -12(%ebp)
+	#//------- line: node1 . addTwoWayConnection ( -12(%ebp) ) ------- #
+	# note, read STACK VAR node1 -> -8(%ebp)
+	# optimized move from -8(%ebp) to __this__
+	# setting register "d" to "-8(%ebp)"
+	mov -8(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_GraphNode_addTwoWayConnection_
+	# TODO optimize if variable just do movl
+	mov -12(%ebp), %edx
+	push %edx
+	call __method_GraphNode_addTwoWayConnection_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: node5 ------- #
+	# note, read STACK VAR node5 -> -24(%ebp)
+	#//------- line: node1 . addTwoWayConnection ( -24(%ebp) ) ------- #
+	# note, read STACK VAR node1 -> -8(%ebp)
+	# optimized move from -8(%ebp) to __this__
+	# setting register "d" to "-8(%ebp)"
+	mov -8(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_GraphNode_addTwoWayConnection_
+	# TODO optimize if variable just do movl
+	mov -24(%ebp), %edx
+	push %edx
+	call __method_GraphNode_addTwoWayConnection_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: node3 ------- #
+	# note, read STACK VAR node3 -> -16(%ebp)
+	#//------- line: node1 . addTwoWayConnection ( -16(%ebp) ) ------- #
+	# note, read STACK VAR node1 -> -8(%ebp)
+	# optimized move from -8(%ebp) to __this__
+	# setting register "d" to "-8(%ebp)"
+	mov -8(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_GraphNode_addTwoWayConnection_
+	# TODO optimize if variable just do movl
+	mov -16(%ebp), %edx
+	push %edx
+	call __method_GraphNode_addTwoWayConnection_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: node6 ------- #
+	# note, read STACK VAR node6 -> -28(%ebp)
+	#//------- line: node2 . addTwoWayConnection ( -28(%ebp) ) ------- #
+	# note, read STACK VAR node2 -> -12(%ebp)
+	# optimized move from -12(%ebp) to __this__
+	# setting register "d" to "-12(%ebp)"
+	mov -12(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_GraphNode_addTwoWayConnection_
+	# TODO optimize if variable just do movl
+	mov -28(%ebp), %edx
+	push %edx
+	call __method_GraphNode_addTwoWayConnection_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: node4 ------- #
+	# note, read STACK VAR node4 -> -20(%ebp)
+	#//------- line: node2 . addTwoWayConnection ( -20(%ebp) ) ------- #
+	# note, read STACK VAR node2 -> -12(%ebp)
+	# optimized move from -12(%ebp) to __this__
+	# setting register "d" to "-12(%ebp)"
+	mov -12(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_GraphNode_addTwoWayConnection_
+	# TODO optimize if variable just do movl
+	mov -20(%ebp), %edx
+	push %edx
+	call __method_GraphNode_addTwoWayConnection_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: node4 ------- #
+	# note, read STACK VAR node4 -> -20(%ebp)
+	#//------- line: node3 . addTwoWayConnection ( -20(%ebp) ) ------- #
+	# note, read STACK VAR node3 -> -16(%ebp)
+	# optimized move from -16(%ebp) to __this__
+	# setting register "d" to "-16(%ebp)"
+	mov -16(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_GraphNode_addTwoWayConnection_
+	# TODO optimize if variable just do movl
+	mov -20(%ebp), %edx
+	push %edx
+	call __method_GraphNode_addTwoWayConnection_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: node7 ------- #
+	# note, read STACK VAR node7 -> -32(%ebp)
+	#//------- line: node3 . addTwoWayConnection ( -32(%ebp) ) ------- #
+	# note, read STACK VAR node3 -> -16(%ebp)
+	# optimized move from -16(%ebp) to __this__
+	# setting register "d" to "-16(%ebp)"
+	mov -16(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_GraphNode_addTwoWayConnection_
+	# TODO optimize if variable just do movl
+	mov -32(%ebp), %edx
+	push %edx
+	call __method_GraphNode_addTwoWayConnection_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: node5 ------- #
+	# note, read STACK VAR node5 -> -24(%ebp)
+	#//------- line: node4 . addTwoWayConnection ( -24(%ebp) ) ------- #
+	# note, read STACK VAR node4 -> -20(%ebp)
+	# optimized move from -20(%ebp) to __this__
+	# setting register "d" to "-20(%ebp)"
+	mov -20(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_GraphNode_addTwoWayConnection_
+	# TODO optimize if variable just do movl
+	mov -24(%ebp), %edx
+	push %edx
+	call __method_GraphNode_addTwoWayConnection_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: node1 ------- #
+	# note, read STACK VAR node1 -> -8(%ebp)
+	#//------- line: graph . dft ( -8(%ebp) ) ------- #
+	# note, read STACK VAR graph -> -4(%ebp)
+	# optimized move from -4(%ebp) to __this__
+	# setting register "d" to "-4(%ebp)"
+	mov -4(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_Graph_dft_
+	# TODO optimize if variable just do movl
+	mov -8(%ebp), %edx
+	push %edx
+	call __method_Graph_dft_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	#//------- line: } ------- #
+# }
+call __rc_quick_check__
+
+mov %ebp, %esp
+pop %ebp
+ret
+# graph: 4
+# node1: 8
+# node2: 12
+# node3: 16
+# node4: 20
+# node5: 24
+# node6: 28
+# node7: 32
+testBFT:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR_testBFT__, %esp # total stack allocation
+
 	#//------- line:  ------- #
 	#//------- line:  ------- #
 	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
+	#//------- line: Graph (  ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_Graph_0_
+	call __constructor_Graph_0_
+	mov %eax, %ecx
+	# popping clobbers
+	#//------- line: create graph <- %ecx ------- #
+	# creating variable "graph" of type "Graph:dynamic" stack?=true
+	# Loading local variable "graph" @-4(%ebp) with "%ecx"
+	# optimized move from %ecx to -4(%ebp)
+	mov %ecx, -4(%ebp)
+	# requesting ownership for graph (create)
+	lea -4(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
 	#//------- line: 0 ------- #
 	#//------- line: GraphNode ( 0 ) ------- #
 	# pushing clobbers
@@ -3543,7 +3885,6 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 	mov %eax, %ecx
 	add $4, %esp
 	# popping clobbers
-	#//------- line:  ------- #
 	#//------- line: node2 ------- #
 	# note, read STACK VAR node2 -> -16(%ebp)
 	#//------- line: node1 . addConnection ( -16(%ebp) ) ------- #
@@ -3682,11 +4023,9 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 	mov %eax, %ecx
 	add $4, %esp
 	# popping clobbers
-	#//------- line:  ------- #
 	#//------- line: } ------- #
 # }
-call __rc_free_all__
-mov  $0, %eax
+call __rc_quick_check__
 
 mov %ebp, %esp
 pop %ebp
@@ -3698,4 +4037,71 @@ ret
 # node3: 20
 # node4: 24
 # node5: 28
+entry:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR_entry__, %esp # total stack allocation
+
+	#//------- line: 0 ------- #
+	#//------- line: create i <- 0 ------- #
+	# creating variable "i" of type "u32:borrowed" stack?=true
+	# Loading local variable "i" @-4(%ebp) with "0"
+	# optimized move from 0 to -4(%ebp)
+	movl $0, -4(%ebp)
+	__LABEL63__:
+	#//------- line: i <: 500 ------- #
+	# note, read STACK VAR i -> -4(%ebp)
+	mov -4(%ebp), %eax
+	mov $0, %cl
+	cmp $500, %eax
+	setl %cl
+	#//------- line: while ( %cl ) ------- #
+	# comparison for WHILE loop
+	cmpb $1, %cl
+	jne __LABEL64__
+	#//------- line: { ; ------- #
+	# {
+		#//------- line:  ------- #
+		#//------- line: testBFT (  ) ------- #
+		# pushing clobbers
+		# Calling function testBFT
+		call testBFT
+		mov %eax, %ecx
+		# popping clobbers
+		#//------- line: "\n" ------- #
+		#//------- line: print_ ( __STRING8__ ) ------- #
+		# pushing multi-line clobbers
+		pushl $__STRING8__
+		call puts
+		add $4, %esp
+		# popping multi-line clobbers
+		#//------- line:  ------- #
+		#//------- line: testDFT (  ) ------- #
+		# pushing clobbers
+		# Calling function testDFT
+		call testDFT
+		mov %eax, %ecx
+		# popping clobbers
+		#//------- line: i + 1 ------- #
+		# note, read STACK VAR i -> -4(%ebp)
+		mov -4(%ebp), %eax
+		add $1, %eax
+		mov %eax, %ecx
+		#//------- line: i <- %ecx ------- #
+		# SETTING i <- %ecx
+		# optimized move from %ecx to -4(%ebp)
+		mov %ecx, -4(%ebp)
+		#//------- line: } ------- #
+	# }
+	jmp __LABEL63__
+	__LABEL64__:
+	#//------- line: } ------- #
+# }
+call __rc_free_all__
+mov  $0, %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+# i: 4
 
