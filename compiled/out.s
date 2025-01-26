@@ -1,11 +1,7 @@
 
 /*
 ********HAM PRIME**********
-<<<<<<< HEAD
-Compiled with love on Sat Jan 25 2025 20:11:43 GMT-0700 (Mountain Standard Time)
-=======
-Compiled with love on Sat Jan 25 2025 20:12:27 GMT-0700 (Mountain Standard Time)
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
+Compiled with love on Sat Jan 25 2025 20:27:50 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -3911,16 +3907,12 @@ call __rc_enterChunk__
 	# popping clobbers
 	#//------- line: } ------- #
 # }
-<<<<<<< HEAD
-call __rc_quick_check__
-=======
 push %eax
 push %esp
 push %ebp
 call __rc_exitChunk__
 add $8, %esp
 pop %eax
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 
 mov %ebp, %esp
 pop %ebp
@@ -3938,12 +3930,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_testBFT__, %esp # total stack allocation
 
-<<<<<<< HEAD
-=======
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 	#//------- line:  ------- #
 	#//------- line:  ------- #
 	#//------- line:  ------- #
@@ -4360,16 +4349,12 @@ call __rc_enterChunk__
 	# popping clobbers
 	#//------- line: } ------- #
 # }
-<<<<<<< HEAD
-call __rc_quick_check__
-=======
 push %eax
 push %esp
 push %ebp
 call __rc_exitChunk__
 add $8, %esp
 pop %eax
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 
 mov %ebp, %esp
 pop %ebp
@@ -4386,12 +4371,9 @@ push %ebp
 mov %esp, %ebp
 sub $__ALLOCFOR_entry__, %esp # total stack allocation
 
-<<<<<<< HEAD
-=======
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
->>>>>>> c67818b4379b9c13424657f2895f27c380b1f104
 	#//------- line: 0 ------- #
 	#//------- line: create i <- 0 ------- #
 	# creating variable "i" of type "u32:borrowed" stack?=true

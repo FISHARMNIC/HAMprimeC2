@@ -61,7 +61,6 @@ void *__rc_allocate__(int size_bytes, int restricted)
 
     return roster_entry->pointer;
 }
-*/
 
 void *__rc_allocate_with_tempowner__(int size_bytes, int restricted)
 {
