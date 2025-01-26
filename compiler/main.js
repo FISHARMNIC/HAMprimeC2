@@ -1,11 +1,7 @@
 /*
 TODO:
 
-    [CRITICAL]
-        Overflow might clear allocated data on the same line
-        As seen in graphs test
-        How to fix?????
-
+    Maybe Change overflow to only collect on same frame?
 
     Actually do signed and unsigned
     

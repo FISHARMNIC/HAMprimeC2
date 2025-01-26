@@ -8,6 +8,11 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
 <summary><b>Recent Update Log</b></summary>
 
 ## Recent Update Log
+- Improved garbage collector model!
+    - Much more incremental
+    - Destroys lost references quicker by checking for data that was owned by things on old stack scopes
+    - Works by "chunking" the roster into smaller pieces that are split by function scopes
+    - Seems to be a lot faster in some things, a bit slower in others
 - Added some builting libraries which can now be used with `#include`
     - See examples under `libs-xxx`
     - New libraries are:
