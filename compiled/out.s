@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Mon Jan 27 2025 21:10:42 GMT-0700 (Mountain Standard Time)
+Compiled with love on Mon Jan 27 2025 21:14:57 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -20,93 +20,76 @@ Compiled with love on Mon Jan 27 2025 21:10:42 GMT-0700 (Mountain Standard Time)
 .extern ___TEMPORARY_OWNER___
 
 ######## user data section ########
-.extern stdout
-.type	testOutput, @function
-.global testOutput
-.4byte 16
-__STRING0__: .asciz "[ RUN      ] : "
+.type	__constructor_List_0_, @function
+.global __constructor_List_0_
+__ALLOCFOR___constructor_List_0___ = 0
+.type	__constructor_List_1_, @function
+.global __constructor_List_1_
+__ALLOCFOR___constructor_List_1___ = 4
+.type	__method_List_push_, @function
+.global __method_List_push_
+__ALLOCFOR___method_List_push___ = 0
+.type	__method_List_pop_, @function
+.global __method_List_pop_
+__ALLOCFOR___method_List_pop___ = 4
+.type	__method_List_every_, @function
+.global __method_List_every_
+__ALLOCFOR___method_List_every___ = 4
+.type	__method_List_toString_, @function
+.global __method_List_toString_
 .4byte 2
-__STRING1__: .asciz " "
-.4byte 3
-__STRING2__: .asciz "%c"
-.4byte 1
-__STRING3__: .asciz ""
-.4byte 16
-__STRING4__: .asciz "[     PASS ] : "
-.4byte 16
-__STRING5__: .asciz "[  FAILED  ] : "
-.4byte 33
-__STRING6__: .asciz "------------\n*** Expected:\n\t "
-.4byte 21
-__STRING7__: .asciz " \n*** But got:\n\t "
-.4byte 17
-__STRING8__: .asciz "\n------------\n"
-__ALLOCFOR_testOutput__ = 13
+__STRING0__: .asciz "["
+.4byte 2
+__STRING1__: .asciz ","
+.4byte 2
+__STRING2__: .asciz "]"
+__ALLOCFOR___method_List_toString___ = 8
+.type	__operator_List_add_0__, @function
+.global __operator_List_add_0__
+__ALLOCFOR___operator_List_add_0____ = 4
+__SIZEOF_List__ = 8
+# format "List" includes:
+#   - PROPERTY (p32) buffer
+#   - PROPERTY (u32) length
+#   - CNSTRCTR __constructor_List_0_ (0 parameters)
+#   - CNSTRCTR __constructor_List_1_ (1 parameters, variadic)
+.type	putint, @function
+.global putint
+.4byte 15
+__STRING3__: .asciz "Printing: %i\n"
+__ALLOCFOR_putint__ = 0
 .type	entry, @function
 .global entry
-.4byte 6
-__STRING9__: .asciz "first"
-.4byte 8
-__STRING10__: .asciz "hello\n"
-.4byte 7
-__STRING11__: .asciz "second"
 .4byte 10
-__STRING12__: .asciz "bananas\n"
-__ALLOCFOR_entry__ = 0
+__STRING4__: .asciz "[%i,%i]\n"
+__ALLOCFOR_entry__ = 12
 __anonymous_a__ebpCapture__: .4byte 0 # Capture ebp for anonymous function
 .type	__anonymous_a__, @function
 .global __anonymous_a__
-.4byte 6
-__STRING13__: .asciz "hello"
+.4byte 16
+__STRING5__: .asciz "At [%i] is %i\n"
 __ALLOCFOR___anonymous_a____ = 0
-__anonymous_b__ebpCapture__: .4byte 0 # Capture ebp for anonymous function
-.type	__anonymous_b__, @function
-.global __anonymous_b__
-.4byte 7
-__STRING14__: .asciz "apples"
-__ALLOCFOR___anonymous_b____ = 0
+__TEMP8_0__: .1byte 0
+__TEMP32_0__: .4byte 0
+__TEMP32_1__: .4byte 0
 ###################################
 .text
 
 #### compiler initation section ###
 __init_for_out__:
 
-#//------- line:  ------- #
-#//------- line:  ------- #
-#//------- line:  ------- #
-#//------- line:  ------- #
-#//------- line: import p32 stdout ------- #
-#//------- line: p32 f ------- #
-#//------- line: forward fflush function < f > -> none ------- #
-#//------- line: p32 f ------- #
-#//------- line: forward fileno function < f > -> u32 ------- #
-#//------- line: u32 fno ------- #
-#//------- line: forward dup function < fno > -> u32 ------- #
-#//------- line: u32 a , u32 b ------- #
-#//------- line: forward dup2 function < a,,,b > -> u32 ------- #
-#//------- line: u32 : array f ------- #
-#//------- line: forward pipe function < f > -> u32 ------- #
-#//------- line: u32 p , conststr s , u32 i ------- #
-#//------- line: forward write function < p,,,s,,,i > -> u32 ------- #
-#//------- line: u32 fno , p32 b , u32 nb ------- #
-#//------- line: forward read function < fno,,,b,,,nb > -> u32 ------- #
-#//------- line: u32 fno ------- #
-#//------- line: forward close function < fno > -> u32 ------- #
-#//------- line: string testName , fn func , string expected ------- #
-#//------- line: testOutput function < testName,,,func,,,expected > -> u32 ------- #
+#//------- line: List format { ; ------- #
+# {
+#//------- line: u32 i ------- #
+#//------- line: putint function < i > ------- #
 #//------- line: { ; ------- #
 # {
-#//------- line:  ------- #
 #//------- line: entry function <  > -> u32 ------- #
 #//------- line: { ; ------- #
 # {
 # auto-return OK for entry function
-#//------- line:  ------- #
-#//------- line: __lambda__ __anonymous_a__ function <  > ------- #
-#//------- line: { ------- #
-# {
-#//------- line:  ------- #
-#//------- line: __lambda__ __anonymous_b__ function <  > ------- #
+#//------- line: u32 i , u32 n ------- #
+#//------- line: __lambda__ __anonymous_a__ function < i,,,n > ------- #
 #//------- line: { ------- #
 # {
 ret
@@ -120,460 +103,901 @@ call entry
 ret
 
 ###################################
-testOutput:
+	#//------- line: . buffer array ------- #
+	#//------- line: . length u32 ------- #
+	#//------- line: . List constructor <  > ------- #
+__constructor_List_0_:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR_testOutput__, %esp # total stack allocation
+sub $__ALLOCFOR___constructor_List_0___, %esp # total stack allocation
 
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
-	#//------- line: `[ RUN      ] : ${testName} ` ------- #
-	pushw __disable_gc__; movw $1, __disable_gc__
-	#//------- line: testName ------- #
-	# note, read PARAM testName -> 8(%ebp)
-	#//------- line: "[ RUN      ] : " ------- #
-	#//------- line: " " ------- #
-	# setting register "d" to "__STRING1__"
-	movl $__STRING1__, %edx
-	push %edx
-	push 8(%ebp)
-	# setting register "d" to "__STRING0__"
-	movl $__STRING0__, %edx
-	push %edx
-	pushl $3
-	call strjoinmany
-	add $16, %esp
-	mov %eax, %ecx
-	popw __disable_gc__
-	#//------- line: print_ ( %ecx ) ------- #
-	# pushing multi-line clobbers
-	push %ecx
-	call puts
-	add $4, %esp
-	# popping multi-line clobbers
-	#//------- line:  ------- #
-	#//------- line: stdout ------- #
-	#//------- line: fflush ( stdout ) ------- #
 	# pushing clobbers
-	# Calling function fflush
-	# TODO optimize if variable just do movl
-	mov stdout, %edx
-	push %edx
-	call fflush
-	mov %eax, %ecx
-	add $4, %esp
-	# popping clobbers
-	# clobbering "c"
-	#//------- line:  ------- #
-	#//------- line: stdout ------- #
-	#//------- line: fileno ( stdout ) ------- #
-	# pushing clobbers
-	# Calling function fileno
-	# TODO optimize if variable just do movl
-	mov stdout, %edx
-	push %edx
-	call fileno
-	mov %eax, %ecx
-	add $4, %esp
-	# popping clobbers
-	# clobbering "c"
-	#//------- line: dup ( %ecx ) ------- #
-	# pushing clobbers
-	push %ecx
-	# Calling function dup
-	push %ecx
-	call dup
-	mov %eax, %esi
-	add $4, %esp
-	# popping clobbers
-	pop %ecx
-	# clobbering "s"
-	#//------- line: create tmpout <- %esi ------- #
-	# creating variable "tmpout" of type "u32:borrowed" stack?=true
-	# Loading local variable "tmpout" @-4(%ebp) with "%esi"
-	# optimized move from %esi to -4(%ebp)
-	mov %esi, -4(%ebp)
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line: 2 ------- #
-	#//------- line: u32 [ 2 ] ------- #
-	# pushing clobbers
-	push %ecx
-	# Asked for 2 allocations of "u32"
+	# Allocate for THIS
 	pushl $0
-	pushl $8
+	# setting register "d" to "$__SIZEOF_List__"
+	mov $__SIZEOF_List__, %edx
+	push %edx
 	call __rc_allocate__
 	add $8, %esp
 	# popping clobbers
-	pop %ecx
-	mov %eax, %ecx
-	#//------- line: create pipes <- %ecx ------- #
-	# creating variable "pipes" of type "array:dynamic" stack?=true
-	# Loading local variable "pipes" @-8(%ebp) with "%ecx"
-	# optimized move from %ecx to -8(%ebp)
-	mov %ecx, -8(%ebp)
-	# requesting ownership for pipes (create)
-	lea -8(%ebp), %eax
+	mov %eax, __this__
+	# requesting ownership for ___TEMPORARY_OWNER___ (set). 
+	lea ___TEMPORARY_OWNER___, %eax
 	push %eax
-	push %ecx
+	push __this__
 	call __rc_requestOwnership__
 	add $8, %esp
-	#//------- line: pipes ------- #
-	# note, read STACK VAR pipes -> -8(%ebp)
-	#//------- line: pipe ( -8(%ebp) ) ------- #
+	#//------- line: { ; ------- #
+	# {
+		#//------- line: 0 ------- #
+		#//------- line: this . buffer <- 0 ------- #
+		# Reading property "buffer" in "__this__"
+		movl __this__, %eax
+		# optimized move from 0 to 0(%eax)
+		movl $0, 0(%eax)
+		#//------- line: 0 ------- #
+		#//------- line: this . length <- 0 ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 0 to 4(%eax)
+		movl $0, 4(%eax)
+		#//------- line: } ------- #
+	# }
+	# setting register "a" to "__this__"
+	movl __this__, %eax
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+	#//------- line: u32 size , ... ------- #
+	#//------- line: . List constructor < size,,,... > ------- #
+__constructor_List_1_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___constructor_List_1___, %esp # total stack allocation
+
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
 	# pushing clobbers
-	# Calling function pipe
-	# TODO optimize if variable just do movl
-	mov -8(%ebp), %edx
+	# Allocate for THIS
+	pushl $0
+	# setting register "d" to "$__SIZEOF_List__"
+	mov $__SIZEOF_List__, %edx
 	push %edx
-	call pipe
-	mov %eax, %ecx
-	add $4, %esp
-	# popping clobbers
-	# clobbering "c"
-	#//------- line: 1 ------- #
-	#//------- line: stdout ------- #
-	#//------- line: pipes [ 1 ] , fileno ( stdout ) ------- #
-	# note, read STACK VAR pipes -> -8(%ebp)
-	# indexing array
-	mov -8(%ebp), %eax
-	mov 4(%eax), %ecx
-	# pushing clobbers
-	push %ecx
-	# Calling function fileno
-	# TODO optimize if variable just do movl
-	mov stdout, %edx
-	push %edx
-	call fileno
-	mov %eax, %esi
-	add $4, %esp
-	# popping clobbers
-	pop %ecx
-	# clobbering "s"
-	#//------- line: dup2 ( %ecx,,,%esi ) ------- #
-	# pushing clobbers
-	push %esi
-	push %ecx
-	# Calling function dup2
-	push %esi
-	push %ecx
-	call dup2
-	mov %eax, %edi
+	call __rc_allocate__
 	add $8, %esp
 	# popping clobbers
-	pop %ecx
-	pop %esi
-	# clobbering "i"
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line: func (  ) ------- #
-	# note, read PARAM func -> 12(%ebp)
-	# pushing clobbers
-	# Calling function __not_a_function__
-	call *12(%ebp)
-	mov %eax, %ecx
-	# popping clobbers
-	# clobbering "c"
-	#//------- line: "%c" , 0 ------- #
-	#//------- line: printf ( __STRING2__,,,0 ) ------- #
+	mov %eax, __this__
+	# requesting ownership for ___TEMPORARY_OWNER___ (set). 
+	lea ___TEMPORARY_OWNER___, %eax
+	push %eax
+	push __this__
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: { ; ------- #
+	# {
+		#//------- line: size ------- #
+		# note, read PARAM size -> 8(%ebp)
+		#//------- line: u32 [ 8(%ebp) ] ------- #
+		# pushing clobbers
+		push %ecx
+		# Asked for 8(%ebp) allocations of "u32"
+		mov $4, %edx
+		mov 8(%ebp), %eax
+		mul %edx
+		pushl $0
+		push %eax
+		call __rc_allocate__
+		add $8, %esp
+		# popping clobbers
+		pop %ecx
+		mov %eax, %ecx
+		#//------- line: this . buffer <- %ecx ------- #
+		# Reading property "buffer" in "__this__"
+		movl __this__, %eax
+		# optimized move from %ecx to 0(%eax)
+		mov %ecx, 0(%eax)
+		# requesting ownership for __this__ (property)
+		lea 0(%eax), %eax
+		push %eax
+		push %ecx
+		call __rc_requestOwnership__
+		add $8, %esp
+		#//------- line: size ------- #
+		# note, read PARAM size -> 8(%ebp)
+		#//------- line: this . length <- 8(%ebp) ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 8(%ebp) to 4(%eax)
+		# setting register "d" to "8(%ebp)"
+		mov 8(%ebp), %edx
+		mov %edx, 4(%eax)
+		#//------- line: 0 ------- #
+		#//------- line: create i <- 0 ------- #
+		# creating variable "i" of type "u32:borrowed" stack?=true
+		# Loading local variable "i" @-4(%ebp) with "0"
+		# optimized move from 0 to -4(%ebp)
+		movl $0, -4(%ebp)
+		__LABEL0__:
+		#//------- line: i <: size ------- #
+		# note, read STACK VAR i -> -4(%ebp)
+		# note, read PARAM size -> 8(%ebp)
+		mov -4(%ebp), %eax
+		mov 8(%ebp), %edx
+		mov $0, %cl
+		cmp %edx, %eax
+		setl %cl
+		#//------- line: while ( %cl ) ------- #
+		# comparison for WHILE loop
+		cmpb $1, %cl
+		jne __LABEL1__
+		#//------- line: { ; ------- #
+		# {
+			#//------- line: i ------- #
+			# note, read STACK VAR i -> -4(%ebp)
+			#//------- line: i + 1 ------- #
+			# note, read STACK VAR i -> -4(%ebp)
+			mov -4(%ebp), %eax
+			add $1, %eax
+			mov %eax, %ecx
+			#//------- line: __arguments [ %ecx ] ------- #
+			# reading argument of index %ecx
+			# optimized move from %ecx to %eax
+			mov %ecx, %eax
+			add $2, %eax
+			mov (%ebp, %eax, 4), %esi
+			#//------- line: this . buffer [ -4(%ebp) ] <- %esi ------- #
+			# Reading property "buffer" in "__this__"
+			movl __this__, %eax
+			# optimized move from 0(%eax) to %edi
+			# setting register "d" to "0(%eax)"
+			mov 0(%eax), %edx
+			mov %edx, %edi
+			# Array set begin
+			# array load trash awful. Fix this bad optimize
+			push %edi
+			mov -4(%ebp), %eax
+			shl $2, %eax
+			add (%esp), %eax
+			add $4, %esp
+			mov %esi, (%eax)
+			#Set end
+			#//------- line: i + 1 ------- #
+			# note, read STACK VAR i -> -4(%ebp)
+			mov -4(%ebp), %eax
+			add $1, %eax
+			mov %eax, %ecx
+			#//------- line: i <- %ecx ------- #
+			# SETTING i <- %ecx
+			# optimized move from %ecx to -4(%ebp)
+			mov %ecx, -4(%ebp)
+			#//------- line: } ------- #
+		# }
+		jmp __LABEL0__
+		__LABEL1__:
+		#//------- line: } ------- #
+	# }
+	# setting register "a" to "__this__"
+	movl __this__, %eax
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+# i: 4
+	#//------- line: u32 element ------- #
+	#//------- line: . push method < element > -> u32 ------- #
+__method_List_push_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_push___, %esp # total stack allocation
+
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
+	#//------- line: { ; ------- #
+	# {
+		#//------- line: this . length + 1 ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		mov %ecx, %eax
+		add $1, %eax
+		mov %eax, %esi
+		#//------- line: ( %esi ) ------- #
+		#//------- line: this . length <- %esi ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from %esi to 4(%eax)
+		mov %esi, 4(%eax)
+		#//------- line: this . length == 1 ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		movb $0, __TEMP8_0__
+		cmp $1, %ecx
+		sete __TEMP8_0__
+		#//------- line: if ( __TEMP8_0__ ) ------- #
+		cmpb $1, __TEMP8_0__ # comparison for "if" statement
+		jne __LABEL2__
+		#//------- line: { ; ------- #
+		# {
+			#//------- line: 1 ------- #
+			#//------- line: u32 [ 1 ] ------- #
+			# pushing clobbers
+			push %ecx
+			# Asked for 1 allocations of "u32"
+			pushl $0
+			pushl $4
+			call __rc_allocate__
+			add $8, %esp
+			# popping clobbers
+			pop %ecx
+			mov %eax, %ecx
+			#//------- line: this . buffer <- %ecx ------- #
+			# Reading property "buffer" in "__this__"
+			movl __this__, %eax
+			# optimized move from %ecx to 0(%eax)
+			mov %ecx, 0(%eax)
+			# requesting ownership for __this__ (property)
+			lea 0(%eax), %eax
+			push %eax
+			push %ecx
+			call __rc_requestOwnership__
+			add $8, %esp
+			#//------- line: } ------- #
+		# }
+jmp __LABEL3__
+__LABEL2__:
+		#//------- line: else ------- #
+		#//------- line: { ; ------- #
+		# {
+			#//------- line: this . length ------- #
+			# Reading property "length" in "__this__"
+			movl __this__, %eax
+			# optimized move from 4(%eax) to %ecx
+			# setting register "d" to "4(%eax)"
+			mov 4(%eax), %edx
+			mov %edx, %ecx
+			#//------- line: u32 [ %ecx ] , this . buffer ------- #
+			# pushing clobbers
+			push %esi
+			push %ecx
+			# Asked for %ecx allocations of "u32"
+			mov $4, %edx
+			mov %ecx, %eax
+			mul %edx
+			pushl $0
+			push %eax
+			call __rc_allocate__
+			add $8, %esp
+			# popping clobbers
+			pop %ecx
+			pop %esi
+			mov %eax, %esi
+			# Reading property "buffer" in "__this__"
+			movl __this__, %eax
+			# optimized move from 0(%eax) to %edi
+			# setting register "d" to "0(%eax)"
+			mov 0(%eax), %edx
+			mov %edx, %edi
+			#//------- line: copy ( %esi,,,%edi ) ------- #
+			# realloc buffer
+			push %edi
+			push %esi
+			call __copydata__
+			add $8, %esp
+			mov %eax, __TEMP32_0__
+			#//------- line: this . buffer <- __TEMP32_0__ ------- #
+			# Reading property "buffer" in "__this__"
+			movl __this__, %eax
+			# optimized move from __TEMP32_0__ to 0(%eax)
+			# setting register "d" to "__TEMP32_0__"
+			movl __TEMP32_0__, %edx
+			mov %edx, 0(%eax)
+			# requesting ownership for __this__ (property)
+			lea 0(%eax), %eax
+			push %eax
+			push __TEMP32_0__
+			call __rc_requestOwnership__
+			add $8, %esp
+			#//------- line: } ------- #
+		# }
+jmp __LABEL3__
+__LABEL4__:
+		__LABEL3__:
+		#//------- line: this . length - 1 ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		mov %ecx, %eax
+		sub $1, %eax
+		mov %eax, %esi
+		#//------- line: element ------- #
+		# note, read PARAM element -> 8(%ebp)
+		#//------- line: this . buffer [ %esi ] <- 8(%ebp) ------- #
+		# Reading property "buffer" in "__this__"
+		movl __this__, %eax
+		# optimized move from 0(%eax) to %edi
+		# setting register "d" to "0(%eax)"
+		mov 0(%eax), %edx
+		mov %edx, %edi
+		# Array set begin
+		mov 8(%ebp), %edx
+		mov %edx, (%edi, %esi, 4) # mhm
+		#Set end
+		#//------- line: this . length ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		#//------- line: return ( %ecx ) ------- #
+		# setting register "a" to "%ecx"
+		mov %ecx, %eax
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+		#//------- line: } ------- #
+	# }
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+	#//------- line: . pop method <  > -> u32 ------- #
+__method_List_pop_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_pop___, %esp # total stack allocation
+
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
+	#//------- line: { ; ------- #
+	# {
+		#//------- line: this . length - 1 ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		mov %ecx, %eax
+		sub $1, %eax
+		mov %eax, %esi
+		#//------- line: ( %esi ) ------- #
+		#//------- line: this . length <- %esi ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from %esi to 4(%eax)
+		mov %esi, 4(%eax)
+		#//------- line: this . length ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		#//------- line: this . buffer [ %ecx ] ------- #
+		# Reading property "buffer" in "__this__"
+		movl __this__, %eax
+		# optimized move from 0(%eax) to %esi
+		# setting register "d" to "0(%eax)"
+		mov 0(%eax), %edx
+		mov %edx, %esi
+		# indexing array
+		mov %esi, %eax
+		mov (%eax, %ecx, 4), %edi
+		#//------- line: create retValue <- %edi ------- #
+		# creating variable "retValue" of type "u32:borrowed" stack?=true
+		# Loading local variable "retValue" @-4(%ebp) with "%edi"
+		# optimized move from %edi to -4(%ebp)
+		mov %edi, -4(%ebp)
+		#//------- line: this . length ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		#//------- line: u32 [ %ecx ] , this . buffer ------- #
+		# pushing clobbers
+		push %esi
+		push %ecx
+		# Asked for %ecx allocations of "u32"
+		mov $4, %edx
+		mov %ecx, %eax
+		mul %edx
+		pushl $0
+		push %eax
+		call __rc_allocate__
+		add $8, %esp
+		# popping clobbers
+		pop %ecx
+		pop %esi
+		mov %eax, %esi
+		# Reading property "buffer" in "__this__"
+		movl __this__, %eax
+		# optimized move from 0(%eax) to %edi
+		# setting register "d" to "0(%eax)"
+		mov 0(%eax), %edx
+		mov %edx, %edi
+		#//------- line: copy ( %esi,,,%edi ) ------- #
+		# realloc buffer
+		push %edi
+		push %esi
+		call __copydata__
+		add $8, %esp
+		mov %eax, __TEMP32_0__
+		#//------- line: this . buffer <- __TEMP32_0__ ------- #
+		# Reading property "buffer" in "__this__"
+		movl __this__, %eax
+		# optimized move from __TEMP32_0__ to 0(%eax)
+		# setting register "d" to "__TEMP32_0__"
+		movl __TEMP32_0__, %edx
+		mov %edx, 0(%eax)
+		# requesting ownership for __this__ (property)
+		lea 0(%eax), %eax
+		push %eax
+		push __TEMP32_0__
+		call __rc_requestOwnership__
+		add $8, %esp
+		#//------- line: return retValue ------- #
+		#//------- line: retValue ------- #
+		# note, read STACK VAR retValue -> -4(%ebp)
+		# setting register "a" to "-4(%ebp)"
+		mov -4(%ebp), %eax
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+		# note, read STACK VAR retValue -> -4(%ebp)
+		#//------- line: } ------- #
+	# }
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+# retValue: 4
+	#//------- line: fn iterator ------- #
+	#//------- line: . every method < iterator > -> u32 ------- #
+__method_List_every_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_every___, %esp # total stack allocation
+
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
+	#//------- line: { ; ------- #
+	# {
+		#//------- line: 0 ------- #
+		#//------- line: create i <- 0 ------- #
+		# creating variable "i" of type "u32:borrowed" stack?=true
+		# Loading local variable "i" @-4(%ebp) with "0"
+		# optimized move from 0 to -4(%ebp)
+		movl $0, -4(%ebp)
+		__LABEL5__:
+		#//------- line: i <: this . length ------- #
+		# note, read STACK VAR i -> -4(%ebp)
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		mov -4(%ebp), %eax
+		movb $0, __TEMP8_0__
+		cmp %ecx, %eax
+		setl __TEMP8_0__
+		#//------- line: while ( __TEMP8_0__ ) ------- #
+		# comparison for WHILE loop
+		cmpb $1, __TEMP8_0__
+		jne __LABEL6__
+		#//------- line: { ; ------- #
+		# {
+			#//------- line: i ------- #
+			# note, read STACK VAR i -> -4(%ebp)
+			#//------- line: this . buffer [ -4(%ebp) ] , i ------- #
+			# Reading property "buffer" in "__this__"
+			movl __this__, %eax
+			# optimized move from 0(%eax) to %ecx
+			# setting register "d" to "0(%eax)"
+			mov 0(%eax), %edx
+			mov %edx, %ecx
+			# indexing array
+			mov %ecx, %eax
+			# optimized move from -4(%ebp) to %edx
+			# setting register "d" to "-4(%ebp)"
+			mov -4(%ebp), %edx
+			mov %edx, %edx
+			mov (%eax, %edx, 4), %esi
+			# note, read STACK VAR i -> -4(%ebp)
+			#//------- line: iterator ( %esi,,,-4(%ebp) ) ------- #
+			# note, read PARAM iterator -> 8(%ebp)
+			# pushing clobbers
+			push %esi
+			push %ecx
+			# Calling function __not_a_function__
+			# TODO optimize if variable just do movl
+			mov -4(%ebp), %edx
+			push %edx
+			push %esi
+			call *8(%ebp)
+			mov %eax, %edi
+			add $8, %esp
+			# popping clobbers
+			pop %ecx
+			pop %esi
+			# clobbering "i"
+			#//------- line: i + 1 ------- #
+			# note, read STACK VAR i -> -4(%ebp)
+			mov -4(%ebp), %eax
+			add $1, %eax
+			mov %eax, %ecx
+			#//------- line: ( %ecx ) ------- #
+			#//------- line: i <- %ecx ------- #
+			# SETTING i <- %ecx
+			# optimized move from %ecx to -4(%ebp)
+			mov %ecx, -4(%ebp)
+			#//------- line: } ------- #
+		# }
+		jmp __LABEL5__
+		__LABEL6__:
+		#//------- line: } ------- #
+	# }
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+# i: 4
+	#//------- line: . toString method <  > -> string ------- #
+__method_List_toString_:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___method_List_toString___, %esp # total stack allocation
+
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
+	#//------- line: { ; ------- #
+	# {
+		#//------- line: "[" ------- #
+		#//------- line: create build <- __STRING0__ ------- #
+		# creating variable "build" of type "conststr:borrowed" stack?=true
+		# converting conststr "__STRING0__" to dynamic string
+		pushl $__STRING0__
+		call cptos
+		add $4, %esp
+		mov %eax, %ecx
+		# Loading local variable "build" @-4(%ebp) with "%ecx"
+		# optimized move from %ecx to -4(%ebp)
+		mov %ecx, -4(%ebp)
+		# requesting ownership for build (create)
+		lea -4(%ebp), %eax
+		push %eax
+		push %ecx
+		call __rc_requestOwnership__
+		add $8, %esp
+		#//------- line: 0 ------- #
+		#//------- line: create i <- 0 ------- #
+		# creating variable "i" of type "u32:borrowed" stack?=true
+		# Loading local variable "i" @-8(%ebp) with "0"
+		# optimized move from 0 to -8(%ebp)
+		movl $0, -8(%ebp)
+		__LABEL7__:
+		#//------- line: this . length - 1 ------- #
+		# Reading property "length" in "__this__"
+		movl __this__, %eax
+		# optimized move from 4(%eax) to %ecx
+		# setting register "d" to "4(%eax)"
+		mov 4(%eax), %edx
+		mov %edx, %ecx
+		mov %ecx, %eax
+		sub $1, %eax
+		mov %eax, %esi
+		#//------- line: i <: ( %esi ) ------- #
+		# note, read STACK VAR i -> -8(%ebp)
+		mov -8(%ebp), %eax
+		movb $0, __TEMP8_0__
+		cmp %esi, %eax
+		setl __TEMP8_0__
+		#//------- line: while ( __TEMP8_0__ ) ------- #
+		# comparison for WHILE loop
+		cmpb $1, __TEMP8_0__
+		jne __LABEL8__
+		#//------- line: { ; ------- #
+		# {
+			#//------- line: i ------- #
+			# note, read STACK VAR i -> -8(%ebp)
+			#//------- line: build + this . buffer [ -8(%ebp) ] + "," ------- #
+			# note, read STACK VAR build -> -4(%ebp)
+			# Reading property "buffer" in "__this__"
+			movl __this__, %eax
+			# optimized move from 0(%eax) to %ecx
+			# setting register "d" to "0(%eax)"
+			mov 0(%eax), %edx
+			mov %edx, %ecx
+			# indexing array
+			mov %ecx, %eax
+			# optimized move from -8(%ebp) to %edx
+			# setting register "d" to "-8(%ebp)"
+			mov -8(%ebp), %edx
+			mov %edx, %edx
+			mov (%eax, %edx, 4), %esi
+			pushw __disable_gc__; movw $1, __disable_gc__
+			# setting register "d" to "__STRING1__"
+			movl $__STRING1__, %edx
+			push %edx
+			push %esi
+			call itos
+			add $4, %esp
+			push %eax
+			push -4(%ebp)
+			pushl $3
+			call strjoinmany
+			add $16, %esp
+			mov %eax, %edi
+			popw __disable_gc__
+			#//------- line: build <- %edi ------- #
+			# SETTING build <- %edi
+			# requesting ownership for build (set). 
+			lea -4(%ebp), %eax
+			push %eax
+			push %edi
+			call __rc_requestOwnership__
+			add $8, %esp
+			#//------- line: i + 1 ------- #
+			# note, read STACK VAR i -> -8(%ebp)
+			mov -8(%ebp), %eax
+			add $1, %eax
+			mov %eax, %ecx
+			#//------- line: i <- %ecx ------- #
+			# SETTING i <- %ecx
+			# optimized move from %ecx to -8(%ebp)
+			mov %ecx, -8(%ebp)
+			#//------- line: } ------- #
+		# }
+		jmp __LABEL7__
+		__LABEL8__:
+		#//------- line: i ------- #
+		# note, read STACK VAR i -> -8(%ebp)
+		#//------- line: build + this . buffer [ -8(%ebp) ] + "]" ------- #
+		# note, read STACK VAR build -> -4(%ebp)
+		# Reading property "buffer" in "__this__"
+		movl __this__, %eax
+		# optimized move from 0(%eax) to %ecx
+		# setting register "d" to "0(%eax)"
+		mov 0(%eax), %edx
+		mov %edx, %ecx
+		# indexing array
+		mov %ecx, %eax
+		# optimized move from -8(%ebp) to %edx
+		# setting register "d" to "-8(%ebp)"
+		mov -8(%ebp), %edx
+		mov %edx, %edx
+		mov (%eax, %edx, 4), %esi
+		pushw __disable_gc__; movw $1, __disable_gc__
+		# setting register "d" to "__STRING2__"
+		movl $__STRING2__, %edx
+		push %edx
+		push %esi
+		call itos
+		add $4, %esp
+		push %eax
+		push -4(%ebp)
+		pushl $3
+		call strjoinmany
+		add $16, %esp
+		mov %eax, %edi
+		popw __disable_gc__
+		#//------- line: build <- %edi ------- #
+		# SETTING build <- %edi
+		# requesting ownership for build (set). 
+		lea -4(%ebp), %eax
+		push %eax
+		push %edi
+		call __rc_requestOwnership__
+		add $8, %esp
+		#//------- line: return build ------- #
+		#//------- line: build ------- #
+		# note, read STACK VAR build -> -4(%ebp)
+		# optimized move from -4(%ebp) to __gc_dontClear__
+		# setting register "d" to "-4(%ebp)"
+		mov -4(%ebp), %edx
+		mov %edx, __gc_dontClear__
+		# setting register "a" to "-4(%ebp)"
+		mov -4(%ebp), %eax
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+		# note, read STACK VAR build -> -4(%ebp)
+		#//------- line: } ------- #
+	# }
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+# build: 4
+# i: 8
+	#//------- line: add ------- #
+	#//------- line: u32 rhs ------- #
+	#//------- line: . List operator ( add ) < rhs > -> List ------- #
+__operator_List_add_0__:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR___operator_List_add_0____, %esp # total stack allocation
+
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
+	#//------- line: { ; ------- #
+	# {
+		#//------- line: this ------- #
+		#//------- line: duplicate ( __this__ ) ------- #
+		# copying buffer
+		pushl __this__
+		call __duplicate__
+		add $4, %esp
+
+		mov %eax, %ecx
+		#//------- line: create dupe <- %ecx ------- #
+		# creating variable "dupe" of type "List:dynamic" stack?=true
+		# Loading local variable "dupe" @-4(%ebp) with "%ecx"
+		# optimized move from %ecx to -4(%ebp)
+		mov %ecx, -4(%ebp)
+		# requesting ownership for dupe (create)
+		lea -4(%ebp), %eax
+		push %eax
+		push %ecx
+		call __rc_requestOwnership__
+		add $8, %esp
+		#//------- line: rhs ------- #
+		# note, read PARAM rhs -> 8(%ebp)
+		#//------- line: dupe . push ( 8(%ebp) ) ------- #
+		# note, read STACK VAR dupe -> -4(%ebp)
+		pushl __this__
+		# optimized move from -4(%ebp) to __this__
+		# setting register "d" to "-4(%ebp)"
+		mov -4(%ebp), %edx
+		mov %edx, __this__
+		# pushing clobbers
+		# Calling function __method_List_push_
+		# TODO optimize if variable just do movl
+		mov 8(%ebp), %edx
+		push %edx
+		call __method_List_push_
+		mov %eax, %ecx
+		add $4, %esp
+		# popping clobbers
+		# clobbering "c"
+		popl __this__
+		#//------- line: return dupe ------- #
+		#//------- line: dupe ------- #
+		# note, read STACK VAR dupe -> -4(%ebp)
+		# optimized move from -4(%ebp) to __gc_dontClear__
+		# setting register "d" to "-4(%ebp)"
+		mov -4(%ebp), %edx
+		mov %edx, __gc_dontClear__
+		# setting register "a" to "-4(%ebp)"
+		mov -4(%ebp), %eax
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+		# note, read STACK VAR dupe -> -4(%ebp)
+		#//------- line: } ------- #
+	# }
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
+# dupe: 4
+	#//------- line: } ------- #
+# }
+putint:
+push %ebp
+mov %esp, %ebp
+sub $__ALLOCFOR_putint__, %esp # total stack allocation
+
+# pushing multi-line clobbers
+call __rc_enterChunk__
+# popping multi-line clobbers
+	#//------- line: "Printing: %i\n" , i ------- #
+	# note, read PARAM i -> 8(%ebp)
+	#//------- line: printf ( __STRING3__,,,8(%ebp) ) ------- #
 	# pushing clobbers
 	# Calling function printf
-	pushl $0
-	pushl $__STRING2__
+	# TODO optimize if variable just do movl
+	mov 8(%ebp), %edx
+	push %edx
+	pushl $__STRING3__
 	call printf
 	mov %eax, %ecx
 	add $8, %esp
 	# popping clobbers
 	# clobbering "c"
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line: stdout ------- #
-	#//------- line: fflush ( stdout ) ------- #
-	# pushing clobbers
-	# Calling function fflush
-	# TODO optimize if variable just do movl
-	mov stdout, %edx
-	push %edx
-	call fflush
-	mov %eax, %ecx
-	add $4, %esp
-	# popping clobbers
-	# clobbering "c"
-	#//------- line: 1 ------- #
-	#//------- line: pipes [ 1 ] ------- #
-	# note, read STACK VAR pipes -> -8(%ebp)
-	# indexing array
-	mov -8(%ebp), %eax
-	mov 4(%eax), %ecx
-	#//------- line: close ( %ecx ) ------- #
-	# pushing clobbers
-	push %ecx
-	# Calling function close
-	push %ecx
-	call close
-	mov %eax, %esi
-	add $4, %esp
-	# popping clobbers
-	pop %ecx
-	# clobbering "s"
-	#//------- line: stdout ------- #
-	#//------- line: tmpout , fileno ( stdout ) ------- #
-	# note, read STACK VAR tmpout -> -4(%ebp)
-	# pushing clobbers
-	# Calling function fileno
-	# TODO optimize if variable just do movl
-	mov stdout, %edx
-	push %edx
-	call fileno
-	mov %eax, %ecx
-	add $4, %esp
-	# popping clobbers
-	# clobbering "c"
-	#//------- line: dup2 ( -4(%ebp),,,%ecx ) ------- #
-	# pushing clobbers
-	push %ecx
-	# Calling function dup2
-	push %ecx
-	# TODO optimize if variable just do movl
-	mov -4(%ebp), %edx
-	push %edx
-	call dup2
-	mov %eax, %esi
-	add $8, %esp
-	# popping clobbers
-	pop %ecx
-	# clobbering "s"
-	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line: 1 ------- #
-	#//------- line: create char c <- 1 ------- #
-	# creating variable "c" of type "u8:borrowed" stack?=true
-	# Loading local variable "c" @-9(%ebp) with "1"
-	# optimized move from 1 to -9(%ebp)
-	movb $1, -9(%ebp)
-	#//------- line:  ------- #
-	#//------- line: "" ------- #
-	#//------- line: create ostr <- __STRING3__ ------- #
-	# creating variable "ostr" of type "conststr:borrowed" stack?=true
-	# converting conststr "__STRING3__" to dynamic string
-	pushl $__STRING3__
-	call cptos
-	add $4, %esp
-	mov %eax, %ecx
-	# Loading local variable "ostr" @-13(%ebp) with "%ecx"
-	# optimized move from %ecx to -13(%ebp)
-	mov %ecx, -13(%ebp)
-	# requesting ownership for ostr (create)
-	lea -13(%ebp), %eax
-	push %eax
-	push %ecx
-	call __rc_requestOwnership__
-	add $8, %esp
-	__LABEL1__:
-	#//------- line: c != 0 ------- #
-	# note, read STACK VAR c -> -9(%ebp)
-	mov -9(%ebp), %al
-	mov $0, %cl
-	cmp $0, %al
-	setne %cl
-	#//------- line: while ( %cl ) ------- #
-	# comparison for WHILE loop
-	cmpb $1, %cl
-	jne __LABEL2__
-	#//------- line: { ; ------- #
-	# {
-		#//------- line: 0 ------- #
-		#//------- line: c ------- #
-		# note, read STACK VAR c -> -9(%ebp)
-		#//------- line: pipes [ 0 ] , $ ( -9(%ebp) ) , 1 ------- #
-		# note, read STACK VAR pipes -> -8(%ebp)
-		# indexing array
-		mov -8(%ebp), %eax
-		mov 0(%eax), %ecx
-		# reading address of -9(%ebp)
-		lea -9(%ebp), %esi
-		#//------- line: read ( %ecx,,,%esi,,,1 ) ------- #
-		# pushing clobbers
-		push %esi
-		push %ecx
-		# Calling function read
-		pushl $1
-		push %esi
-		push %ecx
-		call read
-		mov %eax, %edi
-		add $12, %esp
-		# popping clobbers
-		pop %ecx
-		pop %esi
-		# clobbering "i"
-		#//------- line: ostr + c ------- #
-		# note, read STACK VAR ostr -> -13(%ebp)
-		# note, read STACK VAR c -> -9(%ebp)
-		pushw __disable_gc__; movw $1, __disable_gc__
-		push -9(%ebp)
-		call ctos
-		add $4, %esp
-		push %eax
-		push -13(%ebp)
-		pushl $2
-		call strjoinmany
-		add $12, %esp
-		mov %eax, %ecx
-		popw __disable_gc__
-		#//------- line: ostr <- %ecx ------- #
-		# SETTING ostr <- %ecx
-		# requesting ownership for ostr (set). 
-		lea -13(%ebp), %eax
-		push %eax
-		push %ecx
-		call __rc_requestOwnership__
-		add $8, %esp
-		#//------- line: } ------- #
-	# }
-	jmp __LABEL1__
-	__LABEL2__:
-	#//------- line: ostr == expected ------- #
-	# note, read STACK VAR ostr -> -13(%ebp)
-	# note, read PARAM expected -> 16(%ebp)
-	# pushing clobbers
-	push %ecx
-	push -13(%ebp)
-	push 16(%ebp)
-	# comparing strings
-	call strcmp
-	add $8, %esp
-	# popping clobbers
-	pop %ecx
-	xor %ecx, %ecx
-	cmp $0, %eax
-	setz %cl
-	#//------- line: if ( %cl ) ------- #
-	cmpb $1, %cl # comparison for "if" statement
-	jne __LABEL3__
-	#//------- line: { ; ------- #
-	# {
-		#//------- line: `[     PASS ] : ${testName}` ------- #
-		pushw __disable_gc__; movw $1, __disable_gc__
-		#//------- line: testName ------- #
-		# note, read PARAM testName -> 8(%ebp)
-		#//------- line: "[     PASS ] : " ------- #
-		#//------- line: "" ------- #
-		# setting register "d" to "__STRING3__"
-		movl $__STRING3__, %edx
-		push %edx
-		push 8(%ebp)
-		# setting register "d" to "__STRING4__"
-		movl $__STRING4__, %edx
-		push %edx
-		pushl $3
-		call strjoinmany
-		add $16, %esp
-		mov %eax, %ecx
-		popw __disable_gc__
-		#//------- line: print_ ( %ecx ) ------- #
-		# pushing multi-line clobbers
-		push %ecx
-		call puts
-		add $4, %esp
-		# popping multi-line clobbers
-		#//------- line: return 0 ------- #
-		#//------- line: 0 ------- #
-		# setting register "a" to "0"
-		mov $0, %eax
-push %eax
-push %esp
-push %ebp
-call __rc_exitChunk__
-add $8, %esp
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
-		#//------- line: } ------- #
-	# }
-jmp __LABEL4__
-__LABEL3__:
-	#//------- line: else ------- #
-	#//------- line: { ; ------- #
-	# {
-		#//------- line: `[  FAILED  ] : ${testName}` ------- #
-		pushw __disable_gc__; movw $1, __disable_gc__
-		#//------- line: testName ------- #
-		# note, read PARAM testName -> 8(%ebp)
-		#//------- line: "[  FAILED  ] : " ------- #
-		#//------- line: "" ------- #
-		# setting register "d" to "__STRING3__"
-		movl $__STRING3__, %edx
-		push %edx
-		push 8(%ebp)
-		# setting register "d" to "__STRING5__"
-		movl $__STRING5__, %edx
-		push %edx
-		pushl $3
-		call strjoinmany
-		add $16, %esp
-		mov %eax, %ecx
-		popw __disable_gc__
-		#//------- line: print_ ( %ecx ) ------- #
-		# pushing multi-line clobbers
-		push %ecx
-		call puts
-		add $4, %esp
-		# popping multi-line clobbers
-		#//------- line: `------------\n*** Expected:\n\t ${expected} \n*** But got:\n\t ${ostr}\n------------\n` ------- #
-		pushw __disable_gc__; movw $1, __disable_gc__
-		#//------- line: expected ------- #
-		# note, read PARAM expected -> 16(%ebp)
-		#//------- line: ostr ------- #
-		# note, read STACK VAR ostr -> -13(%ebp)
-		#//------- line: "------------\n*** Expected:\n\t " ------- #
-		#//------- line: " \n*** But got:\n\t " ------- #
-		#//------- line: "\n------------\n" ------- #
-		# setting register "d" to "__STRING8__"
-		movl $__STRING8__, %edx
-		push %edx
-		push -13(%ebp)
-		# setting register "d" to "__STRING7__"
-		movl $__STRING7__, %edx
-		push %edx
-		push 16(%ebp)
-		# setting register "d" to "__STRING6__"
-		movl $__STRING6__, %edx
-		push %edx
-		pushl $5
-		call strjoinmany
-		add $24, %esp
-		mov %eax, %ecx
-		popw __disable_gc__
-		#//------- line: print_ ( %ecx ) ------- #
-		# pushing multi-line clobbers
-		push %ecx
-		call puts
-		add $4, %esp
-		# popping multi-line clobbers
-		#//------- line: return 1 ------- #
-		#//------- line: 1 ------- #
-		# setting register "a" to "1"
-		mov $1, %eax
-push %eax
-push %esp
-push %ebp
-call __rc_exitChunk__
-add $8, %esp
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
-		#//------- line: } ------- #
-	# }
-jmp __LABEL4__
-__LABEL5__:
-	__LABEL4__:
 	#//------- line: } ------- #
 # }
 push %eax
@@ -586,10 +1010,6 @@ pop %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# tmpout: 4
-# pipes: 8
-# c: 9
-# ostr: 13
 entry:
 push %ebp
 mov %esp, %ebp
@@ -598,59 +1018,228 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
+	#//------- line: List (  ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_List_0_
+	call __constructor_List_0_
+	mov %eax, %ecx
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: create myList <- %ecx ------- #
+	# creating variable "myList" of type "List:dynamic" stack?=true
+	# Loading local variable "myList" @-4(%ebp) with "%ecx"
+	# optimized move from %ecx to -4(%ebp)
+	mov %ecx, -4(%ebp)
+	# requesting ownership for myList (create)
+	lea -4(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: 123 ------- #
+	#//------- line: myList . push ( 123 ) ------- #
+	# note, read STACK VAR myList -> -4(%ebp)
+	# optimized move from -4(%ebp) to __this__
+	# setting register "d" to "-4(%ebp)"
+	mov -4(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_List_push_
+	pushl $123
+	call __method_List_push_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: 456 ------- #
+	#//------- line: myList . push ( 456 ) ------- #
+	# note, read STACK VAR myList -> -4(%ebp)
+	# optimized move from -4(%ebp) to __this__
+	# setting register "d" to "-4(%ebp)"
+	mov -4(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_List_push_
+	pushl $456
+	call __method_List_push_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: 0 ------- #
+	#//------- line: "[%i,%i]\n" , myList . buffer [ 0 ] , myList . pop ( ) ------- #
+	# note, read STACK VAR myList -> -4(%ebp)
+	# Reading property "buffer" in "-4(%ebp)"
+	movl -4(%ebp), %eax
+	# optimized move from 0(%eax) to %ecx
+	# setting register "d" to "0(%eax)"
+	mov 0(%eax), %edx
+	mov %edx, %ecx
+	# indexing array
+	mov %ecx, %eax
+	mov 0(%eax), %esi
+	# note, read STACK VAR myList -> -4(%ebp)
+	# optimized move from -4(%ebp) to __this__
+	# setting register "d" to "-4(%ebp)"
+	mov -4(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	push %esi
+	push %ecx
+	# Calling function __method_List_pop_
+	call __method_List_pop_
+	mov %eax, %edi
+	# popping clobbers
+	pop %ecx
+	pop %esi
+	# clobbering "i"
+	#//------- line: printf ( __STRING4__,,,%esi,,,%edi ) ------- #
+	# pushing clobbers
+	push %esi
+	push %ecx
+	push %edi
+	# Calling function printf
+	push %edi
+	push %esi
+	pushl $__STRING4__
+	call printf
+	mov %eax, __TEMP32_0__
+	add $12, %esp
+	# popping clobbers
+	pop %edi
+	pop %ecx
+	pop %esi
+	# clobbering "__TEMP32_0__"
+	#//------- line: 321 ------- #
+	#//------- line: myList . push ( 321 ) ------- #
+	# note, read STACK VAR myList -> -4(%ebp)
+	# optimized move from -4(%ebp) to __this__
+	# setting register "d" to "-4(%ebp)"
+	mov -4(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_List_push_
+	pushl $321
+	call __method_List_push_
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	# clobbering "c"
 	#//------- line: __asm__ "pushl __anonymous_a__ebpCapture__;mov %ebp, __anonymous_a__ebpCapture__" ------- #
 	pushl __anonymous_a__ebpCapture__;mov %ebp, __anonymous_a__ebpCapture__
-	#//------- line: "first" , $ __anonymous_a__ , "hello\n" ------- #
+	#//------- line: $ __anonymous_a__ ------- #
 	# reading address of __anonymous_a__
 	lea __anonymous_a__, %ecx
-	#//------- line: testOutput ( __STRING9__,,,%ecx,,,__STRING10__ ) ------- #
+	#//------- line: myList . every ( %ecx ) ------- #
+	# note, read STACK VAR myList -> -4(%ebp)
+	# optimized move from -4(%ebp) to __this__
+	# setting register "d" to "-4(%ebp)"
+	mov -4(%ebp), %edx
+	mov %edx, __this__
 	# pushing clobbers
 	push %ecx
-	# Calling function testOutput
-	# converting conststr to string (function call)
-	pushl $__STRING10__
-	call cptos
-	mov %eax, (%esp) # str is alr in stack just overwrite
+	# Calling function __method_List_every_
 	push %ecx
-	# converting conststr to string (function call)
-	pushl $__STRING9__
-	call cptos
-	mov %eax, (%esp) # str is alr in stack just overwrite
-	call testOutput
+	call __method_List_every_
 	mov %eax, %esi
-	add $12, %esp
+	add $4, %esp
 	# popping clobbers
 	pop %ecx
 	# clobbering "s"
 	#//------- line: __asm__ "popl __anonymous_a__ebpCapture__" ------- #
 	popl __anonymous_a__ebpCapture__
-	#//------- line: __asm__ "pushl __anonymous_b__ebpCapture__;mov %ebp, __anonymous_b__ebpCapture__" ------- #
-	pushl __anonymous_b__ebpCapture__;mov %ebp, __anonymous_b__ebpCapture__
-	#//------- line: "second" , $ __anonymous_b__ , "bananas\n" ------- #
-	# reading address of __anonymous_b__
-	lea __anonymous_b__, %ecx
-	#//------- line: testOutput ( __STRING11__,,,%ecx,,,__STRING12__ ) ------- #
+	#//------- line: 3 , 1 , 2 , 3 ------- #
+	#//------- line: List ( 3,,,1,,,2,,,3 ) ------- #
+	# pushing clobbers
+	# Calling function __constructor_List_1_
+	pushl $3
+	pushl $2
+	pushl $1
+	pushl $3
+	call __constructor_List_1_
+	mov %eax, %ecx
+	add $16, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: create secondList <- %ecx ------- #
+	# creating variable "secondList" of type "List:dynamic" stack?=true
+	# Loading local variable "secondList" @-8(%ebp) with "%ecx"
+	# optimized move from %ecx to -8(%ebp)
+	mov %ecx, -8(%ebp)
+	# requesting ownership for secondList (create)
+	lea -8(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: secondList + 4 + 5 ------- #
+	# note, read STACK VAR secondList -> -8(%ebp)
+	# optimized move from -8(%ebp) to __this__
+	# setting register "d" to "-8(%ebp)"
+	mov -8(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __operator_List_add_0__
+	pushl $4
+	call __operator_List_add_0__
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	# clobbering "c"
+	# optimized move from %ecx to __this__
+	mov %ecx, __this__
 	# pushing clobbers
 	push %ecx
-	# Calling function testOutput
-	# converting conststr to string (function call)
-	pushl $__STRING12__
-	call cptos
-	mov %eax, (%esp) # str is alr in stack just overwrite
-	push %ecx
-	# converting conststr to string (function call)
-	pushl $__STRING11__
-	call cptos
-	mov %eax, (%esp) # str is alr in stack just overwrite
-	call testOutput
+	# Calling function __operator_List_add_0__
+	pushl $5
+	call __operator_List_add_0__
 	mov %eax, %esi
-	add $12, %esp
+	add $4, %esp
 	# popping clobbers
 	pop %ecx
 	# clobbering "s"
-	#//------- line: __asm__ "popl __anonymous_b__ebpCapture__" ------- #
-	popl __anonymous_b__ebpCapture__
-	#//------- line:  ------- #
+	#//------- line: ( %esi ) ------- #
+	#//------- line: create thirdList <- %esi ------- #
+	# creating variable "thirdList" of type "List:dynamic" stack?=true
+	# Loading local variable "thirdList" @-12(%ebp) with "%esi"
+	# optimized move from %esi to -12(%ebp)
+	mov %esi, -12(%ebp)
+	# requesting ownership for thirdList (create)
+	lea -12(%ebp), %eax
+	push %eax
+	push %esi
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: thirdList ------- #
+	# note, read STACK VAR thirdList -> -12(%ebp)
+	#//------- line: print_ ( -12(%ebp) ) ------- #
+	# pushing multi-line clobbers
+	# optimized move from -12(%ebp) to __this__
+	# setting register "d" to "-12(%ebp)"
+	mov -12(%ebp), %edx
+	mov %edx, __this__
+	# pushing clobbers
+	# Calling function __method_List_toString_
+	call __method_List_toString_
+	mov %eax, %ecx
+	# popping clobbers
+	# clobbering "c"
+	push %ecx
+	call puts
+	add $4, %esp
+	# popping multi-line clobbers
+	#//------- line: return 0 ------- #
+	#//------- line: 0 ------- #
+	# setting register "a" to "0"
+	mov $0, %eax
+	# auto-return OK for entry function
+push %eax
+call __rc_free_all__
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
 	#//------- line: } ------- #
 # }
 call __rc_free_all__
@@ -659,6 +1248,9 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
+# myList: 4
+# secondList: 8
+# thirdList: 12
 __anonymous_a__:
 mov __anonymous_a__ebpCapture__, %ecx
 push %ebp
@@ -670,47 +1262,26 @@ push %ecx
 call __rc_enterChunk__
 # popping multi-line clobbers
 pop %ecx
-	#//------- line: "hello" ------- #
-	#//------- line: print_ ( __STRING13__ ) ------- #
-	# pushing multi-line clobbers
+	#//------- line: "At [%i] is %i\n" , n , i ------- #
+	# note, read PARAM n -> 12(%ebp)
+	# note, read PARAM i -> 8(%ebp)
+	#//------- line: printf ( __STRING5__,,,12(%ebp),,,8(%ebp) ) ------- #
+	# pushing clobbers
 	push %ecx
-	pushl $__STRING13__
-	call puts
-	add $4, %esp
-	# popping multi-line clobbers
+	# Calling function printf
+	# TODO optimize if variable just do movl
+	mov 8(%ebp), %edx
+	push %edx
+	# TODO optimize if variable just do movl
+	mov 12(%ebp), %edx
+	push %edx
+	pushl $__STRING5__
+	call printf
+	mov %eax, %esi
+	add $12, %esp
+	# popping clobbers
 	pop %ecx
-	#//------- line: } ------- #
-# }
-push %eax
-push %esp
-push %ebp
-call __rc_exitChunk__
-add $8, %esp
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
-__anonymous_b__:
-mov __anonymous_b__ebpCapture__, %ecx
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR___anonymous_b____, %esp # total stack allocation
-
-# pushing multi-line clobbers
-push %ecx
-call __rc_enterChunk__
-# popping multi-line clobbers
-pop %ecx
-	#//------- line: "apples" ------- #
-	#//------- line: print_ ( __STRING14__ ) ------- #
-	# pushing multi-line clobbers
-	push %ecx
-	pushl $__STRING14__
-	call puts
-	add $4, %esp
-	# popping multi-line clobbers
-	pop %ecx
+	# clobbering "s"
 	#//------- line: } ------- #
 # }
 push %eax

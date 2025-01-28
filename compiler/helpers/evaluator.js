@@ -16,7 +16,8 @@ function evaluate(line) {
     //if(line.includes("format")) console.log(":::", line)
     // just for macros
 
-    outputCode.autoPush(`#//------- line: ${line.join(" ")} ------- #`)
+    if(line.length != 0)
+        outputCode.autoPush(`#//------- line: ${line.join(" ")} ------- #`)
     for (var wordNum = 0; wordNum < line.length; wordNum++) {
         // HERE is where forced dynamic should be like "Linked:dynamic"
         var word = line[wordNum]
