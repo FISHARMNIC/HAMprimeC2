@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Sat Jan 25 2025 20:40:33 GMT-0700 (Mountain Standard Time)
+Compiled with love on Mon Jan 27 2025 21:02:39 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -20,52 +20,25 @@ Compiled with love on Sat Jan 25 2025 20:40:33 GMT-0700 (Mountain Standard Time)
 .extern ___TEMPORARY_OWNER___
 
 ######## user data section ########
-.type	__method_Person_toString_, @function
-.global __method_Person_toString_
-.4byte 7
-__STRING0__: .asciz "name: "
-.4byte 8
-__STRING1__: .asciz ", age: "
-.4byte 1
-__STRING2__: .asciz ""
-__ALLOCFOR___method_Person_toString___ = 0
-__SIZEOF_Person__ = 8
-# format "Person" includes:
-#   - PROPERTY (p8) name
-#   - PROPERTY (u32) age
+.type	modify, @function
+.global modify
+__ALLOCFOR_modify__ = 0
 .type	entry, @function
 .global entry
-.4byte 4
-__STRING3__: .asciz "abc"
-.4byte 4
-__STRING4__: .asciz "def"
-.4byte 4
-__STRING5__: .asciz "gih"
-.4byte 4
-__STRING6__: .asciz "jkl"
-.4byte 4
-__STRING7__: .asciz "mno"
-.4byte 4
-__STRING8__: .asciz "pqr"
-.4byte 4
-__STRING9__: .asciz "stu"
-__ALLOCFOR_entry__ = 4
+__ALLOCFOR_entry__ = 16
 __TEMP32_0__: .4byte 0
-__TEMP32_1__: .4byte 0
-__TEMP32_2__: .4byte 0
-__TEMP32_3__: .4byte 0
-__TEMP32_4__: .4byte 0
 ###################################
 .text
 
 #### compiler initation section ###
 __init_for_out__:
 
-#//------- line: Person format ------- #
+#//------- line: array arr , u32 outer , u32 inner , u32 value ------- #
+#//------- line: modify function < arr,,,outer,,,inner,,,value > -> u32 ------- #
 #//------- line: { ; ------- #
 # {
 #//------- line:  ------- #
-#//------- line: entry function <  > ------- #
+#//------- line: entry function <  > -> u32 ------- #
 #//------- line: { ; ------- #
 # {
 # auto-return OK for entry function
@@ -80,87 +53,51 @@ call entry
 ret
 
 ###################################
-	#//------- line: . name string ------- #
-	#//------- line: . age u32 ------- #
-	#//------- line:  ------- #
-	#//------- line: . toString method <  > ------- #
-__method_Person_toString_:
+modify:
 push %ebp
 mov %esp, %ebp
-sub $__ALLOCFOR___method_Person_toString___, %esp # total stack allocation
+sub $__ALLOCFOR_modify__, %esp # total stack allocation
 
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
-	#//------- line: { ; ------- #
-	# {
-		#//------- line: `name: ${this.name}, age: ${this.age}` ------- #
-		pushw __disable_gc__; movw $1, __disable_gc__
-		#//------- line: this . name ------- #
-		# Reading property "name" in "__this__"
-		movl __this__, %eax
-		# optimized move from 0(%eax) to %ecx
-		# setting register "d" to "0(%eax)"
-		mov 0(%eax), %edx
-		mov %edx, %ecx
-		#//------- line: this . age ------- #
-		# Reading property "age" in "__this__"
-		movl __this__, %eax
-		# optimized move from 4(%eax) to %esi
-		# setting register "d" to "4(%eax)"
-		mov 4(%eax), %edx
-		mov %edx, %esi
-		#//------- line: "name: " ------- #
-		#//------- line: ", age: " ------- #
-		#//------- line: "" ------- #
-		# setting register "d" to "__STRING2__"
-		movl $__STRING2__, %edx
-		push %edx
-		push %esi
-		call itos
-		add $4, %esp
-		push %eax
-		# setting register "d" to "__STRING1__"
-		movl $__STRING1__, %edx
-		push %edx
-		push %ecx
-		# setting register "d" to "__STRING0__"
-		movl $__STRING0__, %edx
-		push %edx
-		pushl $5
-		call strjoinmany
-		add $24, %esp
-		mov %eax, %edi
-		popw __disable_gc__
-		#//------- line: return ( %edi ) ------- #
-		# optimized move from %edi to __gc_dontClear__
-		mov %edi, __gc_dontClear__
-		# setting register "a" to "%edi"
-		mov %edi, %eax
-push %eax
-push %esp
-push %ebp
-call __rc_exitChunk__
-add $8, %esp
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
-		#//------- line: } ------- #
-	# }
-push %eax
-push %esp
-push %ebp
-call __rc_exitChunk__
-add $8, %esp
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
+	#//------- line: outer ------- #
+	# note, read PARAM outer -> 12(%ebp)
+	#//------- line: inner ------- #
+	# note, read PARAM inner -> 16(%ebp)
+	#//------- line: value ------- #
+	# note, read PARAM value -> 20(%ebp)
+	#//------- line: arr [ 12(%ebp) ] [ 16(%ebp) ] <- 20(%ebp) ------- #
+	# note, read PARAM arr -> 8(%ebp)
+	# indexing array
+	mov 8(%ebp), %eax
+	# optimized move from 12(%ebp) to %edx
+	# setting register "d" to "12(%ebp)"
+	mov 12(%ebp), %edx
+	mov %edx, %edx
+	mov (%eax, %edx, 4), %ecx
+	# Array set begin
+	mov 20(%ebp), %edx
+	# array load trash awful. Fix this bad optimize
+	push %ecx
+	mov 16(%ebp), %eax
+	shl $2, %eax
+	add (%esp), %eax
+	add $4, %esp
+	mov %edx, (%eax)
+	#Set end
 	#//------- line: } ------- #
 # }
+push %eax
+push %esp
+push %ebp
+call __rc_exitChunk__
+add $8, %esp
+pop %eax
+
+mov %ebp, %esp
+pop %ebp
+ret
 entry:
 push %ebp
 mov %esp, %ebp
@@ -169,194 +106,80 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
-	#//------- line: name : "abc" , age : 1 ------- #
-	#//------- line: name : "def" , age : 2 ------- #
-	#//------- line: name : "gih" , age : 3 ------- #
-	#//------- line: name : "jkl" , age : 4 ------- #
-	#//------- line: name : "mno" , age : 5 ------- #
-	#//------- line: name : "pqr" , age : 6 ------- #
-	#//------- line: name : "stu" , age : 7 ------- #
-	#//------- line: { ; Person < name,:,__STRING3__,,,age,:,1 > , ; Person < name,:,__STRING4__,,,age,:,2 > , ; Person < name,:,__STRING5__,,,age,:,3 > , ; Person < name,:,__STRING6__,,,age,:,4 > , ; Person < name,:,__STRING7__,,,age,:,5 > , ; Person < name,:,__STRING8__,,,age,:,6 > , ; Person < name,:,__STRING9__,,,age,:,7 > , ; } ------- #
+	#//------- line: { { 1 , 2 , 3 } , { 4 , 5 , 6 } , { 7 , 8 , 9 } } ------- #
 	# {
+		# {
+		# }
+		# Allocating array {1,2,3},{4,5,6},{7,8,9}}
 		# pushing clobbers
-		# 
+		# Allocation for array
 		pushl $0
-		pushl $8
+		pushl $12
 		call __rc_allocate__
 		add $8, %esp
 		# popping clobbers
-		mov %eax, %ecx # Local allocation address for Person
-		# char lit to string (explicit format init)
-		pushl $__STRING3__
-		call cptos
-		add $4, %esp
-		# requesting ownership (setting sub property)
-		lea 0(%ecx), %edx
-		push %edx
-		push %eax
-		call __rc_requestOwnership__
-		add $8, %esp
-		# optimized move from 1 to 4(%ecx)
-		movl $1, 4(%ecx)
+		# optimized move from 1 to 0(%eax)
+		movl $1, 0(%eax)
+		# optimized move from 2 to 4(%eax)
+		movl $2, 4(%eax)
+		# optimized move from 3 to 8(%eax)
+		movl $3, 8(%eax)
+		# Moving arr to out
+		# optimized move from %eax to %ecx
+		mov %eax, %ecx
+		# {
+		# }
+		# Allocating array {4,5,6},{7,8,9}}
 		# pushing clobbers
 		push %ecx
-		# 
+		# Allocation for array
 		pushl $0
-		pushl $8
+		pushl $12
 		call __rc_allocate__
 		add $8, %esp
 		# popping clobbers
 		pop %ecx
-		mov %eax, %esi # Local allocation address for Person
-		# char lit to string (explicit format init)
-		pushl $__STRING4__
-		call cptos
-		add $4, %esp
-		# requesting ownership (setting sub property)
-		lea 0(%esi), %edx
-		push %edx
-		push %eax
-		call __rc_requestOwnership__
-		add $8, %esp
-		# optimized move from 2 to 4(%esi)
-		movl $2, 4(%esi)
+		# optimized move from 4 to 0(%eax)
+		movl $4, 0(%eax)
+		# optimized move from 5 to 4(%eax)
+		movl $5, 4(%eax)
+		# optimized move from 6 to 8(%eax)
+		movl $6, 8(%eax)
+		# Moving arr to out
+		# optimized move from %eax to %esi
+		mov %eax, %esi
+		# {
+		# }
+		# Allocating array {7,8,9}}
 		# pushing clobbers
 		push %esi
 		push %ecx
-		# 
+		# Allocation for array
 		pushl $0
-		pushl $8
+		pushl $12
 		call __rc_allocate__
 		add $8, %esp
 		# popping clobbers
 		pop %ecx
 		pop %esi
-		mov %eax, %edi # Local allocation address for Person
-		# char lit to string (explicit format init)
-		pushl $__STRING5__
-		call cptos
-		add $4, %esp
-		# requesting ownership (setting sub property)
-		lea 0(%edi), %edx
-		push %edx
-		push %eax
-		call __rc_requestOwnership__
-		add $8, %esp
-		# optimized move from 3 to 4(%edi)
-		movl $3, 4(%edi)
-		# pushing clobbers
-		push %esi
-		push %ecx
-		push %edi
-		# 
-		pushl $0
-		pushl $8
-		call __rc_allocate__
-		add $8, %esp
-		# popping clobbers
-		pop %edi
-		pop %ecx
-		pop %esi
-		mov %eax, __TEMP32_0__ # Local allocation address for Person
-		# char lit to string (explicit format init)
-		pushl $__STRING6__
-		call cptos
-		add $4, %esp
-		# requesting ownership (setting sub property)
-		lea 0(__TEMP32_0__), %edx
-		push %edx
-		push %eax
-		call __rc_requestOwnership__
-		add $8, %esp
-		# optimized move from 4 to 4(__TEMP32_0__)
-		movl $4, 4(__TEMP32_0__)
-		# pushing clobbers
-		push %esi
-		push %ecx
-		push %edi
-		# 
-		pushl $0
-		pushl $8
-		call __rc_allocate__
-		add $8, %esp
-		# popping clobbers
-		pop %edi
-		pop %ecx
-		pop %esi
-		mov %eax, __TEMP32_1__ # Local allocation address for Person
-		# char lit to string (explicit format init)
-		pushl $__STRING7__
-		call cptos
-		add $4, %esp
-		# requesting ownership (setting sub property)
-		lea 0(__TEMP32_1__), %edx
-		push %edx
-		push %eax
-		call __rc_requestOwnership__
-		add $8, %esp
-		# optimized move from 5 to 4(__TEMP32_1__)
-		movl $5, 4(__TEMP32_1__)
-		# pushing clobbers
-		push %esi
-		push %ecx
-		push %edi
-		# 
-		pushl $0
-		pushl $8
-		call __rc_allocate__
-		add $8, %esp
-		# popping clobbers
-		pop %edi
-		pop %ecx
-		pop %esi
-		mov %eax, __TEMP32_2__ # Local allocation address for Person
-		# char lit to string (explicit format init)
-		pushl $__STRING8__
-		call cptos
-		add $4, %esp
-		# requesting ownership (setting sub property)
-		lea 0(__TEMP32_2__), %edx
-		push %edx
-		push %eax
-		call __rc_requestOwnership__
-		add $8, %esp
-		# optimized move from 6 to 4(__TEMP32_2__)
-		movl $6, 4(__TEMP32_2__)
-		# pushing clobbers
-		push %esi
-		push %ecx
-		push %edi
-		# 
-		pushl $0
-		pushl $8
-		call __rc_allocate__
-		add $8, %esp
-		# popping clobbers
-		pop %edi
-		pop %ecx
-		pop %esi
-		mov %eax, __TEMP32_3__ # Local allocation address for Person
-		# char lit to string (explicit format init)
-		pushl $__STRING9__
-		call cptos
-		add $4, %esp
-		# requesting ownership (setting sub property)
-		lea 0(__TEMP32_3__), %edx
-		push %edx
-		push %eax
-		call __rc_requestOwnership__
-		add $8, %esp
-		# optimized move from 7 to 4(__TEMP32_3__)
-		movl $7, 4(__TEMP32_3__)
+		# optimized move from 7 to 0(%eax)
+		movl $7, 0(%eax)
+		# optimized move from 8 to 4(%eax)
+		movl $8, 4(%eax)
+		# optimized move from 9 to 8(%eax)
+		movl $9, 8(%eax)
+		# Moving arr to out
+		# optimized move from %eax to %edi
+		mov %eax, %edi
 	# }
-	# Allocating array {;%ecx,;%esi,;%edi,;__TEMP32_0__,;__TEMP32_1__,;__TEMP32_2__,;__TEMP32_3__,;}
+	# Allocating array {%ecx,%esi,%edi}
 	# pushing clobbers
 	push %esi
 	push %ecx
 	push %edi
 	# Allocation for array
 	pushl $0
-	pushl $28
+	pushl $12
 	call __rc_allocate__
 	add $8, %esp
 	# popping clobbers
@@ -381,69 +204,150 @@ call __rc_enterChunk__
 	pushl %edi
 	call __rc_requestOwnership__
 	add $8, %esp
-	# requesting ownership (setting array index on init)
-	lea 12(%eax), %edx
-	push %edx
-	pushl __TEMP32_0__
-	call __rc_requestOwnership__
-	add $8, %esp
-	# requesting ownership (setting array index on init)
-	lea 16(%eax), %edx
-	push %edx
-	pushl __TEMP32_1__
-	call __rc_requestOwnership__
-	add $8, %esp
-	# requesting ownership (setting array index on init)
-	lea 20(%eax), %edx
-	push %edx
-	pushl __TEMP32_2__
-	call __rc_requestOwnership__
-	add $8, %esp
-	# requesting ownership (setting array index on init)
-	lea 24(%eax), %edx
-	push %edx
-	pushl __TEMP32_3__
-	call __rc_requestOwnership__
-	add $8, %esp
 	# Moving arr to out
-	# optimized move from %eax to __TEMP32_4__
-	mov %eax, __TEMP32_4__
-	#//------- line: ( __TEMP32_4__ ) ------- #
-	#//------- line: create people <- __TEMP32_4__ ------- #
-	# creating variable "people" of type "array:dynamic" stack?=true
-	# Loading local variable "people" @-4(%ebp) with "__TEMP32_4__"
-	# optimized move from __TEMP32_4__ to -4(%ebp)
-	# setting register "d" to "__TEMP32_4__"
-	movl __TEMP32_4__, %edx
+	# optimized move from %eax to __TEMP32_0__
+	mov %eax, __TEMP32_0__
+	#//------- line: create arr <- __TEMP32_0__ ------- #
+	# creating variable "arr" of type "array:dynamic" stack?=true
+	# Loading local variable "arr" @-4(%ebp) with "__TEMP32_0__"
+	# optimized move from __TEMP32_0__ to -4(%ebp)
+	# setting register "d" to "__TEMP32_0__"
+	movl __TEMP32_0__, %edx
 	mov %edx, -4(%ebp)
-	# requesting ownership for people (create)
+	# requesting ownership for arr (create)
 	lea -4(%ebp), %eax
 	push %eax
-	push __TEMP32_4__
+	push __TEMP32_0__
 	call __rc_requestOwnership__
 	add $8, %esp
 	#//------- line:  ------- #
-	#//------- line:  ------- #
-	#//------- line: __rc_collect__ (  ) ------- #
+	#//------- line: 2 ------- #
+	#//------- line: { 3 , 2 , 1 } ------- #
+	# {
+	# }
+	# Allocating array {3,2,1}
 	# pushing clobbers
-	# Calling function __rc_collect__
-	call __rc_collect__
-	mov %eax, %ecx
+	# Allocation for array
+	pushl $0
+	pushl $12
+	call __rc_allocate__
+	add $8, %esp
 	# popping clobbers
-	#//------- line:  ------- #
-	#//------- line: people ------- #
-	# note, read STACK VAR people -> -4(%ebp)
-	#//------- line: print_ ( -4(%ebp) ) ------- #
-	# pushing multi-line clobbers
-	# printing array (either string or format array)
+	# optimized move from 3 to 0(%eax)
+	movl $3, 0(%eax)
+	# optimized move from 2 to 4(%eax)
+	movl $2, 4(%eax)
+	# optimized move from 1 to 8(%eax)
+	movl $1, 8(%eax)
+	# Moving arr to out
+	# optimized move from %eax to %ecx
+	mov %eax, %ecx
+	#//------- line: arr [ 2 ] <- %ecx ------- #
+	# note, read STACK VAR arr -> -4(%ebp)
+	# Array set begin
 	mov -4(%ebp), %eax
-	push %eax     # load buffer
-	mov -4(%eax), %edx
-	pushl 8(%edx) # load size
-	pushl $__method_Person_toString_ # load toString method
-	call print_formatArr
-	add $12, %esp
-	# popping multi-line clobbers
+	mov %ecx, 8(%eax)
+	# requesting ownership for array index
+	lea 8(%eax), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#Set end
+	#//------- line: 0 ------- #
+	#//------- line: 2 ------- #
+	#//------- line: 7 ------- #
+	#//------- line: arr [ 0 ] [ 2 ] <- 7 ------- #
+	# note, read STACK VAR arr -> -4(%ebp)
+	# indexing array
+	mov -4(%ebp), %eax
+	mov 0(%eax), %ecx
+	# Array set begin
+	movl $7, 8(%ecx)
+	#Set end
+	#//------- line: 1 ------- #
+	#//------- line: 1 ------- #
+	#//------- line: 7 ------- #
+	#//------- line: arr [ 1 ] [ 1 ] <- 7 ------- #
+	# note, read STACK VAR arr -> -4(%ebp)
+	# indexing array
+	mov -4(%ebp), %eax
+	mov 4(%eax), %ecx
+	# Array set begin
+	movl $7, 4(%ecx)
+	#Set end
+	#//------- line: arr , 2 , 0 , 7 ------- #
+	# note, read STACK VAR arr -> -4(%ebp)
+	#//------- line: modify ( -4(%ebp),,,2,,,0,,,7 ) ------- #
+	# pushing clobbers
+	# Calling function modify
+	pushl $7
+	pushl $0
+	pushl $2
+	# TODO optimize if variable just do movl
+	mov -4(%ebp), %edx
+	push %edx
+	call modify
+	mov %eax, %ecx
+	add $16, %esp
+	# popping clobbers
+	# clobbering "c"
+	# creating variable "__LABEL2__" of type "u32:borrowed" stack?=true
+	# Loading local variable "__LABEL2__" @-8(%ebp) with "0"
+	# optimized move from 0 to -8(%ebp)
+	movl $0, -8(%ebp)
+	# creating variable "__LABEL4__" of type "u32:borrowed" stack?=true
+	# Loading local variable "__LABEL4__" @-12(%ebp) with "0"
+	# optimized move from 0 to -12(%ebp)
+	movl $0, -12(%ebp)
+	#//------- line: sub in arr ------- #
+	# note, read STACK VAR arr -> -4(%ebp)
+	#//------- line: forEach ( sub,in,-4(%ebp) ) ------- #
+	# forEach loop
+	mov -4(%ebp), %eax # load arr
+	mov -4(%eax), %edx # get entry reference
+	mov 8(%edx),  %edx # get size
+	shr $2, %edx # divide by 4 (bytes to u32 or u16)
+	mov %edx, -12(%ebp) # size to arr len holder
+	mov (%eax), %eax # load first element into A
+	# creating variable "sub" of type "array:dynamic" stack?=true
+	mov %eax, %ecx
+	# Loading local variable "sub" @-16(%ebp) with "%ecx"
+	# optimized move from %ecx to -16(%ebp)
+	mov %ecx, -16(%ebp)
+	__LABEL0__:
+	# comparison for forEach loop
+	mov -8(%ebp), %eax 
+	cmp -12(%ebp), %eax
+	jge __LABEL1__ # exit if finished
+	# indexing array
+	mov -4(%ebp), %eax
+	# optimized move from -8(%ebp) to %edx
+	# setting register "d" to "-8(%ebp)"
+	mov -8(%ebp), %edx
+	mov %edx, %edx
+	mov (%eax, %edx, 4), %esi
+	mov %esi, -16(%ebp)
+	#//------- line: { ; ------- #
+	# {
+		#//------- line: sub ------- #
+		# note, read STACK VAR sub -> -16(%ebp)
+		#//------- line: print_ ( -16(%ebp) ) ------- #
+		# pushing multi-line clobbers
+		# printing array
+		mov -16(%ebp), %eax
+		push %eax     # load buffer
+		mov -4(%eax), %edx
+		pushl 8(%edx) # load size
+		call print_arr32
+		add $8, %esp
+		# popping multi-line clobbers
+		#//------- line: } ------- #
+	# }
+	__LABEL3__: # forEach "continue" jumps here
+	incw -8(%ebp)
+	jmp __LABEL0__
+	__LABEL1__:
 	#//------- line: } ------- #
 # }
 call __rc_free_all__
@@ -452,5 +356,8 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# people: 4
+# arr: 4
+# __LABEL2__: 8
+# __LABEL4__: 12
+# sub: 16
 

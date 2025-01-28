@@ -628,6 +628,7 @@ var registers = {
     },
     clobberRegister: function (register) {
         //if(register.length == 1)
+        outputCode.autoPush(`# clobbering "${register}"`)
         this.inLineClobbers[register] = 1
     },
     multiLineClobberRegister: function (register) {

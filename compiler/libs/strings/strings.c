@@ -132,7 +132,7 @@ char *__sinc_loadStringArray(char* destArr, int numberOfStrings, ...)
     for(int i = 0; i < numberOfStrings; i++)
     {
         char* string = sourceStrings[numberOfStrings - 1 - i];
-        // printf("--- %s --> %i\n", string, 4 * i);
+        //printf("--- %s --> %i\n", string, 4 * i);
         int strlen = *(((int *)string) - 1); // length is stored in int right before str
         char *o = __rc_allocate__(strlen, 0);
         memcpy(o, string, strlen);
@@ -140,6 +140,7 @@ char *__sinc_loadStringArray(char* destArr, int numberOfStrings, ...)
     }
 
     asm volatile("popa");
+    return destArr;
 }
 
 // #endregion
@@ -157,7 +158,7 @@ void print_arr32(int size, int *arr)
     }
     else if (size == 1)
     {
-        printf("[%i]\n");
+        printf("[%i]\n", arr[0]);
         return;
     }
 
@@ -171,9 +172,10 @@ void print_arr32(int size, int *arr)
 }
 
 // todo later just pass a %i, %f, etc
-void print_stringArr(int size, int *arr)
+void print_stringArr(int size, char **arr)
 {
     size /= 4;
+    printf("buffer: %p -- size: %i\n\n", arr, size);
 
     if (size == 0)
     {
@@ -182,7 +184,7 @@ void print_stringArr(int size, int *arr)
     }
     else if (size == 1)
     {
-        printf("[\"%s\"]\n");
+        printf("[\"%s\"]\n", arr[0]);
         return;
     }
 
@@ -206,7 +208,7 @@ void print_arr16(int size, short *arr)
     }
     else if (size == 1)
     {
-        printf("[%i]\n");
+        printf("[%i]\n", arr[0]);
         return;
     }
 

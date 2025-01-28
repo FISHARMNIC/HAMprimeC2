@@ -1959,6 +1959,11 @@ var formats = {
 
                 outputCode.autoPush(`lea ${allocLbl}, ${saveLbl} # Local allocation address for ${fname}`)
                 //throwE(outputCode)
+                // console.log(saveLbl)
+                // if(!helpers.types.stringIsRegister(saveLbl))
+                // {
+                //     throwE(`[INTERNAL] Out of registers. Need to fix this!`)
+                // }
 
                 var off = 0
                 //console.log(userFormats[fname].properties)
@@ -1986,7 +1991,7 @@ var formats = {
                             `# requesting ownership (setting sub property)`,
                             `lea -${allocOffset - off}(%ebp), %edx`,
                             `push %edx`,
-                            `push ${value}`,
+                            `pushl ${saveLbl}`,
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
                     }
@@ -2008,9 +2013,18 @@ var formats = {
                     outputCode.autoPush(`mov %eax, ${saveLbl} # Local allocation address for ${fname}`)
                 }
 
+
+                var OORfix = false // when registers run out. Fix this later somehow TODO
+                //console.log(saveLbl)
+                if(!helpers.types.stringIsRegister(saveLbl))
+                {
+                    OORfix = true
+                    //throwE(`[INTERNAL] Out of registers. Need to fix this!`)
+                }
+
                 var off = 0
-                //throwE(passed)
                 userFormats[fname].properties.forEach(p => {
+                    //console.log(p, passed[p.name])
                     var value = passed[p.name]
                     if (value == undefined) {
                         throwE(`Property ${p} not given`);
@@ -2032,14 +2046,26 @@ var formats = {
                     if ("hasData" in helpers.types.guessType(value) && nextThingTakesOwnership) {
                         outputCode.autoPush(
                             `# requesting ownership (setting sub property)`,
-                            `lea ${off}(${saveLbl}), %edx`,
+                            `# POOOP`,
+                            `${(!OORfix)? `lea ${off}(${saveLbl}), %edx` : `mov ${saveLbl}, %edx; lea ${off}(%edx), %edx # awful fix. Need to find some way to declob regs`}`,
                             `push %edx`,
-                            `push ${value}`,
+                            `pushl ${value}`,
                             `call __rc_requestOwnership__`,
                             `add $8, %esp`)
                     }
                     else {
-                        assembly.optimizeMove(value, `${off}(${saveLbl})`, helpers.types.guessType(value), p.type)
+                        //console.log(OORfix)
+                        if(OORfix)
+                        {
+                            outputCode.autoPush(`mov ${saveLbl}, %edx # awful fix. Need to find some way to declob regs`)
+                            assembly.optimizeMove(value, `${off}(%edx)`, helpers.types.guessType(value), p.type)
+
+                            
+                        }
+                        else
+                        {
+                            assembly.optimizeMove(value, `${off}(${saveLbl})`, helpers.types.guessType(value), p.type)
+                        }
                     }
 
                     nextThingTakesOwnership = defaultAutomaticOwnership

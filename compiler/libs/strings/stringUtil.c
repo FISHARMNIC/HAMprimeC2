@@ -140,7 +140,7 @@ char **strsplitchr(char *str, char delim)
 char *strinsert(char *dest, char *intermediate, int insertIndex)
 {
     assert(dest != 0 && intermediate != 0 && insertIndex >= 0);
-    int atIndex = 0;
+    //int atIndex = 0;
 
     int destlen = strlen(dest);
     int interlen = strlen(intermediate);
