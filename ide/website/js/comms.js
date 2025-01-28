@@ -49,7 +49,7 @@ var comms = {
     compile: function () {
         show("terminal")
         var out = JSON.parse(get("compile/" + currentOpenFile)).data
-        console.log(out[out.length - 1])
+        console.log(out[0])
         if (out[out.length - 1][0] == "{") {
             out = JSON.parse(out[out.length - 1])
         }
@@ -150,7 +150,8 @@ var comms = {
         });
 
         (async () => {
-            if (this.compile()) {
+            var ret = this.compile()
+            if (ret) {
                 await wait(100);
                 this.runCompiled();
             }

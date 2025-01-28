@@ -674,6 +674,7 @@ function drawColLine(l, isError = false) {
 global.throwE = function (x) {
     var lineE = getTrueLine(inputCodeLikeTrue, globalLine) - includeFileOff - 1
     //console.log(lineE, includeFileOff, lineE - includeFileOff)
+    console.log("Assembly dump in", mainDir + `/../compiled/FAILED.s`)
     if (returnHighlight) {
         console.log(JSON.stringify(
             {
@@ -699,7 +700,6 @@ global.throwE = function (x) {
     }
 
     fs.writeFileSync(mainDir + `/../compiled/FAILED.s`, outputCode.text.join("\n"))
-    console.log("Assembly dump in", mainDir + `/../compiled/FAILED.s`)
     process.exit(126)
     //console.log(lineE)
 }

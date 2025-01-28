@@ -22,7 +22,7 @@ entry function<>
         Person<name:"vwx", age: 9>,
     });
     
-    // __rc_collect__(); // testing to make sure gc is working correct
+    __rc_collect__(); // testing to make sure gc is working correct
 
     print_(people);
 }
