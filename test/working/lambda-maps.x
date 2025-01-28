@@ -5,6 +5,8 @@
  * or an array of formats
 */
 
+// FOR  A BETTER VERSION OF THIS, SEE functions-supports2.x
+
 map function<dyna:array arr, fn operation>
 {
     create i <- 0;

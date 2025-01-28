@@ -175,7 +175,7 @@ void print_arr32(int size, int *arr)
 void print_stringArr(int size, char **arr)
 {
     size /= 4;
-    printf("buffer: %p -- size: %i\n\n", arr, size);
+    //printf("buffer: %p -- size: %i\n\n", arr, size);
 
     if (size == 0)
     {

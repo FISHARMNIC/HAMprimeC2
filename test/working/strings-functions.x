@@ -1,5 +1,7 @@
 #include sys strings
 
+// ignore the warnings. Chars are still broken.
+
 entry function<> -> u32
 {
     create word <- "abcdefg";
