@@ -1,22 +1,14 @@
 /*
 TODO:
 
-    FIX ARRAYS-FMTS.X
-
     Maybe Change overflow to only collect on same frame?
 
     Actually do signed and unsigned
     
     right a progam that visualizes memory writes by pointer, shows whats overriding stuff
 
-    SEGFAULTS ON A LOT, see issue2
-
-    need to test backup gc trigger on x amount of bytes alloced
-
     need to have quick collection on assigned to params
     
-    do some speed comps between the old version and this
-
 
     NEW IDEAS
     | ----
