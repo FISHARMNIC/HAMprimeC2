@@ -7,6 +7,7 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
 <summary><b>Recent Update Log</b></summary>
 
 ## Recent Update Log
+- Added bitwise and (&), or (|), xor (^) and shift operations << and >>
 - Improved garbage collector model!
     - Much more incremental
     - Destroys lost references quicker by checking for data that was owned by things on old stack scopes
