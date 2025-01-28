@@ -20,6 +20,7 @@ linked_chunks_t* __ChunkStack = (linked_chunks_t*) 0;
 
 extern linked_t *__Roster;
 extern void* __gc_dontClear__;
+extern int __disable_gc__;
 
 int chunk_index = 0;
 
@@ -59,7 +60,7 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 
     chunk_index--;
 
-    if(save == 0 || save->size == 0)
+    if(save == 0 || save->size == 0 || __disable_gc__)
     {
         dbgprint("Empty or null chunk\n");
         return;

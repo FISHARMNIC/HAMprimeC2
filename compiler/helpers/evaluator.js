@@ -762,6 +762,11 @@ function evaluate(line) {
             if (requestBracket != 0) {
                 newScope(requestBracket)
                 debugPrint("ENTERTING", requestBracket)
+                if(requestBracket.type == keywordTypes.CONSTRUCTOR)
+                {
+                    //console.log(globalVariables.__this__.type)
+                    actions.variables.create("___CONSTRUCTOR_SAVE___", globalVariables.__this__.type, `__this__`, true)
+                }
                 requestBracket = 0
             } else {
                 //throwE("array init")

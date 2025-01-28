@@ -525,7 +525,7 @@ global._deClob = function (tempClobs) {
 global.formatMath_helper = function (oldArr) {
     // todo, add shift, bitwise OR and AND, and rotate
     var trumpOps = ["*", "/", "%"]
-    var lowerOps = ["+", "-", "<<", ">>"]
+    var lowerOps = ["+", "-", "<<", ">>", "&", "|", "^"]
     var allOps = [...trumpOps, ...lowerOps]
 
     var onOperator = false;

@@ -85,10 +85,13 @@ var types = {
         return ("hasData" in a && "hasData" in b) || (!("hasData" in a) && !("hasData" in b))
     },
     areEqualExtraLoose: function (a, b) {
+        if(!("isReference" in a || "isReference" in b))
+        {
         b = objCopy(b)
         a = objCopy(a)
         a.size = 8
         b.size = 8
+        }
         //console.log(a,b)
         return this.areEqual(a, b) || "acceptsAny" in a || "acceptsAny" in b || (types.isStringOrConststrType(a) && types.isStringOrConststrType(b))
     },

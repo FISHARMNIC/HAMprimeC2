@@ -47,6 +47,9 @@ function _doOp(operator, value, valueType) {
             case "%":
                 throwE("Modulo not working yet for float math")
                 break;
+            default:
+                throwE(`Unable to perform "${operator}"`)
+                break
         }
     }
     // outputCode.autoPush("# end")

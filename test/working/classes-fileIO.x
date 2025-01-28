@@ -88,7 +88,9 @@ iofile format
 
     .iofile operator(shr)<u32:reference outnum> -> iofile
     {
-        outnum <- atoi(this.getLine());
+        create joe <- this.getLine();
+        outnum <- atoi(joe);
+        print_(`Test:: ${outnum}`);
         return this;
     }
 
@@ -104,6 +106,12 @@ entry function<> -> u32
 {
     create myFile <- iofile("test.txt");
 
+    if(myFile.isOpen() == 0)
+    {
+        print_("Could not open file!");
+        quit(1);
+    }
+
     myFile << "Rio is the best dog!\n" << 123 << "\nC\nHello ";
     myFile << 456789 << " Bye!"
     
@@ -116,9 +124,9 @@ entry function<> -> u32
     myFile >> output >> onum;
     myFile >> och;
     
-    print_(output);
-    print_(onum);
-    print_(och);
+    print_(`Read 1: ${output}`);
+    print_(`Read 2: ${onum}`);
+    print_(`Read 3: ${och}`);
 
     print_(myFile.getLine());
 

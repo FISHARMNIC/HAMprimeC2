@@ -2164,7 +2164,7 @@ var formats = {
                 outputCode.autoPush(`mov %eax, __this__`)
 
                 nextThingTakesOwnership = true
-                variables.set("___TEMPORARY_OWNER___", `__this__`)
+                //variables.set("___TEMPORARY_OWNER___", `__this__`)
             }
             nextIsForward = false
             //throwE(defines.types)
@@ -2322,6 +2322,8 @@ var formats = {
         // outputCode.autoPush(
         //     `mov __this__, %eax`
         // )
+        //throwE(`-${stack.___CONSTRUCTOR_SAVE___.offset}(%ebp)`)
+        actions.assembly.optimizeMove(`-${stack.___CONSTRUCTOR_SAVE___.offset}(%ebp)`, "__gc_dontClear__", globalVariables.__this__.type, globalVariables.__this__.type)
         functions.closeFunction(scope, stack, false, "__this__")
         //throwE(scope, stack)
     },
@@ -2393,7 +2395,6 @@ var formats = {
     },
     callOperator: function (parent, operator, params) {
 
-        //console.log("CALLING", parent, operator, params)
         if (typeof params == "string") {
             params = [params]
             //throwE("[INTERNAL] Operators cannot be called with multiple parameters")

@@ -84,9 +84,13 @@ __rc_exitChunk__:
 	movl	%edx, chunk_index@GOTOFF(%ebx)
 	testl	%esi, %esi
 	je	.L6
-	movl	8(%esi), %eax
-	testl	%eax, %eax
+	movl	8(%esi), %ecx
+	testl	%ecx, %ecx
 	je	.L6
+	movl	__disable_gc__@GOT(%ebx), %eax
+	movl	(%eax), %eax
+	testl	%eax, %eax
+	jne	.L6
 	movl	__Roster@GOT(%ebx), %eax
 	movl	(%esi), %ecx
 	movl	(%eax), %eax

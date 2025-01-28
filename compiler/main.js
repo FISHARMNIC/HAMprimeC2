@@ -1,6 +1,8 @@
 /*
 TODO:
 
+    Make sure pushing __this__ type to stack on construcotr call
+    
     Maybe Change overflow to only collect on same frame?
 
     Actually do signed and unsigned

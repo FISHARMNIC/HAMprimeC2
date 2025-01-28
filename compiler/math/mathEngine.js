@@ -50,6 +50,34 @@ function _doOp(operator, value, valueType) {
                     `mov ${regD}, ${regA}`,
                 )
                 break;
+            case ">>":
+                outputCode.autoPush(
+                    `shr${suffix} ${value}, ${regA}`,
+                )
+                break;
+            case "<<":
+                outputCode.autoPush(
+                    `shl${suffix} ${value}, ${regA}`,
+                )
+                break;
+            case "&":
+                outputCode.autoPush(
+                    `and${suffix} ${value}, ${regA}`,
+                )
+                break;
+            case "|":
+                outputCode.autoPush(
+                    `or${suffix} ${value}, ${regA}`,
+                )
+                break;
+            case "^":
+                outputCode.autoPush(
+                    `xor${suffix} ${value}, ${regA}`,
+                )
+                break;
+            default:
+                throwE(`Unable to perform "${operator}"`)
+                break;
         }
     }
     // outputCode.autoPush("# end")
