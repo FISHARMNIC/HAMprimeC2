@@ -2,15 +2,14 @@
 TODO:
 
     Make sure pushing __this__ type to stack on construcotr call
-    
-    Maybe Change overflow to only collect on same frame?
+
+    // Maybe Change overflow to only collect on same frame?
 
     Actually do signed and unsigned
     
     right a progam that visualizes memory writes by pointer, shows whats overriding stuff
 
-    need to have quick collection on assigned to params
-    
+    // maybe add a light threshhold on chunk exit
 
     NEW IDEAS
     | ----

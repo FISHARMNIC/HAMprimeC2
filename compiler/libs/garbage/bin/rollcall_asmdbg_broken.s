@@ -19,8 +19,9 @@ __rc_enterChunk__:
 	movl	chunk_index@GOTOFF(%ebx), %esi
 	cmpl	$2047, %esi
 	jg	.L2
-	leal	(%esi,%esi,2), %eax
-	leal	linked_chunks_prealloc@GOTOFF(%ebx,%eax,4), %eax
+	movl	%esi, %eax
+	sall	$4, %eax
+	leal	linked_chunks_prealloc@GOTOFF(%ebx,%eax), %eax
 .L3:
 	movl	__Roster@GOT(%ebx), %edx
 	addl	$1, %esi
@@ -47,7 +48,7 @@ __rc_enterChunk__:
 	.cfi_restore_state
 	subl	$12, %esp
 	.cfi_def_cfa_offset 28
-	pushl	$12
+	pushl	$16
 	.cfi_def_cfa_offset 32
 	call	malloc@PLT
 	addl	$16, %esp
@@ -86,27 +87,27 @@ __rc_exitChunk__:
 	je	.L6
 	movl	8(%esi), %ecx
 	testl	%ecx, %ecx
-	je	.L6
+	je	.L8
 	movl	__disable_gc__@GOT(%ebx), %eax
 	movl	(%eax), %eax
 	testl	%eax, %eax
-	jne	.L6
+	jne	.L8
 	movl	__Roster@GOT(%ebx), %eax
 	movl	(%esi), %ecx
 	movl	(%eax), %eax
 	testl	%eax, %eax
-	je	.L8
+	je	.L11
 	cmpl	%eax, %ecx
-	je	.L8
+	je	.L11
 	movl	__gc_dontClear__@GOT(%ebx), %edx
 	movl	%esi, 12(%esp)
 	xorl	%edi, %edi
 	movl	%ecx, %esi
 	movl	%edx, 8(%esp)
-	jmp	.L13
+	jmp	.L16
 	.p2align 4,,10
 	.p2align 3
-.L42:
+.L50:
 	subl	$8, %esp
 	.cfi_def_cfa_offset 56
 	pushl	%eax
@@ -117,43 +118,54 @@ __rc_exitChunk__:
 	addl	$16, %esp
 	.cfi_def_cfa_offset 48
 	cmpl	%eax, %esi
-	je	.L18
-.L43:
+	je	.L23
+.L51:
 	testl	%eax, %eax
-	je	.L18
-.L13:
+	je	.L23
+.L16:
 	movl	(%eax), %ecx
 	xorl	%ebp, %ebp
 	movl	(%ecx), %edx
 	testl	%edx, %edx
-	je	.L9
+	je	.L12
 	movl	(%edx), %ebp
-.L9:
+.L12:
 	movl	12(%ecx), %ecx
 	cmpl	%ecx, %ebp
-	je	.L41
-.L10:
+	je	.L49
+.L13:
 	movl	8(%esp), %edx
 	cmpl	%ecx, (%edx)
-	jne	.L42
-.L11:
+	jne	.L50
+.L14:
 	movl	%eax, %edi
 	movl	4(%eax), %eax
-.L45:
+.L54:
 	cmpl	%eax, %esi
-	jne	.L43
-.L18:
+	jne	.L51
+.L23:
 	movl	12(%esp), %esi
 	movl	chunk_index@GOTOFF(%ebx), %edx
-.L8:
+.L11:
 	cmpl	$2048, %edx
-	jg	.L44
+	jg	.L52
 	movl	$0, (%esi)
 	movl	$0, 4(%esi)
 	movl	$0, 8(%esi)
-.L16:
+.L19:
 	movl	__ChunkStack@GOTOFF(%ebx), %eax
 	movl	4(%eax), %eax
+	jmp	.L47
+	.p2align 4,,10
+	.p2align 3
+.L8:
+	cmpl	$2048, %edx
+	jg	.L53
+	movl	$0, (%esi)
+	xorl	%eax, %eax
+	movl	$0, 4(%esi)
+	movl	$0, 8(%esi)
+.L47:
 	movl	%eax, __ChunkStack@GOTOFF(%ebx)
 .L6:
 	addl	$28, %esp
@@ -174,18 +186,31 @@ __rc_exitChunk__:
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L41:
+.L49:
 	.cfi_restore_state
 	cmpl	48(%esp), %edx
-	ja	.L11
+	ja	.L14
 	cmpl	52(%esp), %edx
-	jnb	.L10
+	jnb	.L13
 	movl	%eax, %edi
 	movl	4(%eax), %eax
-	jmp	.L45
+	jmp	.L54
 	.p2align 4,,10
 	.p2align 3
-.L44:
+.L53:
+	subl	$12, %esp
+	.cfi_def_cfa_offset 60
+	pushl	%esi
+	.cfi_def_cfa_offset 64
+	call	free@PLT
+	movl	__ChunkStack@GOTOFF(%ebx), %eax
+	addl	$16, %esp
+	.cfi_def_cfa_offset 48
+	movl	4(%eax), %eax
+	jmp	.L47
+	.p2align 4,,10
+	.p2align 3
+.L52:
 	subl	$12, %esp
 	.cfi_def_cfa_offset 60
 	pushl	%esi
@@ -193,12 +218,12 @@ __rc_exitChunk__:
 	call	free@PLT
 	addl	$16, %esp
 	.cfi_def_cfa_offset 48
-	jmp	.L16
+	jmp	.L19
 	.cfi_endproc
 .LFE23:
 	.size	__rc_exitChunk__, .-__rc_exitChunk__
 	.local	linked_chunks_prealloc
-	.comm	linked_chunks_prealloc,24576,32
+	.comm	linked_chunks_prealloc,32768,32
 	.globl	chunk_index
 	.bss
 	.align 4

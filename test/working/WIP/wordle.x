@@ -1,12 +1,53 @@
-/* issue, doing, "\x1B[43m" + c + CRESET where CRESET is a glob string doesnt work */
-create CRESET <- "\x1B[0m";
+#include sys strings
 
-printYellow function<char c>
+create CGREEN  <- "\x1B[42m ";
+create CYELLOW <- "\x1B[43m ";
+create CGRAY   <- "\x1B[40m ";
+create CRESET  <- " \x1B[0m";
+
+printColor function<string color, char c>
 {
-  printf("%s", "\x1B[43m" + c + "\x1B[0m");
+    printf("%s", color + c + CRESET);
 }
+ 
+create answer <- "canoe";
 
+tryWord function<string word>
+{
+    printf("║");
+    create i <- 0;
+    while(i <: 5)
+    {
+        create letter <- word[i];
+        if(strincludes(answer, letter))
+        {
+            if(letter == answer[i])
+            {
+                printColor(CGREEN, letter);
+            }
+            else
+            {
+                printColor(CYELLOW, letter);
+            }
+        }
+        else
+        {
+            printColor(CGRAY, letter);
+        }
+        i <- i + 1;
+    }
+
+    print_("║");
+
+    //return(word == answer);
+}
 entry function<>
 {
-    printYellow('h');
+    print_("\nWelcome to Wordle!\n\n╔═══════════════╗");
+    tryWord("hello");
+    tryWord("adore");
+    tryWord("canes");
+    tryWord("canoe");
+    tryWord("-----");
+    print_("╚═══════════════╝");
 }

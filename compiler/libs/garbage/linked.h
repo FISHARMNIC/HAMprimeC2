@@ -25,6 +25,7 @@ typedef struct linked_chunks_t
     linked_t* address;
     struct linked_chunks_t* next;
     int size;
+    int __po2_padding__;
 } linked_chunks_t;
 
 //linked_t* __linked_readIndex(linked_t* list, int index);

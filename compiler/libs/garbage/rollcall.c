@@ -153,8 +153,10 @@ void __rc_collect_overflow__()
         }
         else
         {
-            //printf("SKIP\n");
-            goto skip;
+            dbgprint("SKIP\n");
+            previous = list;
+            list = list->next;
+            //goto skip;
         }
 
         int *owner_should_point_to = (int *)roster_entry->pointer;
@@ -170,7 +172,7 @@ void __rc_collect_overflow__()
         }
         else
         {
-            skip:
+            //skip:
             dbgprint("\t ^- Skipped \n");
             previous = list;
             list = list->next;

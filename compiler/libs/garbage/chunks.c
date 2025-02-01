@@ -4,22 +4,33 @@ issue must be something involving reading chunk pointer after data it was pointi
 
 */
 
-
 // #define _DEBUG
 
 #include "chunks.h"
 
-
-/*
-Malloc on enter chunk is super expensive. Maybe pre-alloc circular or smth??
+#define CHUNK_EXIT_FREE()                                                    \
+    if (UNLIKELY(chunk_index > MAX_PREALLOCED_CHUNKS))                       \
+    {                                                                        \
+        free(save);                                                          \
+    }                                                                        \
+    else                                                                     \
+    {                                                                        \
+        save->address = 0;                                                   \
+        save->next = 0;                                                      \
+        save->size = 0;                                                      \
+    }                                                                        \
+                                                                             \
+    __ChunkStack = __ChunkStack->next;                                       \
+/*                                                                           \
+Malloc on enter chunk is super expensive. Maybe pre-alloc circular or smth?? \
 */
 
 // pointer to chunk pointers, which are just LL ptrs
-// so really an array where each item points to a part of the LL  
-linked_chunks_t* __ChunkStack = (linked_chunks_t*) 0;
+// so really an array where each item points to a part of the LL
+linked_chunks_t *__ChunkStack = (linked_chunks_t *)0;
 
 extern linked_t *__Roster;
-extern void* __gc_dontClear__;
+extern void *__gc_dontClear__;
 extern int __disable_gc__;
 
 int chunk_index = 0;
@@ -28,12 +39,12 @@ static linked_chunks_t linked_chunks_prealloc[MAX_PREALLOCED_CHUNKS];
 
 void __rc_enterChunk__()
 {
-    linked_chunks_t* newItem;
+    linked_chunks_t *newItem;
 
-    //newItem = &linked_chunks_prealloc[chunk_index];
-    //newItem = malloc(sizeof(linked_chunks_t));
+    // newItem = &linked_chunks_prealloc[chunk_index];
+    // newItem = malloc(sizeof(linked_chunks_t));
 
-    if(LIKELY(chunk_index < MAX_PREALLOCED_CHUNKS))
+    if (LIKELY(chunk_index < MAX_PREALLOCED_CHUNKS))
     {
         newItem = &linked_chunks_prealloc[chunk_index];
     }
@@ -53,38 +64,42 @@ void __rc_enterChunk__()
     dbgprint(">>> Entering chunk %p\n", newItem);
 }
 
-void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
+void __rc_exitChunk__(int **old_frame_ebp, int **old_frame_esp)
 {
-    linked_chunks_t* save = __ChunkStack;
+    linked_chunks_t *save = __ChunkStack;
     dbgprint(">>> Reading chunk %p\n", save);
 
     chunk_index--;
 
-    if(save == 0 || save->size == 0 || __disable_gc__)
+    if (save == 0 || save->size == 0 || __disable_gc__)
     {
         dbgprint("Empty or null chunk\n");
+        if (LIKELY(save != 0))
+        {
+            CHUNK_EXIT_FREE();
+        }
         return;
     }
 
     dbgprint("||| - Old frame is between %p -> %p [%i?]\n", old_frame_esp, old_frame_ebp, old_frame_esp <= old_frame_ebp)
-    
-    ///assert(old_frame_esp <= old_frame_ebp);
-    
-    linked_t* end = save->address;
-    linked_t* list = __Roster;
-    linked_t *previous = (linked_t*)0;
+
+    // assert(old_frame_esp <= old_frame_ebp);
+
+    linked_t *end = save->address;
+    linked_t *list = __Roster;
+    linked_t *previous = (linked_t *)0;
 
     dbgprint("Chunk has %d bytes\n", save->size);
 
-    while(list != end && list != 0)
+    while (list != end && list != 0)
     {
         roster_entry_t *roster_entry = list->item;
-        //assert(roster_entry != 0);
+        // assert(roster_entry != 0);
 
         int **owner_reference = (int **)roster_entry->owner;
         int *owner_points_to = 0;
 
-        if(owner_reference != 0)
+        if (owner_reference != 0)
         {
             owner_points_to = *owner_reference;
         }
@@ -95,7 +110,7 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
 
         // if the datas owner now points to a different address, this data is considered "lost"
         // __gc_dontClear__ is used in allocation-on-return. It's similar to a temporary owner
-        
+
         if (((owner_points_to != owner_should_point_to) || (owner_reference <= old_frame_ebp && owner_reference >= old_frame_esp)) && (__gc_dontClear__ != owner_should_point_to))
         {
             dbgprint("\t ^- Discarding item was %p now %p\n", owner_should_point_to, owner_points_to);
@@ -109,16 +124,5 @@ void __rc_exitChunk__(int ** old_frame_ebp, int ** old_frame_esp)
         }
     }
 
-    if(UNLIKELY(chunk_index > MAX_PREALLOCED_CHUNKS))
-    {
-        free(save);
-    }
-    else
-    {
-        save->address = 0;
-        save->next = 0;
-        save->size = 0;
-    }
-
-    __ChunkStack = __ChunkStack->next;
+    CHUNK_EXIT_FREE();
 }
