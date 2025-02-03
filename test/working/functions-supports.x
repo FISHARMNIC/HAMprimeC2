@@ -48,5 +48,5 @@ entry function<> -> u32
     create food <- Item<name:"Burger",price:15>;
     create tv   <- Item<name:"Samsung",price:100>;
     
-    print_(add(food,tv));
+    print_(`The final price is: ${add(food,tv)}`);
 }

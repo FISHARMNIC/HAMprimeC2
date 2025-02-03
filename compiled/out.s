@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Sun Feb 02 2025 21:59:08 GMT-0700 (Mountain Standard Time)
+Compiled with love on Sun Feb 02 2025 22:40:37 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -20,28 +20,20 @@ Compiled with love on Sun Feb 02 2025 21:59:08 GMT-0700 (Mountain Standard Time)
 .extern ___TEMPORARY_OWNER___
 
 ######## user data section ########
-.type	inner, @function
-.global inner
-__ALLOCFOR_inner__ = 4
-.type	medium, @function
-.global medium
-__ALLOCFOR_medium__ = 4
 .type	entry, @function
 .global entry
-__ALLOCFOR_entry__ = 8
+.4byte 5
+__STRING0__: .asciz "abc "
+.4byte 5
+__STRING1__: .asciz " def"
+__ALLOCFOR_entry__ = 0
 ###################################
 .text
 
 #### compiler initation section ###
 __init_for_out__:
 
-#//------- line: inner function <  > ------- #
-#//------- line: { ; ------- #
-# {
-#//------- line: medium function <  > ------- #
-#//------- line: { ; ------- #
-# {
-#//------- line: entry function <  > ------- #
+#//------- line: entry function <  > -> u32 ------- #
 #//------- line: { ; ------- #
 # {
 # auto-return OK for entry function
@@ -56,101 +48,6 @@ call entry
 ret
 
 ###################################
-inner:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR_inner__, %esp # total stack allocation
-
-# pushing multi-line clobbers
-call __rc_enterChunk__
-# popping multi-line clobbers
-	#//------- line: 1 ------- #
-	#//------- line: u32 [ 1 ] ------- #
-	# pushing clobbers
-	push %ecx
-	# Asked for 1 allocations of "u32"
-	pushl $0
-	pushl $4
-	call __rc_allocate__
-	add $8, %esp
-	# popping clobbers
-	pop %ecx
-	mov %eax, %ecx
-	#//------- line: create someAlloc <- %ecx ------- #
-	# creating variable "someAlloc" of type "array:dynamic" stack?=true
-	# Loading local variable "someAlloc" @-4(%ebp) with "%ecx"
-	# optimized move from %ecx to -4(%ebp)
-	mov %ecx, -4(%ebp)
-	# requesting ownership for someAlloc (create)
-	lea -4(%ebp), %eax
-	push %eax
-	push %ecx
-	call __rc_requestOwnership__
-	add $8, %esp
-	#//------- line: } ------- #
-# }
-push %eax
-push %esp
-push %ebp
-call __rc_exitChunk__
-add $8, %esp
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
-# someAlloc: 4
-medium:
-push %ebp
-mov %esp, %ebp
-sub $__ALLOCFOR_medium__, %esp # total stack allocation
-
-# pushing multi-line clobbers
-call __rc_enterChunk__
-# popping multi-line clobbers
-	#//------- line: 1 ------- #
-	#//------- line: u32 [ 1 ] ------- #
-	# pushing clobbers
-	push %ecx
-	# Asked for 1 allocations of "u32"
-	pushl $0
-	pushl $4
-	call __rc_allocate__
-	add $8, %esp
-	# popping clobbers
-	pop %ecx
-	mov %eax, %ecx
-	#//------- line: create someAlloc <- %ecx ------- #
-	# creating variable "someAlloc" of type "array:dynamic" stack?=true
-	# Loading local variable "someAlloc" @-4(%ebp) with "%ecx"
-	# optimized move from %ecx to -4(%ebp)
-	mov %ecx, -4(%ebp)
-	# requesting ownership for someAlloc (create)
-	lea -4(%ebp), %eax
-	push %eax
-	push %ecx
-	call __rc_requestOwnership__
-	add $8, %esp
-	#//------- line: inner (  ) ------- #
-	# pushing clobbers
-	# Calling function inner
-	call inner
-	mov %eax, %ecx
-	# popping clobbers
-	# clobbering "c"
-	#//------- line: } ------- #
-# }
-push %eax
-push %esp
-push %ebp
-call __rc_exitChunk__
-add $8, %esp
-pop %eax
-
-mov %ebp, %esp
-pop %ebp
-ret
-# someAlloc: 4
 entry:
 push %ebp
 mov %esp, %ebp
@@ -159,70 +56,36 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
-	#//------- line: create bob ------- #
-	# creating variable "bob" of type "u32:borrowed" stack?=true
-	# Loading local variable "bob" @-4(%ebp) with "0"
-	# optimized move from 0 to -4(%ebp)
-	movl $0, -4(%ebp)
-	#//------- line: 0 ------- #
-	#//------- line: create i <- 0 ------- #
-	# creating variable "i" of type "u32:borrowed" stack?=true
-	# Loading local variable "i" @-8(%ebp) with "0"
-	# optimized move from 0 to -8(%ebp)
-	movl $0, -8(%ebp)
-	__LABEL0__:
-	#//------- line: i <: 1000000 ------- #
-	# note, read STACK VAR i -> -8(%ebp)
-	mov -8(%ebp), %eax
-	mov $0, %cl
-	cmp $1000000, %eax
-	setl %cl
-	#//------- line: while ( %cl ) ------- #
-	# comparison for WHILE loop
-	cmpb $1, %cl
-	jne __LABEL1__
-	#//------- line: { ; ------- #
-	# {
-		#//------- line: 1 ------- #
-		#//------- line: u32 [ 1 ] ------- #
-		# pushing clobbers
-		push %ecx
-		# Asked for 1 allocations of "u32"
-		pushl $0
-		pushl $4
-		call __rc_allocate__
-		add $8, %esp
-		# popping clobbers
-		pop %ecx
-		mov %eax, %ecx
-		#//------- line: bob <- %ecx ------- #
-		# SETTING bob <- %ecx
-		# requesting ownership for bob (set). 
-		lea -4(%ebp), %eax
-		push %eax
-		push %ecx
-		call __rc_requestOwnership__
-		add $8, %esp
-		#//------- line: medium (  ) ------- #
-		# pushing clobbers
-		# Calling function medium
-		call medium
-		mov %eax, %ecx
-		# popping clobbers
-		# clobbering "c"
-		#//------- line: i + 1 ------- #
-		# note, read STACK VAR i -> -8(%ebp)
-		mov -8(%ebp), %eax
-		add $1, %eax
-		mov %eax, %ecx
-		#//------- line: i <- %ecx ------- #
-		# SETTING i <- %ecx
-		# optimized move from %ecx to -8(%ebp)
-		mov %ecx, -8(%ebp)
-		#//------- line: } ------- #
-	# }
-	jmp __LABEL0__
-	__LABEL1__:
+	#//------- line: `abc ${123 + 456} def` ------- #
+	pushw __disable_gc__; movw $1, __disable_gc__
+	#//------- line: 123 + 456 ------- #
+	mov $123, %eax
+	add $456, %eax
+	mov %eax, %ecx
+	#//------- line: %ecx ------- #
+	#//------- line: "abc " ------- #
+	#//------- line: " def" ------- #
+	# setting register "d" to "__STRING1__"
+	movl $__STRING1__, %edx
+	push %edx
+	push %ecx
+	call itos
+	add $4, %esp
+	push %eax
+	# setting register "d" to "__STRING0__"
+	movl $__STRING0__, %edx
+	push %edx
+	pushl $3
+	call strjoinmany
+	add $16, %esp
+	mov %eax, %esi
+	popw __disable_gc__
+	#//------- line: print_ ( %esi ) ------- #
+	# pushing multi-line clobbers
+	push %esi
+	call puts
+	add $4, %esp
+	# popping multi-line clobbers
 	#//------- line: } ------- #
 # }
 call __rc_free_all__
@@ -231,6 +94,4 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# bob: 4
-# i: 8
 

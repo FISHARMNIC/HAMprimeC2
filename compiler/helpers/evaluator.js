@@ -16,6 +16,7 @@ function evaluate(line) {
     //if(line.includes("format")) console.log(":::", line)
     // just for macros
 
+    //console.log(line)
     if(line.length != 0)
         outputCode.autoPush(`#//------- line: ${line.join(" ")} ------- #`)
     for (var wordNum = 0; wordNum < line.length; wordNum++) {

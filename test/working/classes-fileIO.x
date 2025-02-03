@@ -90,7 +90,6 @@ iofile format
     {
         create joe <- this.getLine();
         outnum <- atoi(joe);
-        print_(`Test:: ${outnum}`);
         return this;
     }
 

@@ -2415,8 +2415,8 @@ var formats = {
 
         var foundOperatorFn = parentType.formatPtr.operators[operator].find(e => {
             return e.parameters.every((p, i) => {
-                if (!helpers.types.areEqualExtraLoose(p.type, helpers.types.guessType(paramsNoComma[i])))
-                    console.log(helpers.types.convertTypeObjToName(p.type), " but given ", helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[i])), `(${paramsNoComma[i]})`)
+                //if (!helpers.types.areEqualExtraLoose(p.type, helpers.types.guessType(paramsNoComma[i])))
+                    //console.log(helpers.types.convertTypeObjToName(p.type), " but given ", helpers.types.convertTypeObjToName(helpers.types.guessType(paramsNoComma[i])), `(${paramsNoComma[i]})`)
                 return helpers.types.areEqualExtraLoose(p.type, helpers.types.guessType(paramsNoComma[i]))
             })
         })
@@ -2501,7 +2501,19 @@ var strings = {
                 splitted = splitted.slice(1, splitted.length - 1)
 
                 finalArr.push(stringBuild)
-                finalArr.push(evaluator(splitted))
+                //throwE("Issue is to run nested")
+                
+                var splitted2 = nest.nest(splitted);
+                splitted2 = nest.orderDeepestFirst(splitted2)
+                splitted2 = nest.runDeepestFirst(splitted2)
+                
+               // throwE(splitted2)
+                if(typeof splitted2 == "string")
+                {
+                    splitted2 = [splitted2]
+                }
+
+                finalArr.push(evaluator(splitted2))
                 stringBuild = ""
 
                 letterNum += splittedLen - 1
@@ -2512,6 +2524,7 @@ var strings = {
                 override = false
             }
         }
+
         finalArr.push(stringBuild)
         finalArr = finalArr.map(x => {
             if (typeof (x) == "string") {
@@ -2538,8 +2551,6 @@ var strings = {
         finalArr = finalArr.slice(0, finalArr.length - 1)
 
         var evaluatedOut = stringAdder(finalArr)
-
-        //throwE("template str WIP", finalArr, evaluatedOut)
 
         assembly.restoreGCActive()
 
