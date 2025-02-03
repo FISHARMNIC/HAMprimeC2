@@ -33,15 +33,15 @@ __rc_quick_check__:
     ret
 
 //__rc_quick_check__:                   
-    cmpl $BYTES_PER_GC, __rc_total_allocated_bytes__       
-    jl 0f                
-    cmpl $0, __disable_gc__          
-    jne 0f  
-    pusha             
-    call __rc_collect__ 
-    popa 
-    0:                                                   
-    ret                 
+    // cmpl $BYTES_PER_GC, __rc_total_allocated_bytes__       
+    // jl 0f                
+    // cmpl $0, __disable_gc__          
+    // jne 0f  
+    // pusha             
+    // call __rc_collect__ 
+    // popa 
+    // 0:                                                   
+    // ret                 
 
 // I forgot why I wrote this in assembly
 __rc_requestOwnership__:

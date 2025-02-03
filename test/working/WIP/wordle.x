@@ -1,5 +1,7 @@
 #include sys strings
 
+forward time function<u32 t> -> u32;
+
 create CGREEN  <- "\x1B[42m ";
 create CYELLOW <- "\x1B[43m ";
 create CGRAY   <- "\x1B[40m ";
@@ -10,7 +12,8 @@ printColor function<string color, char c>
     printf("%s", color + c + CRESET);
 }
  
-create answer <- "canoe";
+create string:array words;
+create string answer;
 
 tryWord function<string word>
 {
@@ -37,17 +40,88 @@ tryWord function<string word>
         i <- i + 1;
     }
 
-    print_("║");
-
+    printf("║");
     //return(word == answer);
 }
+
+getInput function<> -> string
+{
+    create str <- char[6];
+    scanf("%5s", str);
+    /* todo: flush as seen here: https://stackoverflow.com/questions/28297306/how-to-limit-input-length-with-scanf */
+    return(string:(str));
+}
+
+game function<>
+{
+    create tries <- 1;
+
+    print_("\nWelcome to Wordle! You have 5 tries to guess the secret word\n");
+    
+    printf("Enter your starting word: ");
+    
+    create input <- getInput();
+
+    print_("\n╔═══════════════╗");
+
+    tryWord(input);
+    
+    while((input != answer) && (tries <: 5))
+    {
+        printf(" Guess: ");
+        input <- getInput();
+        tryWord(input);
+        tries <- tries + 1;
+    }
+
+    print_("\n╚═══════════════╝\n\n");
+
+    if(tries == 1)
+    {
+        print_("You got it in 1 try!");
+    }
+    elif(input != answer)
+    {
+        print_(`You couldn't get it. The word was: ${answer}`);
+    }
+    else
+    {
+        print_(`You got it in ${tries} tries!`);
+    }
+}
+
 entry function<>
 {
-    print_("\nWelcome to Wordle!\n\n╔═══════════════╗");
-    tryWord("hello");
-    tryWord("adore");
-    tryWord("canes");
-    tryWord("canoe");
-    tryWord("-----");
-    print_("╚═══════════════╝");
+
+    words <- ({
+        "apple",
+        "brave",
+        "cloud",
+        "drink",
+        "eagle",
+        "flame",
+        "grace",
+        "heart",
+        "jelly",
+        "knife",
+        "light",
+        "magic",
+        "noble",
+        "ocean",
+        "pride",
+        "queen",
+        "river",
+        "stone",
+        "truth",
+        "voice",
+        "water",
+        "yield",
+        "zebra",
+    });
+
+    srand(time(0)); 
+
+    answer <- words[rand() % len(words)];
+
+    game();
 }

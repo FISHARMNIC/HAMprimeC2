@@ -1,5 +1,9 @@
 	.file	"chunks.c"
 	.text
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.LC0:
+	.string	"[ROLL CALL] Malloc failed!"
+	.text
 	.p2align 4
 	.globl	__rc_enterChunk__
 	.type	__rc_enterChunk__, @function
@@ -53,7 +57,16 @@ __rc_enterChunk__:
 	call	malloc@PLT
 	addl	$16, %esp
 	.cfi_def_cfa_offset 16
-	jmp	.L3
+	testl	%eax, %eax
+	jne	.L3
+	subl	$12, %esp
+	.cfi_def_cfa_offset 28
+	leal	.LC0@GOTOFF(%ebx), %eax
+	pushl	%eax
+	.cfi_def_cfa_offset 32
+	call	perror@PLT
+	movl	$1, (%esp)
+	call	exit@PLT
 	.cfi_endproc
 .LFE22:
 	.size	__rc_enterChunk__, .-__rc_enterChunk__

@@ -40,10 +40,7 @@ static linked_chunks_t linked_chunks_prealloc[MAX_PREALLOCED_CHUNKS];
 void __rc_enterChunk__()
 {
     linked_chunks_t *newItem;
-
-    // newItem = &linked_chunks_prealloc[chunk_index];
-    // newItem = malloc(sizeof(linked_chunks_t));
-
+    
     if (LIKELY(chunk_index < MAX_PREALLOCED_CHUNKS))
     {
         newItem = &linked_chunks_prealloc[chunk_index];
@@ -51,6 +48,11 @@ void __rc_enterChunk__()
     else
     {
         newItem = malloc(sizeof(linked_chunks_t));
+        if(UNLIKELY(newItem == 0))
+        {
+            perror("[ROLL CALL] Malloc failed!");
+            exit(1);
+        }
     }
 
     chunk_index++;

@@ -1372,9 +1372,9 @@ function evaluate(line) {
             }
             else if (word == "len") {
                 if (offsetWord(1) != "(") {
-                    throwE(`Print must be called like a function with parenthesis`)
+                    throwE(`Len must be called like a function with parenthesis`)
                 } else if (offsetWord(3) != ")") {
-                    throwE(`Print can only take one value`)
+                    throwE(`Len can only take one value`)
                 }
                 //console.log("====", offsetWord(2))
                 line[wordNum] = actions.arrays.getLength(offsetWord(2))

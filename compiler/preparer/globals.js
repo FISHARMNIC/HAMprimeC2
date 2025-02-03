@@ -102,6 +102,14 @@ global.userFunctions = {           // Object : {function name: {func name, param
         variadic: true,
         returnType: defines.types.u32
     },
+    "scanf": {
+        name: 'scanf',
+        parameters: [
+            { name: "format", type: defines.types.conststr }
+        ],
+        variadic: true,
+        returnType: defines.types.u32
+    },
     "strcmp": {
         name: 'strcmp',
         parameters: [
@@ -238,6 +246,14 @@ global.userFunctions = {           // Object : {function name: {func name, param
     "rand": {
         name: "rand",
         parameters: [],
+        variadic: false,
+        returnType: defines.types.u32
+    },
+    "srand": {
+        name: "srand",
+        parameters: [
+            { name: "seed", type: defines.types.u32 },
+        ],
         variadic: false,
         returnType: defines.types.u32
     },
