@@ -45,8 +45,10 @@ entry function<>
 {
     create family <- {"Dad", "Mom", "Dog", "Cat"};
     create ages   <- {1,2,3,4,5,6,7,8};
+    create floats <- {1.11,2.22,3.33,4.44,5.55,6.66,7.77,8.88};
     
     create people <- Person[3];
+    
     people[0] <- Person<name:"Bob",  age: 1>;
     people[1] <- Person<name:"Joe",  age: 2>;
     people[2] <- Person<name:"Phil", age: 3>;
@@ -58,6 +60,10 @@ entry function<>
 
     /* integers are statics */
     map(ages, lambda<u32 value> {
+        return (value * value);
+    });
+    
+     map(floats, lambda<f32 value> {
         return (value * value);
     });
     
@@ -77,6 +83,7 @@ entry function<>
 
     print_(family);
     print_(ages);
+    print_(floats);
     print_(people);
 
     return 0;

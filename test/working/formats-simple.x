@@ -1,4 +1,7 @@
-/* CURRENTLY BROKEN DUE TO PARSER ISSUE */
+/* Note that there is currently a parser issue / i am planning to change format instantiations
+    * If you do nested instantiations in the form of A<B<...>>, the >> will cause issues
+    * So please write A<B...> > (note the space)
+ */
 
 Person format
 {
@@ -21,7 +24,7 @@ giveNewID function<Student stud, u32 new_id> -> u32
 entry function<> -> u32
 {
     /* ISSUE: doesn't split >>, thinks never gets closed */
-    create bob <- Student<id:123,info:Person<age:15,name:"bob">>;
+    create bob <- Student<id:123,info:Person<age:15,name:"bob"> >;
 
     giveNewID(bob, 321);
     bob.info.age <- 16;

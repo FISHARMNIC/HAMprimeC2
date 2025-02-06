@@ -990,7 +990,8 @@ function evaluate(line) {
 
                 else if ("arrayElements" in dataType) {
                     var arr_type = dataType.size;
-                    var printFn = `print_arr${arr_type}`
+                    //console.log(dataType)
+                    var printFn = `print_arr${dataType.arrayElements.float? "f" : ""}${arr_type}`
 
                     if (helpers.types.areEqualNonStrict(dataType.arrayElements, defines.types.string)) {
                         printFn = `print_stringArr`
