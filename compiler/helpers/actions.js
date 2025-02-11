@@ -1478,12 +1478,13 @@ var functions = {
 
         //console.log(`\tCalling ${fname} with ${args}, ${typeIfFromAddress}`)
         //console.log(args.filter(x => x != ","))
-        if (typeof args != "string") {
-            var filtered = args.filter(x => x != ",")
-            if (typeIfFromAddress == null && !userFunctions[fname].variadic && (filtered.length != userFunctions[fname].parameters.length)) {
-                throwE(`Function ${fname} expects ${userFunctions[fname].parameters.length} parameter(s), given ${filtered.length}`)
-            }
-        }
+        // if (typeof args != "string") {
+        //     var filtered = args.filter(x => x != ",")
+        //     if (typeIfFromAddress == null && !userFunctions[fname].variadic && (filtered.length != userFunctions[fname].parameters.length)) {
+        //         //throwE(userFunctions)
+        //         throwE(`Function ${fname} expects ${userFunctions[fname].parameters.length} parameter(s), given ${filtered.length}`)
+        //     }
+        // }
 
         if (typeIfFromAddress != null) {
             // if ("__not_a_function__" in userFunctions) {
@@ -2178,18 +2179,33 @@ var formats = {
                 returnType: ret,
                 totalAlloc: 0,
                 saveRegs: false,
-                isPublic: inPublicMode
+                isPublic: inPublicMode,
+                overloads: []
             }
 
             //throwE("not done", _data)
+            //throwE(userFunctions)
+            if (fname in userFunctions) {
+                //throwE("METHOD OVERLOAD WIP")
+                var newlbl = `${fname}__overload__${helpers.functions.newUniqueStr()}__`
+                if (!("overloads" in userFunctions[fname])) {
+                    throwE(`Cannot overload "${fname}". It might be an internal function.`)
+                }
+                userFunctions[fname].overloads.push(_data)
+                _data.overloads.push(userFunctions[fname]) // circular so that can read overloads from overloads itself
+                //throwE("overloads WIP. Can be created but not called yet", userFunctions[fname])
+                fname = newlbl
+                _data.name = fname
+                //throwE(fname)
+                //throwE(`Function "${fname}" already exists, and overloads are not yet implemented`)
+            }
 
             _scope.methods[fname] = _data
-
-            //throwE(userFormats)
             userFormats[_scope.name] = _scope
 
 
             userFunctions[fname] = _data
+
 
             if (!nextIsForward) {
                 requestBracket = {
