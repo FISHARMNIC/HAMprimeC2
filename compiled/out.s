@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Thu Feb 13 2025 10:59:32 GMT-0700 (Mountain Standard Time)
+Compiled with love on Thu Feb 13 2025 12:10:57 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -22,17 +22,21 @@ Compiled with love on Thu Feb 13 2025 10:59:32 GMT-0700 (Mountain Standard Time)
 ######## user data section ########
 .type	entry, @function
 .global entry
-.4byte 5
-__STRING0__: .asciz "ABC "
 .4byte 6
-__STRING1__: .asciz " BOB "
-__ALLOCFOR_entry__ = 4
+__STRING0__: .asciz "HELLO"
+.4byte 5
+__STRING1__: .asciz "ABC "
+.4byte 6
+__STRING2__: .asciz " BOB "
+__ALLOCFOR_entry__ = 8
 ###################################
 .text
 
 #### compiler initation section ###
 __init_for_out__:
 
+#//------- line: u32 sz ------- #
+#//------- line: forward __rc_allocate_str__ function < sz > -> p32 ------- #
 #//------- line: entry function <  > ------- #
 #//------- line: { ; ------- #
 # {
@@ -56,7 +60,25 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
-	#//------- line: "ABC " + 123 + " BOB " + 123 . 456 ------- #
+	#//------- line: "HELLO" ------- #
+	#//------- line: create someStr <- __STRING0__ ------- #
+	# creating variable "someStr" of type "conststr:borrowed" stack?=true
+	# converting conststr "__STRING0__" to dynamic string
+	pushl $__STRING0__
+	call cptos
+	add $4, %esp
+	mov %eax, %ecx
+	# Loading local variable "someStr" @-4(%ebp) with "%ecx"
+	# optimized move from %ecx to -4(%ebp)
+	mov %ecx, -4(%ebp)
+	# requesting ownership for someStr (create)
+	lea -4(%ebp), %eax
+	push %eax
+	push %ecx
+	call __rc_requestOwnership__
+	add $8, %esp
+	#//------- line: someStr + "ABC " + 123 + " BOB " + 123 . 456 ------- #
+	# note, read STACK VAR someStr -> -4(%ebp)
 	# setting register "c" to "1123477881"
 	mov $1123477881, %ecx
 	pushw __disable_gc__; movw $1, __disable_gc__
@@ -64,37 +86,38 @@ call __rc_enterChunk__
 	call ftos
 	add $4, %esp
 	push %eax
-	# setting register "d" to "__STRING1__"
-	movl $__STRING1__, %edx
+	# setting register "d" to "__STRING2__"
+	movl $__STRING2__, %edx
 	push %edx
 	pushl $123
 	call itos
 	add $4, %esp
 	push %eax
-	# setting register "d" to "__STRING0__"
-	movl $__STRING0__, %edx
+	# setting register "d" to "__STRING1__"
+	movl $__STRING1__, %edx
 	push %edx
-	pushl $4
+	push -4(%ebp)
+	pushl $5
 	call strjoinmany
-	add $20, %esp
+	add $24, %esp
 	mov %eax, %esi
 	popw __disable_gc__
 	#//------- line: create something <- %esi ------- #
 	# creating variable "something" of type "string:dynamic" stack?=true
-	# Loading local variable "something" @-4(%ebp) with "%esi"
-	# optimized move from %esi to -4(%ebp)
-	mov %esi, -4(%ebp)
+	# Loading local variable "something" @-8(%ebp) with "%esi"
+	# optimized move from %esi to -8(%ebp)
+	mov %esi, -8(%ebp)
 	# requesting ownership for something (create)
-	lea -4(%ebp), %eax
+	lea -8(%ebp), %eax
 	push %eax
 	push %esi
 	call __rc_requestOwnership__
 	add $8, %esp
 	#//------- line: something ------- #
-	# note, read STACK VAR something -> -4(%ebp)
-	#//------- line: print_ ( -4(%ebp) ) ------- #
+	# note, read STACK VAR something -> -8(%ebp)
+	#//------- line: print_ ( -8(%ebp) ) ------- #
 	# pushing multi-line clobbers
-	push -4(%ebp)
+	push -8(%ebp)
 	call puts
 	add $4, %esp
 	# popping multi-line clobbers
@@ -106,5 +129,6 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# something: 4
+# someStr: 4
+# something: 8
 

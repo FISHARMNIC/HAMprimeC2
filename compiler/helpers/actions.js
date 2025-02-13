@@ -1094,7 +1094,8 @@ var allocations = {
         var label = helpers.formatters.stringLiteral(helpers.counters.stringLiterals++)
         outputCode.data.push(
             `.4byte ${value.length + 1}`,
-            `${label}: .asciz "${value}"`
+            `${label}: .asciz "${value}"`,
+            //`${label}END_:`
         )
         allStringLiterals[value] = label
         globalVariables[label] = newGlobalVar(defines.types.conststr)

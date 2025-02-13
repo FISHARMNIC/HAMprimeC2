@@ -1,6 +1,18 @@
 #ifndef SINC_H
 #define SINC_H
 
+// #define ALLOC_ACCESS_ER(x) *((roster_entry_t **)((int*)(x) - 1))
+// #define ALLOC_ACCESS_PT(x) *((void **)((int*)(x) - 2))
+// #define ALLOC_ACCESS_USZ(x) *(((int*)(x) - 3))
+// #define ALLOC_ACCESS_ASZ(x) *(((int*)(x) - 4))
+// #define ALLOC_ACCESS_RT(x) *(((int*)(x)   - 5))
+// #define AALOC_ACCESS_OW(x) *((void **)((int*)(x) - 6))
+
+// for strings
+#define ALLOC_ACCESS_USZ(x) *(int*)(x - 4)
+#define ALLOC_ACCESS_ASZ(x) *(int*)(x - 8)
+
+
 void *__rc_allocate__(int, int);
 void *__rc_allocate_with_tempowner__(int, int);
 void __rc_requestOwnership__(void *, void *);

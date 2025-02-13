@@ -1,24 +1,54 @@
 #include "sinc.h"
 #include "stringUtil.c"
 
+char *__rc_allocate_str__(int slen)
+{
+    int alen = slen << 2;
+    char* allocation = __rc_allocate_with_tempowner__(alen, 0);
+    //printf("::%d\n", ALLOC_ACCESS_SZ(allocation));
+
+    return allocation;
+}
+
 char *strjoinmany(int numberOfStrings, ...)
 {
     asm volatile("pusha");
     // printf("STRING JOIN %i\n", numberOfStrings);
     char **stringsbase = (char **)(&numberOfStrings + 1);
-    int totalAllocationSize = 0;
+
+    int neededAllocSize = 0;
+    int givenAllocSize = 0;
 
     int i = 0;
     for (; i < numberOfStrings; i++)
     {
         // printf("LENGTHING %i\n", i);
         // fflush(stdout);
-        totalAllocationSize += strlen(stringsbase[i]);
-        // printf("\t%i\n", totalAllocationSize);
+        char *str = stringsbase[i];
+        int strsz = ALLOC_ACCESS_USZ(str);
+        int allocsz;
+
+        // if(is_dynamic)
+        // {
+        //     if(allocSz > givenAllocSize)
+        //     {
+        //         givenAllocSize = allocSz;
+        //     }
+        //     neededAllocSize += strsz;
+        // }
+        // else
+        // {
+            neededAllocSize += strsz;
+        //}
+
+        printf("\t%10s of %i %i\n", str, strsz, ALLOC_ACCESS_ASZ(str));
     }
 
+    printf("-- needed space is: %i\n", neededAllocSize);
+    printf("-- given  space is: %i\n", givenAllocSize);
+
     // printf("STRJOIN ALLOCATING\n");
-    char *allocatedBufferOrigin = __rc_allocate__(totalAllocationSize + 1, 0);
+    char *allocatedBufferOrigin = __rc_allocate__(neededAllocSize + 1, 0);
     // printf("ALLOCATED\n");
     // fflush(stdout);
     char *allocatedBuffer = allocatedBufferOrigin;
@@ -116,8 +146,8 @@ char *itos(int num)
 char *cptos(const char *str)
 {
     asm volatile("pusha");
-    int strlen = *(((int *)str) - 1); // length is stored in int right before str
-    char *o = __rc_allocate_with_tempowner__(strlen, 0);
+    int strlen = *((int*)(str) - 1); // length is stored in int right before str
+    char *o = __rc_allocate_str__(strlen);
     memcpy(o, (char *)str, strlen);
     asm volatile("popa");
     return o;
