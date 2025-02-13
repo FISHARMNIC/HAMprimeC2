@@ -26,7 +26,7 @@ char *strjoinmany(int numberOfStrings, ...)
     for (i = 0; i < numberOfStrings; i++)
     {
         char *wp = stringsbase[i];
-        // printf("adding: %s\n", stringsbase[i]);
+        //printf("adding: %s\n", stringsbase[i]);
         while (*wp != 0)
         {
             *allocatedBuffer = *wp;
@@ -96,7 +96,7 @@ char *itos(int num)
     asm volatile("pusha");
     static char obuff[11];
 
-    int len = sprintf(obuff, "%i\0", num);
+    int len = sprintf(obuff, "%i\0", num); // remove \0. doesnt do anything
     //printf("%i\n", len);
 
     char *o = __rc_allocate__(len, 0);

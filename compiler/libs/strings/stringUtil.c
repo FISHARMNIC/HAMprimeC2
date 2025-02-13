@@ -158,6 +158,7 @@ char *strreplace(char* src, char* find, char* replace)
 {
     // todo! make it be able to replace substrs
     // use strstr, then offset src by end, then use strstr again until null
+    return (char*) 0;
 }
 
 char *strjoin(char *first, char *second)
