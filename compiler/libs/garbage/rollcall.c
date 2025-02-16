@@ -53,6 +53,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     described_buffer->entry_reference = roster_entry;
     described_buffer->allocSize = size_bytes;
     described_buffer->usedSize = size_bytes >> 2;
+    described_buffer->dontModify_allocFlag = 0xD1E9;
 
     roster_entry->owner = 0;
     roster_entry->restricted = restricted;

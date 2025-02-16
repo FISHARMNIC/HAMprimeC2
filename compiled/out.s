@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Thu Feb 13 2025 12:10:57 GMT-0700 (Mountain Standard Time)
+Compiled with love on Sun Feb 16 2025 00:30:51 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -22,10 +22,13 @@ Compiled with love on Thu Feb 13 2025 12:10:57 GMT-0700 (Mountain Standard Time)
 ######## user data section ########
 .type	entry, @function
 .global entry
-.4byte 6
-__STRING0__: .asciz "HELLO"
+.4byte 0xDA8A
+.4byte 7
+__STRING0__: .asciz "HELLO "
+.4byte 0xDA8A
 .4byte 5
 __STRING1__: .asciz "ABC "
+.4byte 0xDA8A
 .4byte 6
 __STRING2__: .asciz " BOB "
 __ALLOCFOR_entry__ = 8
@@ -60,7 +63,7 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
-	#//------- line: "HELLO" ------- #
+	#//------- line: "HELLO " ------- #
 	#//------- line: create someStr <- __STRING0__ ------- #
 	# creating variable "someStr" of type "conststr:borrowed" stack?=true
 	# converting conststr "__STRING0__" to dynamic string

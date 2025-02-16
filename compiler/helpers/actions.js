@@ -1093,6 +1093,7 @@ var allocations = {
 
         var label = helpers.formatters.stringLiteral(helpers.counters.stringLiterals++)
         outputCode.data.push(
+            `.4byte 0xDA8A`,
             `.4byte ${value.length + 1}`,
             `${label}: .asciz "${value}"`,
             //`${label}END_:`

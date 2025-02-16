@@ -18,6 +18,7 @@ char *strjoinmany(int numberOfStrings, ...)
 
     int neededAllocSize = 0;
     int givenAllocSize = 0;
+    char* givenAllocPtr = 0;
 
     int i = 0;
     for (; i < numberOfStrings; i++)
@@ -25,47 +26,56 @@ char *strjoinmany(int numberOfStrings, ...)
         // printf("LENGTHING %i\n", i);
         // fflush(stdout);
         char *str = stringsbase[i];
-        int strsz = ALLOC_ACCESS_USZ(str);
-        int allocsz;
+        int strsz   = ALLOC_ACCESS_USZ(str);
+        int strtype = ALLOC_ACCESS_FLG(str);
 
-        // if(is_dynamic)
-        // {
-        //     if(allocSz > givenAllocSize)
-        //     {
-        //         givenAllocSize = allocSz;
-        //     }
-        //     neededAllocSize += strsz;
-        // }
-        // else
-        // {
+        printf("\t%10s uses: %i\n", str, strsz);
+        if(strtype == ALLOC_FLG_DYNAMIC)
+        {
+            int allocsz = ALLOC_ACCESS_ASZ(str);
+            if(allocsz > givenAllocSize)
+            {
+                givenAllocSize = allocsz;
+                givenAllocPtr = str;
+            }
             neededAllocSize += strsz;
-        //}
-
-        printf("\t%10s of %i %i\n", str, strsz, ALLOC_ACCESS_ASZ(str));
+            printf("\t\t  > has: %i\n", allocsz);
+        }
+        else if(strtype == ALLOC_FLG_STATIC)
+        {
+            neededAllocSize += strsz;
+        }
+        else
+        {
+            printf("[STRINGS ERROR] Bad type flag, got %x\n", strtype);
+        }
     }
 
     printf("-- needed space is: %i\n", neededAllocSize);
     printf("-- given  space is: %i\n", givenAllocSize);
 
-    // printf("STRJOIN ALLOCATING\n");
-    char *allocatedBufferOrigin = __rc_allocate__(neededAllocSize + 1, 0);
-    // printf("ALLOCATED\n");
-    // fflush(stdout);
-    char *allocatedBuffer = allocatedBufferOrigin;
+    char *allocatedBuffer;
+    if(givenAllocSize > neededAllocSize)
+    {
+        allocatedBuffer = givenAllocPtr;
+    }
+    else
+    {
+        allocatedBuffer = __rc_allocate__(neededAllocSize + 1, 0);
+    }
+    char *allocatedBufferOrigin = allocatedBuffer;
 
     for (i = 0; i < numberOfStrings; i++)
     {
         char *wp = stringsbase[i];
-        //printf("adding: %s\n", stringsbase[i]);
-        while (*wp != 0)
-        {
-            *allocatedBuffer = *wp;
-            allocatedBuffer++;
-            wp++;
-        }
+        int sz = ALLOC_ACCESS_USZ(wp) - 1;
+        printf(">>> copying: %s %i\n", wp, sz);
+        fflush(stdout);
+        allocatedBuffer = memcpy(allocatedBuffer, wp, sz);
+        allocatedBuffer += sz;
     }
     *allocatedBuffer = 0;
-    // printf("concat: %s\n", allocatedBufferOrigin);
+    printf("concat: %s\n", allocatedBufferOrigin);
 
     asm volatile("popa");
     return allocatedBufferOrigin;
@@ -101,7 +111,7 @@ char *ftos(float num)
     asm volatile("pusha");
     static char obuff[35];
     int len = sprintf(obuff, "%f", num);
-    char *o = __rc_allocate__(len, 0);
+    char *o = __rc_allocate_str__(len);
     while (len >= 0)
     {
         o[len] = obuff[len];
@@ -114,7 +124,7 @@ char *ftos(float num)
 char *ctos(char ch)
 {
     asm volatile("pusha");
-    char *o = __rc_allocate__(2, 0);
+    char *o = __rc_allocate_str__(2);
     o[0] = ch;
     o[1] = 0;
     asm volatile("popa");
@@ -126,10 +136,10 @@ char *itos(int num)
     asm volatile("pusha");
     static char obuff[11];
 
-    int len = sprintf(obuff, "%i\0", num); // remove \0. doesnt do anything
+    int len = sprintf(obuff, "%i", num); // remove \0. doesnt do anything
     //printf("%i\n", len);
 
-    char *o = __rc_allocate__(len, 0);
+    char *o = __rc_allocate_str__(len);
 
     while (len >= 0)
     {
@@ -164,7 +174,7 @@ char *__sinc_loadStringArray(char* destArr, int numberOfStrings, ...)
         char* string = sourceStrings[numberOfStrings - 1 - i];
         //printf("--- %s --> %i\n", string, 4 * i);
         int strlen = *(((int *)string) - 1); // length is stored in int right before str
-        char *o = __rc_allocate__(strlen, 0);
+        char *o = __rc_allocate_str__(strlen);
         memcpy(o, string, strlen);
         __rc_requestOwnership__(o, destArr + (4 * i));
     }

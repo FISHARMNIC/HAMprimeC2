@@ -10,8 +10,11 @@
 
 // for strings
 #define ALLOC_ACCESS_USZ(x) *(int*)(x - 4)
-#define ALLOC_ACCESS_ASZ(x) *(int*)(x - 8)
+#define ALLOC_ACCESS_FLG(x) *(int*)(x - 8)
+#define ALLOC_ACCESS_ASZ(x) *(int*)(x - 12)
 
+#define ALLOC_FLG_DYNAMIC 0xD1E9
+#define ALLOC_FLG_STATIC  0xDA8A
 
 void *__rc_allocate__(int, int);
 void *__rc_allocate_with_tempowner__(int, int);

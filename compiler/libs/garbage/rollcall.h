@@ -39,6 +39,7 @@ typedef struct described_buffer_t
     // This struct doesn't have a defined size as the size of data varies
     roster_entry_t *entry_reference;
     int allocSize;
+    int dontModify_allocFlag;
     int usedSize;
     int data[]; // This is NOT a pointer. the actual data exists right here
 } described_buffer_t;
