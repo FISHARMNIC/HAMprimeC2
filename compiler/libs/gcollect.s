@@ -69,7 +69,7 @@ __rc_requestOwnership__:
                 movb $0, 0 # trigger segfault when __rc_triggerSegfaultOnNullOwnership__ is enabled
     2:
 
-    mov -4(%ebx), %eax        # get entry reference pointer
+    mov -8(%ebx), %eax        # get entry reference pointer
 
     cmpl $0, (%eax)           # if owner yet (0 = no owner)
     je 0f

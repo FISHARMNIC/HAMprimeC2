@@ -946,8 +946,6 @@ function evaluate(line) {
                         `# printing array (either string or format array)`,
                         `mov ${data}, %eax`,
                         `push %eax     # load buffer`,
-                        `mov -4(%eax), %edx`,
-                        `pushl 8(%edx) # load size`,
                     )
 
                     // IMPORTANT need to save and restore "this" before and after
@@ -1000,9 +998,7 @@ function evaluate(line) {
                     outputCode.autoPush(
                         `# printing array`,
                         `mov ${data}, %eax`,
-                        `push %eax     # load buffer`,
-                        `mov -4(%eax), %edx`,
-                        `pushl 8(%edx) # load size`,
+                        `push %eax # load buffer`,
                         `call ${printFn}`,
                         `add $8, %esp`
                     )

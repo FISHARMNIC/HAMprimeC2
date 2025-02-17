@@ -1,6 +1,7 @@
 #include "sinc.h"
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 
 void quit(int code); // move to sinc.h
 
@@ -8,7 +9,7 @@ char *substr(char *src, int start, int end)
 {
     assert(src != 0);
 
-    int len = strlen(src);
+    int len = STRING_GET_SZ(src) - 1;
 
     if (end <= start)
     {
@@ -41,29 +42,29 @@ char *substr(char *src, int start, int end)
 
 char *strpush(char **src, char letter)
 {
-    int len = strlen(*src);
-    char *dest = __rc_allocate__(len + 2, 0);
+    int len = STRING_GET_SZ(*src);
+    printf("len was: %d\n", len);
+    char *dest = __rc_allocate__(len + 1, 0);
     memcpy(dest, *src, len);
-    dest[len] = letter;
-    dest[len + 1] = 0;
+    dest[len - 1] = letter;
+    dest[len] = 0;
     __rc_requestOwnership__(dest, src);
     *src = dest;
 
     return dest;
 }
 
-char strpop(char **src)
+char strpop(char *src)
 {
-    int len = strlen(*src);
-    char *dest = __rc_allocate__(len, 0);
-    char last = (*src)[len - 1];
-    memcpy(dest, *src, len - 1);
-    dest[len] = 0;
+    int len = STRING_GET_SZ(src);
+    printf("len: %d\n", len);
+    char ret = src[len - 2];
+    printf("ret: %c\n", ret);
+    src[len - 2] = 0;
 
-    __rc_requestOwnership__(dest, src);
-    *src = dest;
-
-    return last;
+    STRING_GET_SZ(src)--;
+    
+    return ret;
 }
 
 char **strsplit(char *str)
@@ -71,7 +72,7 @@ char **strsplit(char *str)
     /* hasn't been checked yet, and no prototype in strings.xh */
     assert(str != 0);
 
-    int len = strlen(str);
+    int len = STRING_GET_SZ(str) - 1;
     char **allocedArr = __rc_allocate__(sizeof(char *) * len, 0);
 
     for (int chnum = 0; chnum < len; chnum++)
@@ -109,7 +110,8 @@ char **strsplitchr(char *str, char delim)
     assert(str != 0);
 
     int count = strcount(str, delim) + 1;
-    char **allocedArr = __rc_allocate__(sizeof(char *) * count, 0);
+    printf("count: %d\n", count);
+    char **allocedArr = __rc_allocate__(sizeof(char *) * count + 1, 0);
 
     int index = 0;
 
@@ -131,6 +133,7 @@ char **strsplitchr(char *str, char delim)
         int subLen = end - str;
 
         allocedArr[index++] = substr(str, 0, subLen);
+        printf(">> %s\n", substr(str, 0, subLen));
         str += subLen + 1;
     }
 
@@ -142,10 +145,10 @@ char *strinsert(char *dest, char *intermediate, int insertIndex)
     assert(dest != 0 && intermediate != 0 && insertIndex >= 0);
     //int atIndex = 0;
 
-    int destlen = strlen(dest);
-    int interlen = strlen(intermediate);
+    int destlen = STRING_GET_SZ(dest) - 1;
+    int interlen = STRING_GET_SZ(intermediate) - 1;
 
-    char *outbuf = __rc_allocate__(destlen + interlen, 0);
+    char *outbuf = __rc_allocate__(destlen + interlen + 1, 0);
 
     memcpy(outbuf, dest, insertIndex);
     memcpy(&outbuf[insertIndex], intermediate, interlen);
@@ -154,19 +157,19 @@ char *strinsert(char *dest, char *intermediate, int insertIndex)
     return outbuf;
 }
 
-char *strreplace(char* src, char* find, char* replace)
-{
-    // todo! make it be able to replace substrs
-    // use strstr, then offset src by end, then use strstr again until null
-    return (char*) 0;
-}
+// char *strreplace(char* src, char* find, char* replace)
+// {
+//     // todo! make it be able to replace substrs
+//     // use strstr, then offset src by end, then use strstr again until null
+//     return (char*) 0;
+// }
 
 char *strjoin(char *first, char *second)
 {
     assert(first != 0 && second != 0);
 
-    int firlen = strlen(first);
-    int seclen = strlen(second);
+    int firlen = STRING_GET_SZ(first);
+    int seclen = STRING_GET_SZ(second);
 
     char *outbuf = __rc_allocate__(firlen + seclen, 0);
 

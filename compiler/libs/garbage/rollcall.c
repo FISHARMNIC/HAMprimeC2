@@ -51,6 +51,7 @@ void *__rc_allocate__(int size_bytes, int restricted)
     described_buffer_t *described_buffer = &(allocation->section_describedBuffer);
 
     described_buffer->entry_reference = roster_entry;
+    described_buffer->size = size_bytes;
 
     roster_entry->owner = 0;
     roster_entry->restricted = restricted;

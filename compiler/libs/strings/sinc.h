@@ -1,6 +1,8 @@
 #ifndef SINC_H
 #define SINC_H
 
+#define STRING_GET_SZ(x) (((int*)x)[-1])
+
 void *__rc_allocate__(int, int);
 void *__rc_allocate_with_tempowner__(int, int);
 void __rc_requestOwnership__(void *, void *);

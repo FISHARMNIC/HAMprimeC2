@@ -1,7 +1,7 @@
 
 /*
 ********HAM PRIME**********
-Compiled with love on Thu Feb 13 2025 10:59:32 GMT-0700 (Mountain Standard Time)
+Compiled with love on Mon Feb 17 2025 11:59:17 GMT-0700 (Mountain Standard Time)
 **************************
 */
 
@@ -22,10 +22,20 @@ Compiled with love on Thu Feb 13 2025 10:59:32 GMT-0700 (Mountain Standard Time)
 ######## user data section ########
 .type	entry, @function
 .global entry
-.4byte 5
-__STRING0__: .asciz "ABC "
-.4byte 6
-__STRING1__: .asciz " BOB "
+.4byte 8
+__STRING0__: .asciz "abcdefg"
+.4byte 13
+__STRING1__: .asciz "nico,jon,bob"
+.4byte 13
+__STRING2__: .asciz "Hello World!"
+.4byte 17
+__STRING3__: .asciz "to this amazing "
+.4byte 4
+__STRING4__: .asciz "abc"
+.4byte 4
+__STRING5__: .asciz "123"
+.4byte 4
+__STRING6__: .asciz "rio"
 __ALLOCFOR_entry__ = 4
 ###################################
 .text
@@ -33,7 +43,21 @@ __ALLOCFOR_entry__ = 4
 #### compiler initation section ###
 __init_for_out__:
 
-#//------- line: entry function <  > ------- #
+#//------- line: string : reference src , char letter ------- #
+#//------- line: forward strpush function < src,,,letter > -> string ------- #
+#//------- line: string src ------- #
+#//------- line: forward strpop function < src > -> char ------- #
+#//------- line: string str , char delim ------- #
+#//------- line: forward strsplitchr function < str,,,delim > -> string : array ------- #
+#//------- line: string str , string ins , u32 index ------- #
+#//------- line: forward strinsert function < str,,,ins,,,index > -> string ------- #
+#//------- line: string first , string second ------- #
+#//------- line: forward strjoin function < first,,,second > -> string ------- #
+#//------- line: string str ------- #
+#//------- line: forward strsplit function < str > -> string : array ------- #
+#//------- line: string str , u8 ch ------- #
+#//------- line: forward strincludes function < str,,,ch > -> u8 ------- #
+#//------- line: entry function <  > -> u32 ------- #
 #//------- line: { ; ------- #
 # {
 # auto-return OK for entry function
@@ -56,47 +80,174 @@ sub $__ALLOCFOR_entry__, %esp # total stack allocation
 # pushing multi-line clobbers
 call __rc_enterChunk__
 # popping multi-line clobbers
-	#//------- line: "ABC " + 123 + " BOB " + 123 . 456 ------- #
-	# setting register "c" to "1123477881"
-	mov $1123477881, %ecx
-	pushw __disable_gc__; movw $1, __disable_gc__
-	push %ecx
-	call ftos
+	#//------- line: "abcdefg" ------- #
+	#//------- line: create word <- __STRING0__ ------- #
+	# creating variable "word" of type "conststr:borrowed" stack?=true
+	# converting conststr "__STRING0__" to dynamic string
+	pushl $__STRING0__
+	call cptos
 	add $4, %esp
-	push %eax
-	# setting register "d" to "__STRING1__"
-	movl $__STRING1__, %edx
-	push %edx
-	pushl $123
-	call itos
-	add $4, %esp
-	push %eax
-	# setting register "d" to "__STRING0__"
-	movl $__STRING0__, %edx
-	push %edx
-	pushl $4
-	call strjoinmany
-	add $20, %esp
-	mov %eax, %esi
-	popw __disable_gc__
-	#//------- line: create something <- %esi ------- #
-	# creating variable "something" of type "string:dynamic" stack?=true
-	# Loading local variable "something" @-4(%ebp) with "%esi"
-	# optimized move from %esi to -4(%ebp)
-	mov %esi, -4(%ebp)
-	# requesting ownership for something (create)
+	mov %eax, %ecx
+	# Loading local variable "word" @-4(%ebp) with "%ecx"
+	# optimized move from %ecx to -4(%ebp)
+	mov %ecx, -4(%ebp)
+	# requesting ownership for word (create)
 	lea -4(%ebp), %eax
 	push %eax
-	push %esi
+	push %ecx
 	call __rc_requestOwnership__
 	add $8, %esp
-	#//------- line: something ------- #
-	# note, read STACK VAR something -> -4(%ebp)
-	#//------- line: print_ ( -4(%ebp) ) ------- #
+	#//------- line: word , 2 , 5 ------- #
+	# note, read STACK VAR word -> -4(%ebp)
+	#//------- line: substr ( -4(%ebp),,,2,,,5 ) ------- #
+	# pushing clobbers
+	# Calling function substr
+	pushl $5
+	pushl $2
+	# TODO optimize if variable just do movl
+	mov -4(%ebp), %edx
+	push %edx
+	call substr
+	mov %eax, %ecx
+	add $12, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: print_ ( %ecx ) ------- #
 	# pushing multi-line clobbers
-	push -4(%ebp)
+	push %ecx
 	call puts
 	add $4, %esp
+	# popping multi-line clobbers
+	#//------- line: word , 'h' ------- #
+	# note, read STACK VAR word -> -4(%ebp)
+	#//------- line: strpush ( -4(%ebp),,,104 ) ------- #
+	# pushing clobbers
+	# Calling function strpush
+	pushl $104
+	# TODO optimize if variable just do movl
+	lea -4(%ebp), %edx # PASS AS REFERENCE
+	push %edx
+	call strpush
+	mov %eax, %ecx
+	add $8, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: print_ ( %ecx ) ------- #
+	# pushing multi-line clobbers
+	push %ecx
+	call puts
+	add $4, %esp
+	# popping multi-line clobbers
+	#//------- line: word ------- #
+	# note, read STACK VAR word -> -4(%ebp)
+	#//------- line: strpop ( -4(%ebp) ) ------- #
+	# pushing clobbers
+	# Calling function strpop
+	# TODO optimize if variable just do movl
+	mov -4(%ebp), %edx
+	push %edx
+	call strpop
+	mov %al, %cl
+	add $4, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: print_ ( %cl ) ------- #
+	# pushing multi-line clobbers
+	push %ecx
+	call putchar
+	movb $'\n', (%esp)
+	call putchar
+	add $4, %esp
+	# popping multi-line clobbers
+	#//------- line: "nico,jon,bob" , ',' ------- #
+	#//------- line: strsplitchr ( __STRING1__,,,44 ) ------- #
+	# pushing clobbers
+	# Calling function strsplitchr
+	pushl $44
+	# converting conststr to string (function call)
+	pushl $__STRING1__
+	call cptos
+	mov %eax, (%esp) # str is alr in stack just overwrite
+	call strsplitchr
+	mov %eax, %ecx
+	add $8, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: print_ ( %ecx ) ------- #
+	# pushing multi-line clobbers
+	# printing array (either string or format array)
+	mov %ecx, %eax
+	push %eax     # load buffer
+	call print_stringArr
+	add $8, %esp
+	# popping multi-line clobbers
+	#//------- line: "Hello World!" , "to this amazing " , 6 ------- #
+	#//------- line: strinsert ( __STRING2__,,,__STRING3__,,,6 ) ------- #
+	# pushing clobbers
+	# Calling function strinsert
+	pushl $6
+	# converting conststr to string (function call)
+	pushl $__STRING3__
+	call cptos
+	mov %eax, (%esp) # str is alr in stack just overwrite
+	# converting conststr to string (function call)
+	pushl $__STRING2__
+	call cptos
+	mov %eax, (%esp) # str is alr in stack just overwrite
+	call strinsert
+	mov %eax, %ecx
+	add $12, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: print_ ( %ecx ) ------- #
+	# pushing multi-line clobbers
+	push %ecx
+	call puts
+	add $4, %esp
+	# popping multi-line clobbers
+	#//------- line: "abc" , "123" ------- #
+	#//------- line: strjoin ( __STRING4__,,,__STRING5__ ) ------- #
+	# pushing clobbers
+	# Calling function strjoin
+	# converting conststr to string (function call)
+	pushl $__STRING5__
+	call cptos
+	mov %eax, (%esp) # str is alr in stack just overwrite
+	# converting conststr to string (function call)
+	pushl $__STRING4__
+	call cptos
+	mov %eax, (%esp) # str is alr in stack just overwrite
+	call strjoin
+	mov %eax, %ecx
+	add $8, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: print_ ( %ecx ) ------- #
+	# pushing multi-line clobbers
+	push %ecx
+	call puts
+	add $4, %esp
+	# popping multi-line clobbers
+	#//------- line: "rio" ------- #
+	#//------- line: strsplit ( __STRING6__ ) ------- #
+	# pushing clobbers
+	# Calling function strsplit
+	# converting conststr to string (function call)
+	pushl $__STRING6__
+	call cptos
+	mov %eax, (%esp) # str is alr in stack just overwrite
+	call strsplit
+	mov %eax, %ecx
+	add $4, %esp
+	# popping clobbers
+	# clobbering "c"
+	#//------- line: print_ ( %ecx ) ------- #
+	# pushing multi-line clobbers
+	# printing array (either string or format array)
+	mov %ecx, %eax
+	push %eax     # load buffer
+	call print_stringArr
+	add $8, %esp
 	# popping multi-line clobbers
 	#//------- line: } ------- #
 # }
@@ -106,5 +257,5 @@ mov  $0, %eax
 mov %ebp, %esp
 pop %ebp
 ret
-# something: 4
+# word: 4
 

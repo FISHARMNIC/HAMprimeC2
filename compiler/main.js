@@ -1,6 +1,10 @@
 /*
 TODO:
 
+    * String library is UNTESTED in this mode and is DEFINITLEY broken
+        * also make sure to check print functions
+
+
     // add for loop
     
     Make sure pushing __this__ type to stack on construcotr call

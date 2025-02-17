@@ -13,8 +13,8 @@ char *strjoinmany(int numberOfStrings, ...)
     {
         // printf("LENGTHING %i\n", i);
         // fflush(stdout);
-        totalAllocationSize += strlen(stringsbase[i]);
-        // printf("\t%i\n", totalAllocationSize);
+        totalAllocationSize += STRING_GET_SZ(stringsbase[i]);
+        printf("\t%i\n", totalAllocationSize);
     }
 
     // printf("STRJOIN ALLOCATING\n");
@@ -96,7 +96,7 @@ char *itos(int num)
     asm volatile("pusha");
     static char obuff[11];
 
-    int len = sprintf(obuff, "%i\0", num); // remove \0. doesnt do anything
+    int len = sprintf(obuff, "%i", num); // remove \0. doesnt do anything
     //printf("%i\n", len);
 
     char *o = __rc_allocate__(len, 0);
@@ -116,7 +116,7 @@ char *itos(int num)
 char *cptos(const char *str)
 {
     asm volatile("pusha");
-    int strlen = *(((int *)str) - 1); // length is stored in int right before str
+    int strlen = STRING_GET_SZ(str); // length is stored in int right before str
     char *o = __rc_allocate_with_tempowner__(strlen, 0);
     memcpy(o, (char *)str, strlen);
     asm volatile("popa");
@@ -133,7 +133,7 @@ char *__sinc_loadStringArray(char* destArr, int numberOfStrings, ...)
     {
         char* string = sourceStrings[numberOfStrings - 1 - i];
         //printf("--- %s --> %i\n", string, 4 * i);
-        int strlen = *(((int *)string) - 1); // length is stored in int right before str
+        int strlen = STRING_GET_SZ(string); // length is stored in int right before str
         char *o = __rc_allocate__(strlen, 0);
         memcpy(o, string, strlen);
         __rc_requestOwnership__(o, destArr + (4 * i));
@@ -197,8 +197,9 @@ void print_arrf32(int size, float *arr)
 }
 
 // todo later just pass a %i, %f, etc
-void print_stringArr(int size, char **arr)
+void print_stringArr(char **arr)
 {
+    int size = STRING_GET_SZ(arr);
     size /= 4;
     //printf("buffer: %p -- size: %i\n\n", arr, size);
 
@@ -222,8 +223,9 @@ void print_stringArr(int size, char **arr)
     printf("   \"%s\"\n]\n", arr[i]);
 }
 
-void print_arr16(int size, short *arr)
+void print_arr16(short *arr)
 {
+    int size = STRING_GET_SZ(arr);
     size /= 2;
 
     if (size == 0)
@@ -251,8 +253,9 @@ void print_float_noPromo(float f)
     printf("%f\n", f);
 }
 
-void print_formatArr(fn_toString_t *toStringFn, int size, int **arr)
+void print_formatArr(fn_toString_t *toStringFn, int **arr)
 {
+    int size = STRING_GET_SZ(arr);
     size /= 4;
 
     __this__ = arr[0];
