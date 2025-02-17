@@ -58,6 +58,7 @@ char *strjoinmany(int numberOfStrings, ...)
     if(givenAllocSize > neededAllocSize)
     {
         allocatedBuffer = givenAllocPtr;
+        ALLOC_ACCESS_USZ(str) = givenAllocSize;
     }
     else
     {
