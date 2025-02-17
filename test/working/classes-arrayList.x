@@ -87,11 +87,6 @@ List format {
     }
 }
 
-putint function<u32 i> 
-{
-    printf("Printing: %i\n", i);
-}
-
 entry function<> -> u32
 {
     create myList <- List();
