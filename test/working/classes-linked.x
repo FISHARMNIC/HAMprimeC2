@@ -104,14 +104,10 @@ Linked format
         create build <- "[";
         while(node.next != 0)
         {
-            //printf("::%p %i %s %p\n", node, node.current, build, node.next);
             build <- build + node.current + "->";
-            //printf("---!!\n");
             node <- borrow node.next;
         }
-        //printf("DONE:: %p %s %i\n", node, build, node.current);
         build <- build + node.current + "]";
-        //printf("::FINISHED::\n");
         return build;
     }
 }

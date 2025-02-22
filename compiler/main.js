@@ -1,10 +1,6 @@
 /*
 TODO:
 
-    [CRITICAL] classes-arrayList is BROKEN!!!!!
-    !!!!!
-    !!!!
-
     // add for loop
     
     Make sure pushing __this__ type to stack on construcotr call

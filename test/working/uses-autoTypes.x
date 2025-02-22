@@ -13,7 +13,7 @@ Person format
     .name;
     .age;
 
-    .Person constructor<string n, u32 age>
+    .Person constructor<string n, any age>
     {
         this.name <- n;
         this.age  <- age;

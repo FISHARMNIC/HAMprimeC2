@@ -242,7 +242,7 @@ var assembly = {
         outputCode.autoPush(`# Setting pointer ${data} -> ${address}`)
 
         var atypeBytes = helpers.types.typeToBytes(addressType)
-        if (atypeBytes != 4 && !("isReference" in addressType)) {
+        if (atypeBytes != 4 && !("isReference" in addressType) && !addressType.pointer && !addressType.advptr) {
             throwE(`Setting address is not 32bits, got ${helpers.types.convertTypeObjToName(addressType)} (${atypeBytes * 8})`)
         }
 
@@ -307,10 +307,14 @@ var assembly = {
                 data = dreg
             }
 
-            var suffix = helpers.types.sizeToSuffix(dataType)
+            var noptr = objCopy(addressType)
+            noptr.advptr = false
+            noptr.pointer = false
+
+            var suffix = helpers.types.sizeToSuffix(noptr)
 
             outputCode.autoPush(
-                `mov${suffix} ${helpers.types.formatIfConstOrLit(data)}, (${address})`
+                `mov${suffix} ${helpers.types.conformRegisterIfIs(helpers.types.formatIfConstOrLit(data), noptr)}, (${address})`
             )
 
         }
