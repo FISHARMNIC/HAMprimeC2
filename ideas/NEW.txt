@@ -13,7 +13,7 @@ Arrays are clueless about types of multi-dimensional arrays
         * Might just have to do strictly typed arrays (only if their being nested)
 
     * CURRENT SOLUTION IN PLACE
-        * Arrays do not accept mulitple types (throws err)
+        * Arrays do not accept multiple types (throws err)
         * Arrays assume the type of the first element
         * The element type is stored in the "arrayElements" property
         * "elementsHaveData" is still being used, but i'm trying to get rid of it
