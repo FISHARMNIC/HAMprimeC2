@@ -4,7 +4,7 @@ HAM' (HAM prime) is a fully compiled 32-bit programming language. HAM is an acro
 <br>
 
 ## Addendum
-I have decided to stop working on this project. I built this in highschool as more of an exercise to see how hard it would be to compile a high level language directly to x86 assembly (which HAM' does) without using LLVM nor C as middlemen. It is more of a toy language, and is not built with memory safety in mind and lacks any type enforcement.
+I have decided to stop working on this project. I built this in highschool as more of an exercise to see how hard it would be to compile a high level language directly to x86 assembly (which HAM' does) without using LLVM nor C as middlemen. It is more of a toy language, and is not built with memory safety in mind and lacks any type enforcement. If you are interested in my more modern work, please check out my [static Javascript compiler](https://github.com/FISHARMNIC/construct).
 
 ---
 
